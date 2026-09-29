@@ -1,0 +1,185 @@
+---
+/**
+  * AlertDialog — a modal that interrupts for a decision.
+  *
+  * role="alertdialog" tells assistive tech to announce the message
+  * immediately. Structure mirrors Dialog (native <dialog>, platform
+  * modality/focus containment, zero JS in the component) with an
+  * action-oriented footer: cancel buttons are plain
+  * `<form method="dialog">` submissions, so dismissal needs no JS.
+  *
+  *   <Button id="open-delete">Delete project</Button>
+  *   <AlertDialog id="delete">
+  *     <h2 slot="title">Delete project?</h2>
+  *     <p slot="description">This cannot be undone.</p>
+  *     <Fragment slot="footer">
+  *       <form method="dialog"><Button variant="outline">Cancel</Button></form>
+  *       <form method="dialog">
+  *         <Button variant="destructive" value="confirm">Delete</Button>
+  *       </form>
+  *     </Fragment>
+  *   </AlertDialog>
+  *   <!-- app script: getElementById("open-delete") → showModal() -->
+  *
+  * The dialog's `returnValue` receives the submitting button's `value`,
+  * so the app can tell which action dismissed it.
+  *
+  * JavaScript required: Yes — app-level trigger only (`showModal()`); the
+  * component ships zero JS itself.
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  size?: "xs" | "sm" | "md" | "lg";
+  /** Required for automatic title/description labelling. */
+  id?: string;
+  /** Explicit accessible name (skips automatic aria-labelledby). */
+  ariaLabel?: string;
+  class?: string;
+}
+
+const {
+  size = "sm",
+  id,
+  ariaLabel,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const hasTitle = Astro.slots.has("title");
+const hasDescription = Astro.slots.has("description");
+const hasFooter = Astro.slots.has("footer");
+
+const titleId = id && hasTitle ? `${id}-title` : undefined;
+const descriptionId = id && hasDescription ? `${id}-description` : undefined;
+
+const classes = cn("aui-alert-dialog", `aui-alert-dialog--${size}`, className);
+---
+
+<dialog
+  id={id}
+  class={classes}
+  role="alertdialog"
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabel ?? titleId}
+  aria-describedby={descriptionId}
+  {...rest}
+>
+  <div class="aui-alert-dialog__panel">
+    {
+      hasTitle && (
+        <div class="aui-alert-dialog__title" id={titleId}>
+          <slot name="title"/>
+        </div>
+      )
+    }
+    {
+      hasDescription && (
+        <div class="aui-alert-dialog__description" id={descriptionId}>
+          <slot name="description"/>
+        </div>
+      )
+    }
+    <div class="aui-alert-dialog__content">
+      <slot/>
+    </div>
+    {
+      hasFooter && (
+        <div class="aui-alert-dialog__footer">
+          <slot name="footer"/>
+        </div>
+      )
+    }
+  </div>
+</dialog>
+
+<style>
+  .aui-alert-dialog {
+    border: none;
+    padding: 0;
+    margin: auto;
+    background: transparent;
+    color: var(--ui-foreground);
+    max-width: calc(100% - var(--ui-space-8));
+  }
+
+  .aui-alert-dialog::backdrop {
+    background-color: var(--ui-backdrop, rgb(0 0 0 / 0.5));
+  }
+
+  .aui-alert-dialog__panel {
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-xl);
+    padding: var(--ui-space-6);
+  }
+
+  /* --- sizes --- */
+
+  .aui-alert-dialog--xs .aui-alert-dialog__panel {
+    width: 20rem;
+  }
+
+  .aui-alert-dialog--sm .aui-alert-dialog__panel {
+    width: 24rem;
+  }
+
+  .aui-alert-dialog--md .aui-alert-dialog__panel {
+    width: 28rem;
+  }
+
+  .aui-alert-dialog--lg .aui-alert-dialog__panel {
+    width: 32rem;
+  }
+
+  .aui-alert-dialog__title {
+    font-size: var(--ui-text-lg);
+    font-weight: var(--ui-font-semibold);
+    line-height: var(--ui-leading-tight);
+  }
+
+  .aui-alert-dialog__title > :global(*),
+  .aui-alert-dialog__description > :global(*),
+  .aui-alert-dialog__content > :global(*) {
+    margin-top: 0;
+  }
+
+  .aui-alert-dialog__title > :global(*:last-child),
+  .aui-alert-dialog__description > :global(*:last-child),
+  .aui-alert-dialog__content > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+
+  .aui-alert-dialog__description {
+    margin-top: var(--ui-space-2);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-alert-dialog__content {
+    margin-top: var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-alert-dialog__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+    margin-top: var(--ui-space-6);
+  }
+
+  /* Zero-JS dismiss actions live in <form method="dialog"> wrappers —
+     flatten them into the flex row. :global() because slotted forms
+     carry no scope attribute. */
+  .aui-alert-dialog__footer :global(form) {
+    display: contents;
+  }
+
+  .aui-alert-dialog__footer > :global(div) {
+    display: contents;
+  }
+</style>

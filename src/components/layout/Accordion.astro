@@ -1,0 +1,263 @@
+---
+/**
+  * Accordion — collapsible sections with zero JS.
+  *
+  * Built on native <details>/<summary>: expand/collapse, keyboard
+  * (Space/Enter), and announcements all come from the platform. The
+  * `single` mode emulates one-open-at-a-time behavior without script —
+  * see the FAQ note: a browser-native `name` attribute on <details>
+  * (Chrome 120+) enforces exclusivity when provided via rest props.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface AccordionItem {
+  /** Unique value identifying the panel. */
+  value: string;
+  /** Summary-line text. */
+  title: string;
+  /** Panel body content (rendered as plain HTML-free text or slot per item). */
+  content: string;
+  /** Opens this panel on first render (SSR; multiple allowed unless single). */
+  open?: boolean;
+  /** Disables the toggle. */
+  disabled?: boolean;
+}
+
+export interface Props {
+  /** Sections in display order. */
+  items: AccordionItem[];
+  /** Keep only one panel open (best-effort without JS — see header). */
+  single?: boolean;
+  /** Visual style. */
+  variant?: "default" | "bordered" | "ghost";
+  /** Scale of titles and padding. */
+  size?: "sm" | "md" | "lg";
+  /** Renders a chevron indicator that rotates when open. */
+  indicator?: boolean;
+  /** Smooth expand/collapse height animation. CSS-only (::details-content); browsers without support snap instantly like the default. */
+  animated?: boolean;
+  /** Accessible name for the group landmark (when it delimits a region). */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  items,
+  single = false,
+  variant = "default",
+  size = "md",
+  indicator = true,
+  animated = false,
+  ariaLabel,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-accordion",
+  `aui-accordion--${variant}`,
+  `aui-accordion--${size}`,
+  animated && "aui-accordion--animated",
+  className,
+);
+---
+
+<div id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  {
+    items.map((item) => (
+      <details
+        class="aui-accordion__item"
+        name={single ? (id ? `${id}-group` : "aui-accordion-group") : undefined}
+        open={item.open || undefined}
+      >
+        <summary class="aui-accordion__summary">
+          <span class="aui-accordion__title">{item.title}</span>
+          {indicator && (
+            <svg
+              class="aui-accordion__chevron"
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 6l4 4 4-4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          )}
+        </summary>
+        <div class="aui-accordion__content">{item.content}</div>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .aui-accordion {
+    display: grid;
+    font-family: var(--ui-font-sans);
+  }
+
+  /* --- variants --- */
+
+  .aui-accordion--default {
+    gap: var(--ui-space-2);
+  }
+
+  .aui-accordion--bordered {
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    overflow: hidden;
+  }
+
+  .aui-accordion--bordered .aui-accordion__item + .aui-accordion__item {
+    border-block-start: 1px solid var(--ui-border);
+  }
+
+  .aui-accordion--ghost {
+    gap: var(--ui-space-1);
+  }
+
+  /* --- item --- */
+
+  .aui-accordion__item {
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    background-color: var(--ui-background);
+  }
+
+  .aui-accordion--bordered .aui-accordion__item,
+  .aui-accordion--ghost .aui-accordion__item {
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+  }
+
+  .aui-accordion__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-3);
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-medium);
+    cursor: pointer;
+    list-style: none;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-accordion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .aui-accordion__summary:hover {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-accordion__summary:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: calc(var(--ui-focus-ring-offset) * -1);
+  }
+
+  .aui-accordion__item[disabled] .aui-accordion__summary,
+  .aui-accordion__item:has(> summary[disabled]) .aui-accordion__summary {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* --- sizes --- */
+
+  .aui-accordion--sm .aui-accordion__summary {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-accordion--md .aui-accordion__summary {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    font-size: var(--ui-text-md);
+  }
+
+  .aui-accordion--lg .aui-accordion__summary {
+    padding: var(--ui-space-4) var(--ui-space-5);
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-accordion--sm .aui-accordion__content {
+    padding: 0 var(--ui-space-3) var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-accordion--md .aui-accordion__content {
+    padding: 0 var(--ui-space-4) var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-accordion--lg .aui-accordion__content {
+    padding: 0 var(--ui-space-5) var(--ui-space-5);
+    font-size: var(--ui-text-md);
+  }
+
+  /* --- chevron --- */
+
+  .aui-accordion__chevron {
+    flex-shrink: 0;
+    color: var(--ui-muted-foreground);
+    transition: transform var(--ui-transition-normal);
+  }
+
+  .aui-accordion__item[open] .aui-accordion__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* --- content --- */
+
+  .aui-accordion__content {
+    color: var(--ui-muted-foreground);
+    line-height: var(--ui-leading-normal);
+  }
+
+  /* --- expand/collapse animation (opt-in via `animated`) ---
+
+     Native <details> animates through its ::details-content pseudo:
+     the closed state clamps block-size to 0 and the open state lets it
+     grow to auto. `interpolate-size: allow-keywords` (inherited, so
+     scoping it here never leaks to the page) makes `auto` interpolable.
+     `content-visibility` uses allow-discrete so its hidden↔visible flip
+     participates in the same transition. Browsers without these
+     features ignore the rules entirely — the toggle snaps instantly,
+     identical to the default component. */
+
+  .aui-accordion--animated {
+    interpolate-size: allow-keywords;
+
+    .aui-accordion__item::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition: block-size var(--ui-transition-normal),
+      content-visibility var(--ui-transition-normal) allow-discrete;
+    }
+
+    .aui-accordion__item[open]::details-content {
+      block-size: auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-accordion__chevron {
+      transition: none;
+    }
+
+    /* Collapse instantly even in animated mode. */
+    .aui-accordion--animated .aui-accordion__item::details-content {
+      transition: none;
+    }
+  }
+</style>

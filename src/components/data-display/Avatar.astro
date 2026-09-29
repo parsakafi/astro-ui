@@ -1,0 +1,590 @@
+---
+/**
+  * Avatar — zero-JS user/system image with initials fallback.
+  *
+  * Renders <img> when `src` is provided, otherwise initials derived
+  * from `name`. Always sets a meaningful `alt` (or alt="" when
+  * `ariaLabel` describes the wrapper, e.g. inside a button).
+  *
+  * Extras beyond the base surface:
+  *  - `status` renders an online badge (success/warning/error/muted
+  *    or any variant color); `statusPosition` pins it to a corner;
+  *    `statusLabel` is the accessible name for the indicator.
+  *  - `ring` adds a colored ring (token names); `ringInset` keeps the
+  *    ring from clipping in overflow contexts.
+  *  - `loading` overlays a spinner veil over the image.
+  *  - `filter` applies grayscale (hover to restore with `filterHover`).
+  *  - `radius` overrides the shape preset (circle/square/rounded/sm).
+  *  - `badge` slot renders arbitrary badge content (count, ✓, icon).
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+import {Image} from "astro:assets";
+
+export interface Props {
+  src?: string;
+  alt?: string;
+  /** Full name — used for alt fallback and initials. */
+  name?: string;
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+  /** Explicit box size (e.g. "3.5rem", "56") — overrides `size`. */
+  customSize?: string | number;
+  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  shape?: "circle" | "square" | "rounded";
+  /** Radius override: token-based corner treatment (mirrors shape + finer control). */
+  radius?: "none" | "sm" | "md" | "lg" | "full";
+  fit?: "cover" | "contain";
+  /** Online-style status dot rendered on a corner. */
+  status?: "online" | "away" | "busy" | "offline";
+  /** Corner for the status badge. */
+  statusPosition?: "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  /** Accessible label for the status indicator (defaults per status). */
+  statusLabel?: string;
+  /** Ring color: primary, success, warning, error, info, or background. */
+  ring?: "primary" | "success" | "warning" | "error" | "info" | "background";
+  /** Image filter treatment. */
+  filter?: "none" | "grayscale";
+  /** Restores color on hover when filter="grayscale". */
+  filterHover?: boolean;
+  /** Shows a spinner veil over the avatar (image loading demonstration). */
+  loading?: boolean;
+  /** Corner anchoring slotted badges to the avatar's border. */
+  badgePosition?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+}
+
+const {
+  src,
+  alt,
+  name = "",
+  size = "md",
+  customSize,
+  variant = "inherit",
+  shape = "circle",
+  radius,
+  fit = "cover",
+  status,
+  statusPosition = "bottom-right",
+  statusLabel,
+  /** Corner anchoring slotted badges to the avatar's border. */
+  badgePosition = "top-right",
+  ring,
+  filter = "none",
+  filterHover = false,
+  loading = false,
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const initials = name
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((part) => part[0]?.toUpperCase() ?? "")
+  .join("");
+
+const resolvedAlt = alt ?? (name ? `${name}'s avatar` : "Avatar");
+const sizeToPx: Record<string, number> = {
+  xs: 20,
+  sm: 32,
+  md: 40,
+  lg: 48,
+  xl: 64,
+  "2xl": 80,
+  "3xl": 104,
+};
+
+const statusLabels: Record<string, string> = {
+  online: "Online",
+  away: "Away",
+  busy: "Do not disturb",
+  offline: "Offline",
+};
+
+const classes = cn(
+  "aui-avatar",
+  `aui-avatar--${size}`,
+  `aui-avatar--variant-${variant}`,
+  shape !== "circle" && `aui-avatar--${shape}`,
+  radius && `aui-avatar--radius-${radius}`,
+  ring && `aui-avatar--ring-${ring}`,
+  Astro.slots.has("badge") && `aui-avatar--has-badge`,
+  filter === "grayscale" && "aui-avatar--grayscale",
+  filterHover && "aui-avatar--grayscale-hover",
+  loading && "aui-avatar--loading",
+  className,
+);
+
+const inlineStyle = [
+  typeof customSize === "number" ? `inline-size:${customSize}px;block-size:${customSize}px` : customSize ? `inline-size:${customSize};block-size:${customSize}` : "",
+  fit === "contain" ? "" : "",
+]
+  .filter(Boolean)
+  .join(";")
+  .replace(/^;|;$/g, "");
+---
+
+<span
+  id={id}
+  class={classes}
+  role="img"
+  aria-label={ariaLabel ?? (alt === "" ? resolvedAlt : undefined)}
+  style={inlineStyle || undefined}
+  {...rest}
+>
+	{
+    src ? (
+      <Image
+        class="aui-avatar__img"
+        src={src}
+        alt={ariaLabel ? "" : resolvedAlt}
+        loading="lazy"
+        width={typeof customSize === "number" ? customSize : sizeToPx[size]}
+        height={typeof customSize === "number" ? customSize : sizeToPx[size]}
+        style={`object-fit:${fit}`}
+      />
+    ) : (
+      <span class="aui-avatar__fallback" aria-hidden={ariaLabel ? undefined : "true"}>
+				{initials ||
+          <slot/>}
+			</span>
+    )
+  }
+  {
+    status && (
+      <span
+        class={`aui-avatar__status aui-avatar__status--${status} aui-avatar__status--${statusPosition}`}
+        role="status"
+        aria-label={statusLabel ?? statusLabels[status]}
+        title={statusLabel ?? statusLabels[status]}
+      />
+    )
+  }
+  {
+    loading && (
+      <span class="aui-avatar__loading" aria-hidden="true">
+				<svg class="aui-avatar__spinner" width="16" height="16" viewBox="0 0 16 16" fill="none">
+					<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" opacity="0.25"/>
+					<path d="M14 8a6 6 0 0 0-6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+				</svg>
+			</span>
+    )
+  }
+  {
+    Astro.slots.has("badge") && (
+      <span class={`aui-avatar__badges aui-avatar__badges--${badgePosition}`}>
+				<slot name="badge"/>
+			</span>
+    )
+  }
+</span>
+
+<style>
+  .aui-avatar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: visible; /* status badges + rings sit outside the media */
+    border-radius: var(--ui-radius-full);
+    color: var(--ui-foreground);
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-medium);
+    user-select: none;
+  }
+
+  /* The media itself keeps the clipping. */
+  .aui-avatar > :global(.aui-avatar__img),
+  .aui-avatar > .aui-avatar__fallback {
+    border-radius: inherit;
+  }
+
+  .aui-avatar > :global(.aui-avatar__img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: var(--aui-avatar-fit, cover);
+  }
+
+  .aui-avatar__fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: hidden;
+    line-height: var(--ui-leading-none);
+  }
+
+  .aui-avatar--square {
+    border-radius: var(--ui-radius-sm);
+  }
+
+  .aui-avatar--rounded {
+    border-radius: var(--ui-radius-md);
+  }
+
+  /* --- radius overrides --- */
+
+  .aui-avatar--radius-none {
+    border-radius: var(--ui-radius-none);
+  }
+
+  .aui-avatar--radius-sm {
+    border-radius: var(--ui-radius-sm);
+  }
+
+  .aui-avatar--radius-md {
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-avatar--radius-lg {
+    border-radius: var(--ui-radius-lg);
+  }
+
+  .aui-avatar--radius-full {
+    border-radius: var(--ui-radius-full);
+  }
+
+  /* --- size --- */
+
+  .aui-avatar--xs {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.5rem;
+  }
+
+  .aui-avatar--sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-avatar--md {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-avatar--lg {
+    width: 3rem;
+    height: 3rem;
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-avatar--xl {
+    width: 4rem;
+    height: 4rem;
+    font-size: var(--ui-text-xl);
+  }
+
+  .aui-avatar--2xl {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.75rem;
+  }
+
+  .aui-avatar--3xl {
+    width: 6.5rem;
+    height: 6.5rem;
+    font-size: 2.25rem;
+  }
+
+  /* --- status badge --- */
+
+  /* em-based sizing keeps the dot proportional at every avatar size.
+     The font-size comes from the size class on the root. */
+  .aui-avatar__status {
+    position: absolute;
+    z-index: 1;
+    inline-size: 0.375em;
+    block-size: 0.375em;
+    min-inline-size: 10px;
+    min-block-size: 10px;
+    background: var(--ui-muted-foreground);
+    border: 2px solid var(--ui-background);
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-avatar--xs .aui-avatar__status,
+  .aui-avatar--sm .aui-avatar__status {
+    border-width: 1.5px;
+  }
+
+  .aui-avatar__status--online {
+    background: var(--ui-success);
+  }
+
+  .aui-avatar__status--away {
+    background: var(--ui-warning);
+  }
+
+  .aui-avatar__status--busy {
+    background: var(--ui-error);
+  }
+
+  .aui-avatar__status--offline {
+    background: var(--ui-muted-foreground);
+  }
+
+  .aui-avatar__status--top-left {
+    inset-block-start: 0;
+    inset-inline-start: 0;
+  }
+
+  .aui-avatar__status--top-right {
+    inset-block-start: 0;
+    inset-inline-end: 0;
+  }
+
+  .aui-avatar__status--bottom-left {
+    inset-block-end: 0;
+    inset-inline-start: 0;
+  }
+
+  .aui-avatar__status--bottom-right {
+    inset-block-end: 0;
+    inset-inline-end: 0;
+  }
+
+  /* --- ring --- */
+
+  .aui-avatar--ring-primary {
+    box-shadow: 0 0 0 2px var(--ui-background),
+    0 0 0 4px var(--ui-primary);
+  }
+
+  .aui-avatar--ring-success {
+    box-shadow: 0 0 0 2px var(--ui-background),
+    0 0 0 4px var(--ui-success);
+  }
+
+  .aui-avatar--ring-warning {
+    box-shadow: 0 0 0 2px var(--ui-background),
+    0 0 0 4px var(--ui-warning);
+  }
+
+  .aui-avatar--ring-error {
+    box-shadow: 0 0 0 2px var(--ui-background),
+    0 0 0 4px var(--ui-error);
+  }
+
+  .aui-avatar--ring-info {
+    box-shadow: 0 0 0 2px var(--ui-background),
+    0 0 0 4px var(--ui-info);
+  }
+
+  .aui-avatar--ring-background {
+    box-shadow: 0 0 0 2px var(--ui-background);
+  }
+
+  /* --- filters --- */
+
+  .aui-avatar--grayscale > :global(.aui-avatar__img) {
+    filter: grayscale(1);
+  }
+
+  .aui-avatar--grayscale-hover:hover > :global(.aui-avatar__img) {
+    filter: grayscale(0);
+    transition: filter var(--ui-transition-normal);
+  }
+
+  /* --- loading veil --- */
+
+  .aui-avatar--loading > :global(.aui-avatar__img),
+  .aui-avatar--loading > .aui-avatar__fallback {
+    opacity: 0.35;
+  }
+
+  .aui-avatar__loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ui-primary);
+    background: color-mix(in srgb, var(--ui-background) 55%, transparent);
+    border-radius: inherit;
+  }
+
+  .aui-avatar__spinner {
+    /* em-based so the spinner tracks the avatar's size class
+       (root font-size) instead of a fixed 16px box; the 10px floor
+       keeps it legible on xs. The CSS box overrides the SVG's
+       width/height attributes; the viewBox scales the stroke.
+       Override the box with --aui-avatar-spinner. */
+    inline-size: var(--aui-avatar-spinner, 1em);
+    block-size: var(--aui-avatar-spinner, 1em);
+    min-inline-size: 10px;
+    min-block-size: 10px;
+    animation: aui-avatar-spin 0.8s linear infinite;
+  }
+
+  @keyframes aui-avatar-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-avatar__spinner {
+      animation: none;
+    }
+  }
+
+  /* --- variant colors --- */
+
+  .aui-avatar--variant-primary {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-avatar--variant-secondary {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-avatar--variant-muted {
+    background-color: var(--ui-muted-foreground);
+    color: var(--ui-background);
+  }
+
+  .aui-avatar--variant-destructive {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-avatar--variant-success {
+    background-color: var(--ui-success);
+    color: var(--ui-success-foreground);
+  }
+
+  .aui-avatar--variant-warning {
+    background-color: var(--ui-warning);
+    color: var(--ui-warning-foreground);
+  }
+
+  .aui-avatar--variant-info {
+    background-color: var(--ui-info);
+    color: var(--ui-info-foreground);
+  }
+
+  .aui-avatar--variant-inherit {
+    background-color: var(--ui-muted);
+    color: var(--ui-muted-foreground);
+  }
+
+  /* --- gradient ring (user CSS, referenced by demo) --- */
+
+  .aui-avatar-gradient-ring {
+    position: relative;
+    background: conic-gradient(from 0deg, var(--ui-primary), var(--ui-accent), var(--ui-success), var(--ui-primary));
+    mask: radial-gradient(farthest-side, transparent calc(100% - var(--ui-space-2)), black calc(100% - var(--ui-space-2) + 1px));
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ui-space-2)), black calc(100% - var(--ui-space-2) + 1px));
+    animation: aui-avatar-ring-spin 3s linear infinite;
+  }
+
+  .aui-avatar-gradient-ring > :global(.aui-avatar__img),
+  .aui-avatar-gradient-ring > .aui-avatar__fallback {
+    position: relative;
+    z-index: 1;
+  }
+
+  .aui-avatar-story-ring {
+    position: relative;
+    background: transparent;
+  }
+
+  .aui-avatar-story-ring::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: conic-gradient(from 0deg, var(--ui-success), var(--ui-warning), var(--ui-error), var(--ui-success));
+    animation: aui-avatar-ring-spin 2s linear infinite;
+    z-index: -1;
+  }
+
+  @keyframes aui-avatar-ring-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* --- slotted badges — anchored to the avatar's border corner ---
+
+     The wrapper is a zero-size point at the chosen corner (same
+     technique as the overlay Badge bubble): children centered on it
+     with translate, so the badge straddles the border. Logical insets
+     keep it correct in RTL. */
+
+  .aui-avatar__badges {
+    position: absolute;
+    display: flex;
+    gap: var(--ui-space-1);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .aui-avatar__badges > :global(*) {
+    pointer-events: auto;
+  }
+
+  .aui-avatar__badges--top-right {
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    translate: 50% -50%;
+  }
+
+  .aui-avatar__badges--bottom-right {
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    translate: 50% 50%;
+  }
+
+  .aui-avatar__badges--top-left {
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    translate: -50% -50%;
+  }
+
+  .aui-avatar__badges--bottom-left {
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    translate: -50% 50%;
+  }
+
+  /* RTL: logical insets flip sides, so the physical X translate must
+     flip too — or the badge drifts inside the avatar. */
+  [dir='rtl'] .aui-avatar__badges--top-right {
+    translate: -50% -50%;
+  }
+
+  [dir='rtl'] .aui-avatar__badges--bottom-right {
+    translate: -50% 50%;
+  }
+
+  [dir='rtl'] .aui-avatar__badges--top-left {
+    translate: 50% -50%;
+  }
+
+  [dir='rtl'] .aui-avatar__badges--bottom-left {
+    translate: 50% 50%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-avatar-gradient-ring,
+    .aui-avatar-story-ring::before {
+      animation: none;
+    }
+  }
+</style>

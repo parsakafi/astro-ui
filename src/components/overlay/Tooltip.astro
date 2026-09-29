@@ -1,0 +1,157 @@
+---
+/**
+  * Tooltip — CSS-only tooltip on hover and keyboard focus.
+  *
+  * A wrapper <span> carries the trigger and a bubble positioned above
+  * or below. Shows on :hover and :focus-visible (touch users should
+  * get the same content inline — tooltips never carry essential info).
+  * The bubble is aria-hidden; describe the trigger with aria-label or
+  * aria-describedby pointing at the bubble's id when it has one.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Placement of the bubble relative to the trigger. */
+  placement?: "top" | "bottom";
+  /** Visual style of the bubble. */
+  variant?: "dark" | "light";
+  /** Scale of the bubble text. */
+  size?: "sm" | "md";
+  /** Accessible name for the trigger (recommended — the bubble is decorative to AT). */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  placement = "top",
+  variant = "dark",
+  size = "sm",
+  ariaLabel,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-tooltip",
+  `aui-tooltip--${placement}`,
+  `aui-tooltip--${variant}`,
+  `aui-tooltip--${size}`,
+  className,
+);
+---
+
+<span id={id} class={classes} {...rest}>
+	<span class="aui-tooltip__trigger" aria-label={ariaLabel}>
+		<slot/>
+	</span>
+	<span class="aui-tooltip__bubble" role="tooltip" aria-hidden="true">
+		<slot name="content"/>
+		<span class="aui-tooltip__arrow" aria-hidden="true"/>
+	</span>
+</span>
+
+<style>
+  .aui-tooltip {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .aui-tooltip__trigger {
+    display: inline-flex;
+  }
+
+  .aui-tooltip__bubble {
+    position: absolute;
+    inset-inline-start: 50%;
+    z-index: var(--ui-z-tooltip);
+    display: none;
+    width: max-content;
+    max-width: 16rem;
+    text-align: center;
+    font-family: var(--ui-font-sans);
+    line-height: var(--ui-leading-tight);
+    border-radius: var(--ui-radius-md);
+    pointer-events: none;
+  }
+
+  .aui-tooltip--sm .aui-tooltip__bubble {
+    font-size: var(--ui-text-xs);
+    padding: var(--ui-space-1) var(--ui-space-2);
+  }
+
+  .aui-tooltip--md .aui-tooltip__bubble {
+    font-size: var(--ui-text-sm);
+    padding: var(--ui-space-2) var(--ui-space-3);
+  }
+
+  /* --- placement --- */
+
+  .aui-tooltip--top .aui-tooltip__bubble {
+    bottom: calc(100% + var(--ui-space-2));
+    transform: translateX(-50%);
+  }
+
+  .aui-tooltip--bottom .aui-tooltip__bubble {
+    top: calc(100% + var(--ui-space-2));
+    transform: translateX(-50%);
+  }
+
+  /* --- variants --- */
+
+  .aui-tooltip--dark .aui-tooltip__bubble {
+    color: var(--ui-primary-foreground);
+    background-color: var(--ui-carbon);
+  }
+
+  .aui-tooltip--light .aui-tooltip__bubble {
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    box-shadow: var(--ui-shadow-md);
+  }
+
+  /* --- arrow --- */
+
+  .aui-tooltip__arrow {
+    position: absolute;
+    inset-inline-start: 50%;
+    width: 0.5rem;
+    height: 0.5rem;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .aui-tooltip--top .aui-tooltip__arrow {
+    bottom: -0.25rem;
+  }
+
+  .aui-tooltip--bottom .aui-tooltip__arrow {
+    top: -0.25rem;
+  }
+
+  .aui-tooltip--dark .aui-tooltip__arrow {
+    background-color: var(--ui-carbon);
+  }
+
+  .aui-tooltip--light .aui-tooltip__arrow {
+    background-color: var(--ui-background);
+    border-inline-end: 1px solid var(--ui-border);
+    border-block-end: 1px solid var(--ui-border);
+  }
+
+  /* --- show on hover / focus --- */
+
+  .aui-tooltip:hover .aui-tooltip__bubble,
+  .aui-tooltip:focus-within .aui-tooltip__bubble {
+    display: block;
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .aui-tooltip__bubble {
+      display: none;
+    }
+  }
+</style>

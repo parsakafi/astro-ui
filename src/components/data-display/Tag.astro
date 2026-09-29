@@ -1,0 +1,204 @@
+---
+/**
+  * Tag — zero-JS categorization label with optional close affordance.
+  *
+  * Inline semantic <span>. Unlike Badge (status/count), Tag marks
+  * membership in a set (categories, filters). `closable` renders a
+  * dismiss button that ships zero JS — wire the removal app-side, or
+  * wrap the tag in a form and use a submit button pattern.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Color scheme. */
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline"
+    | "soft"
+    | "success"
+    | "warning"
+    | "error"
+    | "info"
+    | "muted";
+  /** Scale of the tag. */
+  size?: "sm" | "md" | "lg";
+  /** Corner shape. */
+  shape?: "rounded" | "square" | "pill";
+  /** Text content when no default slot is provided. */
+  content?: string;
+  /** Renders a dismiss (×) button after the content. */
+  closable?: boolean;
+  /** Accessible label for the dismiss button (defaults to "Remove"). */
+  closeLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "primary",
+  size = "md",
+  shape = "rounded",
+  content,
+  closable = false,
+  closeLabel = "Remove",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-tag",
+  `aui-tag--${variant}`,
+  `aui-tag--${size}`,
+  `aui-tag--${shape}`,
+  className,
+);
+---
+
+<span id={id} class={classes} {...rest}>
+	{content ??
+    <slot/>}
+  {
+    closable && (
+      <button type="button" class="aui-tag__close" aria-label={closeLabel}>
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M1 1l8 8M9 1l-8 8"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    )
+  }
+</span>
+
+<style>
+  .aui-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-medium);
+    line-height: var(--ui-leading-none);
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  .aui-tag--rounded {
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-tag--square {
+    border-radius: var(--ui-radius-none);
+  }
+
+  .aui-tag--pill {
+    border-radius: var(--ui-radius-full);
+  }
+
+  /* --- sizes --- */
+
+  .aui-tag--sm {
+    font-size: var(--ui-text-2xs);
+    padding: 2px var(--ui-space-2);
+    min-height: 1.25rem;
+  }
+
+  .aui-tag--md {
+    font-size: var(--ui-text-xs);
+    padding: 2px var(--ui-space-2);
+    min-height: 1.5rem;
+  }
+
+  .aui-tag--lg {
+    font-size: var(--ui-text-sm);
+    padding: var(--ui-space-1) var(--ui-space-3);
+    min-height: 1.75rem;
+  }
+
+  /* --- variants --- */
+
+  .aui-tag--primary {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-tag--secondary {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-tag--outline {
+    background-color: transparent;
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-tag--soft {
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+    color: var(--ui-primary);
+  }
+
+  .aui-tag--success {
+    background-color: var(--ui-success-muted);
+    color: var(--ui-success);
+  }
+
+  .aui-tag--warning {
+    background-color: var(--ui-warning-muted);
+    color: var(--ui-warning);
+  }
+
+  .aui-tag--error {
+    background-color: var(--ui-error-muted);
+    color: var(--ui-error);
+  }
+
+  .aui-tag--info {
+    background-color: var(--ui-info-muted);
+    color: var(--ui-info);
+  }
+
+  .aui-tag--muted {
+    background-color: var(--ui-muted);
+    color: var(--ui-muted-foreground);
+  }
+
+  /* --- close button --- */
+
+  .aui-tag__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    color: currentcolor;
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-tag__close:hover {
+    background-color: color-mix(in srgb, currentcolor 15%, transparent);
+  }
+
+  .aui-tag__close:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+</style>

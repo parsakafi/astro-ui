@@ -1,0 +1,302 @@
+---
+/**
+  * Table — zero-JS semantic data table.
+  *
+  * Renders a `<table>` with named slots for head, body, and footer rows.
+  * Column headers use `<th>`, body cells use `<td>`. For complex layouts,
+  * compose rows manually via the `head`, `body`, and `footer` slots.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Table caption / accessible name. Renders as `<caption>` when provided. */
+  caption?: string;
+  /** Whether the table has a header row group. */
+  header?: boolean;
+  /** Table border style. */
+  bordered?: boolean;
+  /** Striped (zebra) row styling. */
+  striped?: boolean;
+  /** Column alignment. */
+  align?: "start" | "center" | "end";
+  /** When true, the table overflows horizontally and scrolls. */
+  scrollable?: boolean;
+  /** Row height / density. */
+  size?: "xs" | "sm" | "md" | "lg";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+}
+
+const {
+  caption,
+  header = true,
+  bordered = false,
+  striped = false,
+  align = "start",
+  scrollable = false,
+  size = "md",
+  class: className,
+  id,
+  ariaLabel,
+  ariaDescribedby,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-table",
+  `aui-table--size-${size}`,
+  bordered && "aui-table--bordered",
+  striped && "aui-table--striped",
+  scrollable && "aui-table--scrollable",
+  align !== "start" && `aui-table--align-${align}`,
+  !scrollable && bordered && "aui-table--bordered-solid",
+  className,
+);
+---
+<div
+  id={id}
+  class={classes}
+  role="region"
+  aria-label={ariaLabel}
+  aria-describedby={ariaDescribedby}
+  {...rest}
+>
+  <div class={scrollable ? "aui-table__scroll-wrapper" : undefined}>
+    <table class="aui-table__wrap">
+      <caption>{caption || ""}</caption>
+      <thead class={header ? "aui-table__head" : undefined}>
+      <slot name="head"/>
+      </thead>
+      <tbody class="aui-table__body">
+      <slot/>
+      </tbody>
+      <tfoot class="aui-table__foot">
+      <slot name="footer"/>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+<style>
+  /* ============================================================
+     Table — CSS architecture.
+     Astro scopes <style> blocks by adding data-astro-cid to every
+     element rendered by the component template. Slot content
+     (consumer-passed <tr>/<th>/<td>) does NOT get data-astro-cid.
+     Therefore every selector that touches slot-content elements
+     must be wrapped in :global(). Structural elements stay scoped.
+     ============================================================ */
+
+  /* ---- outer container (scoped) ---- */
+  .aui-table {
+    width: 100%;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+  }
+
+  .aui-table--align-center {
+    text-align: center;
+  }
+
+  .aui-table--align-end {
+    text-align: end;
+  }
+
+  /* ---- scrollable wrapper (scoped) ---- */
+  .aui-table__scroll-wrapper {
+    overflow: auto;
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+  }
+
+  /* ---- bordered solid: outer container (scoped) ---- */
+  .aui-table--bordered-solid {
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    overflow: hidden;
+  }
+
+  /* ---- table element (scoped) ---- */
+  .aui-table__wrap {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: auto;
+  }
+
+  .aui-table:not(.aui-table--bordered) .aui-table__wrap {
+    border-spacing: 0;
+  }
+
+  .aui-table--bordered .aui-table__wrap {
+    border-collapse: collapse;
+  }
+
+  /* ---- caption (scoped) ---- */
+  .aui-table__wrap > caption {
+    padding: var(--ui-space-2) var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    text-align: start;
+    caption-side: top;
+    color: var(--ui-foreground);
+  }
+
+  .aui-table__wrap > caption:empty {
+    display: none;
+  }
+
+  /* ---- head / body / foot groups (scoped) ---- */
+  .aui-table__head {
+    display: table-header-group;
+  }
+
+  .aui-table__head:empty {
+    display: none;
+  }
+
+  .aui-table__body {
+    display: table-row-group;
+  }
+
+  .aui-table__foot {
+    display: table-footer-group;
+  }
+
+  .aui-table__foot:empty {
+    display: none;
+  }
+
+  /* ============================================================
+     Slot-content selectors — :global() because <tr>, <th>, <td>
+     are rendered by the consumer and lack data-astro-cid.
+     ============================================================ */
+
+  /* ---- head cells (always: muted bg, bottom border, medium weight) ---- */
+  .aui-table__head :global(.aui-table__head-cell) {
+    font-weight: var(--ui-font-medium);
+    text-align: start;
+    white-space: nowrap;
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+    border-bottom: 1px solid var(--ui-border);
+  }
+
+  /* ---- body cells: base (no border) ---- */
+  .aui-table__body :global(.aui-table__cell) {
+    vertical-align: middle;
+    color: var(--ui-foreground);
+  }
+
+  /* ---- non-bordered mode ---- */
+  .aui-table:not(.aui-table--bordered) .aui-table__body :global(.aui-table__cell) {
+    border-bottom: 1px solid var(--ui-border);
+  }
+
+  .aui-table:not(.aui-table--bordered) .aui-table__body :global(tr:last-child .aui-table__cell) {
+    border-bottom: none;
+  }
+
+  .aui-table:not(.aui-table--bordered) .aui-table__body :global(tr:hover .aui-table__cell) {
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-table:not(.aui-table--bordered) .aui-table__foot :global(.aui-table__cell) {
+    font-weight: var(--ui-font-medium);
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+    text-align: start;
+    border-top: 1px solid var(--ui-border);
+    padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
+    font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
+  }
+
+  /* ---- bordered mode ---- */
+  .aui-table--bordered .aui-table__body :global(.aui-table__cell) {
+    border: 1px solid var(--ui-border);
+  }
+
+  .aui-table--bordered .aui-table__head :global(.aui-table__head-cell) {
+    background-color: var(--ui-muted);
+    border: 1px solid var(--ui-border);
+  }
+
+  .aui-table--bordered .aui-table__body :global(tr:last-child .aui-table__cell) {
+    border-bottom: none;
+  }
+
+  .aui-table--bordered .aui-table__body :global(tr:hover .aui-table__cell) {
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-table--bordered .aui-table__foot :global(.aui-table__cell) {
+    font-weight: var(--ui-font-medium);
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+    text-align: start;
+    padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
+    font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
+  }
+
+  /* ---- striped mode ---- */
+  .aui-table--striped .aui-table__body :global(tr:nth-child(2n) .aui-table__cell) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-table--striped .aui-table__body :global(tr:nth-child(2n):hover .aui-table__cell) {
+    background-color: var(--ui-secondary);
+  }
+
+  /* ---- striped + bordered ---- */
+  .aui-table--bordered.aui-table--striped .aui-table__body :global(tr:nth-child(2n) .aui-table__cell) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-table--bordered.aui-table--striped .aui-table__body :global(tr:nth-child(2n):hover .aui-table__cell) {
+    background-color: var(--ui-secondary);
+  }
+
+  /* ---- sizes: cell padding via CSS variables (scoped on container, global on cells) ---- */
+  .aui-table--size-xs {
+    --aui-table-cell-padding: 1px var(--ui-space-2);
+    --aui-table-cell-font-size: var(--ui-text-2xs);
+  }
+
+  .aui-table--size-sm {
+    --aui-table-cell-padding: var(--ui-space-1) var(--ui-space-3);
+    --aui-table-cell-font-size: var(--ui-text-xs);
+  }
+
+  .aui-table--size-md {
+    --aui-table-cell-padding: var(--ui-space-2) var(--ui-space-4);
+    --aui-table-cell-font-size: var(--ui-text-sm);
+  }
+
+  .aui-table--size-lg {
+    --aui-table-cell-padding: var(--ui-space-3) var(--ui-space-5);
+    --aui-table-cell-font-size: var(--ui-text-base);
+  }
+
+  .aui-table__head :global(.aui-table__head-cell) {
+    padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
+    font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
+  }
+
+  .aui-table__body :global(.aui-table__cell) {
+    padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
+    font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
+  }
+
+  /* ---- responsive: md collapses to xs padding on small screens ---- */
+  @media (max-width: 640px) {
+    .aui-table--size-md {
+      --aui-table-cell-padding: var(--ui-space-1) var(--ui-space-3);
+      --aui-table-cell-font-size: var(--ui-text-xs);
+    }
+  }
+</style>

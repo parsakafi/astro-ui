@@ -1,0 +1,49 @@
+---
+/**
+  * ButtonGroupText — non-button content inside a ButtonGroup.
+  *
+  * Lets you embed text (counts, labels, badges) as a participant in a
+  * ButtonGroup row, sharing its borders and border-radius so the group
+  * reads as one continuous control. The element carries
+  * data-slot="button-group-text" for scoped styling.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  class?: string;
+  id?: string;
+}
+
+const {class: className, id, ...rest} = Astro.props;
+
+const classes = cn("aui-button-group-text", className);
+---
+
+<div
+  id={id}
+  data-slot="button-group-text"
+  class={classes}
+  {...rest}
+>
+  <slot/>
+</div>
+
+<style>
+  .aui-button-group-text {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    padding: 0 var(--ui-space-3);
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-medium);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+    /* Match the sibling buttons' baseline height without a sibling selector */
+    height: 2.5rem;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: var(--ui-foreground);
+  }
+</style>

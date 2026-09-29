@@ -1,0 +1,183 @@
+---
+/**
+  * Skeleton — zero-JS content placeholder.
+  *
+  * Hidden from assistive tech (aria-hidden); the loading state should be
+  * announced by the surrounding live region or the content that replaces
+  * the skeleton. Pair with `aria-busy="true"` on the loading container.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  variant?: "text" | "rect" | "circle";
+  width?: string;
+  height?: string;
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+  animated?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "text",
+  width,
+  height,
+  size = "md",
+  animated = true,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const style = [width ? `width:${width}` : "", height ? `height:${height}` : ""]
+  .filter(Boolean)
+  .join(";");
+
+const classes = cn(
+  "aui-skeleton",
+  `aui-skeleton--${variant}`,
+  `aui-skeleton--${size}`,
+  !animated && "aui-skeleton--static",
+  className,
+);
+---
+
+<div id={id} class={classes} style={style || undefined} aria-hidden="true" {...rest}/>
+
+<style>
+  .aui-skeleton {
+    display: block;
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-skeleton:not(.aui-skeleton--static) {
+    animation: aui-pulse 2s ease-in-out infinite;
+  }
+
+  /* --- variant --- */
+
+  .aui-skeleton--text {
+    height: 1rem;
+    width: 100%;
+    border-radius: var(--ui-radius-sm);
+  }
+
+  .aui-skeleton--rect {
+    width: 100%;
+    height: 8rem;
+  }
+
+  .aui-skeleton--circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--ui-radius-full);
+  }
+
+  /* --- size overrides (height for text, sizing for shapes) --- */
+
+  .aui-skeleton--xs {
+    --aui-skeleton-height: 0.5rem;
+  }
+
+  .aui-skeleton--sm {
+    --aui-skeleton-height: 0.75rem;
+  }
+
+  .aui-skeleton--md {
+    --aui-skeleton-height: 1rem;
+  }
+
+  .aui-skeleton--lg {
+    --aui-skeleton-height: 1.5rem;
+  }
+
+  .aui-skeleton--xl {
+    --aui-skeleton-height: 2rem;
+  }
+
+  .aui-skeleton--2xl {
+    --aui-skeleton-height: 2.5rem;
+  }
+
+  .aui-skeleton--xs.aui-skeleton--text {
+    height: var(--aui-skeleton-height);
+  }
+
+  .aui-skeleton--sm.aui-skeleton--text {
+    height: var(--aui-skeleton-height);
+  }
+
+  .aui-skeleton--md.aui-skeleton--text {
+    height: var(--aui-skeleton-height);
+  }
+
+  .aui-skeleton--lg.aui-skeleton--text {
+    height: var(--aui-skeleton-height);
+  }
+
+  .aui-skeleton--xl.aui-skeleton--text {
+    height: var(--aui-skeleton-height);
+  }
+
+  .aui-skeleton--2xl.aui-skeleton--text {
+    height: var(--aui-skeleton-height);
+  }
+
+  .aui-skeleton--xs.aui-skeleton--circle {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .aui-skeleton--sm.aui-skeleton--circle {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .aui-skeleton--lg.aui-skeleton--circle {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .aui-skeleton--xl.aui-skeleton--circle {
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .aui-skeleton--2xl.aui-skeleton--circle {
+    width: 5rem;
+    height: 5rem;
+  }
+
+  .aui-skeleton--xs.aui-skeleton--rect {
+    height: 4rem;
+  }
+
+  .aui-skeleton--sm.aui-skeleton--rect {
+    height: 6rem;
+  }
+
+  .aui-skeleton--lg.aui-skeleton--rect {
+    height: 10rem;
+  }
+
+  .aui-skeleton--xl.aui-skeleton--rect {
+    height: 12rem;
+  }
+
+  .aui-skeleton--2xl.aui-skeleton--rect {
+    height: 14rem;
+  }
+
+  @keyframes aui-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+</style>

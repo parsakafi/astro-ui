@@ -1,0 +1,334 @@
+---
+/**
+  * Slider — native <input type="range"> with token styling, zero JS.
+  *
+  * The platform owns dragging, keyboard (arrows/Home/End), and form
+  * submission. `marks` renders tick labels under the track (visual
+  * only). Min/max/step pass through as native attributes via rest.
+  *
+  * `tooltip` renders a value bubble above the thumb that appears on
+  * hover/drag/focus and follows the thumb while dragging — RTL-aware via
+  * logical properties. It needs a tiny opt-in script (~15 lines, bundled
+  * once per page); every other feature stays zero-JS. When enabled, the
+  * `showValue` readout also updates live while dragging.
+  *
+  * JavaScript required: No — only the optional `tooltip` bubble script.
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Field name for form submission. */
+  name?: string;
+  /** Initial value. */
+  value?: number;
+  /** Minimum value. */
+  min?: number;
+  /** Maximum value. */
+  max?: number;
+  /** Step increment. */
+  step?: number;
+  /** Tick labels rendered under the track (e.g. ["Low","Mid","High"]). */
+  marks?: string[];
+  /** Shows the current value readout next to the label. */
+  showValue?: boolean;
+  /** Renders a value bubble above the thumb (appears on hover/drag/focus). */
+  tooltip?: boolean;
+  /** Visual style. */
+  variant?: "primary" | "success" | "warning" | "error" | "info";
+  /** Scale of the control. */
+  size?: "sm" | "md" | "lg";
+  /** Disables the slider. */
+  disabled?: boolean;
+  /** Label text rendered above the track. */
+  label?: string;
+  /** Associates an external <label for> with this slider. */
+  id?: string;
+  class?: string;
+}
+
+const {
+  name,
+  value = 50,
+  min = 0,
+  max = 100,
+  step = 1,
+  marks,
+  showValue = false,
+  tooltip = false,
+  variant = "primary",
+  size = "md",
+  disabled = false,
+  label,
+  id,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-slider",
+  `aui-slider--${variant}`,
+  `aui-slider--${size}`,
+  disabled && "aui-slider--disabled",
+  tooltip && "aui-slider--tooltip",
+  className,
+);
+
+/** Thumb position for the tooltip bubble, as a percentage of the track. */
+const pct = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
+---
+
+<div class={classes}>
+  {
+    (label || showValue) && (
+      <div class="aui-slider__head">
+        {label && <span class="aui-slider__label" id={id ? `${id}-label` : undefined}>{label}</span>}
+        {showValue && <span class="aui-slider__value">{value}</span>}
+      </div>
+    )
+  }
+  <div class="aui-slider__track-wrap">
+    <input
+      type="range"
+      id={id}
+      name={name}
+      value={value}
+      min={min}
+      max={max}
+      step={step}
+      disabled={disabled}
+      class="aui-slider__input"
+      aria-label={label}
+      aria-labelledby={id && label ? `${id}-label` : undefined}
+      {...rest}
+    />
+    {
+      tooltip && (
+        <output class="aui-slider__tooltip" for={id} style={`--aui-slider-pct: ${pct}%`}>
+          {value}
+        </output>
+      )
+    }
+  </div>
+  {
+    marks && marks.length > 0 && (
+      <div class="aui-slider__marks" aria-hidden="true">
+        {marks.map((mark) => (
+          <span class="aui-slider__mark">{mark}</span>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+{
+  tooltip && (
+  <script>
+    // Opt-in value-bubble sync for every slider on the page. Astro
+    // hoists and bundles this once, however many sliders render.
+    document.querySelectorAll(".aui-slider--tooltip").forEach(function (root) {
+      const input = root.querySelector<HTMLInputElement>("input[type='range']");
+      const bubble = root.querySelector<HTMLElement>(".aui-slider__tooltip");
+      if (!(input instanceof HTMLInputElement) || !(bubble instanceof HTMLElement)) return;
+      const readout = root.querySelector<HTMLElement>(".aui-slider__value");
+      const sync = () => {
+        const min = Number(input.min) || 0;
+        const max = Number(input.max) || 100;
+        const val = Number(input.value);
+        const pct = Math.min(Math.max(((val - min) / (max - min)) * 100, 0), 100);
+        bubble.style.setProperty("--aui-slider-pct", pct + "%");
+        bubble.textContent = input.value;
+        if (readout) readout.textContent = input.value;
+      };
+      input.addEventListener("input", sync);
+      sync();
+    });
+  </script>
+    )
+  }
+
+<style>
+  .aui-slider {
+    display: grid;
+    gap: var(--ui-space-2);
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-slider__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--ui-space-3);
+  }
+
+  .aui-slider__label {
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-medium);
+  }
+
+  .aui-slider--sm .aui-slider__label,
+  .aui-slider--sm .aui-slider__value {
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-slider--md .aui-slider__label,
+  .aui-slider--md .aui-slider__value {
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-slider--lg .aui-slider__label,
+  .aui-slider--lg .aui-slider__value {
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-slider__value {
+    color: var(--ui-muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- the native input, themed --- */
+
+  .aui-slider__track-wrap {
+    position: relative;
+  }
+
+  .aui-slider__input {
+    --aui-slider-track: var(--ui-muted);
+    --aui-slider-fill: var(--ui-slider-color);
+    --aui-slider-thumb: var(--ui-slider-color);
+
+    appearance: none;
+    width: 100%;
+    height: var(--aui-slider-track-h, 0.5rem);
+    background: var(--aui-slider-track);
+    border-radius: var(--ui-radius-full);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .aui-slider--sm .aui-slider__input {
+    --aui-slider-track-h: 0.375rem;
+  }
+
+  .aui-slider--md .aui-slider__input {
+    --aui-slider-track-h: 0.5rem;
+  }
+
+  .aui-slider--lg .aui-slider__input {
+    --aui-slider-track-h: 0.75rem;
+  }
+
+  .aui-slider__input::-webkit-slider-thumb {
+    appearance: none;
+    width: calc(var(--aui-slider-track-h, 0.5rem) * 2);
+    height: calc(var(--aui-slider-track-h, 0.5rem) * 2);
+    background-color: var(--aui-slider-thumb);
+    border: 2px solid var(--ui-background);
+    border-radius: var(--ui-radius-full);
+    box-shadow: var(--ui-shadow-sm);
+    transition: transform var(--ui-transition-fast);
+  }
+
+  .aui-slider__input::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+  }
+
+  .aui-slider__input::-moz-range-thumb {
+    width: calc(var(--aui-slider-track-h, 0.5rem) * 2);
+    height: calc(var(--aui-slider-track-h, 0.5rem) * 2);
+    background-color: var(--aui-slider-thumb);
+    border: 2px solid var(--ui-background);
+    border-radius: var(--ui-radius-full);
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  .aui-slider__input:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  /* --- colors --- */
+
+  .aui-slider--primary {
+    --ui-slider-color: var(--ui-primary);
+  }
+
+  .aui-slider--success {
+    --ui-slider-color: var(--ui-success);
+  }
+
+  .aui-slider--warning {
+    --ui-slider-color: var(--ui-warning);
+  }
+
+  .aui-slider--error,
+  .aui-slider--destructive {
+    --ui-slider-color: var(--ui-error);
+  }
+
+  .aui-slider--info {
+    --ui-slider-color: var(--ui-info);
+  }
+
+  /* --- disabled --- */
+
+  .aui-slider--disabled .aui-slider__input {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* --- value tooltip --- */
+
+  .aui-slider__tooltip {
+    position: absolute;
+    inset-block-end: calc(100% + var(--ui-space-2));
+    inset-inline-start: var(--aui-slider-pct, 50%);
+    transform: translateX(-50%);
+    padding: 0.125rem 0.5rem;
+    background: var(--ui-foreground);
+    color: var(--ui-background);
+    border-radius: var(--ui-radius-sm);
+    font-size: var(--ui-text-xs);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--ui-transition-fast);
+    z-index: 1;
+  }
+
+  /* physical translate flips in RTL so the bubble tracks the thumb */
+  [dir='rtl'] .aui-slider__tooltip {
+    transform: translateX(50%);
+  }
+
+  .aui-slider__track-wrap:hover .aui-slider__tooltip,
+  .aui-slider__input:focus-visible ~ .aui-slider__tooltip,
+  .aui-slider__input:active ~ .aui-slider__tooltip {
+    opacity: 1;
+  }
+
+  .aui-slider--disabled .aui-slider__tooltip {
+    display: none;
+  }
+
+  /* --- marks --- */
+
+  .aui-slider__marks {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-slider--sm .aui-slider__mark {
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-slider--md .aui-slider__mark {
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-slider--lg .aui-slider__mark {
+    font-size: var(--ui-text-sm);
+  }
+</style>

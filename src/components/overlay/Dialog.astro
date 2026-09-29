@@ -1,0 +1,312 @@
+---
+/**
+  * Dialog — modal window built on the native <dialog> element.
+  *
+  * Structure (slots) is separated from behavior: modality, `::backdrop`,
+  * focus containment, Escape-to-close, and focus return all come from the
+  * platform, not from a headless runtime.
+  *
+  * The component itself ships zero JavaScript. Opening a modal dialog
+  * inherently needs one app-level `showModal()` call, so the consuming
+  * app owns a tiny trigger script — full recipe in docs/components/dialog.md:
+  *
+  *   <Button id="open-prefs">Preferences</Button>
+  *   <Dialog id="prefs">
+  *     <h2 slot="title">Preferences</h2>
+  *     <p>Dialog body.</p>
+  *   </Dialog>
+  *   <!-- app script: getElementById("open-prefs") → showModal() on #prefs -->
+  *
+  * Closing needs no JS: the built-in close button and any
+  * `<form method="dialog">` button dismiss natively, as does Escape.
+  *
+  * Accessible naming is wired automatically: when `id` is set, the title
+  * and description slots get `{id}-title` / `{id}-description` ids and the
+  * dialog points `aria-labelledby` / `aria-describedby` at them. Pass
+  * `ariaLabel` for an explicitly labelled dialog instead.
+  *
+  * JavaScript required: Yes — app-level trigger only (`showModal()` plus
+  * optional backdrop-dismiss); the component ships zero JS itself.
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+  /** Required for automatic title/description labelling. */
+  id?: string;
+  /** Explicit accessible name (skips automatic `aria-labelledby`). */
+  ariaLabel?: string;
+  /** Override the automatic `aria-labelledby` target. */
+  ariaLabelledby?: string;
+  /** Override the automatic `aria-describedby` target. */
+  ariaDescribedby?: string;
+  /** Render the native (zero-JS) close button. Defaults to true. */
+  showClose?: boolean;
+  /** Accessible label for the built-in close button. */
+  closeLabel?: string;
+  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  class?: string;
+}
+
+const {
+  size = "md",
+  id,
+  ariaLabel,
+  ariaLabelledby,
+  ariaDescribedby,
+  showClose = true,
+  closeLabel = "Close dialog",
+  variant = "inherit",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const hasTitle = Astro.slots.has("title");
+const hasDescription = Astro.slots.has("description");
+const hasFooter = Astro.slots.has("footer");
+
+const titleId = id && hasTitle ? `${id}-title` : undefined;
+const descriptionId = id && hasDescription ? `${id}-description` : undefined;
+
+const classes = cn(
+  "aui-dialog",
+  `aui-dialog--${size}`,
+  `aui-dialog--variant-${variant}`,
+  className,
+);
+---
+
+<dialog
+  id={id}
+  class={classes}
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabel ?? ariaLabelledby ?? titleId}
+  aria-describedby={ariaDescribedby ?? descriptionId}
+  {...rest}
+>
+  <div class="aui-dialog__panel">
+    {
+      showClose && (
+        <form method="dialog" class="aui-dialog__close-form">
+          <button
+            type="submit"
+            class="aui-dialog__close"
+            value="close"
+            aria-label={closeLabel}
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </form>
+      )
+    }
+    {
+      hasTitle && (
+        <div class="aui-dialog__header">
+          <div class="aui-dialog__title" id={titleId}>
+            <slot name="title"/>
+          </div>
+        </div>
+      )
+    }
+    {
+      hasDescription && (
+        <div class="aui-dialog__description" id={descriptionId}>
+          <slot name="description"/>
+        </div>
+      )
+    }
+    <div class="aui-dialog__content">
+      <slot/>
+    </div>
+    {
+      hasFooter && (
+        <div class="aui-dialog__footer">
+          <slot name="footer"/>
+        </div>
+      )
+    }
+  </div>
+</dialog>
+
+<style>
+  .aui-dialog {
+    border: none;
+    padding: 0;
+    /* Explicit (not UA-default) so CSS resets like Tailwind preflight
+       can never knock the dialog off-center. */
+    margin: auto;
+    background: transparent;
+    color: var(--ui-foreground);
+    max-width: calc(100% - var(--ui-space-8));
+    max-height: calc(100% - var(--ui-space-8));
+  }
+
+  .aui-dialog::backdrop {
+    background-color: rgb(0 0 0 / 0.5);
+  }
+
+  .aui-dialog__panel {
+    position: relative;
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-xl);
+    padding: var(--ui-space-6);
+    overflow: auto;
+  }
+
+  /* --- sizes --- */
+
+  .aui-dialog--xs .aui-dialog__panel {
+    width: 20rem;
+  }
+
+  .aui-dialog--sm .aui-dialog__panel {
+    width: 24rem;
+  }
+
+  .aui-dialog--md .aui-dialog__panel {
+    width: 32rem;
+  }
+
+  .aui-dialog--lg .aui-dialog__panel {
+    width: 42rem;
+  }
+
+  .aui-dialog--xl .aui-dialog__panel {
+    width: 52rem;
+  }
+
+  .aui-dialog--2xl .aui-dialog__panel {
+    width: 64rem;
+  }
+
+  /* --- variant panel border (modifier classes live on <dialog>) --- */
+
+  .aui-dialog--variant-primary .aui-dialog__panel {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-dialog--variant-secondary .aui-dialog__panel {
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-dialog--variant-muted .aui-dialog__panel {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-dialog--variant-destructive .aui-dialog__panel {
+    border-color: var(--ui-error);
+  }
+
+  .aui-dialog--variant-success .aui-dialog__panel {
+    border-color: var(--ui-success);
+  }
+
+  .aui-dialog--variant-warning .aui-dialog__panel {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-dialog--variant-info .aui-dialog__panel {
+    border-color: var(--ui-info);
+  }
+
+  .aui-dialog--variant-inherit .aui-dialog__panel {
+    border-color: var(--ui-border);
+  }
+
+  .aui-dialog__close-form {
+    position: absolute;
+    top: var(--ui-space-3);
+    inset-inline-end: var(--ui-space-3);
+    margin: 0;
+  }
+
+  .aui-dialog__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    font-size: var(--ui-text-xl);
+    line-height: var(--ui-leading-none);
+    color: var(--ui-muted-foreground);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+  }
+
+  .aui-dialog__close:hover {
+    background-color: var(--ui-secondary);
+    color: var(--ui-foreground);
+  }
+
+  .aui-dialog__header {
+    margin-bottom: var(--ui-space-2);
+    padding-inline-end: var(--ui-space-8);
+  }
+
+  .aui-dialog__title {
+    font-size: var(--ui-text-lg);
+    font-weight: var(--ui-font-semibold);
+    line-height: var(--ui-leading-tight);
+  }
+
+  /* NOTE: slotted content belongs to the consumer, so it never carries
+     this component's scope attribute. Any selector reaching into a slot
+     must go through :global() on the consumer side — otherwise Astro
+     compiles it to [data-astro-cid] on both sides and it silently
+     matches nothing. */
+  .aui-dialog__title > :global(*),
+  .aui-dialog__description > :global(*),
+  .aui-dialog__content > :global(*) {
+    margin-top: 0;
+  }
+
+  .aui-dialog__title > :global(*:last-child),
+  .aui-dialog__description > :global(*:last-child),
+  .aui-dialog__content > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+
+  .aui-dialog__description {
+    margin-bottom: var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-dialog__content {
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-dialog__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+    margin-top: var(--ui-space-6);
+    padding-top: var(--ui-space-4);
+    border-top: 1px solid var(--ui-border);
+  }
+
+  /* Zero-JS close actions live in <form method="dialog"> wrappers.
+     Flatten those forms so every button shares one flex row with
+     even gaps instead of each form becoming its own flex item.
+     (display does not affect form submission semantics.)
+     :global() because slotted forms carry no scope attribute. */
+  .aui-dialog__footer :global(form) {
+    display: contents;
+  }
+
+  /* Same for bare grouping <div>s that wrap slotted footer content.
+     Flatten all direct-child divs so buttons and forms share one flex
+     row with even gaps. Classed divs that need their own layout can
+     be re-styled by the consumer. :global() because slotted divs carry
+     no scope attribute. */
+  .aui-dialog__footer > :global(div) {
+    display: contents;
+  }
+</style>

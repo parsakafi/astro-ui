@@ -1,0 +1,470 @@
+---
+/**
+  * Tabs — tabbed content switcher following the WAI-ARIA tabs pattern.
+  *
+  * The tab list renders server-side from the `items` prop with
+  * the initial tab pre-selected, and panel content composes through the
+  * default slot — each child carries `data-tab="<value>"` matching its
+  * tab (children without `data-tab` fall back to item order).
+  * A small scoped inline script wires
+  * click-to-select and arrow-key navigation (automatic activation);
+  * without JS the tab list still renders and every panel stays visible,
+  * so SSR output remains fully meaningful.
+  *
+  *   <Tabs
+  *     id="settings"
+  *     ariaLabel="Settings"
+  *     items={[
+  *       { value: "account", label: "Account" },
+  *       { value: "billing", label: "Billing" },
+  *       { value: "team", label: "Team", disabled: true },
+  *     ]}
+  *     defaultValue="billing"
+  *   >
+  *     <div data-tab="account">Account panel.</div>
+  *     <div data-tab="billing">Billing panel.</div>
+  *     <div data-tab="team">Team panel.</div>
+  *   </Tabs>
+  *
+  * Tab ↔ panel labelling is wired automatically: tabs get
+  * `{id}-tab-{value}` ids and panels `{id}-panel-{value}`, linked via
+  * `aria-controls` / `aria-labelledby`. Pass `id` whenever more than one
+  * tab group lives on the page so the generated ids stay unique.
+  *
+  * JavaScript required: Yes — scoped inline script (click + arrow-key
+  * navigation with automatic activation); the component needs no
+  * hydration directive or framework island.
+  */
+import {cn} from "../../utils/cn";
+import {uid} from "../../utils/uid";
+
+export interface TabItem {
+  /** Stable identifier; matched against panel `data-tab` attributes and `defaultValue`. */
+  value: string;
+  /** Visible tab label (plain text). */
+  label: string;
+  /** Skipped by keyboard navigation and not selectable. */
+  disabled?: boolean;
+}
+
+export interface Props {
+  /** Tabs in display order. Panel content comes from the default slot. */
+  items: TabItem[];
+  /** Initially selected tab. Defaults to the first non-disabled tab. */
+  defaultValue?: string;
+  /** Visual style: underline, filled pill, or segmented card. */
+  variant?: "line" | "pill" | "card";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  /** Horizontal tabs stack panels below; vertical tabs place them beside the list. */
+  orientation?: "horizontal" | "vertical";
+  /** Accessible name for the tab list (e.g. "Settings"). */
+  ariaLabel?: string;
+  class?: string;
+  /** Recommended: prefixes the generated tab/panel ids. */
+  id?: string;
+}
+
+const {
+  items = [],
+  defaultValue,
+  variant = "line",
+  size = "md",
+  orientation = "horizontal",
+  ariaLabel,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const firstEnabled = items.find((item) => !item.disabled);
+const requested = items.find((item) => item.value === defaultValue && !item.disabled);
+const activeValue = requested?.value ?? firstEnabled?.value;	// Unique per-instance fallback so aria-controls/labelledby wiring never
+// resolves to another Tabs instance when no explicit id is passed.
+// Unique per-instance fallback so aria-controls/labelledby wiring never
+// resolves to another Tabs instance when no explicit id is passed.
+const base = id ?? uid("aui-tabs");
+
+const classes = cn(
+  "aui-tabs",
+  `aui-tabs--${variant}`,
+  `aui-tabs--${size}`,
+  orientation === "vertical" && "aui-tabs--vertical",
+  className,
+);
+---
+
+<div
+  class={classes}
+  id={id}
+  data-aui-tabs={base}
+  data-orientation={orientation}
+  {...rest}
+>
+  <div
+    role="tablist"
+    aria-label={ariaLabel}
+    aria-orientation={orientation === "vertical" ? "vertical" : undefined}
+    class="aui-tabs__list"
+  >
+    {
+      items.map((item) => {
+        const active = item.value === activeValue;
+        return (
+          <button
+            type="button"
+            role="tab"
+            id={`${base}-tab-${item.value}`}
+            aria-selected={active ? "true" : "false"}
+            aria-controls={`${base}-panel-${item.value}`}
+            tabindex={active ? "0" : "-1"}
+            disabled={item.disabled || undefined}
+            data-aui-tab=""
+            data-value={item.value}
+            data-active={active || undefined}
+            class="aui-tabs__tab"
+          >
+            {item.label}
+          </button>
+        );
+      })
+    }
+  </div>
+  <div class="aui-tabs__panels" data-aui-tab-panels="">
+    <slot/>
+  </div>
+</div>
+
+<script>
+  const SELECTOR_ROOT = "[data-aui-tabs]";
+
+  /** An element belongs to this root only — never to a nested Tabs
+   * rendered inside one of its panels (e.g. demo previews). */
+  function ownedBy(root: HTMLElement, el: Element): boolean {
+    return el.closest(SELECTOR_ROOT) === root;
+  }
+
+  function panelsFor(
+    root: HTMLElement,
+  ): { tabs: HTMLButtonElement[]; panels: HTMLElement[]; list: HTMLElement | null } {
+    const tabs = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("[data-aui-tab]"),
+    ).filter((tab) => ownedBy(root, tab));
+    const host =
+      Array.from(root.querySelectorAll<HTMLElement>("[data-aui-tab-panels]")).find(
+        (el) => ownedBy(root, el),
+      ) ?? null;
+    const panels = host ? Array.from(host.children).filter(isPanelElement) : [];
+    const list =
+      Array.from(root.querySelectorAll<HTMLElement>('[role="tablist"]')).find((el) =>
+        ownedBy(root, el),
+      ) ?? null;
+    return {tabs, panels, list};
+  }
+
+  function isPanelElement(node: Element): node is HTMLElement {
+    return node instanceof HTMLElement;
+  }
+
+  function currentValue(root: HTMLElement): string | undefined {
+    const {tabs} = panelsFor(root);
+    const selected = tabs.find(
+      (tab) => tab.getAttribute("aria-selected") === "true" && !tab.disabled,
+    );
+    if (selected?.dataset.value) return selected.dataset.value;
+    return tabs.find((tab) => !tab.disabled)?.dataset.value;
+  }
+
+  function activate(root: HTMLElement, value: string, moveFocus: boolean): void {
+    const {tabs, panels} = panelsFor(root);
+    const target = tabs.find((tab) => tab.dataset.value === value);
+    // Disabled or unknown values never activate.
+    if (!target || target.disabled) return;
+    for (const tab of tabs) {
+      const selected = tab === target;
+      tab.setAttribute("aria-selected", selected ? "true" : "false");
+      tab.tabIndex = selected ? 0 : -1;
+      if (selected) {
+        tab.setAttribute("data-active", "");
+      } else {
+        tab.removeAttribute("data-active");
+      }
+    }
+    for (const panel of panels) {
+      const panelValue = panel.getAttribute("data-tab");
+      if (panelValue !== value) {
+        panel.setAttribute("hidden", "");
+      } else {
+        panel.removeAttribute("hidden");
+      }
+    }
+    if (moveFocus) target.focus();
+  }
+
+  function wirePanels(root: HTMLElement, base: string, values: string[]): void {
+    const {panels} = panelsFor(root);
+    const active = currentValue(root);
+    panels.forEach((panel, index) => {
+      let value = panel.getAttribute("data-tab");
+      // Index fallback: children without data-tab map to item order.
+      if (!value) {
+        value = values[index];
+        if (value) panel.setAttribute("data-tab", value);
+      }
+      if (!value) return;
+      panel.setAttribute("role", "tabpanel");
+      panel.tabIndex = 0;
+      if (!panel.id) panel.id = `${base}-panel-${value}`;
+      panel.setAttribute("aria-labelledby", `${base}-tab-${value}`);
+      if (value === active) {
+        panel.removeAttribute("hidden");
+      } else {
+        panel.setAttribute("hidden", "");
+      }
+    });
+  }
+
+  function move(
+    tabs: HTMLButtonElement[],
+    from: HTMLButtonElement,
+    delta: 1 | -1,
+  ): HTMLButtonElement | undefined {
+    const enabled = tabs.filter((tab) => !tab.disabled);
+    if (enabled.length === 0) return undefined;
+    const current = enabled.indexOf(from);
+    const next = enabled[(current + delta + enabled.length) % enabled.length];
+    return next;
+  }
+
+  function initTabs(root: HTMLElement): void {
+    if (root.dataset.auiTabsInit === "true") return;
+    root.dataset.auiTabsInit = "true";
+    const base = root.getAttribute("data-aui-tabs") || "aui-tabs";
+    const {tabs, list} = panelsFor(root);
+    const values = tabs.map((tab) => tab.dataset.value || "");
+    wirePanels(root, base, values);
+
+    for (const tab of tabs) {
+      tab.addEventListener("click", () => {
+        if (tab.dataset.value) activate(root, tab.dataset.value, false);
+      });
+    }
+
+    list?.addEventListener("keydown", (event: KeyboardEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLButtonElement)) return;
+      if (!target.hasAttribute("data-aui-tab")) return;
+      const vertical = root.getAttribute("data-orientation") === "vertical";
+      const rtl =
+        window.getComputedStyle(list).direction === "rtl" && !vertical;
+      const nextKey = vertical ? "ArrowDown" : rtl ? "ArrowLeft" : "ArrowRight";
+      const prevKey = vertical ? "ArrowUp" : rtl ? "ArrowRight" : "ArrowLeft";
+
+      if (event.key === nextKey) {
+        event.preventDefault();
+        const next = move(tabs, target, 1);
+        if (next?.dataset.value) activate(root, next.dataset.value, true);
+      } else if (event.key === prevKey) {
+        event.preventDefault();
+        const prev = move(tabs, target, -1);
+        if (prev?.dataset.value) activate(root, prev.dataset.value, true);
+      } else if (event.key === "Home") {
+        event.preventDefault();
+        const first = tabs.find((tab) => !tab.disabled);
+        if (first?.dataset.value) activate(root, first.dataset.value, true);
+      } else if (event.key === "End") {
+        event.preventDefault();
+        const last = [...tabs].reverse().find((tab) => !tab.disabled);
+        if (last?.dataset.value) activate(root, last.dataset.value, true);
+      }
+    });
+  }
+
+  function initAll(): void {
+    document.querySelectorAll<HTMLElement>(SELECTOR_ROOT).forEach(initTabs);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-tabs {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--ui-font-sans);
+    color: var(--ui-foreground);
+  }
+
+  .aui-tabs--vertical {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--ui-space-4);
+  }
+
+  .aui-tabs__list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--ui-space-1);
+    overflow-x: auto;
+  }
+
+  .aui-tabs--vertical .aui-tabs__list {
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: visible;
+  }
+
+  .aui-tabs__tab {
+    flex-shrink: 0;
+    font: inherit;
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-muted-foreground);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast),
+    color var(--ui-transition-fast),
+    box-shadow var(--ui-transition-fast),
+    border-color var(--ui-transition-fast);
+  }
+
+  .aui-tabs__tab:hover {
+    color: var(--ui-foreground);
+  }
+
+  .aui-tabs__tab:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-tabs__tab:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-tabs__tab[data-active] {
+    color: var(--ui-foreground);
+  }
+
+  /* --- sizes --- */
+
+  .aui-tabs--xs .aui-tabs__tab {
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-tabs--sm .aui-tabs__tab {
+    padding: var(--ui-space-1) var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-tabs--md .aui-tabs__tab {
+    padding: var(--ui-space-2) var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-tabs--lg .aui-tabs__tab {
+    padding: var(--ui-space-2) var(--ui-space-5);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-tabs--xl .aui-tabs__tab {
+    padding: var(--ui-space-3) var(--ui-space-6);
+    font-size: var(--ui-text-lg);
+  }
+
+  /* --- variant: line (underline) --- */
+
+  .aui-tabs--line .aui-tabs__list {
+    gap: var(--ui-space-2);
+    border-block-end: 1px solid var(--ui-border);
+  }
+
+  .aui-tabs--line.aui-tabs--vertical .aui-tabs__list {
+    border-block-end: none;
+    border-inline-end: 1px solid var(--ui-border);
+  }
+
+  .aui-tabs--line .aui-tabs__tab {
+    border-radius: 0;
+    border-block-end: 2px solid transparent;
+    margin-block-end: -1px;
+  }
+
+  .aui-tabs--line.aui-tabs--vertical .aui-tabs__tab {
+    border-block-end: none;
+    border-inline-start: 2px solid transparent;
+    margin-block-end: 0;
+    margin-inline-end: -1px;
+    text-align: start;
+  }
+
+  .aui-tabs--line > .aui-tabs__list > .aui-tabs__tab[data-active] {
+    color: var(--ui-primary);
+    border-block-end-color: var(--ui-primary);
+  }
+
+  .aui-tabs--line.aui-tabs--vertical .aui-tabs__tab[data-active] {
+    border-block-end-color: transparent;
+    border-inline-start-color: var(--ui-primary);
+  }
+
+  /* --- variant: pill ---
+
+     Variant + active rules use the child combinator from the variant
+     root: a Tabs inside another Tabs' panels (e.g. a pill range
+     switcher in a card-variant demo wrapper) must not be styled by
+     the outer variant — nested variant roots otherwise bleed into
+     each other since both share one Astro scope id. */
+
+  .aui-tabs--pill > .aui-tabs__list > .aui-tabs__tab[data-active] {
+    color: var(--ui-primary-foreground);
+    background-color: var(--ui-primary);
+  }
+
+  /* --- variant: card (segmented control) --- */
+
+  .aui-tabs--card > .aui-tabs__list {
+    gap: var(--ui-space-1);
+    padding: var(--ui-space-1);
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-lg);
+  }
+
+  .aui-tabs--card > .aui-tabs__list > .aui-tabs__tab[data-active] {
+    background-color: var(--ui-background);
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  /* --- panels --- */
+
+  .aui-tabs__panels {
+    padding-block-start: var(--ui-space-4);
+  }
+
+  .aui-tabs--vertical .aui-tabs__panels {
+    flex: 1;
+    min-width: 0;
+    padding-block-start: 0;
+    padding-inline-start: var(--ui-space-4);
+  }
+
+  /* Slotted panels belong to the consumer, so they never carry this
+     component's scope attribute — :global() on the consumer side only. */
+  .aui-tabs__panels > :global([data-tab][hidden]) {
+    display: none;
+  }
+
+  .aui-tabs__panels > :global([role="tabpanel"]:focus-visible) {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-tabs__tab {
+      transition: none;
+    }
+  }
+</style>

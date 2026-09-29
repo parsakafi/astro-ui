@@ -1,0 +1,327 @@
+---
+/**
+  * Checkbox — zero-JS boolean control.
+  *
+  * Native <input type="checkbox"> wrapped in a <label> so the whole row
+  * is clickable with correct semantics. `checked` sets the initial
+  * server-rendered state; toggling is native browser behavior.
+  * `indeterminate` sets aria-checked="mixed" visually (the checkmark
+  * is hidden) — the actual indeterminate state still requires a tiny
+  * bit of client JS if you need it to react to user interaction, but
+  * the visual + a11y foundation is here.
+  *
+  * Compose with Label; group with fieldset/legend.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  name?: string;
+  value?: string;
+  checked?: boolean;
+  required?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  shape?: "square" | "rounded";
+  orientation?: "horizontal" | "vertical";
+  indeterminate?: boolean;
+  label?: string;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+}
+
+const {
+  name,
+  value,
+  checked = false,
+  required = false,
+  disabled = false,
+  invalid = false,
+  size = "md",
+  variant = "primary",
+  shape = "square",
+  orientation = "horizontal",
+  indeterminate = false,
+  label,
+  class: className,
+  id,
+  ariaLabel,
+  ariaDescribedby,
+  ...rest
+} = Astro.props;
+
+const isChecked = checked || undefined;
+const isIndeterminate = indeterminate;
+
+const classes = cn(
+  "aui-checkbox",
+  `aui-checkbox--${size}`,
+  `aui-checkbox--variant-${variant}`,
+  shape === "rounded" && "aui-checkbox--rounded",
+  orientation === "vertical" && "aui-checkbox--vertical",
+  isIndeterminate && "aui-checkbox--indeterminate",
+  invalid && "aui-checkbox--invalid",
+  disabled && "aui-checkbox--disabled",
+  className,
+);
+---
+
+<label
+  class={classes}
+>
+  <input
+    type="checkbox"
+    class="aui-checkbox__input"
+    name={name}
+    value={value}
+    checked={isChecked}
+    required={required || undefined}
+    disabled={disabled || undefined}
+    aria-invalid={invalid || undefined}
+    aria-label={ariaLabel}
+    aria-describedby={ariaDescribedby}
+    aria-checked={isIndeterminate ? "mixed" : isChecked ? "true" : "false"}
+    id={id}
+    {...rest}
+  />
+  <span class="aui-checkbox__box" aria-hidden="true">
+		<svg
+      class="aui-checkbox__check"
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden="true"
+    >
+			<path
+        d="M2 6.5 4.8 9 10 3.5"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+		</svg>
+	</span>
+  <span class="aui-checkbox__label">
+		{label ||
+      <slot/>}
+	</span>
+</label>
+
+<style>
+  .aui-checkbox {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--ui-space-2);
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    cursor: pointer;
+  }
+
+  .aui-checkbox--vertical {
+    align-items: center;
+  }
+
+  .aui-checkbox--disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-checkbox__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .aui-checkbox__box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-sm);
+    transition: border-color var(--ui-transition-fast),
+    background-color var(--ui-transition-fast);
+  }
+
+  .aui-checkbox--rounded .aui-checkbox__box {
+    border-radius: var(--ui-radius-md);
+  }
+
+  /* --- size --- */
+
+  .aui-checkbox--xs .aui-checkbox__box {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .aui-checkbox--sm .aui-checkbox__box {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .aui-checkbox--md .aui-checkbox__box {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .aui-checkbox--lg .aui-checkbox__box {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .aui-checkbox--xl .aui-checkbox__box {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .aui-checkbox__check {
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity var(--ui-transition-fast),
+    transform var(--ui-transition-fast);
+  }
+
+  .aui-checkbox--xs .aui-checkbox__check {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  .aui-checkbox--sm .aui-checkbox__check {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .aui-checkbox--md .aui-checkbox__check {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .aui-checkbox--lg .aui-checkbox__check {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .aui-checkbox--xl .aui-checkbox__check {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-primary);
+    border-color: var(--ui-primary);
+  }
+
+  .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* --- checkmark color per variant (matches box foreground) --- */
+
+  .aui-checkbox--variant-primary .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-checkbox--variant-secondary .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-checkbox--variant-muted .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-muted);
+  }
+
+  .aui-checkbox--variant-inherit .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-foreground);
+  }
+
+  .aui-checkbox--variant-destructive .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-checkbox--variant-success .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-success-foreground);
+  }
+
+  .aui-checkbox--variant-warning .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-warning-foreground);
+  }
+
+  .aui-checkbox--variant-info .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+    color: var(--ui-info-foreground);
+  }
+
+  /* --- color variants --- */
+
+  .aui-checkbox--variant-primary .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-primary);
+    border-color: var(--ui-primary);
+  }
+
+  .aui-checkbox--variant-secondary .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-secondary);
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-checkbox--variant-muted .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-muted-foreground);
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-checkbox--variant-destructive .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-error);
+    border-color: var(--ui-error);
+  }
+
+  .aui-checkbox--variant-success .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-success);
+    border-color: var(--ui-success);
+  }
+
+  .aui-checkbox--variant-warning .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-warning);
+    border-color: var(--ui-warning);
+  }
+
+  .aui-checkbox--variant-info .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: var(--ui-info);
+    border-color: var(--ui-info);
+  }
+
+  .aui-checkbox--variant-inherit .aui-checkbox__input:checked + .aui-checkbox__box {
+    background-color: currentColor;
+    border-color: currentColor;
+  }
+
+  .aui-checkbox__input:focus-visible + .aui-checkbox__box {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-checkbox--invalid .aui-checkbox__box {
+    border-color: var(--ui-error);
+  }
+
+  .aui-checkbox--indeterminate .aui-checkbox__check {
+    display: none;
+  }
+
+  .aui-checkbox__label {
+    color: var(--ui-foreground);
+  }
+
+  .aui-checkbox--vertical .aui-checkbox__label {
+    line-height: var(--ui-leading-tight);
+  }
+
+  .aui-checkbox__label:empty {
+    display: none;
+  }
+</style>

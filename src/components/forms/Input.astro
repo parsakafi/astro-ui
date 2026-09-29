@@ -1,0 +1,245 @@
+---
+/**
+  * Input — zero-JS text control.
+  *
+  * Native <input> with token-driven states (focus ring, invalid,
+  * disabled, readonly). Compose with Label + hint/error text; wire them
+  * with `id` / `aria-describedby`:
+  *
+  *   <Label for="email">Email</Label>
+  *   <Input id="email" type="email" aria-describedby="email-hint" />
+  *   <p id="email-hint">We never share your email.</p>
+  *
+  * Validation display is server/form-driven via `invalid` — no JS shipped.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /**
+   * Constrained to valid HTML input types (assignable to the native attribute).
+   */
+  type?:
+    | "text"
+    | "email"
+    | "password"
+    | "number"
+    | "search"
+    | "tel"
+    | "url"
+    | "date"
+    | "time"
+    | "datetime-local"
+    | "month"
+    | "week"
+    | "color"
+    | "file"
+    | "range"
+    | "hidden";
+  name?: string;
+  value?: string | number;
+  placeholder?: string;
+  /** Numeric/date bounds — native `min`/`max`/`step`. */
+  min?: string | number;
+  max?: string | number;
+  step?: string | number;
+  minlength?: number;
+  maxlength?: number;
+  /** Native `accept` (file), `autocomplete`, `pattern`, `list` (datalist id). */
+  accept?: string;
+  autocomplete?: string;
+  pattern?: string;
+  list?: string;
+  multiple?: boolean;
+  required?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
+  invalid?: boolean;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+  /** Inline styles forwarded to the native <input> control. */
+  style?: string;
+}
+
+const {
+  type = "text",
+  name,
+  value,
+  placeholder,
+  min,
+  max,
+  step,
+  minlength,
+  maxlength,
+  accept,
+  autocomplete,
+  pattern,
+  list,
+  multiple = false,
+  required = false,
+  disabled = false,
+  readonly = false,
+  invalid = false,
+  size = "md",
+  variant = "inherit",
+  class: className,
+  id,
+  ariaLabel,
+  ariaDescribedby,
+  style,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-input",
+  `aui-input--${size}`,
+  `aui-input--variant-${variant}`,
+  invalid && "aui-input--invalid",
+  className,
+);
+---
+
+<input
+  class={classes}
+  style={style}
+  type={type}
+  name={name}
+  value={value}
+  placeholder={placeholder}
+  min={min}
+  max={max}
+  step={step}
+  minlength={minlength}
+  maxlength={maxlength}
+  accept={accept}
+  autocomplete={autocomplete}
+  pattern={pattern}
+  list={list}
+  multiple={multiple || undefined}
+  required={required || undefined}
+  disabled={disabled || undefined}
+  readonly={readonly || undefined}
+  aria-invalid={invalid || undefined}
+  aria-label={ariaLabel}
+  aria-describedby={ariaDescribedby}
+  id={id}
+  {...rest}
+/>
+
+<style>
+  .aui-input {
+    display: flex;
+    width: 100%;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    transition: border-color var(--ui-transition-fast),
+    box-shadow var(--ui-transition-fast);
+  }
+
+  .aui-input::placeholder {
+    color: var(--ui-muted-foreground);
+  }
+
+  /* --- size --- */
+
+  .aui-input--xs {
+    height: 1.75rem;
+    padding: 0 var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-input--sm {
+    height: 2rem;
+    padding: 0 var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-input--md {
+    height: 2.5rem;
+    padding: 0 var(--ui-space-3);
+  }
+
+  .aui-input--lg {
+    height: 2.75rem;
+    padding: 0 var(--ui-space-4);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-input--xl {
+    height: 3rem;
+    padding: 0 var(--ui-space-5);
+    font-size: var(--ui-text-lg);
+  }
+
+  /* --- variant borders --- */
+
+  .aui-input--variant-inherit {
+    border-color: inherit;
+  }
+
+  .aui-input--variant-primary {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-input--variant-secondary {
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-input--variant-muted {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-input--variant-destructive {
+    border-color: var(--ui-error);
+  }
+
+  .aui-input--variant-success {
+    border-color: var(--ui-success);
+  }
+
+  .aui-input--variant-warning {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-input--variant-info {
+    border-color: var(--ui-info);
+  }
+
+  .aui-input:focus {
+    outline: none;
+    border-color: var(--ui-ring);
+    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
+    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+  }
+
+  /* Invalid overrides the custom border + focus ring */
+  .aui-input--invalid {
+    border-color: var(--ui-error);
+  }
+
+  .aui-input--invalid:focus {
+    border-color: var(--ui-error);
+    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
+    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-error);
+  }
+
+  .aui-input:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+    background-color: var(--ui-muted);
+  }
+
+  .aui-input[readonly] {
+    background-color: var(--ui-muted);
+  }
+</style>

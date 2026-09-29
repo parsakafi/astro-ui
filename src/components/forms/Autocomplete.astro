@@ -1,0 +1,604 @@
+---
+/**
+  * Autocomplete — input that suggests options as you type.
+  *
+  * Implements the WAI-ARIA combobox + listbox pattern with a small
+  * scoped script: type to filter, ↑/↓ to move, Enter to commit,
+  * Escape to dismiss, Home/End to jump. The input participates in
+  * forms normally (name + committed value). Options render entirely
+  * server-side; the script only filters, highlights, and manages
+  * focus — with JS disabled the input still works (no suggestions).
+  *
+  * Structure:
+  *
+  *   <Autocomplete name="fruit" items={["Apple", "Banana"]}>
+  *     <Label>Fruit</Label>   <!-- optional, slot="label" -->
+  *   </Autocomplete>
+  *
+  * Pass plain strings, or `{ value, label, hint }` objects for a muted
+  * hint line per option. `groups` renders labelled sections instead.
+  * Filtering is case-insensitive substring match on label/value;
+  * `filter={false}` disables it (async/external filtering).
+  *
+  * JavaScript required: Yes (filter + keyboard listbox navigation)
+  */
+import {cn} from "../../utils/cn";
+
+export interface AutocompleteOption {
+  value: string;
+  label: string;
+  hint?: string;
+}
+
+export interface Props {
+  /** Options as strings or { value, label, hint } objects. */
+  items?: (string | AutocompleteOption)[];
+  /** Labelled sections: `{ label, items }[]` (overrides items). */
+  groups?: { label: string; items: (string | AutocompleteOption)[] }[];
+  /** Form field name; the committed option value posts with the form. */
+  name?: string;
+  /** Initial committed value (server-side preselect). */
+  value?: string;
+  placeholder?: string;
+  /** Text shown when the filter matches nothing. */
+  emptyMessage?: string;
+  /** Disable client-side filtering (you filter externally/async). */
+  filter?: boolean;
+  /** Highlight the first match automatically on open. */
+  autoHighlight?: boolean;
+  /** Show a clear (✕) button when the field has a value. */
+  clearable?: boolean;
+  /** Opens the list on focus (search-style) instead of on arrow/typing. */
+  openOnFocus?: boolean;
+  /** Renders the trigger input matching a control size. */
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  /** Visual variant of the trigger input. */
+  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  disabled?: boolean;
+  required?: boolean;
+  invalid?: boolean;
+  /** Floating panel placement relative to the input. */
+  placement?: "bottom" | "top";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  items = [],
+  groups,
+  name,
+  value,
+  placeholder = "Search…",
+  emptyMessage = "No results found.",
+  filter = true,
+  autoHighlight = false,
+  clearable = false,
+  openOnFocus = false,
+  size = "md",
+  variant = "inherit",
+  disabled = false,
+  required = false,
+  invalid = false,
+  placement = "bottom",
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const uid = id ?? `aui-ac-${Math.random().toString(36).slice(2, 8)}`;
+const listId = `${uid}-list`;
+const inputId = `${uid}-input`;
+
+interface Norm {
+  value: string;
+  label: string;
+  hint?: string;
+}
+const norm = (o: string | AutocompleteOption): Norm =>
+  typeof o === "string" ? {value: o, label: o} : o;
+
+/** Everything the scoped script needs, inlined as JSON. */
+const config = {
+  uid,
+  listId,
+  filter,
+  autoHighlight,
+  openOnFocus,
+  emptyMessage,
+  groups:
+    groups?.map((g) => ({
+      label: g.label,
+      items: g.items.map(norm),
+    })) ?? null,
+  items: items.map(norm),
+  initialValue: value ?? "",
+};
+
+const classes = cn(
+  "aui-autocomplete",
+  `aui-autocomplete--${size}`,
+  `aui-autocomplete--variant-${variant}`,
+  `aui-autocomplete--${placement}`,
+  invalid && "aui-autocomplete--invalid",
+  disabled && "aui-autocomplete--disabled",
+  className,
+);
+---
+
+<span class={classes} data-disabled={disabled || undefined}>
+	<slot name="label"/>
+	<span class="aui-autocomplete__field">
+		<input
+      class="aui-autocomplete__input"
+      type="text"
+      role="combobox"
+      autocomplete="off"
+      spellcheck="false"
+      id={inputId}
+      name={name}
+      placeholder={placeholder}
+      value={value}
+      required={required || undefined}
+      disabled={disabled || undefined}
+      aria-invalid={invalid || undefined}
+      aria-label={ariaLabel}
+      aria-expanded="false"
+      aria-controls={listId}
+      aria-autocomplete="list"
+      {...rest}
+    />
+		<script type="application/json" data-aui-autocomplete-config set:html={JSON.stringify(config)}/>
+    {
+      clearable && (
+        <button
+          type="button"
+          class="aui-autocomplete__clear"
+          aria-label="Clear"
+          tabindex="-1"
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+            <path
+              d="M1 1l8 8M9 1l-8 8"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      )
+    }
+    <svg
+      class="aui-autocomplete__chevron"
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+    >
+			<path
+        d="M4 6l4 4 4-4"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+		</svg>
+	</span>
+	<div class="aui-autocomplete__panel" id={listId} role="listbox" hidden>
+		{
+      groups
+        ? groups.map((g) => (
+          <div class="aui-autocomplete__group" role="group" aria-label={g.label}>
+            <p class="aui-autocomplete__group-label">{g.label}</p>
+            {g.items.map(norm).map((o) => (
+              <div class="aui-autocomplete__option" role="option" aria-selected="false" data-value={o.value}
+                   tabindex="-1">
+                <span class="aui-autocomplete__option-label">{o.label}</span>
+                {o.hint && <span class="aui-autocomplete__option-hint">{o.hint}</span>}
+              </div>
+            ))}
+          </div>
+        ))
+        : items.map(norm).map((o) => (
+          <div class="aui-autocomplete__option" role="option" aria-selected="false" data-value={o.value} tabindex="-1">
+            <span class="aui-autocomplete__option-label">{o.label}</span>
+            {o.hint && <span class="aui-autocomplete__option-hint">{o.hint}</span>}
+          </div>
+        ))
+    }
+    <p class="aui-autocomplete__empty" hidden>
+			{emptyMessage}
+		</p>
+	</div>
+</span>
+
+<script>
+  // WAI-ARIA combobox wiring: filter + highlight + keyboard listbox.
+  // Each instance is self-contained (config inlined as JSON in data attr).
+  const setup = (root: HTMLElement) => {
+    const input = root.querySelector<HTMLInputElement>(".aui-autocomplete__input");
+    const panel = root.querySelector<HTMLElement>(".aui-autocomplete__panel");
+    const empty = root.querySelector<HTMLElement>(".aui-autocomplete__empty");
+    const clear = root.querySelector<HTMLButtonElement>(".aui-autocomplete__clear");
+    const cfgEl = root.querySelector<HTMLScriptElement>("script[data-aui-autocomplete-config]");
+    if (!input || !panel || !empty || !cfgEl) return;
+
+    const cfg = JSON.parse(cfgEl.textContent ?? "{}") as {
+      uid: string;
+      filter: boolean;
+      autoHighlight: boolean;
+      openOnFocus: boolean;
+      groups: { label: string; items: { value: string; label: string; hint?: string }[] }[] | null;
+      items: { value: string; label: string; hint?: string }[];
+    };
+    const groups = [...root.querySelectorAll<HTMLElement>(".aui-autocomplete__group")];
+    const options = () =>
+      [...root.querySelectorAll<HTMLElement>(".aui-autocomplete__option:not([hidden])")];
+
+    let open = false;
+    let activeIndex = -1;
+
+    const setActive = (i: number) => {
+      activeIndex = i;
+      for (const [idx, opt] of options().entries()) {
+        opt.setAttribute("aria-selected", idx === i ? "true" : "false");
+      }
+      const current = options()[i];
+      if (current) {
+        input.setAttribute("aria-activedescendant", current.dataset.value ?? "");
+        current.scrollIntoView({block: "nearest"});
+      } else {
+        input.removeAttribute("aria-activedescendant");
+      }
+    };
+
+    const matches = (opt: HTMLElement) => {
+      if (!cfg.filter) return true;
+      const q = input.value.trim().toLowerCase();
+      if (!q) return true;
+      const text = (
+        (opt.querySelector(".aui-autocomplete__option-label")?.textContent ?? "") +
+        " " +
+        (opt.dataset.value ?? "")
+      ).toLowerCase();
+      return text.includes(q);
+    };
+
+    const applyFilter = () => {
+      for (const opt of root.querySelectorAll<HTMLElement>(".aui-autocomplete__option")) {
+        opt.hidden = !matches(opt);
+      }
+      for (const g of groups) {
+        const any = g.querySelector(".aui-autocomplete__option:not([hidden])") !== null;
+        g.hidden = !any;
+      }
+      const anyVisible = options().length > 0;
+      empty.hidden = anyVisible;
+      panel.hidden = false;
+    };
+
+    const openList = (highlight = false) => {
+      if (open) return;
+      open = true;
+      applyFilter();
+      input.setAttribute("aria-expanded", "true");
+      setActive(highlight && options().length ? 0 : -1);
+    };
+
+    const closeList = () => {
+      if (!open) return;
+      open = false;
+      panel.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+      setActive(-1);
+    };
+
+    const commit = (opt?: HTMLElement) => {
+      const target = opt ?? options()[activeIndex];
+      if (target) {
+        input.value = target.dataset.value ?? "";
+        input.dispatchEvent(new Event("change", {bubbles: true}));
+      }
+      closeList();
+    };
+
+    if (cfg.filter) {
+      input.addEventListener("input", () => {
+        if (input.value.trim()) openList(cfg.autoHighlight);
+        else if (cfg.openOnFocus) openList();
+        else closeList();
+      });
+    }
+
+    input.addEventListener("keydown", (e) => {
+      const list = options();
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          if (!open) {
+            openList(true);
+          } else {
+            setActive(Math.min(activeIndex + 1, list.length - 1));
+          }
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          if (!open) {
+            openList(true);
+          } else {
+            setActive(Math.max(activeIndex - 1, 0));
+          }
+          break;
+        case "Home":
+          if (open) {
+            e.preventDefault();
+            setActive(0);
+          }
+          break;
+        case "End":
+          if (open) {
+            e.preventDefault();
+            setActive(list.length - 1);
+          }
+          break;
+        case "Enter":
+          if (open && activeIndex >= 0) {
+            e.preventDefault();
+            commit();
+          }
+          break;
+        case "Escape":
+          if (open) {
+            e.preventDefault();
+            closeList();
+          }
+          break;
+      }
+    });
+
+    if (cfg.openOnFocus) {
+      input.addEventListener("focus", () => openList());
+    }
+    input.addEventListener("blur", () => {
+      // Delay so option mousedown (which precedes blur) can commit first.
+      setTimeout(() => {
+        if (!root.contains(document.activeElement)) closeList();
+      }, 80);
+    });
+
+    panel.addEventListener("mousedown", (e) => e.preventDefault());
+    panel.addEventListener("click", (e) => {
+      const opt = (e.target as HTMLElement).closest<HTMLElement>(".aui-autocomplete__option");
+      if (opt && !opt.hidden) commit(opt);
+    });
+
+    clear?.addEventListener("click", () => {
+      input.value = "";
+      input.focus();
+      input.dispatchEvent(new Event("input", {bubbles: true}));
+    });
+
+    document.addEventListener("click", (e) => {
+      if (e.target instanceof Element && !e.target.closest(`#${CSS.escape(cfg.uid)}`)) closeList();
+    });
+  };
+
+  document.querySelectorAll<HTMLElement>(".aui-autocomplete").forEach(setup);
+</script>
+
+<style>
+  .aui-autocomplete {
+    position: relative;
+    display: grid;
+    gap: var(--ui-space-1);
+    width: 100%;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-autocomplete__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .aui-autocomplete__input {
+    flex: 1;
+    min-width: 0;
+    inline-size: 100%;
+    font-family: inherit;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    transition: border-color var(--ui-transition-fast),
+    box-shadow var(--ui-transition-fast);
+  }
+
+  .aui-autocomplete__input::placeholder {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-autocomplete__input:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-autocomplete__input[aria-expanded="true"] {
+    border-color: var(--ui-ring);
+  }
+
+  /* --- sizes (heights mirror Input) --- */
+
+  .aui-autocomplete--xs .aui-autocomplete__input {
+    block-size: 1.75rem;
+    padding: 0 var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-autocomplete--sm .aui-autocomplete__input {
+    block-size: 2rem;
+    padding: 0 var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-autocomplete--md .aui-autocomplete__input {
+    block-size: 2.5rem;
+    padding: 0 var(--ui-space-3);
+  }
+
+  .aui-autocomplete--lg .aui-autocomplete__input {
+    block-size: 2.75rem;
+    padding: 0 var(--ui-space-4);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-autocomplete--xl .aui-autocomplete__input {
+    block-size: 3rem;
+    padding: 0 var(--ui-space-5);
+    font-size: var(--ui-text-lg);
+  }
+
+  /* --- variants mirror Input borders --- */
+
+  .aui-autocomplete--variant-inherit .aui-autocomplete__input {
+    border-color: inherit;
+  }
+
+  .aui-autocomplete--variant-primary .aui-autocomplete__input {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-autocomplete--variant-secondary .aui-autocomplete__input {
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-autocomplete--variant-muted .aui-autocomplete__input {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-autocomplete--variant-destructive .aui-autocomplete__input,
+  .aui-autocomplete--invalid .aui-autocomplete__input {
+    border-color: var(--ui-error);
+  }
+
+  .aui-autocomplete--variant-success .aui-autocomplete__input {
+    border-color: var(--ui-success);
+  }
+
+  .aui-autocomplete--variant-warning .aui-autocomplete__input {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-autocomplete--variant-info .aui-autocomplete__input {
+    border-color: var(--ui-info);
+  }
+
+  .aui-autocomplete--disabled {
+    opacity: 0.6;
+  }
+
+  .aui-autocomplete--disabled .aui-autocomplete__input {
+    cursor: not-allowed;
+    background-color: var(--ui-muted);
+  }
+
+  /* --- field adornments --- */
+
+  .aui-autocomplete__clear {
+    position: absolute;
+    inset-inline-end: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    color: var(--ui-muted-foreground);
+    background: transparent;
+    border: 0;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+  }
+
+  .aui-autocomplete__clear:hover {
+    color: var(--ui-foreground);
+  }
+
+  .aui-autocomplete__chevron {
+    position: absolute;
+    inset-inline-end: var(--ui-space-3);
+    flex: none;
+    color: var(--ui-muted-foreground);
+    pointer-events: none;
+    transition: transform var(--ui-transition-fast);
+  }
+
+  .aui-autocomplete__input[aria-expanded="true"] ~ .aui-autocomplete__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* --- panel --- */
+
+  .aui-autocomplete__panel {
+    position: absolute;
+    inset-inline: 0;
+    z-index: 20;
+    max-block-size: 16rem;
+    overflow-block: auto;
+    padding: var(--ui-space-1);
+    background: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  .aui-autocomplete--bottom .aui-autocomplete__panel {
+    inset-block-start: calc(100% + 4px);
+  }
+
+  .aui-autocomplete--top .aui-autocomplete__panel {
+    inset-block-end: calc(100% + 4px);
+  }
+
+  .aui-autocomplete__group-label {
+    margin: 0;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .aui-autocomplete__option {
+    display: grid;
+    gap: 1px;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    border-radius: var(--ui-radius-sm);
+    cursor: pointer;
+  }
+
+  .aui-autocomplete__option[aria-selected="true"] {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-autocomplete__option-hint {
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-autocomplete__empty {
+    margin: 0;
+    padding: var(--ui-space-2);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+  }
+</style>

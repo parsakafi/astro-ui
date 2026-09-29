@@ -1,0 +1,186 @@
+---
+/**
+  * Separator — zero-JS thematic break.
+  *
+  * Horizontal uses semantic <hr>; vertical uses <div role="separator">
+  * (an <hr> cannot be vertical). `label` adds an accessible name when
+  * the separator delimits labelled regions.
+  *
+  * `variant` paints the line: dashed, dotted, double, an accent gradient
+  * bar, or a fade-to-transparent edge. `labeled` (horizontal only)
+  * centers the default slot between two lines — an "or continue with"
+  * style divider; it renders a div since an <hr> cannot hold content.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  orientation?: "horizontal" | "vertical";
+  variant?:
+    | "solid"
+    | "dashed"
+    | "dotted"
+    | "double"
+    | "gradient"
+    | "faded"
+    | "labeled";
+  /** Accessible name when the separator delimits labelled regions. */
+  label?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  orientation = "horizontal",
+  variant = "solid",
+  label,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+// Labeled is horizontal-only; a vertical rule falls back to solid.
+const effectiveVariant =
+  orientation === "vertical" && variant === "labeled" ? "solid" : variant;
+
+const classes = cn(
+  "aui-separator",
+  `aui-separator--${orientation}`,
+  `aui-separator--${effectiveVariant}`,
+  className,
+);
+---
+
+{
+  orientation === "horizontal" && effectiveVariant !== "labeled" ? (
+  <hr id={id} class={classes} aria-label={label} {...rest}/>
+    ) : (
+  <div
+    id={id}
+    class={classes}
+    role="separator"
+    aria-orientation={orientation === "vertical" ? "vertical" : undefined}
+    aria-label={label}
+    {...rest}
+  >
+    {effectiveVariant === "labeled" &&
+      <slot/>}
+  </div>
+    )
+  }
+
+<style>
+  .aui-separator {
+    border: none;
+    background-color: var(--ui-border);
+    flex-shrink: 0;
+  }
+
+  .aui-separator--horizontal {
+    height: 1px;
+    width: 100%;
+    margin: var(--ui-space-4) 0;
+  }
+
+  .aui-separator--vertical {
+    width: 1px;
+    align-self: stretch;
+    margin: 0 var(--ui-space-4);
+  }
+
+  /* --- line-style variants: horizontal --- */
+
+  .aui-separator--dashed.aui-separator--horizontal {
+    height: 0;
+    background: none;
+    border-top: 1px dashed var(--ui-border);
+  }
+
+  .aui-separator--dotted.aui-separator--horizontal {
+    height: 0;
+    background: none;
+    border-top: 1px dotted var(--ui-border);
+  }
+
+  .aui-separator--double.aui-separator--horizontal {
+    height: 0;
+    background: none;
+    border-top: 3px double var(--ui-border);
+  }
+
+  .aui-separator--gradient.aui-separator--horizontal {
+    height: 3px;
+    border-radius: var(--ui-radius-full);
+    background: linear-gradient(90deg, var(--ui-primary), var(--ui-accent));
+  }
+
+  .aui-separator--faded.aui-separator--horizontal {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--ui-border) 15%,
+      var(--ui-border) 85%,
+      transparent
+    );
+  }
+
+  /* --- line-style variants: vertical --- */
+
+  .aui-separator--dashed.aui-separator--vertical {
+    width: 0;
+    background: none;
+    border-left: 1px dashed var(--ui-border);
+  }
+
+  .aui-separator--dotted.aui-separator--vertical {
+    width: 0;
+    background: none;
+    border-left: 1px dotted var(--ui-border);
+  }
+
+  .aui-separator--double.aui-separator--vertical {
+    width: 0;
+    background: none;
+    border-left: 3px double var(--ui-border);
+  }
+
+  .aui-separator--gradient.aui-separator--vertical {
+    width: 3px;
+    border-radius: var(--ui-radius-full);
+    background: linear-gradient(180deg, var(--ui-primary), var(--ui-accent));
+  }
+
+  .aui-separator--faded.aui-separator--vertical {
+    background: linear-gradient(
+      180deg,
+      transparent,
+      var(--ui-border) 15%,
+      var(--ui-border) 85%,
+      transparent
+    );
+  }
+
+  /* --- labeled: slot content between two lines --- */
+
+  .aui-separator--labeled {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-3);
+    height: auto;
+    background: none;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-xs);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-muted-foreground);
+    white-space: nowrap;
+  }
+
+  .aui-separator--labeled::before,
+  .aui-separator--labeled::after {
+    content: "";
+    flex: 1 1 0;
+    height: 1px;
+    background-color: var(--ui-border);
+  }
+</style>

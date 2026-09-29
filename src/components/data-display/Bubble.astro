@@ -1,0 +1,205 @@
+---
+/**
+  * Bubble — chat / conversational message bubble.
+  *
+  * A rounded message surface composed from three parts:
+  *  - `Bubble` positions the message (start/end alignment + 7 variants)
+  *  - `BubbleContent` is the visible rounded box carrying the look
+  *  - `BubbleReactions` is an absolutely positioned pill (top or bottom)
+  *
+  * BubbleContent is the styled box; Bubble only sets alignment and the
+  * variant context. Anything can live inside the content: text, lists,
+  * code, avatars — or a <button>/<a>, which gets an interactive hover.
+  *
+  *   <Bubble align="end">
+  *     <BubbleContent>Looks great — ship it.</BubbleContent>
+  *   </Bubble>
+  *
+  * Variants: primary (sender), secondary, muted, tinted, outline,
+  * ghost (bare content for headings/lists/code), destructive.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Which side of the thread the message sits on. */
+  align?: "start" | "end";
+  /** Color scheme of the content box. */
+  variant?: "primary" | "secondary" | "muted" | "tinted" | "outline" | "ghost" | "destructive";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+}
+
+const {align = "start", variant = "primary", class: className, id, ariaLabel, ...rest} = Astro.props as Props;
+
+const classes = cn(
+  "aui-bubble",
+  `aui-bubble--${align}`,
+  `aui-bubble--${variant}`,
+  className,
+);
+---
+
+<div id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  <slot/>
+</div>
+
+<style>
+  .aui-bubble {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    max-inline-size: 80%;
+    min-inline-size: 0;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-bubble--end {
+    align-self: flex-end;
+  }
+
+  .aui-bubble--start {
+    align-self: flex-start;
+  }
+
+  /* Interactive content: real buttons and links get a themed hover. */
+  .aui-bubble > :global(.aui-bubble__content:is(button, a):hover) {
+    filter: brightness(0.96);
+  }
+
+  .aui-bubble--ghost > :global(.aui-bubble__content:is(button, a):hover) {
+    filter: none;
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+  }
+
+  .aui-bubble > :global(.aui-bubble__content:is(button, a):focus-visible) {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+</style>
+
+<style is:global>
+  /* Global: BubbleContent / BubbleReactions are rendered by consumers,
+     so their styling must reach composed markup. aui-namespaced. */
+  .aui-bubble__content {
+    inline-size: fit-content;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    overflow-wrap: break-word;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    text-align: start;
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-xl);
+    transition: background-color var(--ui-transition-fast), color var(--ui-transition-fast);
+  }
+
+  /* --- variants (context selector: Bubble root) --- */
+
+  .aui-bubble--primary .aui-bubble__content {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-bubble--secondary .aui-bubble__content {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-bubble--muted .aui-bubble__content {
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+  }
+
+  .aui-bubble--tinted .aui-bubble__content {
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, var(--ui-background));
+    color: var(--ui-foreground);
+  }
+
+  .aui-bubble--outline .aui-bubble__content {
+    background-color: var(--ui-background);
+    border-color: var(--ui-border);
+    color: var(--ui-foreground);
+  }
+
+  .aui-bubble--ghost .aui-bubble__content {
+    background-color: transparent;
+    border-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    color: var(--ui-foreground);
+    max-inline-size: 100%;
+  }
+
+  .aui-bubble--destructive .aui-bubble__content {
+    background-color: color-mix(in srgb, var(--ui-error) 10%, transparent);
+    color: var(--ui-error);
+  }
+
+  /* --- reactions pill --- */
+
+  .aui-bubble__reactions {
+    position: absolute;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    flex-shrink: 0;
+    padding: 0.125rem var(--ui-space-1);
+    font-size: var(--ui-text-sm);
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-full);
+    box-shadow: 0 0 0 3px var(--ui-background);
+    color: var(--ui-foreground);
+  }
+
+  .aui-bubble__reactions:has(button) {
+    padding: 0;
+  }
+
+  .aui-bubble__reactions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem var(--ui-space-1);
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-bubble__reactions button:hover {
+    background-color: color-mix(in srgb, currentcolor 12%, transparent);
+  }
+
+  .aui-bubble__reactions button:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: 1px;
+  }
+
+  .aui-bubble__reactions--side-top {
+    inset-block-start: 0;
+    translate: 0 -75%;
+  }
+
+  .aui-bubble__reactions--side-bottom {
+    inset-block-end: 0;
+    translate: 0 75%;
+  }
+
+  .aui-bubble__reactions--align-start {
+    inset-inline-start: 0.75rem;
+  }
+
+  .aui-bubble__reactions--align-end {
+    inset-inline-end: 0.75rem;
+  }
+</style>

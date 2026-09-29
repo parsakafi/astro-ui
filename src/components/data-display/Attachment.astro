@@ -1,0 +1,429 @@
+---
+/**
+  * Attachment — zero-JS file attachment card.
+  *
+  * A composed surface for showing an attached file (icon or image
+  * thumbnail, title, description, actions). Purely presentational:
+  * upload progress, error handling, and removal are wired app-side.
+  * Pairs naturally with a hidden `<input type="file">` + `<label>`
+  * when you need a picker trigger.
+  *
+  * Layout: `orientation` stacks media above the text (vertical) or
+  * keeps them on one row (horizontal). `size` scales the media box
+  * and paddings. `state` drives styling hooks (`data-state`):
+  *  - "idle"        — dashed border (picker placeholder)
+  *  - "uploading"   — in-flight; style via [data-state="uploading"]
+  *  - "processing"  — server-side work; style via [data-state="processing"]
+  *  - "error"       — destructive border + destructive text
+  *  - "done"        — default settled look
+  *
+  * Slots: `media` (icon/image for the media box), `title`,
+  * `description`, `actions` (buttons row).
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Visual state of the attachment (drives data-state styling hooks). */
+  state?: "idle" | "uploading" | "processing" | "error" | "done";
+  /** Scale of the card and media box. */
+  size?: "xs" | "sm" | "md";
+  /** Media above text (vertical) or inline row (horizontal). */
+  orientation?: "horizontal" | "vertical";
+  /** How the media box renders its content. */
+  media?: "icon" | "image";
+  /** Text content for the title when no title slot is provided. */
+  title?: string;
+  /** Text content for the description line. */
+  description?: string;
+  /** Upload/processing completion percentage (0–100). Renders a
+   determinate 2px progress bar; omit for an indeterminate sweep. */
+  progress?: number;
+  /** Accessible role/label context, e.g. listitem when inside a group. */
+  class?: string;
+  id?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  state = "done",
+  size = "md",
+  orientation = "horizontal",
+  media = "icon",
+  title,
+  description,
+  progress,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;  const classes = cn(
+  "aui-attachment",
+  `aui-attachment--${size}`,
+  `aui-attachment--${orientation}`,
+  className,
+);
+
+/* Progress percentage baked into a CSS custom property — attr() in
+   calc() isn't reliably supported for lengths, so the server resolves
+   the number and the stylesheet only reads the var. */
+const progressVar =
+  typeof progress === "number"
+    ? `--aui-attachment-progress: ${Math.min(100, Math.max(0, progress))}%;`
+    : undefined;
+---
+
+<div
+  id={id}
+  class={classes}
+  data-state={state}
+  data-media={media}
+  data-progress={typeof progress === "number" ? Math.min(100, Math.max(0, progress)) : undefined}
+  style={progressVar}
+  aria-busy={state === "uploading" || state === "processing" ? "true" : undefined}
+  {...rest}
+>
+  <div class="aui-attachment__media">
+    <slot name="media">
+      {
+        media === "image" ? (
+          <span class="aui-attachment__media-fallback" aria-hidden="true">
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+							<rect x="2" y="3" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+							<path d="m4 11 2.5-3 2 2.2L10.5 8l1.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round"/>
+						</svg>
+					</span>
+        ) : (
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M13 6.5 8.6 11a3.2 3.2 0 0 1-4.5-4.5l4.8-4.8a2.1 2.1 0 0 1 3 3L7.1 9.4a1 1 0 0 1-1.4-1.4l4-4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        )
+      }
+    </slot>
+  </div>
+  <div class="aui-attachment__content">
+		<span class="aui-attachment__title">
+			<slot name="title">{title}</slot>
+		</span>
+    {
+      description && (
+        <span class="aui-attachment__description">
+					<slot name="description">{description}</slot>
+				</span>
+      )
+    }
+  </div>
+  {
+    Astro.slots.has("actions") && (
+      <div class="aui-attachment__actions">
+        <slot name="actions"/>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .aui-attachment {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-3);
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    padding: var(--ui-space-3);
+    font-family: var(--ui-font-sans);
+    color: var(--ui-foreground);
+    background-color: var(--ui-card, var(--ui-background));
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    transition: background-color var(--ui-transition-fast),
+    border-color var(--ui-transition-fast);
+  }
+
+  /* State hooks — plain-attribute selectors so app CSS can target them too. */
+  .aui-attachment[data-state="idle"] {
+    border-style: dashed;
+  }
+
+  /* Uploading: skeleton shimmer on the media box + indeterminate progress
+     bar sweeping the card's bottom edge + shimmering title. Purely CSS —
+     flip the `state` prop to "done" (optionally setting `progress`) to stop. */
+  .aui-attachment[data-state="uploading"] .aui-attachment__media,
+  .aui-attachment[data-state="processing"] .aui-attachment__media {
+    animation: aui-attachment-pulse 1.6s ease-in-out infinite;
+  }
+
+  .aui-attachment[data-state="uploading"] .aui-attachment__title,
+  .aui-attachment[data-state="processing"] .aui-attachment__title {
+    color: var(--ui-muted-foreground);
+    background: linear-gradient(
+      90deg,
+      var(--ui-muted-foreground) 0%,
+      var(--ui-foreground) 50%,
+      var(--ui-muted-foreground) 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: aui-attachment-shimmer 1.6s linear infinite;
+  }
+
+  /* Progress track pinned to the card's bottom edge. Renders for uploading
+     and processing; determinate when the `progress` prop is set (0–100),
+     indeterminate sweep otherwise. */
+  .aui-attachment::after {
+    content: "";
+    display: none;
+  }
+
+  .aui-attachment[data-state="uploading"]::after,
+  .aui-attachment[data-state="processing"]::after {
+    display: block;
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    block-size: 2px;
+    background: var(--ui-primary);
+    border-end-end-radius: var(--ui-radius-lg);
+    border-end-start-radius: var(--ui-radius-lg);
+  }
+
+  .aui-attachment--xs[data-state="uploading"]::after,
+  .aui-attachment--xs[data-state="processing"]::after {
+    border-end-end-radius: var(--ui-radius-md);
+    border-end-start-radius: var(--ui-radius-md);
+  }
+
+  /* Determinate vs indeterminate. `attr()` in calc() isn't reliably
+     supported for lengths yet, so the template bakes the resolved
+     percentage into the CSS custom property inline. */
+  .aui-attachment[data-state="uploading"]:not([data-progress])::after,
+  .aui-attachment[data-state="processing"]:not([data-progress])::after {
+    inline-size: 30%;
+    animation: aui-attachment-sweep 1.4s ease-in-out infinite;
+  }
+
+  .aui-attachment[data-state="uploading"][data-progress]::after,
+  .aui-attachment[data-state="processing"][data-progress]::after {
+    inline-size: var(--aui-attachment-progress);
+    transition: inline-size var(--ui-transition-normal);
+  }
+
+  .aui-attachment[data-state="error"] {
+    border-color: color-mix(in srgb, var(--ui-error) 35%, transparent);
+    background-color: color-mix(in srgb, var(--ui-error) 6%, var(--ui-background));
+  }
+
+  .aui-attachment[data-state="error"] .aui-attachment__title,
+  .aui-attachment[data-state="error"] .aui-attachment__description {
+    color: var(--ui-error);
+  }
+
+  /* --- sizes --- */
+
+  .aui-attachment--xs {
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-2);
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-attachment--sm {
+    gap: var(--ui-space-2);
+    padding: calc(var(--ui-space-2) + 1px) var(--ui-space-3);
+  }
+
+  /* --- orientation --- */
+
+  .aui-attachment--vertical {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--ui-space-2);
+  }
+
+  /* --- media --- */
+
+  .aui-attachment__media {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    color: var(--ui-muted-foreground);
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-md);
+    aspect-ratio: 1;
+  }
+
+  .aui-attachment--xs .aui-attachment__media {
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: var(--ui-radius-sm);
+  }
+
+  .aui-attachment--sm .aui-attachment__media {
+    inline-size: 2.375rem;
+    block-size: 2.375rem;
+  }
+
+  .aui-attachment--vertical .aui-attachment__media {
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-attachment--vertical.aui-attachment--xs .aui-attachment__media,
+  .aui-attachment--vertical.aui-attachment--sm .aui-attachment__media {
+    inline-size: 100%;
+  }
+
+  .aui-attachment__media :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .aui-attachment__media-fallback {
+    display: inline-flex;
+    color: var(--ui-muted-foreground);
+  }
+
+  /* --- content --- */
+
+  .aui-attachment__content {
+    display: grid;
+    gap: 2px;
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .aui-attachment__title {
+    display: block;
+    max-inline-size: 100%;
+    overflow: hidden;
+    min-inline-size: 0;
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .aui-attachment__description {
+    display: block;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    overflow: hidden;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* --- actions --- */
+
+  .aui-attachment__actions {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-attachment--vertical .aui-attachment__actions {
+    /* Vertical (image-first) cards overlay actions on the media's
+       top-inline-end corner — the usual image-card remove affordance —
+       instead of a detached row under the text. */
+    position: absolute;
+    inset-block-start: var(--ui-space-2);
+    inset-inline-end: var(--ui-space-2);
+    z-index: 1;
+    padding: var(--ui-space-1);
+    background: color-mix(in srgb, var(--ui-background) 72%, transparent);
+    border-radius: var(--ui-radius-full);
+    backdrop-filter: blur(2px);
+  }
+
+  /* Overlay actions are compact by default — a 40px icon button dwarfs
+     the media box. Consumers can still force a larger hit area with
+     inline styles or a size class of their own. The button is made
+     circular to match the frosted pill, and its hover/focus tint is a
+     translucent wash — an opaque (white in light theme) square inside
+     the circle reads as a rendering glitch. */
+  .aui-attachment--vertical .aui-attachment__actions :global(.aui-btn--icon) {
+    height: 1.75rem;
+    width: 1.75rem;
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-attachment--vertical .aui-attachment__actions :global(.aui-btn--icon:hover),
+  .aui-attachment--vertical .aui-attachment__actions :global(.aui-btn--icon:focus-visible) {
+    background-color: color-mix(in srgb, currentcolor 14%, transparent);
+  }
+
+  .aui-attachment--vertical .aui-attachment__actions :global(.aui-btn--icon svg) {
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+  }
+
+  @keyframes aui-attachment-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  @keyframes aui-attachment-shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @keyframes aui-attachment-sweep {
+    0% {
+      inset-inline-start: 0;
+    }
+    50% {
+      inset-inline-start: calc(100% - 30%);
+    }
+    100% {
+      inset-inline-start: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-attachment[data-state="uploading"] .aui-attachment__media,
+    .aui-attachment[data-state="processing"] .aui-attachment__media {
+      animation: none;
+    }
+
+    .aui-attachment[data-state="uploading"] .aui-attachment__title,
+    .aui-attachment[data-state="processing"] .aui-attachment__title {
+      animation: none;
+      -webkit-text-fill-color: currentColor;
+      background: none;
+      color: var(--ui-muted-foreground);
+    }
+
+    .aui-attachment[data-state="uploading"]::after,
+    .aui-attachment[data-state="processing"]::after {
+      animation: none;
+      inline-size: var(--aui-attachment-progress);
+    }
+  }
+</style>

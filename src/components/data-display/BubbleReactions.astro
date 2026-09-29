@@ -1,0 +1,60 @@
+---
+/**
+  * BubbleReactions — reaction pill anchored to a Bubble's edge.
+  *
+  * Absolutely positioned inside the Bubble root; top or bottom edge,
+  * start or end horizontal alignment. Content is free: emoji spans for
+  * a static row, or real <button>s for pressable reactions (buttons
+  * get their own hit area and hover).
+  *
+  *   <Bubble>
+  *     <BubbleContent>Deploy finished.</BubbleContent>
+  *     <BubbleReactions side="bottom" align="start" ariaLabel="Reactions">
+  *       <button type="button" aria-pressed="false"><span aria-hidden="true">🎉</span> 2</button>
+  *     </BubbleReactions>
+  *   </Bubble>
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Anchor edge on the bubble. */
+  side?: "top" | "bottom";
+  /** Horizontal anchoring inside the bubble. */
+  align?: "start" | "end";
+  class?: string;
+  id?: string;
+  /** Accessible name for the reaction row. */
+  ariaLabel?: string;
+}
+
+const {
+  side = "bottom",
+  align = "end",
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-bubble__reactions",
+  `aui-bubble__reactions--side-${side}`,
+  `aui-bubble__reactions--align-${align}`,
+  className,
+);
+---
+
+<div id={id} class={classes} role="group" aria-label={ariaLabel ?? "Reactions"} {...rest}>
+  <slot/>
+</div>
+
+<style>
+  /* Base position hooks — visual treatment (pill, ring, buttons) is
+     defined against the Bubble root so it stays variant-aware. */
+  .aui-bubble__reactions {
+    flex-shrink: 0;
+    font-family: var(--ui-font-sans);
+  }
+</style>

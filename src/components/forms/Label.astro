@@ -1,0 +1,72 @@
+---
+/**
+  * Label — zero-JS form label.
+  *
+  * Native <label>; pair with Input/Checkbox via matching `for`/`id`.
+  * Shows a required marker when `required` is set (visual only — the
+  * control itself carries the semantics via required + aria-required).
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Must match the control's `id`. */
+  for?: string;
+  required?: boolean;
+  disabled?: boolean;
+  size?: "sm" | "md";
+  class?: string;
+  id?: string;
+}
+
+const {
+  for: htmlFor,
+  required = false,
+  disabled = false,
+  size = "md",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-label",
+  `aui-label--${size}`,
+  disabled && "aui-label--disabled",
+  className,
+);
+---
+
+<label for={htmlFor} id={id} class={classes} {...rest}>
+  <slot/>
+  {required && (
+    <span class="aui-label__required" aria-hidden="true">
+			{" *"}
+		</span>
+  )}
+</label>
+
+<style>
+  .aui-label {
+    display: inline-block;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    margin-bottom: var(--ui-space-1);
+  }
+
+  .aui-label--sm {
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-label--disabled {
+    opacity: var(--ui-disabled-opacity);
+  }
+
+  .aui-label__required {
+    color: var(--ui-error);
+  }
+</style>

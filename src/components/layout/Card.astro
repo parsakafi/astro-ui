@@ -1,0 +1,342 @@
+---
+/**
+  * Card — zero-JS content container with named-slot composition.
+  *
+  * Prefer composition to title/description/footer props:
+  *
+  *   <Card>
+  *     <h2 slot="header">Title</h2>
+  *     <p>Body</p>
+  *     <div slot="footer">Actions</div>
+  *   </Card>
+  *
+  * Renders a semantic <article> (override with `as="section"` etc.).
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Semantic wrapper element. */
+  as?: "article" | "section" | "div";
+  variant?: "default" | "outline" | "ghost" | "bordered";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+  /** When true, add a divider between header, content, and footer. */
+  split?: boolean;
+  /** When true, the content area is scrollable if it overflows. */
+  scrollable?: boolean;
+  /** Title text rendered by the component. */
+  title?: string;
+  /** Description text rendered by the component. */
+  description?: string;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaLabelledby?: string;
+  ariaDescribedby?: string;
+  /** Forwarded to the header element. */
+  headerProps?: Record<string, any>;
+  /** Forwarded to the footer element. */
+  footerProps?: Record<string, any>;
+  /** Forwarded to the title element. */
+  titleProps?: Record<string, any>;
+  /** Forwarded to the description element. */
+  descriptionProps?: Record<string, any>;
+}
+
+const {
+  as: Tag = "article",
+  variant = "default",
+  size = "md",
+  split = false,
+  scrollable = true,
+  title,
+  description,
+  class: className,
+  id,
+  ariaLabel,
+  ariaLabelledby,
+  ariaDescribedby,
+  headerProps = {},
+  footerProps = {},
+  titleProps = {},
+  descriptionProps = {},
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-card",
+  `aui-card--${variant}`,
+  `aui-card--size-${size}`,
+  split && "aui-card--split",
+  scrollable && "aui-card--scrollable",
+  className,
+);
+---
+
+<Tag
+  id={id}
+  class={classes}
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabelledby}
+  aria-describedby={ariaDescribedby}
+  {...rest}
+>
+  {Astro.slots.has("header") && (
+    <div class="aui-card__header" {...headerProps}>
+      <slot name="header"/>
+    </div>
+  )}
+  {Astro.slots.has("title") && !Astro.slots.has("header") && (
+    <div class="aui-card__header" {...headerProps}>
+      <h3
+        class="aui-card__title"
+        id={id ? `${id}-title` : undefined}
+        {...titleProps}
+      >
+        <slot name="title"/>
+      </h3>
+      {Astro.slots.has("description") && (
+        <p
+          class="aui-card__description"
+          id={id ? `${id}-description` : undefined}
+          {...descriptionProps}
+        >
+          <slot name="description"/>
+        </p>
+      )}
+    </div>
+  )}
+  {title && !Astro.slots.has("title") && !Astro.slots.has("header") && (
+    <div class="aui-card__header" {...headerProps}>
+      <h3
+        class="aui-card__title"
+        id={id ? `${id}-title` : undefined}
+        {...titleProps}
+      >
+        {title}
+      </h3>
+      {description && (
+        <p
+          class="aui-card__description"
+          id={id ? `${id}-description` : undefined}
+          {...descriptionProps}
+        >
+          {description}
+        </p>
+      )}
+    </div>
+  )}
+  <div class="aui-card__content">
+    <slot/>
+  </div>
+  {Astro.slots.has("footer") && (
+    <div class="aui-card__footer" {...footerProps}>
+      <slot name="footer"/>
+    </div>
+  )}
+</Tag>
+
+<style>
+  .aui-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* --- variants --- */
+
+  .aui-card--default {
+    background-color: var(--ui-background);
+    color: var(--ui-foreground);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  .aui-card--outline {
+    background-color: var(--ui-background);
+    color: var(--ui-foreground);
+    border: 1px solid var(--ui-border);
+    box-shadow: none;
+  }
+
+  .aui-card--ghost {
+    background-color: transparent;
+    color: var(--ui-foreground);
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .aui-card--bordered {
+    background-color: var(--ui-background);
+    color: var(--ui-foreground);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: none;
+  }
+
+  /* --- size --- */
+
+  .aui-card--size-xs {
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-card--size-xs .aui-card__header {
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-card--size-xs .aui-card__content {
+    padding: var(--ui-space-1) var(--ui-space-2);
+  }
+
+  .aui-card--size-xs .aui-card__footer {
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-card--size-sm {
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-card--size-sm .aui-card__header {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-card--size-sm .aui-card__content {
+    padding: var(--ui-space-2) var(--ui-space-3);
+  }
+
+  .aui-card--size-sm .aui-card__footer {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-card--size-md {
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-card--size-md .aui-card__header {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-card--size-md .aui-card__content {
+    padding: var(--ui-space-3) var(--ui-space-4);
+  }
+
+  .aui-card--size-md .aui-card__footer {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-card--size-lg {
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-card--size-lg .aui-card__header {
+    padding: var(--ui-space-4) var(--ui-space-5);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-card--size-lg .aui-card__content {
+    padding: var(--ui-space-4) var(--ui-space-5);
+  }
+
+  .aui-card--size-lg .aui-card__footer {
+    padding: var(--ui-space-4) var(--ui-space-5);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-card--size-xl {
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-card--size-xl .aui-card__header {
+    padding: var(--ui-space-5) var(--ui-space-6);
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-card--size-xl .aui-card__content {
+    padding: var(--ui-space-5) var(--ui-space-6);
+  }
+
+  .aui-card--size-xl .aui-card__footer {
+    padding: var(--ui-space-5) var(--ui-space-6);
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-card--size-2xl {
+    font-size: var(--ui-text-xl);
+  }
+
+  .aui-card--size-2xl .aui-card__header {
+    padding: var(--ui-space-6) var(--ui-space-8);
+    font-size: var(--ui-text-xl);
+  }
+
+  .aui-card--size-2xl .aui-card__content {
+    padding: var(--ui-space-6) var(--ui-space-8);
+  }
+
+  .aui-card--size-2xl .aui-card__footer {
+    padding: var(--ui-space-6) var(--ui-space-8);
+    font-size: var(--ui-text-xl);
+  }
+
+  /* --- header --- */
+
+  .aui-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .aui-card--split .aui-card__header {
+    border-bottom: 1px solid var(--ui-border);
+  }
+
+  .aui-card__title {
+    margin: 0;
+    font-weight: var(--ui-font-semibold);
+    line-height: var(--ui-leading-tight);
+    color: var(--ui-foreground);
+  }
+
+  .aui-card__title + .aui-card__description {
+    margin-top: var(--ui-space-1);
+  }
+
+  .aui-card__description {
+    margin: 0;
+    color: var(--ui-muted-foreground);
+    line-height: var(--ui-leading-normal);
+  }
+
+  /* --- content --- */
+
+  .aui-card__content {
+    font-size: inherit;
+    color: var(--ui-foreground);
+  }
+
+  .aui-card--scrollable .aui-card__content {
+    overflow: auto;
+  }
+
+  /* --- footer --- */
+
+  .aui-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    background-color: var(--ui-muted);
+  }
+
+  .aui-card--split .aui-card__footer {
+    border-top: 1px solid var(--ui-border);
+  }
+</style>

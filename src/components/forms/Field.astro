@@ -1,0 +1,120 @@
+---
+/**
+  * Field — wraps a form control with label, hint, and error messaging.
+  *
+  * Composition over props: the default slot carries the control itself
+  * (Input, Select, Textarea…), the named slots carry the chrome. When
+  * `id` is set the wiring is automatic:
+  *
+  *   - the label points at the control (`for="${id}-control"`)
+  *   - hint + error text get stable ids consumers can reference
+  *   - the wrapper exposes data-invalid so themes can recolor the chrome
+  *
+  * For full accessibility give the control `id="${id}-control"` and, when
+  * invalid, `aria-invalid` plus `aria-describedby="${id}-error"` (Input
+  * and Textarea already expose `invalid` for this).
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Base id — enables label-for wiring and stable hint/error ids. */
+  id?: string;
+  /** Marks the field required (adds a marker to the label slot). */
+  required?: boolean;
+  class?: string;
+}
+
+const {
+  id,
+  required = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = cn("aui-field", className);
+
+const hasLabel = Astro.slots.has("label");
+const hasHint = Astro.slots.has("hint");
+const hasError = Astro.slots.has("error");
+
+const controlId = id ? `${id}-control` : undefined;
+const hintId = id && hasHint ? `${id}-hint` : undefined;
+const errorId = id && hasError ? `${id}-error` : undefined;
+---
+
+<div
+  id={id}
+  class={classes}
+  data-invalid={hasError ? "" : undefined}
+  data-required={required ? "" : undefined}
+  {...rest}
+>
+  {
+    hasLabel && (
+      <label class="aui-field__label" for={controlId}>
+        <slot name="label"/>
+        {required && (
+          <span class="aui-field__required" aria-hidden="true">
+						*
+					</span>
+        )}
+      </label>
+    )
+  }
+  <div class="aui-field__control">
+    <slot/>
+  </div>
+  {
+    hasHint && (
+      <p class="aui-field__hint" id={hintId}>
+        <slot name="hint"/>
+      </p>
+    )
+  }
+  {
+    hasError && (
+      <p class="aui-field__error" id={errorId} role="alert">
+        <slot name="error"/>
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .aui-field {
+    display: grid;
+    gap: var(--ui-space-2);
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-field__label {
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-foreground);
+  }
+
+  .aui-field__required {
+    color: var(--ui-error);
+    margin-inline-start: var(--ui-space-1);
+  }
+
+  .aui-field__control {
+    display: grid;
+  }
+
+  .aui-field__hint {
+    margin: 0;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+    line-height: var(--ui-leading-normal);
+  }
+
+  .aui-field__error {
+    margin: 0;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-error);
+    line-height: var(--ui-leading-normal);
+  }
+</style>

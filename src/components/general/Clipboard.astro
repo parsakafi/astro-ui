@@ -1,0 +1,281 @@
+---
+/**
+  * Clipboard — copy-to-clipboard affordance with icon-first triggers.
+  *
+  * Renders a trigger plus the value to copy. The core is zero-JS: the
+  * button carries the value in `data-aui-clipboard`; wire it app-side,
+  * or set `auto` to opt into the built-in micro-script that calls the
+  * async clipboard API for you — a few lines, no hydration, and it
+  * degrades to a no-op without JS.
+  *
+  * The trigger leads with a copy icon; on success the icon swaps to a
+  * check and a polite live region confirms. `onlyIcon` renders a square
+  * icon-only trigger (docs code-block style) with a derived aria-label.
+  *
+  * JavaScript required: No (Yes when `auto` is set)
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Text placed on the clipboard. */
+  value: string;
+  /** Visible trigger label (hidden when `onlyIcon`). */
+  label?: string;
+  /** Leads the trigger with the copy icon (default on; swaps to a check when copied). */
+  icon?: boolean;
+  /** Icon-only square trigger — the accessible name is derived from `value`. */
+  onlyIcon?: boolean;
+  /** Wires the built-in clipboard handler (async Clipboard API, adds a tiny script). */
+  auto?: boolean;
+  /** Disables the trigger. */
+  disabled?: boolean;
+  /** Visual style of the trigger. */
+  variant?: "outline" | "ghost" | "soft";
+  /** Scale of the trigger. */
+  size?: "sm" | "md";
+  /** Announces copy success politely via a live region. Null hides the text entirely (the icon swap alone confirms). */
+  feedback?: string | null;
+  /** Accessible name for the trigger (defaults to `Copy ${value}` when icon-only). */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  value,
+  label = "Copy",
+  icon = true,
+  onlyIcon = false,
+  auto = false,
+  disabled = false,
+  variant = "outline",
+  size = "md",
+  feedback = "Copied!",
+  ariaLabel,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-clipboard",
+  `aui-clipboard--${variant}`,
+  `aui-clipboard--${size}`,
+  onlyIcon && "aui-clipboard--icon-only",
+  icon && !onlyIcon && "aui-clipboard--icon",
+  className,
+);
+
+const triggerLabel = ariaLabel ?? (onlyIcon ? `Copy ${value}` : undefined);
+const buttonId = id ?? `aui-clipboard-${Math.abs(value.length * 31 + value.charCodeAt(0) * 7)}`;
+---
+
+<span class={classes}>
+	<button
+    type="button"
+    id={buttonId}
+    class="aui-clipboard__trigger"
+    data-aui-clipboard={value}
+    aria-label={triggerLabel}
+    disabled={disabled}
+    {...rest}
+  >
+		{
+      icon && (
+        <span class="aui-clipboard__icons" aria-hidden="true">
+					<svg class="aui-clipboard__icon aui-clipboard__icon--copy" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="1em"
+               height="1em">
+						<rect x="9" y="9" width="13" height="13" rx="2"/>
+						<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+					</svg>
+					<svg class="aui-clipboard__icon aui-clipboard__icon--check" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="1em"
+               height="1em">
+						<path d="M20 6 9 17l-5-5"/>
+					</svg>
+				</span>
+      )
+    }
+    {!onlyIcon && label}
+	</button>
+  {
+    feedback && (
+      <span class="aui-clipboard__feedback" role="status" aria-live="polite" data-aui-clipboard-feedback
+            aria-hidden="true">
+				{feedback}
+			</span>
+    )
+  }
+</span>
+
+{
+  auto && (
+  <script>        document.addEventListener("click", (event) => {
+    const target = event.target;
+    /* Element, not HTMLElement: clicking the copy icon makes the
+       SVG element the target, and SVGElement is not an HTMLElement. */
+    if (!(target instanceof Element)) return;
+    const btn = target.closest<HTMLButtonElement>("[data-aui-clipboard]");
+    const value = btn?.dataset.auiClipboard;
+    if (!btn || !value) return;
+    navigator.clipboard?.writeText(value).then(() => {
+      const root = btn.closest(".aui-clipboard");
+      if (!root) return;
+      const feedback = root.querySelector("[data-aui-clipboard-feedback]");
+      root.classList.add("is-copied");
+      if (feedback) {
+        feedback.removeAttribute("aria-hidden");
+        feedback.classList.add("is-visible");
+      }
+      window.setTimeout(() => {
+        root.classList.remove("is-copied");
+        if (feedback) {
+          feedback.classList.remove("is-visible");
+          feedback.setAttribute("aria-hidden", "true");
+        }
+      }, 1500);
+    }).catch(() => {
+      /* Permission denied or non-secure context — stay silent rather
+         than throwing an unhandled rejection; the value stays in
+         data-aui-clipboard for app-side fallbacks. */
+    });
+  });
+  </script>
+    )
+  }
+
+<style>
+  .aui-clipboard {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-clipboard__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    font-weight: var(--ui-font-medium);
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-md);
+    transition: color var(--ui-transition-fast),
+    background-color var(--ui-transition-fast),
+    border-color var(--ui-transition-fast);
+  }
+
+  .aui-clipboard__trigger[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .aui-clipboard--sm .aui-clipboard__trigger {
+    font-size: var(--ui-text-xs);
+    padding: var(--ui-space-1) var(--ui-space-2);
+  }
+
+  .aui-clipboard--md .aui-clipboard__trigger {
+    font-size: var(--ui-text-sm);
+    padding: var(--ui-space-1) var(--ui-space-3);
+  }
+
+  /* --- icon box: em-based so it tracks the trigger's font-size --- */
+
+  .aui-clipboard__icons {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1em;
+    block-size: 1em;
+    flex-shrink: 0;
+  }
+
+  .aui-clipboard__icon {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .aui-clipboard__icon--check {
+    display: none;
+    color: var(--ui-success);
+  }
+
+  .aui-clipboard.is-copied .aui-clipboard__icon--copy {
+    display: none;
+  }
+
+  .aui-clipboard.is-copied .aui-clipboard__icon--check {
+    display: block;
+  }
+
+  /* --- icon-only trigger: square hit area --- */
+
+  .aui-clipboard--icon-only .aui-clipboard__trigger {
+    padding: 0.4375rem;
+  }
+
+  .aui-clipboard--icon-only.aui-clipboard--sm .aui-clipboard__trigger {
+    padding: 0.3125rem;
+  }
+
+  /* --- variants --- */
+
+  .aui-clipboard--outline .aui-clipboard__trigger {
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+    background-color: transparent;
+  }
+
+  .aui-clipboard--outline .aui-clipboard__trigger:hover:not([disabled]) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-clipboard--ghost .aui-clipboard__trigger {
+    color: var(--ui-muted-foreground);
+    background-color: transparent;
+  }
+
+  .aui-clipboard--ghost .aui-clipboard__trigger:hover:not([disabled]) {
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-clipboard--soft .aui-clipboard__trigger {
+    color: var(--ui-primary);
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  }
+
+  .aui-clipboard--soft .aui-clipboard__trigger:hover:not([disabled]) {
+    background-color: color-mix(in srgb, var(--ui-primary) 20%, transparent);
+  }
+
+  .aui-clipboard__trigger:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-clipboard__feedback {
+    /* Anchored outside the trigger instead of in flow: occupies no
+       space while hidden, so it never opens a layout gap between
+       elements — and appearing causes no shift. Still exposed to
+       screen readers (opacity only, never display:none). */
+    position: absolute;
+    inset-inline-start: 100%;
+    inset-block-start: 50%;
+    translate: 0 -50%;
+    margin-inline-start: var(--ui-space-2);
+    white-space: nowrap;
+    pointer-events: none;
+    color: var(--ui-success);
+    font-size: var(--ui-text-xs);
+    opacity: 0;
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-clipboard__feedback.is-visible {
+    opacity: 1;
+  }
+</style>

@@ -1,0 +1,173 @@
+---
+/**
+  * AvatarGroup — stacked avatar cluster with optional trailing count.
+  *
+  * Overlapping avatars with a background-keyed border; slot any number
+  * of Avatar children and (optionally) a trailing count via the `count`
+  * slot — a number ("+3"), an icon, or a Tooltip-wrapped element.
+  * Purely presentational: links/tooltips are composed by the consumer
+  * per avatar.
+  *
+  *   <AvatarGroup>
+  *     <Avatar name="Ada" src={…} />
+  *     <Avatar name="Grace" />
+  *     <Fragment slot="count">+3</Fragment>
+  *   </AvatarGroup>
+  *
+  * `hover` spreads the stack apart on group hover; `ring`-ed avatars
+  * compose naturally (the group adds its own separating border).
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Negative overlap between stack items. */
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
+  /** Spread items apart on hover (lift + separation). */
+  hover?: boolean;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+}
+
+const {
+  size = "md",
+  hover = false,
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-avatar-group",
+  `aui-avatar-group--${size}`,
+  hover && "aui-avatar-group--hover",
+  className,
+);
+---
+
+<span id={id} class={classes} role="group" aria-label={ariaLabel ?? "User group"} {...rest}>
+	<slot/>
+  {
+    Astro.slots.has("count") && (
+      <span class="aui-avatar-group__count" data-avatar-group-count>
+				<slot name="count"/>
+			</span>
+    )
+  }
+</span>
+
+<style>
+  .aui-avatar-group {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Overlap via negative margin; logical direction keeps RTL correct. */
+  .aui-avatar-group > :global(*:not(:first-child)) {
+    margin-inline-start: calc(-1 * var(--aui-avatar-group-overlap, 0.75rem));
+  }
+
+  /* Separating border so stacked avatars read as distinct circles.
+     Matches the ring treatment (2px background ring on each avatar). */
+  .aui-avatar-group > :global(.aui-avatar) {
+    box-shadow: 0 0 0 2px var(--ui-background);
+  }
+
+  /* --- size (drives overlap + count chip box) --- */
+
+  .aui-avatar-group--xs {
+    --aui-avatar-group-overlap: 0.5rem;
+  }
+
+  .aui-avatar-group--sm {
+    --aui-avatar-group-overlap: 0.625rem;
+  }
+
+  .aui-avatar-group--md {
+    --aui-avatar-group-overlap: 0.75rem;
+  }
+
+  .aui-avatar-group--lg {
+    --aui-avatar-group-overlap: 0.875rem;
+  }
+
+  .aui-avatar-group--xl {
+    --aui-avatar-group-overlap: 1.125rem;
+  }
+
+  .aui-avatar-group--2xl {
+    --aui-avatar-group-overlap: 1.375rem;
+  }
+
+  .aui-avatar-group--3xl {
+    --aui-avatar-group-overlap: 1.75rem;
+  }
+
+  /* --- count chip (trailing slot, wrapped by the component) --- */
+
+  .aui-avatar-group__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-xs);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-full);
+    box-shadow: 0 0 0 2px var(--ui-background);
+    user-select: none;
+  }
+
+  .aui-avatar-group--xs .aui-avatar-group__count {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    font-size: 0.5rem;
+  }
+
+  .aui-avatar-group--sm .aui-avatar-group__count {
+    inline-size: 2rem;
+    block-size: 2rem;
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-avatar-group--lg .aui-avatar-group__count {
+    inline-size: 3rem;
+    block-size: 3rem;
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-avatar-group--xl .aui-avatar-group__count {
+    inline-size: 4rem;
+    block-size: 4rem;
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-avatar-group--2xl .aui-avatar-group__count {
+    inline-size: 5rem;
+    block-size: 5rem;
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-avatar-group--3xl .aui-avatar-group__count {
+    inline-size: 6.5rem;
+    block-size: 6.5rem;
+    font-size: var(--ui-text-xl);
+  }
+
+  /* --- hover spread --- */
+
+  .aui-avatar-group--hover > :global(*) {
+    transition: margin-inline-start var(--ui-transition-normal),
+    translate var(--ui-transition-normal);
+  }
+
+  .aui-avatar-group--hover:hover > :global(*:not(:first-child)) {
+    margin-inline-start: 0;
+  }
+</style>

@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [ 20, 22 ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: astro-ui/package-lock.json
+      - name: Install library deps
+        run: npm ci
+        working-directory: astro-ui
+      - name: Lint (Biome)
+        run: npm run lint
+        working-directory: astro-ui
+      - name: Typecheck (astro check)
+        run: npm run check
+        working-directory: astro-ui
+      - name: Unit + contract tests
+        run: npm test
+        working-directory: astro-ui
+      - name: Install playground deps
+        run: npm ci
+        working-directory: demo
+      - name: Build playground (SSR proof)
+        run: npm run build
+        working-directory: demo

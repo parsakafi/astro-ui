@@ -1,0 +1,96 @@
+---
+/**
+  * ToggleGroup — a connected row (or column) of Toggle buttons.
+  *
+  * Composition mirrors ButtonGroup: wrap any number of <Toggle> children
+  * and the group joins their borders into one segmented control. Radius
+  * and negative-margin stitching reach slotted children through
+  * :global(); the doubled group class keeps specificity above a child's
+  * own radius rule regardless of stylesheet order.
+  *
+  * State stays per-toggle (aria-pressed on each child); whether the group
+  * enforces single-selection is the consumer's choice — a one-line app
+  * script, same recipe as Toggle.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Stack direction of the connected group. */
+  orientation?: "horizontal" | "vertical";
+  /** Accessible name for the group (groups of toggles need one). */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  orientation = "horizontal",
+  ariaLabel,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-toggle-group",
+  `aui-toggle-group--${orientation}`,
+  className,
+);
+---
+
+<div id={id} class={classes} role="group" aria-label={ariaLabel} {...rest}>
+  <slot/>
+</div>
+
+<style>
+  .aui-toggle-group {
+    display: inline-flex;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-toggle-group--horizontal {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .aui-toggle-group--vertical {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* --- horizontal stitching (:global — slotted toggles carry no scope) --- */
+
+  .aui-toggle-group.aui-toggle-group--horizontal > :global(.aui-toggle:not(:first-child)) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    margin-inline-start: calc(var(--ui-border-width, 1px) * -1);
+  }
+
+  .aui-toggle-group.aui-toggle-group--horizontal > :global(.aui-toggle:not(:last-child)) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* --- vertical stitching --- */
+
+  .aui-toggle-group.aui-toggle-group--vertical > :global(.aui-toggle:not(:first-child)) {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    margin-block-start: calc(var(--ui-border-width, 1px) * -1);
+  }
+
+  .aui-toggle-group.aui-toggle-group--vertical > :global(.aui-toggle:not(:last-child)) {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* Keep the hovered/pressed child visually above its neighbor so the
+     shared border flips color instead of doubling up. */
+  .aui-toggle-group > :global(.aui-toggle:hover),
+  .aui-toggle-group > :global(.aui-toggle:focus-visible),
+  .aui-toggle-group > :global(.aui-toggle.aui-toggle--pressed) {
+    z-index: 1;
+  }
+</style>

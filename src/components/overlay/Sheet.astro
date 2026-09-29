@@ -1,0 +1,328 @@
+---
+/**
+  * Sheet — a dialog panel that slides in from a screen edge.
+  *
+  * Built on the same native <dialog> foundation as Dialog: modality,
+  * ::backdrop, Escape-to-close, and focus containment come from the
+  * platform and the component itself ships zero JS. The consuming app
+  * opens it with the same one-line trigger recipe:
+  *
+  *   <Button id="open-menu">Menu</Button>
+  *   <Sheet id="menu" side="left">
+  *     <h2 slot="title">Menu</h2>
+  *     <p>Sheet body…</p>
+  *   </Sheet>
+  *   <!-- app script: getElementById("open-menu") → showModal() on #menu -->
+  *
+  * Closing needs no JS: any <form method="dialog"> button, the optional
+  * built-in close button, Escape, or — by default — a click on the dark
+  * backdrop layer (`closeOnBackdrop={false}` to require an explicit close)
+  * dismisses natively.
+  *
+  * Accessible naming is wired automatically: when `id` is set, the title
+  * slot gets `{id}-title` and the sheet points `aria-labelledby` at it.
+  * Pass `ariaLabel` for an explicitly labelled sheet instead.
+  *
+  * JavaScript required: Yes — app-level trigger only (`showModal()`); the
+  * component ships zero JS itself.
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Which screen edge the panel slides in from. */
+  side?: "left" | "right" | "top" | "bottom";
+  /** Panel scale (width for left/right, height for top/bottom). */
+  size?: "sm" | "md" | "lg" | "xl";
+  /** Required for automatic title labelling. */
+  id?: string;
+  /** Explicit accessible name (skips automatic aria-labelledby). */
+  ariaLabel?: string;
+  /** Render the native (zero-JS) close button. Defaults to true. */
+  showClose?: boolean;
+  /** Accessible label for the built-in close button. */
+  closeLabel?: string;
+  /** Close the sheet when the dark backdrop layer is clicked. Defaults to true. */
+  closeOnBackdrop?: boolean;
+  class?: string;
+}
+
+const {
+  side = "right",
+  size = "md",
+  id,
+  ariaLabel,
+  showClose = true,
+  closeLabel = "Close sheet",
+  closeOnBackdrop = true,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const hasTitle = Astro.slots.has("title");
+
+const titleId = id && hasTitle ? `${id}-title` : undefined;
+
+const classes = cn(
+  "aui-sheet",
+  `aui-sheet--${side}`,
+  `aui-sheet--${size}`,
+  className,
+);
+---
+
+<dialog
+  id={id}
+  class={classes}
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabel ?? titleId}
+  data-aui-close-on-backdrop={closeOnBackdrop ? "" : undefined}
+  {...rest}
+>
+  <div class="aui-sheet__panel">
+    {
+      showClose && (
+        <form method="dialog" class="aui-sheet__close-form">
+          <button
+            type="submit"
+            class="aui-sheet__close"
+            value="close"
+            aria-label={closeLabel}
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </form>
+      )
+    }
+    {
+      hasTitle && (
+        <div class="aui-sheet__header">
+          <div class="aui-sheet__title" id={titleId}>
+            <slot name="title"/>
+          </div>
+        </div>
+      )
+    }
+    <div class="aui-sheet__content">
+      <slot/>
+    </div>
+  </div>
+</dialog>
+
+{
+  closeOnBackdrop && (
+  <script>
+    // Backdrop dismiss: a click on the ::backdrop hit-tests to the
+    // <dialog> element itself (the panel is a positioned child, so
+    // clicks inside the panel never target the dialog). Astro bundles
+    // this hoisted script once per page, however many sheets render.
+    document.addEventListener("click", (event) => {
+      if (!(event.target instanceof Element)) return;
+      const dlg = event.target.closest("dialog[data-aui-close-on-backdrop]");
+      if (dlg instanceof HTMLDialogElement && dlg.open && event.target === dlg) {
+        dlg.close("backdrop");
+      }
+    });
+  </script>
+    )
+  }
+
+<style>
+  .aui-sheet {
+    border: none;
+    padding: 0;
+    margin: auto;
+    background: transparent;
+    color: var(--ui-foreground);
+    overflow: visible;
+  }
+
+  .aui-sheet::backdrop {
+    background-color: var(--ui-backdrop, rgb(0 0 0 / 0.5));
+  }
+
+  .aui-sheet__panel {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    box-shadow: var(--ui-shadow-xl);
+    overflow: auto;
+  }
+
+  /* --- side anchoring --- */
+
+  .aui-sheet--left .aui-sheet__panel,
+  .aui-sheet--right .aui-sheet__panel {
+    top: 0;
+    bottom: 0;
+    width: min(100%, 100vw);
+  }
+
+  .aui-sheet--left .aui-sheet__panel {
+    inset-inline-start: 0;
+    border-start-end-radius: var(--ui-radius-lg);
+    border-end-end-radius: var(--ui-radius-lg);
+    border-inline-end-width: 1px;
+    animation: aui-sheet-in-left var(--ui-transition-normal);
+  }
+
+  .aui-sheet--right .aui-sheet__panel {
+    inset-inline-end: 0;
+    border-start-start-radius: var(--ui-radius-lg);
+    border-end-start-radius: var(--ui-radius-lg);
+    animation: aui-sheet-in-right var(--ui-transition-normal);
+  }
+
+  .aui-sheet--top .aui-sheet__panel,
+  .aui-sheet--bottom .aui-sheet__panel {
+    inset-inline: 0;
+    max-height: 85vh;
+  }
+
+  .aui-sheet--top .aui-sheet__panel {
+    top: 0;
+    border-end-start-radius: var(--ui-radius-lg);
+    border-end-end-radius: var(--ui-radius-lg);
+    animation: aui-sheet-in-top var(--ui-transition-normal);
+  }
+
+  .aui-sheet--bottom .aui-sheet__panel {
+    bottom: 0;
+    border-start-start-radius: var(--ui-radius-lg);
+    border-start-end-radius: var(--ui-radius-lg);
+    animation: aui-sheet-in-bottom var(--ui-transition-normal);
+  }
+
+  /* --- sizes --- */
+
+  .aui-sheet--sm.aui-sheet--left .aui-sheet__panel,
+  .aui-sheet--sm.aui-sheet--right .aui-sheet__panel {
+    width: 20rem;
+  }
+
+  .aui-sheet--md.aui-sheet--left .aui-sheet__panel,
+  .aui-sheet--md.aui-sheet--right .aui-sheet__panel {
+    width: 26rem;
+  }
+
+  .aui-sheet--lg.aui-sheet--left .aui-sheet__panel,
+  .aui-sheet--lg.aui-sheet--right .aui-sheet__panel {
+    width: 32rem;
+  }
+
+  .aui-sheet--xl.aui-sheet--left .aui-sheet__panel,
+  .aui-sheet--xl.aui-sheet--right .aui-sheet__panel {
+    width: 40rem;
+  }
+
+  .aui-sheet--sm.aui-sheet--top .aui-sheet__panel,
+  .aui-sheet--sm.aui-sheet--bottom .aui-sheet__panel {
+    height: 12rem;
+  }
+
+  .aui-sheet--md.aui-sheet--top .aui-sheet__panel,
+  .aui-sheet--md.aui-sheet--bottom .aui-sheet__panel {
+    height: 18rem;
+  }
+
+  .aui-sheet--lg.aui-sheet--top .aui-sheet__panel,
+  .aui-sheet--lg.aui-sheet--bottom .aui-sheet__panel {
+    height: 24rem;
+  }
+
+  .aui-sheet--xl.aui-sheet--top .aui-sheet__panel,
+  .aui-sheet--xl.aui-sheet--bottom .aui-sheet__panel {
+    height: 32rem;
+  }
+
+  @keyframes aui-sheet-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+
+  @keyframes aui-sheet-in-right {
+    from {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes aui-sheet-in-top {
+    from {
+      transform: translateY(-100%);
+    }
+  }
+
+  @keyframes aui-sheet-in-bottom {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  /* --- chrome --- */
+
+  .aui-sheet__close-form {
+    position: absolute;
+    top: var(--ui-space-3);
+    inset-inline-end: var(--ui-space-3);
+    margin: 0;
+    z-index: 1;
+  }
+
+  .aui-sheet__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    font-size: var(--ui-text-xl);
+    line-height: var(--ui-leading-none);
+    color: var(--ui-muted-foreground);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+  }
+
+  .aui-sheet__close:hover {
+    background-color: var(--ui-secondary);
+    color: var(--ui-foreground);
+  }
+
+  .aui-sheet__header {
+    padding: var(--ui-space-5) var(--ui-space-5) var(--ui-space-2);
+    padding-inline-end: var(--ui-space-10);
+    border-block-end: 1px solid var(--ui-border);
+  }
+
+  .aui-sheet__title {
+    font-size: var(--ui-text-lg);
+    font-weight: var(--ui-font-semibold);
+    line-height: var(--ui-leading-tight);
+  }
+
+  .aui-sheet__title > :global(*),
+  .aui-sheet__content > :global(*) {
+    margin-top: 0;
+  }
+
+  .aui-sheet__title > :global(*:last-child),
+  .aui-sheet__content > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+
+  .aui-sheet__content {
+    flex: 1;
+    padding: var(--ui-space-5);
+    font-size: var(--ui-text-sm);
+    overflow: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-sheet__panel {
+      animation: none;
+    }
+  }
+</style>

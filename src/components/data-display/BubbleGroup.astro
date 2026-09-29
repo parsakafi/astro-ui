@@ -1,0 +1,41 @@
+---
+/**
+  * BubbleGroup — a run of consecutive bubbles from one sender.
+  *
+  * Stacks Bubble children with tight spacing so consecutive turns read
+  * as one sender's collapsed turn. A plain flow container: combine with
+  * `align` on the bubbles; threads usually wrap it with sender metadata.
+  *
+  *   <BubbleGroup ariaLabel="Messages from Ada">
+  *     <Bubble align="end"><BubbleContent>One</BubbleContent></Bubble>
+  *     <Bubble align="end"><BubbleContent>Two</BubbleContent></Bubble>
+  *   </BubbleGroup>
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  class?: string;
+  id?: string;
+  /** Accessible name for the grouped run (e.g. "Messages from Ada"). */
+  ariaLabel?: string;
+}
+
+const {class: className, id, ariaLabel, ...rest} = Astro.props;
+
+const classes = cn("aui-bubble-group", className);
+---
+
+<div id={id} class={classes} role="group" aria-label={ariaLabel} {...rest}>
+  <slot/>
+</div>
+
+<style>
+  .aui-bubble-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    min-inline-size: 0;
+  }
+</style>

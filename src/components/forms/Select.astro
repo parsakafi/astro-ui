@@ -1,0 +1,237 @@
+---
+/**
+  * Select — zero-JS dropdown control built on the native <select>.
+  *
+  * Deliberately NOT a custom listbox: the native control gives full
+  * keyboard support (arrows, Home/End, type-ahead, Escape), platform
+  * screen-reader behavior, form participation, and SSR safety with no
+  * client JavaScript. A custom listbox would require JS focus management
+  * and is deferred until the interactive-component phase (see ADR-001 D6).
+  *
+  * Compose options as children; preselect server-side with `selected`:
+  *
+  *   <Label for="fruit">Fruit</Label>
+  *   <Select id="fruit" name="fruit" placeholder="Choose a fruit">
+  *     {fruits.map((f) => (
+  *       <option value={f.value} selected={f.value === current}>{f.label}</option>
+  *     ))}
+  *   </Select>
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  name?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+  /** Multi-line listbox rendering (native chrome, custom chevron hidden). */
+  multiple?: boolean;
+  /** Inline styles forwarded to the native <select> control. */
+  style?: string;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+}
+
+const {
+  name,
+  placeholder,
+  required = false,
+  disabled = false,
+  invalid = false,
+  multiple = false,
+  size = "md",
+  variant = "inherit",
+  style,
+  class: className,
+  id,
+  ariaLabel,
+  ariaDescribedby,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-select",
+  `aui-select--${size}`,
+  `aui-select--variant-${variant}`,
+  invalid && "aui-select--invalid",
+  disabled && "aui-select--disabled",
+  className,
+);
+---
+
+<span class={classes}>
+		<select
+      class="aui-select__control"
+      style={style}
+      name={name}
+      multiple={multiple || undefined}
+      required={required || undefined}
+      disabled={disabled || undefined}
+      aria-invalid={invalid || undefined}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
+      id={id}
+      {...rest}
+    >
+		{placeholder && (
+      <option value="" disabled>
+        {placeholder}
+      </option>
+    )}
+      <slot/>
+	</select>
+	<svg
+    class="aui-select__chevron"
+    viewBox="0 0 12 12"
+    fill="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+		<path
+      d="M3 4.5 6 7.5 9 4.5"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+	</svg>
+</span>
+
+<style>
+  .aui-select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--ui-font-sans);
+    color: var(--ui-foreground);
+  }
+
+  .aui-select__control {
+    appearance: none;
+    width: 100%;
+    font: inherit;
+    line-height: var(--ui-leading-normal);
+    color: inherit;
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    padding-inline-end: var(--ui-space-8);
+    transition: border-color var(--ui-transition-fast),
+    box-shadow var(--ui-transition-fast);
+  }
+
+  .aui-select--xs .aui-select__control {
+    height: 1.75rem;
+    padding-inline-start: var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-select--sm .aui-select__control {
+    height: 2rem;
+    padding-inline-start: var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-select--md .aui-select__control {
+    height: 2.5rem;
+    padding-inline-start: var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-select--lg .aui-select__control {
+    height: 2.75rem;
+    padding-inline-start: var(--ui-space-4);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-select--xl .aui-select__control {
+    height: 3rem;
+    padding-inline-start: var(--ui-space-5);
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-select__control:focus {
+    outline: none;
+    border-color: var(--ui-ring);
+    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
+    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+  }
+
+  /* --- variant borders (modifier classes live on the wrapper) --- */
+
+  .aui-select--variant-inherit .aui-select__control {
+    border-color: inherit;
+  }
+
+  .aui-select--variant-primary .aui-select__control {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-select--variant-secondary .aui-select__control {
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-select--variant-muted .aui-select__control {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-select--variant-destructive .aui-select__control {
+    border-color: var(--ui-error);
+  }
+
+  .aui-select--variant-success .aui-select__control {
+    border-color: var(--ui-success);
+  }
+
+  .aui-select--variant-warning .aui-select__control {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-select--variant-info .aui-select__control {
+    border-color: var(--ui-info);
+  }
+
+  .aui-select--invalid .aui-select__control {
+    border-color: var(--ui-error);
+  }
+
+  .aui-select--invalid .aui-select__control:focus {
+    border-color: var(--ui-error);
+    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
+    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-error);
+  }
+
+  .aui-select--disabled .aui-select__control {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+    background-color: var(--ui-muted);
+  }
+
+  .aui-select__chevron {
+    position: absolute;
+    inset-inline-end: var(--ui-space-3);
+    width: 0.875rem;
+    height: 0.875rem;
+    pointer-events: none;
+    color: var(--ui-secondary-foreground);
+  }
+
+  /* Multi-line selects keep native chrome: no custom chevron, no extra padding. */
+  .aui-select__control[multiple],
+  .aui-select__control[size] {
+    padding-inline-end: var(--ui-space-3);
+    height: auto;
+  }
+
+  .aui-select__control[multiple] + .aui-select__chevron,
+  .aui-select__control[size] + .aui-select__chevron {
+    display: none;
+  }
+</style>

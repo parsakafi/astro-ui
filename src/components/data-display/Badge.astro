@@ -1,0 +1,552 @@
+---
+/**
+  * Badge — zero-JS status/count label.
+  *
+  * Inline semantic <span>. For counts, keep the number as text content
+  * so screen readers announce it; add aria-label for context when needed.
+  *
+  * Inline mode extras: `dot` renders a status dot tinted by the variant,
+  * an `icon` slot renders a leading icon box sized by `--aui-badge-icon`,
+  * an Avatar dropped into the default slot gets optical alignment for
+  * free, and `closable` renders an accessible dismiss button (wire the
+  * removal app-side — the component ships zero JS).
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline"
+    | "ghost"
+    | "soft"
+    | "success"
+    | "warning"
+    | "error"
+    | "info"
+    | "muted"
+    | "destructive";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
+  class?: string;
+  id?: string;
+  /** Inline styles, e.g. `--aui-badge-icon: 1rem` to size a flag/icon. */
+  style?: string;
+  ariaLabel?: string;
+  /** Bubble content (e.g. a count). Omit for a dot-only bubble. */
+  content?: string;
+  /** Position for the badge bubble when used as an overlay on another element. */
+  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  /** Forwarded to the badge span element when `position` is set. */
+  contentProps?: Record<string, any>;
+  /** Leading status dot, tinted by the variant (inline mode only). */
+  dot?: boolean;
+  /** Renders a dismiss (×) button after the content (inline mode only). */
+  closable?: boolean;
+  /** Accessible label for the dismiss button (defaults to "Dismiss"). */
+  closeLabel?: string;
+}
+
+const {
+  variant = "primary",
+  size = "md",
+  class: className,
+  id,
+  ariaLabel,
+  content,
+  position,
+  contentProps = {},
+  dot = false,
+  closable = false,
+  closeLabel = "Dismiss",
+  ...rest
+} = Astro.props;
+
+const showOverlay = Boolean(position);
+const hasIcon = Astro.slots.has("icon");
+const classes = cn(
+  "aui-badge",
+  `aui-badge--${variant}`,
+  `aui-badge--${size}`,
+  position && `aui-badge--position-${position}`,
+  showOverlay ? "aui-badge--overlay" : "aui-badge--inline",
+  className,
+);
+---
+
+{
+  showOverlay ? (
+  <span
+    id={id}
+    class={classes}
+    aria-label={ariaLabel}
+    data-badge-position={position}
+    {...rest}
+  >
+			<slot/>
+			<span
+        class="aui-badge__bubble"
+        data-badge-content
+        {...contentProps}
+      >
+				{content}
+			</span>
+		</span>
+    ) : (
+  <span id={id} class={classes} aria-label={ariaLabel} {...rest}>
+			{dot && <span class="aui-badge__dot" aria-hidden="true"/>}
+    {
+      hasIcon && (
+        <span class="aui-badge__icon" aria-hidden="true">
+						<slot name="icon"/>
+					</span>
+      )
+    }
+    {content ??
+      <slot/>}
+    {
+      closable && (
+        <button type="button" class="aui-badge__close" aria-label={closeLabel}>
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M1 1l8 8M9 1l-8 8"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      )
+    }
+		</span>
+    )}
+
+<style>
+  .aui-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-semibold);
+    line-height: var(--ui-leading-none);
+    border-radius: var(--ui-radius-full);
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  /* --- sizes --- */
+
+  .aui-badge--sm {
+    font-size: var(--ui-text-2xs);
+    padding: 0 var(--ui-space-1);
+  }
+
+  .aui-badge--md {
+    font-size: var(--ui-text-2xs);
+    padding: 0 var(--ui-space-1);
+  }
+
+  .aui-badge--lg {
+    font-size: var(--ui-text-xs);
+    padding: 0 var(--ui-space-1);
+  }
+
+  .aui-badge--xl {
+    font-size: var(--ui-text-xs);
+    padding: 0 var(--ui-space-1);
+  }
+
+  .aui-badge--2xl {
+    font-size: var(--ui-text-sm);
+    padding: 0 var(--ui-space-2);
+  }
+
+  /* --- variants --- */
+
+  .aui-badge--primary {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-badge--secondary {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-badge--outline {
+    background-color: transparent;
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-badge--ghost {
+    background-color: transparent;
+    color: var(--ui-foreground);
+  }
+
+  .aui-badge--soft {
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+    color: var(--ui-primary);
+  }
+
+  .aui-badge--destructive {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+  }
+
+  /* Soft variants: the raw semantic color lacks contrast on its own
+     muted background in light theme (green-on-light-green ≈ 3:1).
+     Mixing toward the foreground text token darkens it in light theme
+     and lightens it in dark theme — both land above 4.5:1. */
+  .aui-badge--success {
+    background-color: var(--ui-success-muted);
+    color: color-mix(in srgb, var(--ui-success) 78%, var(--ui-foreground));
+    border-color: var(--ui-success);
+  }
+
+  .aui-badge--warning {
+    background-color: var(--ui-warning-muted);
+    color: color-mix(in srgb, var(--ui-warning) 78%, var(--ui-foreground));
+    border-color: var(--ui-warning);
+  }
+
+  .aui-badge--error {
+    background-color: var(--ui-error-muted);
+    color: color-mix(in srgb, var(--ui-error) 80%, var(--ui-foreground));
+    border-color: var(--ui-error);
+  }
+
+  .aui-badge--info {
+    background-color: var(--ui-info-muted);
+    color: color-mix(in srgb, var(--ui-info) 78%, var(--ui-foreground));
+    border-color: var(--ui-info);
+  }
+
+  .aui-badge--muted {
+    background-color: var(--ui-muted);
+    color: color-mix(in srgb, var(--ui-muted-foreground) 85%, var(--ui-foreground));
+  }
+
+  /* --- inline (no overlay) sizing --- */
+
+  .aui-badge--inline {
+    justify-content: center;
+  }
+
+  .aui-badge--inline.aui-badge--sm {
+    min-height: 1.25rem;
+  }
+
+  .aui-badge--inline.aui-badge--md {
+    min-height: 1.5rem;
+  }
+
+  .aui-badge--inline.aui-badge--lg {
+    min-height: 1.625rem;
+  }
+
+  .aui-badge--inline.aui-badge--xl {
+    min-height: 1.75rem;
+  }
+
+  .aui-badge--inline.aui-badge--2xl {
+    min-height: 2rem;
+    padding: 0 var(--ui-space-2);
+  }
+
+  /* --- status dot (inline mode) --- */
+
+  .aui-badge__dot {
+    inline-size: 0.375rem;
+    block-size: 0.375rem;
+    flex-shrink: 0;
+    border-radius: var(--ui-radius-full);
+    background-color: currentcolor;
+  }
+
+  /* --- leading icon box (inline mode) — em-based so it tracks size;
+         override the box with --aui-badge-icon --- */
+
+  .aui-badge__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--aui-badge-icon, 0.875em);
+    block-size: var(--aui-badge-icon, 0.875em);
+    flex-shrink: 0;
+  }
+
+  .aui-badge__icon > :global(*) {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* --- avatar child gets optical alignment against the padding --- */
+
+  .aui-badge--inline > :global(.aui-avatar) {
+    margin-inline-start: calc(var(--ui-space-1) * -0.5);
+  }
+
+  /* --- dismiss button (inline mode) --- */
+
+  .aui-badge__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex-shrink: 0;
+    margin-inline-end: calc(var(--ui-space-1) * -0.5);
+    padding: 0;
+    color: currentcolor;
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-badge__close:hover {
+    background-color: color-mix(in srgb, currentcolor 18%, transparent);
+  }
+
+  .aui-badge__close:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: 1px;
+  }
+
+  /* --- overlay wrapper stays unstyled; the bubble carries the look --- */
+
+  .aui-badge--overlay {
+    /* Anchor the bubble to the CONSUMER's positioned parent, not this
+       zero-size inline wrapper — otherwise the bubble lands on the
+       parent's text instead of its corner. Consumers mark the anchor
+       element (button, avatar, box) with position: relative. */
+    position: static;
+    display: inline;
+    background-color: transparent;
+    border-color: transparent;
+    color: inherit;
+    padding: 0;
+    gap: 0;
+    font-size: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    white-space: inherit;
+  }
+
+  /* --- overlay bubble --- */
+
+  .aui-badge__bubble {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-semibold);
+    line-height: var(--ui-leading-none);
+    border-radius: var(--ui-radius-full);
+    border: 1px solid transparent;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .aui-badge--position-top-right .aui-badge__bubble {
+    top: 0;
+    inset-inline-end: 0;
+    transform: translate(50%, -50%);
+  }
+
+  .aui-badge--position-top-left .aui-badge__bubble {
+    top: 0;
+    inset-inline-start: 0;
+    transform: translate(-50%, -50%);
+  }
+
+  .aui-badge--position-bottom-right .aui-badge__bubble {
+    bottom: 0;
+    inset-inline-end: 0;
+    transform: translate(50%, 50%);
+  }
+
+  .aui-badge--position-bottom-left .aui-badge__bubble {
+    bottom: 0;
+    inset-inline-start: 0;
+    transform: translate(-50%, 50%);
+  }
+
+  /* RTL: the insets flip via logical properties, so the physical X
+     translate must flip too — or the bubble drifts into the anchor. */
+  [dir='rtl'] .aui-badge--position-top-right .aui-badge__bubble {
+    transform: translate(-50%, -50%);
+  }
+
+  [dir='rtl'] .aui-badge--position-top-left .aui-badge__bubble {
+    transform: translate(50%, -50%);
+  }
+
+  [dir='rtl'] .aui-badge--position-bottom-right .aui-badge__bubble {
+    transform: translate(-50%, 50%);
+  }
+
+  [dir='rtl'] .aui-badge--position-bottom-left .aui-badge__bubble {
+    transform: translate(50%, 50%);
+  }
+
+  /* --- bubble sizes --- */
+
+  .aui-badge--position-top-right.aui-badge--sm .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--sm .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--sm .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--sm .aui-badge__bubble {
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 0.25rem;
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-badge--position-top-right.aui-badge--md .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--md .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--md .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--md .aui-badge__bubble {
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.375rem;
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-badge--position-top-right.aui-badge--lg .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--lg .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--lg .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--lg .aui-badge__bubble {
+    min-width: 1.625rem;
+    height: 1.625rem;
+    padding: 0 0.4375rem;
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-badge--position-top-right.aui-badge--xl .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--xl .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--xl .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--xl .aui-badge__bubble {
+    min-width: 1.75rem;
+    height: 1.75rem;
+    padding: 0 0.5rem;
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-badge--position-top-right.aui-badge--2xl .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--2xl .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--2xl .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--2xl .aui-badge__bubble {
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.625rem;
+    font-size: var(--ui-text-sm);
+  }
+
+  /* --- bubble colors (mirror inline variants) --- */
+
+  .aui-badge--position-top-right.aui-badge--primary .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--primary .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--primary .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--primary .aui-badge__bubble {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-badge--position-top-right.aui-badge--secondary .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--secondary .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--secondary .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--secondary .aui-badge__bubble {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-badge--position-top-right.aui-badge--outline .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--outline .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--outline .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--outline .aui-badge__bubble {
+    background-color: transparent;
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-badge--position-top-right.aui-badge--ghost .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--ghost .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--ghost .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--ghost .aui-badge__bubble {
+    background-color: transparent;
+    color: var(--ui-foreground);
+  }
+
+  .aui-badge--position-top-right.aui-badge--soft .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--soft .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--soft .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--soft .aui-badge__bubble {
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+    color: var(--ui-primary);
+  }
+
+  .aui-badge--position-top-right.aui-badge--destructive .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--destructive .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--destructive .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--destructive .aui-badge__bubble {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-badge--position-top-right.aui-badge--success .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--success .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--success .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--success .aui-badge__bubble {
+    background-color: var(--ui-success-muted);
+    color: var(--ui-success);
+    border-color: var(--ui-success);
+  }
+
+  .aui-badge--position-top-right.aui-badge--warning .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--warning .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--warning .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--warning .aui-badge__bubble {
+    background-color: var(--ui-warning-muted);
+    color: var(--ui-warning);
+    border-color: var(--ui-warning);
+  }
+
+  .aui-badge--position-top-right.aui-badge--error .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--error .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--error .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--error .aui-badge__bubble {
+    background-color: var(--ui-error-muted);
+    color: var(--ui-error);
+    border-color: var(--ui-error);
+  }
+
+  .aui-badge--position-top-right.aui-badge--info .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--info .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--info .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--info .aui-badge__bubble {
+    background-color: var(--ui-info-muted);
+    color: var(--ui-info);
+    border-color: var(--ui-info);
+  }
+
+  .aui-badge--position-top-right.aui-badge--muted .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--muted .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--muted .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--muted .aui-badge__bubble {
+    background-color: var(--ui-muted);
+    color: var(--ui-muted-foreground);
+  }
+</style>

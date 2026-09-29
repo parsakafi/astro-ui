@@ -1,0 +1,72 @@
+---
+/**
+  * ScrollArea — themed thin scrollbars with zero JS.
+  *
+  * A plain overflow container whose scrollbar is recolored from design
+  * tokens (works in Chromium/WebKit via ::-webkit-* and in Firefox via
+  * scrollbar-width/color), so it matches the active theme automatically.
+  * Constrain width/height with a class to get a scrolling region.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Which axes may scroll. */
+  orientation?: "vertical" | "horizontal" | "both";
+  class?: string;
+  id?: string;
+}
+
+const {
+  orientation = "vertical",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn("aui-scroll-area", `aui-scroll-area--${orientation}`, className);
+---
+
+<div id={id} class={classes} tabindex="0" {...rest}>
+  <slot/>
+</div>
+
+<style>
+  .aui-scroll-area {
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ui-border) transparent;
+  }
+
+  .aui-scroll-area--vertical {
+    overflow-x: hidden;
+  }
+
+  .aui-scroll-area--horizontal {
+    overflow-y: hidden;
+  }
+
+  .aui-scroll-area::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .aui-scroll-area::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  .aui-scroll-area::-webkit-scrollbar-thumb {
+    background-color: var(--ui-border);
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-scroll-area::-webkit-scrollbar-thumb:hover {
+    background-color: var(--ui-muted-foreground);
+  }
+
+  .aui-scroll-area:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+</style>

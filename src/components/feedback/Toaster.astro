@@ -1,0 +1,399 @@
+---
+import '../../styles/toast.css';
+---
+
+<!--
+  JavaScript required: Yes
+  Toaster renders toast notifications client-side, one fixed stack per screen
+  corner. A toast appears at the corner given by its `position` option
+  (default: bottom-right). Import the `toast` function from "astro-ui/toast"
+  to trigger toasts from anywhere. The CSS is exported separately as
+  "astro-ui/toast.css" for bundle-control.
+-->
+<section class="aui-toaster" id="aui-toaster-top-left" data-aui-toaster data-position="top-left" aria-live="polite"
+         aria-relevant="additions" aria-atomic="false">
+  <ol class="aui-toaster__list" data-aui-toaster-list></ol>
+</section>
+<section class="aui-toaster" id="aui-toaster-top-center" data-aui-toaster data-position="top-center" aria-live="polite"
+         aria-relevant="additions" aria-atomic="false">
+  <ol class="aui-toaster__list" data-aui-toaster-list></ol>
+</section>
+<section class="aui-toaster" id="aui-toaster-top-right" data-aui-toaster data-position="top-right" aria-live="polite"
+         aria-relevant="additions" aria-atomic="false">
+  <ol class="aui-toaster__list" data-aui-toaster-list></ol>
+</section>
+<section class="aui-toaster" id="aui-toaster-bottom-left" data-aui-toaster data-position="bottom-left"
+         aria-live="polite" aria-relevant="additions" aria-atomic="false">
+  <ol class="aui-toaster__list" data-aui-toaster-list></ol>
+</section>
+<section class="aui-toaster" id="aui-toaster-bottom-center" data-aui-toaster data-position="bottom-center"
+         aria-live="polite" aria-relevant="additions" aria-atomic="false">
+  <ol class="aui-toaster__list" data-aui-toaster-list></ol>
+</section>
+<section class="aui-toaster" id="aui-toaster" data-aui-toaster data-position="bottom-right" aria-live="polite"
+         aria-relevant="additions" aria-atomic="false">
+  <ol class="aui-toaster__list" data-aui-toaster-list></ol>
+</section>
+
+<script>
+  import type {Toast, ToastAction} from "astro-ui/toast";
+
+  // Inline icons to avoid cross-module import path issues at runtime
+  const ICONS: Record<string, string> = {
+    success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.528-9.981a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg>`,
+    error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>`,
+    warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.35-1.167 3.022 0l6.28 10.867c.673 1.167-.17 2.62-1.516 2.62H3.72c-1.347 0-2.189-1.453-1.515-2.62L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>`,
+    info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd"/></svg>`,
+    default: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>`,
+    loading: `<span class="aui-toast__spinner" aria-hidden="true"><span class="aui-toast__spinner-bar"></span></span>`,
+  };
+  const CLOSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
+  (async () => {
+    const toast = (await import("astro-ui/toast")).toast;
+
+    // One fixed stack per screen corner; each toast routes to the stack
+    // matching its `position` option (default: bottom-right).
+    var stacks = new Map<string, { container: HTMLElement; list: HTMLElement; hovered: boolean }>();
+    document.querySelectorAll<HTMLElement>('[data-aui-toaster]').forEach(function (container) {
+      var list = container.querySelector<HTMLElement>('[data-aui-toaster-list]');
+      if (!list) return;
+      var stack = {container: container, list: list, hovered: false};
+      stacks.set(container.getAttribute('data-position') || 'bottom-right', stack);
+      // Hover/focus expands a collapsed stack.
+      container.addEventListener('mouseenter', function () {
+        stack.hovered = true;
+        refreshStacks();
+      });
+      container.addEventListener('mouseleave', function () {
+        stack.hovered = false;
+        refreshStacks();
+      });
+      container.addEventListener('focusin', function () {
+        stack.hovered = true;
+        refreshStacks();
+      });
+      container.addEventListener('focusout', function () {
+        stack.hovered = false;
+        refreshStacks();
+      });
+    });
+    if (stacks.size === 0) {
+      throw new Error('Toaster: required DOM elements not found');
+    }
+
+    function stackFor(position?: string): { container: HTMLElement; list: HTMLElement; hovered: boolean } {
+      return stacks.get(position || 'bottom-right') || stacks.get('bottom-right')!;
+    }
+
+    // ---- collapsed peek layout ----
+
+    var PEEK = 10; // px sliver of older cards visible behind the newest
+
+    function applyPeek(stack: { container: HTMLElement; list: HTMLElement }): void {
+      var items = Array.prototype.slice.call(
+        stack.list.querySelectorAll<HTMLElement>('.aui-toast:not([data-exit="true"]):not([data-mounted="false"])'),
+      );
+      var collapsed = stack.container.getAttribute('data-collapsed') === 'true';
+      if (items.length < 2 || !collapsed) {
+        items.forEach(function (el) {
+          el.style.transform = '';
+          el.style.transformOrigin = '';
+        });
+        return;
+      }
+      var front = items[items.length - 1];
+      var isTop = (stack.container.getAttribute('data-position') || '').indexOf('top') === 0;
+      items.slice(0, -1).forEach(function (el: HTMLElement, i: number) {
+        var depth = items.length - 1 - i;
+        var scale = Math.max(0.75, 1 - 0.06 * depth);
+        el.style.transformOrigin = isTop ? 'bottom center' : 'top center';
+        var d: number;
+        if (isTop) {
+          // Older card sits below the front one; slide it up behind.
+          var targetBottom = front.offsetTop + front.offsetHeight + PEEK;
+          d = targetBottom - (el.offsetTop + el.offsetHeight);
+        } else {
+          // Older card sits above the front one; slide it down behind.
+          var targetTop = front.offsetTop - PEEK;
+          d = targetTop - el.offsetTop;
+        }
+        el.style.transform = 'translateY(' + d + 'px) scale(' + scale + ')';
+      });
+    }
+
+    function stackHasExpand(stack: { container: HTMLElement }): boolean {
+      var id = stack.container.getAttribute('data-position') || 'bottom-right';
+      return toast.toasts.some(function (t: Toast) {
+        return t.expand === true && (t.position || 'bottom-right') === id;
+      });
+    }
+
+    function refreshStacks(): void {
+      stacks.forEach(function (stack) {
+        var count = stack.list.querySelectorAll('.aui-toast:not([data-exit="true"])').length;
+        if (stackHasExpand(stack) || stack.hovered || count < 2) {
+          stack.container.setAttribute('data-collapsed', 'false');
+        } else {
+          stack.container.setAttribute('data-collapsed', 'true');
+        }
+        applyPeek(stack);
+        // Only the container with active toasts is visible — the six
+        // containers share the same screen position, so showing more
+        // than one would let toasts bleed into the wrong corner.
+        if (count > 0) {
+          stack.container.setAttribute('data-active', 'true');
+        } else {
+          stack.container.removeAttribute('data-active');
+        }
+      });
+    }
+
+    // ---- helpers ----
+
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function makeAction(action: ToastAction, id: number | string): HTMLButtonElement {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'aui-toast__action';
+      bindAction(btn, action, id);
+      return btn;
+    }
+
+    function bindAction(btn: HTMLButtonElement, action: ToastAction, id: number | string): void {
+      btn.textContent = action.label;
+      // onclick (not addEventListener) so rebinding replaces the handler
+      btn.onclick = function (e: MouseEvent) {
+        action.onClick(e);
+        toast.dismiss(id);
+      };
+    }
+
+    function createEl(t: Toast): HTMLLIElement {
+      var li = document.createElement('li');
+      li.setAttribute('data-aui-toast', '');
+      li.setAttribute('data-mounted', 'false');
+      li.setAttribute('data-exit', 'false');
+      li.setAttribute('data-rich-colors', t.richColors ? 'true' : 'false');
+      li.setAttribute('data-invert', t.invert ? 'true' : 'false');
+      li.setAttribute('data-type', t.type || 'default');
+      li.setAttribute('role', t.role || 'status');
+      if (t.id != null) li.setAttribute('data-id', String(t.id));
+      li.classList.add('aui-toast');
+      if (t.className) {
+        t.className.split(/\s+/).forEach(function (cls: string) {
+          if (cls) li.classList.add(cls);
+        });
+      }
+      if (t.style) Object.assign(li.style, t.style);
+
+      // close button
+      if (t.dismissible !== false && t.closeButton !== false) {
+        var closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'aui-toast__close';
+        closeBtn.setAttribute('aria-label', 'Dismiss');
+        closeBtn.innerHTML = CLOSE_ICON;
+        closeBtn.addEventListener('click', function () {
+          toast.dismiss(t.id);
+        });
+        li.appendChild(closeBtn);
+      }
+
+      var iconSlot = document.createElement('span');
+      iconSlot.className = 'aui-toast__icon';
+      var iconKey = t.icon || t.type || 'default';
+      var iconHTML = ICONS[iconKey] || ICONS.default || '';
+      if (iconHTML) iconSlot.innerHTML = iconHTML;
+      li.appendChild(iconSlot);
+
+      var content = document.createElement('div');
+      content.className = 'aui-toast__content';
+
+      var titleP = document.createElement('p');
+      titleP.className = 'aui-toast__title';
+      titleP.textContent = t.title;
+      content.appendChild(titleP);
+
+      if (t.description) {
+        var descP = document.createElement('p');
+        descP.className = 'aui-toast__description';
+        descP.textContent = t.description;
+        content.appendChild(descP);
+      }
+      li.appendChild(content);
+
+      // action button (runs onClick, then dismisses);
+      // placed after the content so it sits at the toast's inline-end
+      if (t.action) {
+        li.appendChild(makeAction(t.action, t.id));
+      }
+
+      return li;
+    }
+
+    function enter(el: HTMLElement): void {
+      if (reducedMotion) {
+        el.removeAttribute('data-exit');
+        el.setAttribute('data-entered', 'true');
+        return;
+      }
+      el.style.opacity = '0';
+      el.setAttribute('data-mounted', 'true');
+      el.setAttribute('data-exit', 'false');
+      requestAnimationFrame(function () {
+        if (!el.isConnected) return;
+        el.setAttribute('data-mounted', 'true');
+      });
+      // Release the enter animation (and its fill) so collapsed-peek
+      // transforms can take over, then recompute the stack layout.
+      setTimeout(function () {
+        if (!el.isConnected) return;
+        el.style.opacity = '';
+        el.setAttribute('data-entered', 'true');
+        refreshStacks();
+      }, TOAST_ENTER_MS);
+    }
+
+    function exit(el: HTMLElement): void {
+      if (reducedMotion) {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        return;
+      }
+      el.setAttribute('data-exit', 'true');
+      el.removeAttribute('data-mounted');
+      el.addEventListener('animationend', function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+      }, {once: true});
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+      }, 500);
+    }
+
+    function scheduleTimer(t: Toast, el: HTMLElement): void {
+      var duration = t.duration != null ? t.duration : 4000;
+      if (duration === 0 || duration === Infinity) return;
+      if (timerMap.has(t.id)) {
+        clearTimeout(timerMap.get(t.id));
+        timerMap.delete(t.id);
+      }
+      var elapsed = Date.now() - (t.createdAt != null ? t.createdAt : Date.now());
+      var remaining = Math.max(0, duration - elapsed);
+      if (remaining <= 0) {
+        toast.dismiss(t.id);
+        return;
+      }
+      var timer = setTimeout(function () {
+        timerMap.delete(t.id);
+        toast.dismiss(t.id);
+      }, remaining);
+      timerMap.set(t.id, timer);
+      el.addEventListener('mouseenter', function () {
+        if (timerMap.has(t.id)) {
+          clearTimeout(timerMap.get(t.id));
+          timerMap.delete(t.id);
+        }
+      });
+      el.addEventListener('mouseleave', function () {
+        scheduleTimer(t, el);
+      });
+      el.addEventListener('focusin', function () {
+        if (timerMap.has(t.id)) {
+          clearTimeout(timerMap.get(t.id));
+          timerMap.delete(t.id);
+        }
+      });
+      el.addEventListener('focusout', function () {
+        scheduleTimer(t, el);
+      });
+    }
+
+    var mounted = new Map<number | string, HTMLElement>();
+    var timerMap = new Map<number | string, ReturnType<typeof setTimeout>>();
+    var TOAST_ENTER_MS = 240; // keep in sync with $toast-enter-duration
+
+    function render(toasts: Toast[]): void {
+      var activeIds = new Set<number | string>();
+      toasts.forEach(function (t: Toast) {
+        activeIds.add(t.id);
+      });
+      mounted.forEach(function (el, id) {
+        if (!activeIds.has(id)) {
+          exit(el);
+          mounted.delete(id);
+          timerMap.delete(id);
+        }
+      });
+      toasts.forEach(function (t: Toast) {
+        const existing = mounted.get(t.id);
+        if (existing) {
+          var titleEl = existing.querySelector('.aui-toast__title');
+          if (titleEl) titleEl.textContent = t.title;
+          var descEl = existing.querySelector<HTMLElement>('.aui-toast__description');
+          if (descEl) {
+            if (t.description) {
+              descEl.textContent = t.description;
+              descEl.style.display = '';
+            } else {
+              descEl.style.display = 'none';
+            }
+          } else if (t.description) {
+            var content = existing.querySelector('.aui-toast__content');
+            if (content) {
+              var desc = document.createElement('p');
+              desc.className = 'aui-toast__description';
+              desc.textContent = t.description;
+              content.appendChild(desc);
+            }
+          }
+          existing.setAttribute('data-type', t.type || 'default');
+          existing.setAttribute('data-rich-colors', t.richColors ? 'true' : 'false');
+          existing.setAttribute('data-invert', t.invert ? 'true' : 'false');
+          var iconEl = existing.querySelector('.aui-toast__icon');
+          if (iconEl) {
+            var iconKey = t.icon || t.type || 'default';
+            var iconHTML = ICONS[iconKey] || ICONS.default || '';
+            iconEl.innerHTML = iconHTML;
+          }
+          if (t.className) existing.className = 'aui-toast' + (t.className ? ' ' + t.className : '');
+          if (t.style) Object.assign(existing.style, t.style);
+          // Keep the action button in sync with the toast's action option.
+          var actionBtn = existing.querySelector<HTMLButtonElement>('.aui-toast__action');
+          if (t.action) {
+            if (actionBtn) {
+              bindAction(actionBtn, t.action, t.id);
+            } else {
+              existing.appendChild(makeAction(t.action, t.id));
+            }
+          } else if (actionBtn && actionBtn.parentNode) {
+            actionBtn.parentNode.removeChild(actionBtn);
+          }
+          // Follow the toast if its position option changed.
+          var target = stackFor(t.position);
+          if (existing.parentNode !== target.list) {
+            target.list.appendChild(existing);
+          }
+          scheduleTimer(t, existing);
+        } else {
+          var el = createEl(t);
+          stackFor(t.position).list.appendChild(el);
+          mounted.set(t.id, el);
+          enter(el);
+          scheduleTimer(t, el);
+        }
+      });
+      refreshStacks();
+    }
+
+    const unsubscribe = toast.subscribe(render);
+    render(toast.toasts);
+    window.addEventListener('beforeunload', function () {
+      unsubscribe();
+      timerMap.forEach(function (timer) {
+        clearTimeout(timer);
+      });
+      timerMap.clear();
+    });
+  })();
+</script>

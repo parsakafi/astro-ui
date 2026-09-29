@@ -1,0 +1,139 @@
+---
+/**
+  * Toggle — a two-state button (pressed / not pressed).
+  *
+  * Renders a semantic <button type="button"> with aria-pressed. State is
+  * intentionally server-
+  * rendered: pass `pressed` for SSR-controlled state (e.g. a filter that
+  * is on for the initial page load). Client apps flip the attribute with
+  * their own one-line script — see the docs recipe.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** SSR state — maps to aria-pressed and the pressed styling. */
+  pressed?: boolean;
+  /** Visual style. */
+  variant?: "default" | "outline";
+  /** Scale of the button. */
+  size?: "sm" | "md" | "lg";
+  /** Disables the toggle. */
+  disabled?: boolean;
+  /** Accessible name (required when the slot has no visible text). */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  pressed = false,
+  variant = "default",
+  size = "md",
+  disabled = false,
+  ariaLabel,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-toggle",
+  `aui-toggle--${variant}`,
+  `aui-toggle--${size}`,
+  pressed && "aui-toggle--pressed",
+  className,
+);
+---
+
+<button
+  id={id}
+  type="button"
+  class={classes}
+  aria-pressed={pressed}
+  aria-label={ariaLabel}
+  disabled={disabled}
+  data-state={pressed ? "on" : "off"}
+  {...rest}
+>
+  <slot/>
+</button>
+
+<style>
+  .aui-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-space-1);
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-medium);
+    line-height: var(--ui-leading-none);
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast),
+    color var(--ui-transition-fast),
+    border-color var(--ui-transition-fast);
+  }
+
+  .aui-toggle:hover:not(:disabled):not(.aui-toggle--pressed) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-toggle:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-toggle:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  /* --- variants --- */
+
+  .aui-toggle--default {
+    background-color: transparent;
+  }
+
+  .aui-toggle--default.aui-toggle--pressed {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-toggle--outline {
+    border-color: var(--ui-input);
+  }
+
+  .aui-toggle--outline.aui-toggle--pressed {
+    background-color: var(--ui-primary);
+    border-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  /* --- sizes --- */
+
+  .aui-toggle--sm {
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-toggle--md {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-toggle--lg {
+    padding: var(--ui-space-2) var(--ui-space-4);
+    font-size: var(--ui-text-base);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-toggle {
+      transition: none;
+    }
+  }
+</style>

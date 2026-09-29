@@ -1,0 +1,493 @@
+---
+/**
+  * Rating — rating input built on native radios, zero JS.
+  *
+  * A fieldset of radio inputs styled as icons (star, heart, circle, square,
+  * thumb, bar, emoji): arrow keys and form submission come from the
+  * platform; each icon is a real labeled option ("4 out of 5") so screen
+  * readers announce it. `readonly` renders the visual value without inputs.
+  *
+  * `icon` picks a preset shape or "emoji" faces; `iconPath`/`icons` supply
+  * custom 16×16 SVG path data. `colorScale` tints each step with its own
+  * color (red → green satisfaction scales), `labels`/`showLabels` add
+  * semantic anchors under the scale, and `single` highlights only the
+  * selected step (NPS-style) instead of everything up to it.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Field name for form submission (required unless readonly). */
+  name?: string;
+  /** Current/initial value (0–max, fractional allowed for readonly display). */
+  value?: number;
+  /** Number of steps. */
+  max?: number;
+  /** Renders icons without inputs (display-only). */
+  readonly?: boolean;
+  /** Scale of the icons. */
+  size?: "sm" | "md" | "lg";
+  /** Visual style of the filled icons. */
+  variant?: "primary" | "warning";
+  /** Icon preset. "emoji" renders sentiment faces (😢 😕 😐 🙂 😍, tiled beyond 5). */
+  icon?: "star" | "heart" | "circle" | "square" | "bar" | "thumb" | "emoji";
+  /** Custom icon: SVG path data in a 16×16 viewBox (overrides icon preset). */
+  iconPath?: string;
+  /** Custom per-step icons: SVG path data in a 16×16 viewBox, index 0 = step 1. */
+  icons?: string[];
+  /** Tints each step with its own color (red → green satisfaction ramp). */
+  colorScale?: boolean;
+  /** Highlights only the selected step instead of all steps up to it. */
+  single?: boolean;
+  /** Per-step labels, index 0 = step 1 (used for sr text and the labels row). */
+  labels?: string[];
+  /** Renders the per-step labels visibly under the scale. */
+  showLabels?: boolean;
+  /** Disables the input. */
+  disabled?: boolean;
+  /** Accessible name for the group. */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  name,
+  value = 0,
+  max = 5,
+  readonly = false,
+  size = "md",
+  variant = "warning",
+  icon = "star",
+  iconPath,
+  icons,
+  colorScale = false,
+  single = false,
+  labels,
+  showLabels = false,
+  disabled = false,
+  ariaLabel = "Rating",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const interactive = !readonly && !disabled && name;
+
+/** Per-step colors for colorScale (5-step satisfaction ramp; hue-rotated beyond). */
+const STEP_COLORS = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
+const stepColor = (step: number) => STEP_COLORS[(step - 1) % STEP_COLORS.length];
+
+/** Preset icon paths, all in a 16×16 viewBox. */
+const PRESETS: Record<string, string> = {
+  star: "M8 1.5l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.3l-3.8 2 .7-4.3-3.1-3 4.3-.6z",
+  heart:
+    "M8 14S2 10.3 2 5.8C2 3.6 3.7 2 5.7 2 6.9 2 7.7 2.6 8 3.3 8.3 2.6 9.1 2 10.3 2 12.3 2 14 3.6 14 5.8 14 10.3 8 14 8 14z",
+  circle: "M8 2a6 6 0 110 12A6 6 0 018 2z",
+  square: "M2.5 2.5h11v11h-11z",
+  bar: "M5.5 2h5v12h-5z",
+  thumb:
+    "M5 7l2.5-5c.9 0 1.5.7 1.5 1.6V6h3.1c1 0 1.7.9 1.5 1.8l-1 4.7A1.7 1.7 0 0111 14H5M5 7H2.5v7H5",
+};
+
+/** Sentiment emoji for the "emoji" preset (tiled cyclically beyond 5 steps). */
+const EMOJI = ["😢", "😕", "😐", "🙂", "😍"];
+
+const pathFor = (step: number) => icons?.[step - 1] ?? iconPath ?? PRESETS[icon] ?? PRESETS.star;
+const isEmoji = icon === "emoji" && !iconPath && !icons;
+const srLabel = (step: number) =>
+  labels?.[step - 1] ?? `${step} out of ${max}`;
+
+/** Inline style wiring per-step colors for colorScale. */
+const scaleStyle = colorScale
+  ? Object.fromEntries(Array.from({length: max}, (_, i) => [`--aui-rating-step-${i + 1}`, stepColor(i + 1)]))
+  : undefined;
+
+const classes = cn(
+  "aui-rating",
+  `aui-rating--${size}`,
+  `aui-rating--${variant}`,
+  readonly && "aui-rating--readonly",
+  colorScale && "aui-rating--scale",
+  single && "aui-rating--single",
+  showLabels && "aui-rating--labeled",
+  className,
+);
+---
+
+{
+  interactive ? (
+  <fieldset
+    id={id}
+    class={classes}
+    aria-label={ariaLabel}
+    style={scaleStyle}
+    {...rest}
+  >
+    <legend class="aui-rating__legend">{ariaLabel}</legend>
+    <span class="aui-rating__list">
+				{Array.from({length: max}, (_, i) => {
+          const step = i + 1;
+          // Implicit label association — no ids, so multiple Rating
+					// instances can never cross-wire each other's inputs.
+
+          return (
+            <label class="aui-rating__item">
+              <input
+                type="radio"
+                name={name}
+                value={step}
+                checked={Math.round(value) === step}
+                class="aui-rating__input"
+              />
+              {isEmoji ? (
+                <span class="aui-rating__emoji" aria-hidden="true">
+									{EMOJI[(step - 1) % EMOJI.length]}
+								</span>
+              ) : (
+                <svg class="aui-rating__icon" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d={pathFor(step)}
+                    class="aui-rating__shape"
+                    stroke-width="1"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              )}
+              <span class="aui-rating__sr">{srLabel(step)}</span>
+            </label>
+          );
+        })}
+			</span>
+    {showLabels && labels && (
+      <span class="aui-rating__labels" aria-hidden="true">
+					{labels.map((label) => (
+            <span class="aui-rating__label">{label}</span>
+          ))}
+				</span>
+    )}
+  </fieldset>
+    ) : (
+  <span
+    id={id}
+    class={classes}
+    role="img"
+    aria-label={labels?.[Math.round(value) - 1]
+      ? `${value} out of ${max} — ${labels[Math.round(value) - 1]}`
+      : `${value} out of ${max} stars`}
+    style={scaleStyle}
+    {...rest}
+  >
+			<span class="aui-rating__display" aria-hidden="true">
+				<span class="aui-rating__fill" style={`width: ${Math.min(Math.max(value / max, 0), 1) * 100}%`}>
+					{Array.from({length: max}, (_, i) =>
+            isEmoji ? (
+              <span class="aui-rating__emoji">
+								{EMOJI[i % EMOJI.length]}
+							</span>
+            ) : (
+              <svg class="aui-rating__icon" viewBox="0 0 16 16">
+                <path d={pathFor(i + 1)} class="aui-rating__shape aui-rating__shape--filled"/>
+              </svg>
+            ),
+          )}
+				</span>
+				<span class="aui-rating__base">
+					{Array.from({length: max}, (_, i) =>
+            isEmoji ? (
+              <span class="aui-rating__emoji">
+								{EMOJI[i % EMOJI.length]}
+							</span>
+            ) : (
+              <svg class="aui-rating__icon" viewBox="0 0 16 16">
+                <path d={pathFor(i + 1)} class="aui-rating__shape"/>
+              </svg>
+            ),
+          )}
+				</span>
+			</span>
+    {showLabels && labels && (
+      <span class="aui-rating__labels" aria-hidden="true">
+					{labels.map((label) => (
+            <span class="aui-rating__label">{label}</span>
+          ))}
+				</span>
+    )}
+    {!readonly && disabled && <span class="aui-rating__sr">{ariaLabel} (disabled)</span>}
+		</span>
+    )
+  }
+
+<style>
+  .aui-rating {
+    /* Explicit icon geometry — decoupled from font-size so the
+       backdrop and the filled overlay are pixel-identical. */
+    --aui-rating-icon: 20px;
+    --aui-rating-gap: 2px;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--ui-font-sans);
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .aui-rating--sm {
+    --aui-rating-icon: 16px;
+  }
+
+  .aui-rating--md {
+    --aui-rating-icon: 20px;
+  }
+
+  .aui-rating--lg {
+    --aui-rating-icon: 28px;
+  }
+
+  .aui-rating__legend,
+  .aui-rating__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* --- rows --- */
+
+  .aui-rating__list,
+  .aui-rating__display,
+  .aui-rating__base,
+  .aui-rating__fill {
+    display: inline-flex;
+    gap: var(--aui-rating-gap);
+  }
+
+  .aui-rating__display {
+    position: relative;
+  }
+
+  .aui-rating__fill {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .aui-rating__item {
+    position: relative;
+    display: inline-flex;
+    cursor: pointer;
+  }
+
+  .aui-rating__input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  /* --- geometry: every icon identical --- */
+
+  .aui-rating__icon {
+    width: var(--aui-rating-icon);
+    height: var(--aui-rating-icon);
+    display: block;
+    /* the readonly fill overlay is width-clamped; icons must keep their
+       size instead of flex-shrinking (the backdrop/active mismatch) */
+    flex-shrink: 0;
+  }
+
+  .aui-rating__emoji {
+    inline-size: var(--aui-rating-icon);
+    block-size: var(--aui-rating-icon);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--aui-rating-icon);
+    line-height: 1;
+    filter: grayscale(1);
+    opacity: 0.45;
+    flex-shrink: 0;
+  }
+
+  /* --- interactive states (pure CSS via :has) --- */
+
+  .aui-rating__shape {
+    fill: var(--ui-muted);
+    stroke: var(--ui-border);
+  }
+
+  /* the checked step itself */
+  .aui-rating__item:has(.aui-rating__input:checked) .aui-rating__shape {
+    fill: var(--aui-rating-step-color, var(--ui-rating-color));
+    stroke: var(--aui-rating-step-color, var(--ui-rating-color));
+  }
+
+  .aui-rating__item:has(.aui-rating__input:checked) .aui-rating__emoji {
+    filter: none;
+    opacity: 1;
+  }
+
+  /* all steps BEFORE the checked one (a checked later sibling lights them) */
+  .aui-rating__item:has(~ .aui-rating__item .aui-rating__input:checked) .aui-rating__shape {
+    fill: var(--aui-rating-step-color, var(--ui-rating-color));
+    stroke: var(--aui-rating-step-color, var(--ui-rating-color));
+  }
+
+  .aui-rating__item:has(~ .aui-rating__item .aui-rating__input:checked) .aui-rating__emoji {
+    filter: none;
+    opacity: 1;
+  }
+
+  /* single (NPS-style): only the selected step lights */
+  .aui-rating--single
+  .aui-rating__item:has(~ .aui-rating__item .aui-rating__input:checked)
+  .aui-rating__shape {
+    fill: var(--ui-muted);
+    stroke: var(--ui-border);
+  }
+
+  .aui-rating--single
+  .aui-rating__item:has(~ .aui-rating__item .aui-rating__input:checked)
+  .aui-rating__emoji {
+    filter: grayscale(1);
+    opacity: 0.45;
+  }
+
+  /* hover: light the hovered step and everything before it */
+  .aui-rating:not(.aui-rating--single) .aui-rating__item:hover .aui-rating__shape,
+  .aui-rating:not(.aui-rating--single) .aui-rating__item:has(~ .aui-rating__item:hover) .aui-rating__shape {
+    fill: color-mix(in srgb, var(--aui-rating-step-color, var(--ui-rating-color)) 45%, var(--ui-muted));
+    stroke: var(--aui-rating-step-color, var(--ui-rating-color));
+  }
+
+  .aui-rating:not(.aui-rating--single) .aui-rating__item:hover .aui-rating__emoji,
+  .aui-rating:not(.aui-rating--single) .aui-rating__item:has(~ .aui-rating__item:hover) .aui-rating__emoji {
+    filter: none;
+    opacity: 0.75;
+  }
+
+  .aui-rating__input:focus-visible {
+    outline: none;
+  }
+
+  .aui-rating__item:has(.aui-rating__input:focus-visible) {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: 2px;
+    border-radius: var(--ui-radius-sm);
+  }
+
+  /* --- per-step colors (colorScale) --- */
+
+  .aui-rating--scale .aui-rating__item:nth-child(1) {
+    --aui-rating-step-color: var(--aui-rating-step-1);
+  }
+
+  .aui-rating--scale .aui-rating__item:nth-child(2) {
+    --aui-rating-step-color: var(--aui-rating-step-2);
+  }
+
+  .aui-rating--scale .aui-rating__item:nth-child(3) {
+    --aui-rating-step-color: var(--aui-rating-step-3);
+  }
+
+  .aui-rating--scale .aui-rating__item:nth-child(4) {
+    --aui-rating-step-color: var(--aui-rating-step-4);
+  }
+
+  .aui-rating--scale .aui-rating__item:nth-child(5) {
+    --aui-rating-step-color: var(--aui-rating-step-5);
+  }
+
+  /* --- colors --- */
+
+  .aui-rating--warning {
+    --ui-rating-color: var(--ui-warning);
+  }
+
+  .aui-rating--primary {
+    --ui-rating-color: var(--ui-primary);
+  }
+
+  /* --- readonly / display --- */
+
+  .aui-rating--readonly .aui-rating__item {
+    cursor: default;
+  }
+
+  .aui-rating__display .aui-rating__shape {
+    stroke: none;
+  }
+
+  .aui-rating__display .aui-rating__shape--filled {
+    fill: var(--aui-rating-step-color, var(--ui-rating-color));
+  }
+
+  .aui-rating__display .aui-rating__base .aui-rating__shape {
+    fill: var(--ui-muted);
+  }
+
+  .aui-rating__display .aui-rating__fill .aui-rating__emoji {
+    filter: none;
+    opacity: 1;
+  }
+
+  .aui-rating__display .aui-rating__base .aui-rating__emoji {
+    filter: grayscale(1);
+    opacity: 0.45;
+  }
+
+  /* per-step colors inside the readonly fill overlay */
+  .aui-rating--scale .aui-rating__fill .aui-rating__icon:nth-child(1) .aui-rating__shape {
+    fill: var(--aui-rating-step-1);
+  }
+
+  .aui-rating--scale .aui-rating__fill .aui-rating__icon:nth-child(2) .aui-rating__shape {
+    fill: var(--aui-rating-step-2);
+  }
+
+  .aui-rating--scale .aui-rating__fill .aui-rating__icon:nth-child(3) .aui-rating__shape {
+    fill: var(--aui-rating-step-3);
+  }
+
+  .aui-rating--scale .aui-rating__fill .aui-rating__icon:nth-child(4) .aui-rating__shape {
+    fill: var(--aui-rating-step-4);
+  }
+
+  .aui-rating--scale .aui-rating__fill .aui-rating__icon:nth-child(5) .aui-rating__shape {
+    fill: var(--aui-rating-step-5);
+  }
+
+  /* --- labels row --- */
+
+  .aui-rating__labels {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--aui-rating-gap);
+    font-size: 0.75rem;
+    color: var(--ui-muted-foreground, var(--ui-muted));
+  }
+
+  .aui-rating__label {
+    flex: 1;
+    text-align: center;
+  }
+
+  .aui-rating__label:first-child {
+    text-align: start;
+  }
+
+  .aui-rating__label:last-child {
+    text-align: end;
+  }
+</style>

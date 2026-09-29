@@ -1,0 +1,996 @@
+---
+/**
+  * Button — zero-JS action trigger.
+  *
+  * Renders a semantic <button>, or <a> when `href` is provided.
+  * All interactivity is native (click / submit / navigation); attach
+  * behavior with a framework island or an inline <script> in the
+  * consuming app — never via string props.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /**
+   * Visual style.
+   * - `primary` / `secondary` / `destructive`: legacy solid shorthands (same as `variant="solid"` + that `color`).
+   * - `solid` / `soft`: filled / tinted backgrounds colored by `color`.
+   * - `outline` / `dashed`: bordered (neutral unless `color` is set).
+   * - `ghost` / `link`: transparent (link underlines; `link` colors via `color`).
+   * - `plain` / `pure`: subtle bordered surfaces; hover accents use `color`.
+   */
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline"
+    | "ghost"
+    | "destructive"
+    | "link"
+    | "solid"
+    | "dashed"
+    | "soft"
+    | "plain"
+    | "pure";
+  /**
+   * Theme color applied to `solid` / `soft` / tinted outline-style variants.
+   * Ignored on legacy `primary` / `secondary` / `destructive` variants unless set explicitly
+   * (explicit `color` wins and re-resolves the button as `solid` for those shorthands).
+   */
+  color?:
+    | "primary"
+    | "secondary"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "carbon"
+    | "accent";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "icon";
+  /** Default `submit` (native HTML default) so `<form method="dialog">` and other form-wrapped buttons work with zero JS — pass `"button"` for standalone controls. */
+  type?: "button" | "submit" | "reset";
+  href?: string;
+  /** Native form participation (buttons only; ignored on <a>). */
+  name?: string;
+  value?: string;
+  form?: string;
+  formAction?: string;
+  formMethod?: "get" | "post" | "dialog";
+  formEnctype?: string;
+  formTarget?: string;
+  formNoValidate?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+  /** Visual error state: error border + focus ring + `aria-invalid` (forms). */
+  invalid?: boolean;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  /** Rendered as rel on <a>; ignored on <button>. */
+  rel?: string;
+  /** Rendered as target on <a>; ignored on <button>. */
+  target?: string;
+  /** Corner shape: automatic (default radius), fully rounded, sharp, or circular. */
+  shape?: "auto" | "rounded" | "square" | "circle";
+  /** Box shadow: none, or sm/md/lg tokens. */
+  shadow?: "none" | "sm" | "md" | "lg";
+  /** When true, the button fits its content width instead of being inline-flex. */
+  fitContent?: boolean;
+  /** Inline styles forwarded to the control (icon sizing, token overrides). */
+  style?: string;
+  /** Where the loading spinner appears relative to the button content. */
+  loadingPosition?: "start" | "center" | "end";
+  /** Text shown in place of the button content when loading and `loadingPosition` is `center`. */
+  loadingText?: string;
+  /** Visual style of the loading spinner.
+   * - `ring` (default): bordered ring rotating around a gap.
+   * - `dots`: three dots bouncing in sequence.
+   * - `pulse`: circle that scales and fades in a loop.
+   * - `spin`: solid circle rotating continuously.
+   */
+  loadingIcon?: "ring" | "dots" | "pulse" | "spin";
+}
+
+const {
+  variant = "primary",
+  color: colorProp,
+  size = "md",
+  type = "submit",
+  href,
+  name,
+  value,
+  form,
+  formAction,
+  formMethod,
+  formEnctype,
+  formTarget,
+  formNoValidate = false,
+  disabled = false,
+  loading = false,
+  invalid = false,
+  class: className,
+  id,
+  ariaLabel,
+  rel,
+  target,
+  shape = "auto",
+  shadow = "none",
+  fitContent = false,
+  style,
+  loadingPosition = "start",
+  loadingText,
+  loadingIcon = "ring",
+  ...rest
+} = Astro.props;
+
+const isDisabled = disabled || loading;
+
+// Legacy color-named variants map onto solid + color when an explicit color is set;
+// otherwise they keep their historical class + CSS (zero behavior change).
+const legacySolid =
+  variant === "primary" || variant === "secondary" || variant === "destructive";
+const resolvedVariant = legacySolid && colorProp ? "solid" : variant;
+const resolvedColor =
+  colorProp ??
+  (legacySolid
+    ? variant
+    : resolvedVariant === "solid" ||
+    resolvedVariant === "soft" ||
+    resolvedVariant === "link" ||
+    resolvedVariant === "pure"
+      ? "primary"
+      : undefined);
+
+const classes = cn(
+  "aui-btn",
+  `aui-btn--${resolvedVariant}`,
+  `aui-btn--${size}`,
+  `aui-btn--shape-${shape}`,
+  `aui-btn--shadow-${shadow}`,
+  fitContent && "aui-btn--fit-content",
+  loading && "aui-btn--loading",
+  invalid && "aui-btn--invalid",
+  className,
+);
+
+const showLeadingSpinner = loading && loadingPosition === "start";
+const showTrailingSpinner = loading && loadingPosition === "end";
+const isCenterLoading = loading && loadingPosition === "center";
+---
+
+{
+  href ? (
+  <a
+    href={href}
+    id={id}
+    class={classes}
+    aria-label={ariaLabel}
+    aria-disabled={isDisabled || undefined}
+    aria-busy={loading || undefined}
+    aria-invalid={invalid || undefined}
+    rel={rel}
+    target={target}
+    style={style}
+    data-color={resolvedColor}
+    data-normal={isDisabled ? undefined : ""}
+    {...rest}
+  >
+    {isCenterLoading && loadingText ? (
+      <span>{loadingText}</span>
+    ) : (
+      <>
+        {showLeadingSpinner && (
+          <span class={`aui-btn__spinner aui-btn__spinner--${loadingIcon}`} aria-hidden="true"/>
+        )}
+        {Astro.slots.has("leading") &&
+          <slot name="leading"/>}
+        <slot/>
+        {Astro.slots.has("trailing") &&
+          <slot name="trailing"/>}
+        {showTrailingSpinner && (
+          <span class={`aui-btn__spinner aui-btn__spinner--${loadingIcon}`} aria-hidden="true"/>
+        )}
+      </>
+    )}
+  </a>
+    ) : (
+  <button
+    type={type}
+    id={id}
+    class={classes}
+    name={name}
+    value={value}
+    form={form}
+    formaction={formAction}
+    formmethod={formMethod}
+    formenctype={formEnctype}
+    formtarget={formTarget}
+    formnovalidate={formNoValidate || undefined}
+    disabled={isDisabled}
+    aria-label={ariaLabel}
+    aria-busy={loading || undefined}
+    aria-invalid={invalid || undefined}
+    style={style}
+    data-color={resolvedColor}
+    data-normal={isDisabled ? undefined : ""}
+    data-disabled={isDisabled ? "" : undefined}
+    {...rest}
+  >
+    {isCenterLoading && loadingText ? (
+      <span>{loadingText}</span>
+    ) : (
+      <>
+        {showLeadingSpinner && (
+          <span class={`aui-btn__spinner aui-btn__spinner--${loadingIcon}`} aria-hidden="true"/>
+        )}
+        {Astro.slots.has("leading") &&
+          <slot name="leading"/>}
+        <slot/>
+        {Astro.slots.has("trailing") &&
+          <slot name="trailing"/>}
+        {showTrailingSpinner && (
+          <span class={`aui-btn__spinner aui-btn__spinner--${loadingIcon}`} aria-hidden="true"/>
+        )}
+      </>
+    )}
+  </button>
+    )
+  }
+
+<style>
+  .aui-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-space-2);
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-medium);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color var(--ui-transition-fast),
+    color var(--ui-transition-fast),
+    border-color var(--ui-transition-fast);
+  }
+
+  /* --- size --- */
+
+  .aui-btn--xs {
+    height: 1.75rem;
+    padding: 0 var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-btn--sm {
+    height: 2rem;
+    padding: 0 var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-btn--md {
+    height: 2.5rem;
+    padding: 0 var(--ui-space-4);
+  }
+
+  .aui-btn--lg {
+    height: 2.75rem;
+    padding: 0 var(--ui-space-6);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-btn--xl {
+    height: 3rem;
+    padding: 0 var(--ui-space-8);
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-btn--2xl {
+    height: 3.5rem;
+    padding: 0 var(--ui-space-10);
+    font-size: var(--ui-text-xl);
+  }
+
+  .aui-btn--icon {
+    height: 2.5rem;
+    width: 2.5rem;
+    padding: 0;
+  }
+
+  .aui-btn--icon.aui-btn--xs {
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+
+  .aui-btn--icon.aui-btn--xl {
+    height: 3rem;
+    width: 3rem;
+  }
+
+  .aui-btn--icon.aui-btn--2xl {
+    height: 3.5rem;
+    width: 3.5rem;
+  }
+
+  /* --- shape --- */
+
+  .aui-btn--shape-rounded {
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-btn--shape-square {
+    border-radius: 0;
+  }
+
+  .aui-btn--shape-circle {
+    border-radius: var(--ui-radius-full);
+  }
+
+  /* --- shadow --- */
+
+  .aui-btn--shadow-sm {
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  .aui-btn--shadow-md {
+    box-shadow: var(--ui-shadow-md);
+  }
+
+  .aui-btn--shadow-lg {
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  /* --- fitContent --- */
+
+  .aui-btn--fit-content {
+    width: fit-content;
+  }
+
+  /* --- variant: primary (legacy solid shorthand) --- */
+
+  .aui-btn--primary {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-btn--primary:hover {
+    background-color: var(--ui-primary-hover);
+  }
+
+  /* --- variant: secondary (legacy solid shorthand) --- */
+
+  .aui-btn--secondary {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-btn--secondary:hover {
+    background-color: var(--ui-secondary-hover);
+  }
+
+  /* --- variant: solid (colored by data-color; defaults to primary) --- */
+
+  .aui-btn--solid {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-btn--solid:hover {
+    background-color: var(--ui-primary-hover);
+  }
+
+  .aui-btn--solid[data-color="secondary"] {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-btn--solid[data-color="secondary"]:hover {
+    background-color: var(--ui-secondary-hover);
+  }
+
+  .aui-btn--solid[data-color="destructive"] {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-btn--solid[data-color="success"] {
+    background-color: var(--ui-success);
+    color: var(--ui-success-foreground);
+  }
+
+  .aui-btn--solid[data-color="warning"] {
+    background-color: var(--ui-warning);
+    color: var(--ui-warning-foreground);
+  }
+
+  .aui-btn--solid[data-color="info"] {
+    background-color: var(--ui-info);
+    color: var(--ui-info-foreground);
+  }
+
+  .aui-btn--solid[data-color="carbon"] {
+    background-color: var(--ui-carbon);
+    color: var(--ui-carbon-foreground);
+  }
+
+  .aui-btn--solid[data-color="accent"] {
+    background-color: var(--ui-accent);
+    color: var(--ui-accent-foreground);
+  }
+
+  .aui-btn--solid[data-color="destructive"]:hover,
+  .aui-btn--solid[data-color="success"]:hover,
+  .aui-btn--solid[data-color="warning"]:hover,
+  .aui-btn--solid[data-color="info"]:hover,
+  .aui-btn--solid[data-color="carbon"]:hover,
+  .aui-btn--solid[data-color="accent"]:hover {
+    filter: brightness(0.92);
+  }
+
+  /* --- variant: soft (10% tint; defaults to primary) --- */
+
+  .aui-btn--soft {
+    background-color: color-mix(in srgb, var(--ui-primary) 12%, transparent);
+    color: var(--ui-primary);
+  }
+
+  .aui-btn--soft:hover {
+    background-color: color-mix(in srgb, var(--ui-primary) 20%, transparent);
+  }
+
+  .aui-btn--soft[data-color="secondary"] {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-btn--soft[data-color="secondary"]:hover {
+    background-color: var(--ui-secondary-hover);
+  }
+
+  .aui-btn--soft[data-color="destructive"] {
+    background-color: var(--ui-error-muted);
+    color: var(--ui-error);
+  }
+
+  .aui-btn--soft[data-color="success"] {
+    background-color: var(--ui-success-muted);
+    color: var(--ui-success);
+  }
+
+  .aui-btn--soft[data-color="warning"] {
+    background-color: var(--ui-warning-muted);
+    color: var(--ui-warning);
+  }
+
+  .aui-btn--soft[data-color="info"] {
+    background-color: var(--ui-info-muted);
+    color: var(--ui-info);
+  }
+
+  .aui-btn--soft[data-color="carbon"] {
+    background-color: color-mix(in srgb, var(--ui-carbon) 12%, transparent);
+    color: var(--ui-carbon);
+  }
+
+  .aui-btn--soft[data-color="accent"] {
+    background-color: color-mix(in srgb, var(--ui-accent) 12%, transparent);
+    color: var(--ui-accent);
+  }
+
+  .aui-btn--soft[data-color="destructive"]:hover,
+  .aui-btn--soft[data-color="success"]:hover,
+  .aui-btn--soft[data-color="warning"]:hover,
+  .aui-btn--soft[data-color="info"]:hover,
+  .aui-btn--soft[data-color="carbon"]:hover,
+  .aui-btn--soft[data-color="accent"]:hover {
+    filter: brightness(0.96);
+  }
+
+  /* --- variant: outline --- */
+
+  .aui-btn--outline {
+    background-color: transparent;
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-btn--outline:hover {
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-btn--outline[data-color] {
+    color: var(--ui-primary);
+    border-color: var(--ui-primary);
+  }
+
+  .aui-btn--outline[data-color="secondary"] {
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-btn--outline[data-color="destructive"] {
+    color: var(--ui-error);
+    border-color: var(--ui-error);
+  }
+
+  .aui-btn--outline[data-color="success"] {
+    color: var(--ui-success);
+    border-color: var(--ui-success);
+  }
+
+  .aui-btn--outline[data-color="warning"] {
+    color: var(--ui-warning);
+    border-color: var(--ui-warning);
+  }
+
+  .aui-btn--outline[data-color="info"] {
+    color: var(--ui-info);
+    border-color: var(--ui-info);
+  }
+
+  .aui-btn--outline[data-color="carbon"] {
+    color: var(--ui-carbon);
+    border-color: var(--ui-carbon);
+  }
+
+  .aui-btn--outline[data-color="accent"] {
+    color: var(--ui-accent);
+    border-color: var(--ui-accent);
+  }
+
+  .aui-btn--outline[data-color]:hover {
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  }
+
+  .aui-btn--outline[data-color="secondary"]:hover {
+    background-color: var(--ui-secondary-hover);
+  }
+
+  .aui-btn--outline[data-color="destructive"]:hover {
+    background-color: var(--ui-error-muted);
+  }
+
+  .aui-btn--outline[data-color="success"]:hover {
+    background-color: var(--ui-success-muted);
+  }
+
+  .aui-btn--outline[data-color="warning"]:hover {
+    background-color: var(--ui-warning-muted);
+  }
+
+  .aui-btn--outline[data-color="info"]:hover {
+    background-color: var(--ui-info-muted);
+  }
+
+  .aui-btn--outline[data-color="carbon"]:hover {
+    background-color: color-mix(in srgb, var(--ui-carbon) 10%, transparent);
+  }
+
+  .aui-btn--outline[data-color="accent"]:hover {
+    background-color: color-mix(in srgb, var(--ui-accent) 10%, transparent);
+  }
+
+  /* --- variant: dashed --- */
+
+  .aui-btn--dashed {
+    background-color: transparent;
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+    border-style: dashed;
+  }
+
+  .aui-btn--dashed:hover {
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-btn--dashed[data-color] {
+    color: var(--ui-primary);
+    border-color: var(--ui-primary);
+  }
+
+  .aui-btn--dashed[data-color="secondary"] {
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-btn--dashed[data-color="destructive"] {
+    color: var(--ui-error);
+    border-color: var(--ui-error);
+  }
+
+  .aui-btn--dashed[data-color="success"] {
+    color: var(--ui-success);
+    border-color: var(--ui-success);
+  }
+
+  .aui-btn--dashed[data-color="warning"] {
+    color: var(--ui-warning);
+    border-color: var(--ui-warning);
+  }
+
+  .aui-btn--dashed[data-color="info"] {
+    color: var(--ui-info);
+    border-color: var(--ui-info);
+  }
+
+  .aui-btn--dashed[data-color="carbon"] {
+    color: var(--ui-carbon);
+    border-color: var(--ui-carbon);
+  }
+
+  .aui-btn--dashed[data-color="accent"] {
+    color: var(--ui-accent);
+    border-color: var(--ui-accent);
+  }
+
+  .aui-btn--dashed[data-color]:hover {
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  }
+
+  .aui-btn--dashed[data-color="secondary"]:hover {
+    background-color: var(--ui-secondary-hover);
+  }
+
+  .aui-btn--dashed[data-color="destructive"]:hover {
+    background-color: var(--ui-error-muted);
+  }
+
+  .aui-btn--dashed[data-color="success"]:hover {
+    background-color: var(--ui-success-muted);
+  }
+
+  .aui-btn--dashed[data-color="warning"]:hover {
+    background-color: var(--ui-warning-muted);
+  }
+
+  .aui-btn--dashed[data-color="info"]:hover {
+    background-color: var(--ui-info-muted);
+  }
+
+  .aui-btn--dashed[data-color="carbon"]:hover {
+    background-color: color-mix(in srgb, var(--ui-carbon) 10%, transparent);
+  }
+
+  .aui-btn--dashed[data-color="accent"]:hover {
+    background-color: color-mix(in srgb, var(--ui-accent) 10%, transparent);
+  }
+
+  /* --- variant: plain --- */
+
+  .aui-btn--plain {
+    background-color: var(--ui-background);
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-btn--plain:hover {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-btn--plain[data-color="primary"]:hover {
+    border-color: var(--ui-primary);
+    color: var(--ui-primary);
+  }
+
+  .aui-btn--plain[data-color="secondary"]:hover {
+    border-color: var(--ui-border);
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-btn--plain[data-color="destructive"]:hover {
+    border-color: var(--ui-error);
+    color: var(--ui-error);
+  }
+
+  .aui-btn--plain[data-color="success"]:hover {
+    border-color: var(--ui-success);
+    color: var(--ui-success);
+  }
+
+  .aui-btn--plain[data-color="warning"]:hover {
+    border-color: var(--ui-warning);
+    color: var(--ui-warning);
+  }
+
+  .aui-btn--plain[data-color="info"]:hover {
+    border-color: var(--ui-info);
+    color: var(--ui-info);
+  }
+
+  .aui-btn--plain[data-color="carbon"]:hover {
+    border-color: var(--ui-carbon);
+    color: var(--ui-carbon);
+  }
+
+  .aui-btn--plain[data-color="accent"]:hover {
+    border-color: var(--ui-accent);
+    color: var(--ui-accent);
+  }
+
+  /* --- variant: pure (accent hover surface) --- */
+
+  .aui-btn--pure {
+    background-color: var(--ui-background);
+    color: var(--ui-foreground);
+    border-color: var(--ui-border);
+  }
+
+  .aui-btn--pure:hover {
+    background-color: color-mix(in srgb, var(--ui-primary) 12%, var(--ui-background));
+    color: var(--ui-primary);
+  }
+
+  .aui-btn--pure[data-color="primary"]:hover {
+    background-color: color-mix(in srgb, var(--ui-primary) 12%, var(--ui-background));
+    color: var(--ui-primary);
+  }
+
+  .aui-btn--pure[data-color="secondary"]:hover {
+    background-color: var(--ui-secondary-hover);
+  }
+
+  .aui-btn--pure[data-color="destructive"]:hover {
+    background-color: var(--ui-error-muted);
+    color: var(--ui-error);
+  }
+
+  .aui-btn--pure[data-color="success"]:hover {
+    background-color: var(--ui-success-muted);
+    color: var(--ui-success);
+  }
+
+  .aui-btn--pure[data-color="warning"]:hover {
+    background-color: var(--ui-warning-muted);
+    color: var(--ui-warning);
+  }
+
+  .aui-btn--pure[data-color="info"]:hover {
+    background-color: var(--ui-info-muted);
+    color: var(--ui-info);
+  }
+
+  .aui-btn--pure[data-color="carbon"]:hover {
+    background-color: color-mix(in srgb, var(--ui-carbon) 12%, var(--ui-background));
+    color: var(--ui-carbon);
+  }
+
+  .aui-btn--pure[data-color="accent"]:hover {
+    background-color: color-mix(in srgb, var(--ui-accent) 12%, var(--ui-background));
+    color: var(--ui-accent);
+  }
+
+  /* --- variant: ghost --- */
+
+  .aui-btn--ghost {
+    background-color: transparent;
+    color: var(--ui-foreground);
+  }
+
+  .aui-btn--ghost:hover {
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-btn--ghost[data-color] {
+    color: var(--ui-primary);
+  }
+
+  .aui-btn--ghost[data-color="secondary"] {
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-btn--ghost[data-color="destructive"] {
+    color: var(--ui-error);
+  }
+
+  .aui-btn--ghost[data-color="success"] {
+    color: var(--ui-success);
+  }
+
+  .aui-btn--ghost[data-color="warning"] {
+    color: var(--ui-warning);
+  }
+
+  .aui-btn--ghost[data-color="info"] {
+    color: var(--ui-info);
+  }
+
+  .aui-btn--ghost[data-color="carbon"] {
+    color: var(--ui-carbon);
+  }
+
+  .aui-btn--ghost[data-color="accent"] {
+    color: var(--ui-accent);
+  }
+
+  .aui-btn--ghost[data-color]:hover {
+    background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  }
+
+  .aui-btn--ghost[data-color="secondary"]:hover {
+    background-color: var(--ui-secondary-hover);
+  }
+
+  .aui-btn--ghost[data-color="destructive"]:hover {
+    background-color: var(--ui-error-muted);
+  }
+
+  .aui-btn--ghost[data-color="success"]:hover {
+    background-color: var(--ui-success-muted);
+  }
+
+  .aui-btn--ghost[data-color="warning"]:hover {
+    background-color: var(--ui-warning-muted);
+  }
+
+  .aui-btn--ghost[data-color="info"]:hover {
+    background-color: var(--ui-info-muted);
+  }
+
+  .aui-btn--ghost[data-color="carbon"]:hover {
+    background-color: color-mix(in srgb, var(--ui-carbon) 10%, transparent);
+  }
+
+  .aui-btn--ghost[data-color="accent"]:hover {
+    background-color: color-mix(in srgb, var(--ui-accent) 10%, transparent);
+  }
+
+  /* --- variant: destructive (legacy solid shorthand) --- */
+
+  .aui-btn--destructive {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-btn--destructive:hover {
+    filter: brightness(0.92);
+  }
+
+  /* --- variant: link --- */
+
+  .aui-btn--link {
+    background-color: transparent;
+    color: var(--ui-primary);
+    height: auto;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .aui-btn--link[data-color="secondary"] {
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-btn--link[data-color="destructive"] {
+    color: var(--ui-error);
+  }
+
+  .aui-btn--link[data-color="success"] {
+    color: var(--ui-success);
+  }
+
+  .aui-btn--link[data-color="warning"] {
+    color: var(--ui-warning);
+  }
+
+  .aui-btn--link[data-color="info"] {
+    color: var(--ui-info);
+  }
+
+  .aui-btn--link[data-color="carbon"] {
+    color: var(--ui-carbon);
+  }
+
+  .aui-btn--link[data-color="accent"] {
+    color: var(--ui-accent);
+  }
+
+  /* --- invalid (error border + red focus ring; wins over variant borders) --- */
+
+  .aui-btn.aui-btn--invalid,
+  .aui-btn.aui-btn--invalid:hover {
+    border-color: var(--ui-error);
+  }
+
+  .aui-btn.aui-btn--invalid:focus-visible {
+    border-color: var(--ui-error);
+    outline-color: var(--ui-error);
+  }
+
+  .aui-btn--link.aui-btn--invalid,
+  .aui-btn--link.aui-btn--invalid:hover {
+    border-color: transparent;
+    color: var(--ui-error);
+  }
+
+  .aui-btn--solid.aui-btn--invalid:not([data-color="destructive"]),
+  .aui-btn--primary.aui-btn--invalid {
+    box-shadow: inset 0 0 0 1px var(--ui-error);
+  }
+
+  /* --- disabled / loading --- */
+
+  .aui-btn:disabled,
+  .aui-btn[aria-disabled="true"] {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .aui-btn--loading {
+    cursor: wait;
+  }
+
+  /* --- spinner --- */
+
+  .aui-btn__spinner {
+    width: 1em;
+    height: 1em;
+  }
+
+  .aui-btn__spinner--ring {
+    border-radius: var(--ui-radius-full);
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: aui-spin 0.75s linear infinite;
+  }
+
+  .aui-btn__spinner--dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2em;
+  }
+
+  .aui-btn__spinner--dots::before,
+  .aui-btn__spinner--dots::after {
+    content: "";
+    display: block;
+    width: 0.28em;
+    height: 0.28em;
+    border-radius: var(--ui-radius-full);
+    background-color: currentColor;
+    animation: aui-dots-bounce 1.4s ease-in-out infinite both;
+  }
+
+  .aui-btn__spinner--dots::after {
+    animation-delay: -0.33s;
+  }
+
+  .aui-btn__spinner--pulse {
+    border-radius: var(--ui-radius-full);
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    animation: aui-spin 0.8s linear infinite;
+  }
+
+  .aui-btn__spinner--spin {
+    border-radius: var(--ui-radius-sm);
+    background-color: currentColor;
+    animation: aui-spin 0.7s linear infinite;
+    opacity: 0.85;
+  }
+
+  @keyframes aui-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes aui-dots-bounce {
+    0%,
+    80%,
+    100% {
+      transform: scale(0);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+</style>

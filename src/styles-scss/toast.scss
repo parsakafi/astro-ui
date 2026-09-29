@@ -1,0 +1,775 @@
+// ─── AstroUI Toast (SCSS) ────────────────────────────────────────────────────
+// Compiles to src/styles/toast.css via: sass src/styles-scss/toast.scss src/styles/toast.css
+
+// ─── component variables ─────────────────────────────────────────────────────
+// All variables are !default so consumers can override them via Sass:
+//   @use "astro-ui/src/styles-scss/toast" with (
+//     $toast-gap: 16px,
+//     $toast-collapsed-duration: 200ms
+//   );
+// (Used only inside this file; the compiled toast.css carries final values.)
+
+$toast-gap: 12px !default;
+$toast-padding: 16px !default;
+$toast-top: 16px !default;
+$toast-bottom: 16px !default;
+$toast-right: 16px !default;
+$toast-left: 16px !default;
+$toast-max-width: 360px !default;
+$toast-enter-duration: 230ms !default;
+$toast-exit-duration: 180ms !default;
+$toast-enter-easing: cubic-bezier(0.16, 1, 0.3, 1) !default;
+$toast-exit-easing: cubic-bezier(0.55, 0, 1, 0.36) !default;
+$toast-collapsed-duration: 300ms !default;
+$toast-collapsed-easing: cubic-bezier(0.16, 1, 0.3, 1) !default;
+
+// ─── container ──────────────────────────────────────────────────────────────
+
+.aui-toaster {
+  display: grid;
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  list-style: none;
+  margin: 0;
+  padding: $toast-gap;
+
+  // Default position: bottom-inline-end (applies when no data-position is set)
+  top: auto;
+  bottom: $toast-bottom;
+  inset-inline: 0;
+  justify-content: flex-end;
+
+  // All six containers share the same screen position (stacked).
+  // Only the active one is visible — the script moves toasts between
+  // containers, so this keeps the layout honest without JS positioning.
+  &[data-position]:not([data-active]) {
+    display: none;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $toast-gap;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+  }
+}
+
+// ─── position variants ─────────────────────────────────────────────────────
+// data-position lives on the .aui-toaster container itself; the Toaster script
+// keeps it in sync with the newest toast's `position` option.
+
+.aui-toaster {
+  &[data-position="top-left"],
+  &[data-position="top-center"],
+  &[data-position="top-right"] {
+    top: $toast-top;
+    inset-inline: 0;
+    bottom: auto;
+  }
+
+  &[data-position="bottom-left"],
+  &[data-position="bottom-center"],
+  &[data-position="bottom-right"] {
+    bottom: $toast-bottom;
+    inset-inline: 0;
+    top: auto;
+  }
+
+  &[data-position="top-left"],
+  &[data-position="bottom-left"] {
+    justify-content: flex-start;
+  }
+
+  &[data-position="top-center"],
+  &[data-position="bottom-center"] {
+    justify-content: center;
+  }
+
+  &[data-position="top-right"],
+  &[data-position="bottom-right"] {
+    justify-content: flex-end;
+  }
+}
+
+// ─── toast item ────────────────────────────────────────────────────────────
+
+.aui-toast {
+  --toast-bg: var(--toast-color, #fff);
+  --toast-border: var(--toast-border-color, #e2e8f0);
+  --toast-shadow: var(--toast-shadow-color, 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.08));
+  --toast-fg: var(--toast-text-color, #1e293b);
+  --toast-muted-fg: var(--toast-muted-color, #64748b);
+  --toast-close-fg: var(--toast-close-color, #94a3b8);
+  --toast-close-hover-bg: var(--toast-close-hover, rgba(0, 0, 0, 0.06));
+  --toast-radius: var(--ui-radius-md, 8px);
+  --toast-font-size: 0.875rem;
+  --toast-line-height: 1.45;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: var(--toast-max-width, #{$toast-max-width});
+  background: var(--toast-bg);
+  border: 1px solid var(--toast-border);
+  border-radius: var(--toast-radius);
+  box-shadow: var(--toast-shadow);
+  color: var(--toast-fg);
+  font-family: inherit;
+  font-size: var(--toast-font-size);
+  line-height: var(--toast-line-height);
+  padding: 12px 16px;
+  pointer-events: auto;
+  cursor: default;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity $toast-exit-duration $toast-exit-easing,
+  transform $toast-collapsed-duration $toast-collapsed-easing,
+  filter $toast-collapsed-duration $toast-collapsed-easing;
+  will-change: transform, opacity;
+  animation: aui-toast-enter $toast-enter-duration $toast-enter-easing both;
+
+  // ── collapsed (peek) mode ──
+  // The script sets data-collapsed on the STACK; older toasts scale down
+  // and tuck behind the newest one (inline transforms computed there).
+  [data-collapsed="true"] &:not(:last-child) {
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  &[data-dismissible="false"] {
+    .aui-toast__close {
+      display: none;
+    }
+  }
+
+  &[data-entered="true"] {
+    // Releases the enter animation (and its fill) so the script's inline
+    // collapsed-peek transforms can apply. Must precede the exit rule.
+    animation: none;
+  }
+
+  &[data-exit="true"] {
+    animation: aui-toast-exit $toast-exit-duration $toast-exit-easing both;
+    transition: opacity $toast-exit-duration $toast-exit-easing;
+  }
+
+  &[data-mounted="false"] {
+    display: none;
+  }
+}
+
+// ─── close button ──────────────────────────────────────────────────────────
+
+.aui-toast__close {
+  position: absolute;
+  top: 6px;
+  inset-inline-end: 6px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--toast-close-fg);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 120ms ease, color 120ms ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--toast-close-hover-bg);
+    color: var(--toast-fg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ui-ring, rgba(59, 130, 246, 0.5));
+    outline-offset: 1px;
+  }
+}
+
+// ─── content layout ────────────────────────────────────────────────────────
+
+.aui-toast__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+
+  // Reserve space for the absolutely-positioned close button so long
+  // titles never run underneath it.
+  .aui-toast:not([data-dismissible="false"]) & {
+    padding-inline-end: 20px;
+  }
+}
+
+.aui-toast__title {
+  margin: 0;
+  font-weight: 500;
+  color: var(--toast-fg);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.aui-toast__description {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--toast-muted-fg);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+// ─── action button ─────────────────────────────────────────────────────────
+
+.aui-toast__action {
+  flex-shrink: 0;
+  // Push to the far inline-end, opposite the icon.
+  margin-inline-start: auto;
+  border: none;
+  background: transparent;
+  color: var(--toast-fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 5px 10px;
+  border-radius: calc(var(--toast-radius, 8px) - 2px);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 120ms ease, color 120ms ease;
+
+  &:hover {
+    background: var(--toast-close-hover-bg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ui-ring, rgba(59, 130, 246, 0.5));
+    outline-offset: 1px;
+  }
+
+  // Keep clear of the absolutely-positioned close button.
+  .aui-toast:has(.aui-toast__close) & {
+    margin-inline-end: 18px;
+  }
+}
+
+// ─── icon slot ─────────────────────────────────────────────────────────────
+
+.aui-toast__icon {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 10px;
+  color: var(--toast-fg);
+  opacity: 0.7;
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  .aui-toast__spinner {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .aui-toast__spinner-bar {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--toast-fg);
+    border-right-color: transparent;
+    animation: aui-toast-spin 0.8s linear infinite;
+  }
+}
+
+// ─── role styling ──────────────────────────────────────────────────────────
+
+.aui-toast[role="alert"] {
+  .aui-toast__title {
+    font-weight: 600;
+  }
+}
+
+// ─── hover ──────────────────────────────────────────────────────────────────
+
+.aui-toast:hover,
+.aui-toast:focus-within {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+// ─── swipe ──────────────────────────────────────────────────────────────────
+
+.aui-toast[data-swiping="true"] {
+  transition: transform 100ms ease-out, opacity 100ms ease-out;
+}
+
+.aui-toast[data-swipe-direction="right"] {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.aui-toast[data-swipe-direction="left"] {
+  transform: translateX(-120%);
+  opacity: 0;
+}
+
+// ─── theme: light ──────────────────────────────────────────────────────────
+
+:root,
+[data-theme="light"] {
+  --toast-color: #ffffff;
+  --toast-border-color: #e2e8f0;
+  --toast-shadow-color: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --toast-text-color: #1e293b;
+  --toast-muted-color: #64748b;
+  --toast-close-color: #94a3b8;
+  --toast-close-hover: rgba(0, 0, 0, 0.08);
+}
+
+// ─── theme: dark ───────────────────────────────────────────────────────────
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --toast-color: #1e293b;
+    --toast-border-color: #334155;
+    --toast-shadow-color: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+    --toast-text-color: #f1f5f9;
+    --toast-muted-color: #94a3b8;
+    --toast-close-color: #64748b;
+    --toast-close-hover: rgba(255, 255, 255, 0.1);
+  }
+}
+
+[data-theme="dark"] {
+  --toast-color: #1e293b;
+  --toast-border-color: #334155;
+  --toast-shadow-color: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4);
+  --toast-text-color: #f1f5f9;
+  --toast-muted-color: #94a3b8;
+  --toast-close-color: #64748b;
+  --toast-close-hover: rgba(255, 255, 255, 0.1);
+}
+
+// ─── type accents (always on) ──────────────────────────────────────────────
+// Colored icon + left accent identify the variant even without `richColors`;
+// richColors additionally tints the whole card.
+
+.aui-toast[data-type="success"] {
+  border-inline-start: 3px solid #16a34a;
+
+  .aui-toast__icon {
+    color: #16a34a;
+    opacity: 1;
+  }
+}
+
+.aui-toast[data-type="error"] {
+  border-inline-start: 3px solid #dc2626;
+
+  .aui-toast__icon {
+    color: #dc2626;
+    opacity: 1;
+  }
+}
+
+.aui-toast[data-type="warning"] {
+  border-inline-start: 3px solid #d97706;
+
+  .aui-toast__icon {
+    color: #d97706;
+    opacity: 1;
+  }
+}
+
+.aui-toast[data-type="info"] {
+  border-inline-start: 3px solid #2563eb;
+
+  .aui-toast__icon {
+    color: #2563eb;
+    opacity: 1;
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-type="info"] .aui-toast__icon {
+    color: #60a5fa;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-type="info"] .aui-toast__icon {
+      color: #60a5fa;
+    }
+  }
+}
+
+// ─── rich colors ───────────────────────────────────────────────────────────
+
+// success
+.aui-toast[data-type="success"][data-rich-colors="true"] {
+  --toast-bg: #f0fdf4;
+  --toast-border: #bbf7d0;
+  --toast-fg: #166534;
+  --toast-muted-fg: #4ade80;
+  --toast-close-fg: #4ade80;
+  --toast-close-hover-bg: rgba(22, 101, 52, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-type="success"][data-rich-colors="true"] {
+      --toast-bg: rgba(34, 197, 94, 0.18);
+      --toast-border: rgba(34, 197, 94, 0.4);
+      --toast-fg: #86efac;
+      --toast-muted-fg: #86efac;
+      --toast-close-fg: #86efac;
+      --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-type="success"][data-rich-colors="true"] {
+    --toast-bg: rgba(34, 197, 94, 0.18);
+    --toast-border: rgba(34, 197, 94, 0.4);
+    --toast-fg: #86efac;
+    --toast-muted-fg: #86efac;
+    --toast-close-fg: #86efac;
+    --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// error
+.aui-toast[data-type="error"][data-rich-colors="true"] {
+  --toast-bg: #fef2f2;
+  --toast-border: #fecaca;
+  --toast-fg: #991b1b;
+  --toast-muted-fg: #f87171;
+  --toast-close-fg: #f87171;
+  --toast-close-hover-bg: rgba(153, 27, 27, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-type="error"][data-rich-colors="true"] {
+      --toast-bg: rgba(239, 68, 68, 0.18);
+      --toast-border: rgba(239, 68, 68, 0.4);
+      --toast-fg: #fca5a5;
+      --toast-muted-fg: #fca5a5;
+      --toast-close-fg: #fca5a5;
+      --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-type="error"][data-rich-colors="true"] {
+    --toast-bg: rgba(239, 68, 68, 0.18);
+    --toast-border: rgba(239, 68, 68, 0.4);
+    --toast-fg: #fca5a5;
+    --toast-muted-fg: #fca5a5;
+    --toast-close-fg: #fca5a5;
+    --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// warning
+.aui-toast[data-type="warning"][data-rich-colors="true"] {
+  --toast-bg: #fffbeb;
+  --toast-border: #fde68a;
+  --toast-fg: #854d0e;
+  --toast-muted-fg: #facc15;
+  --toast-close-fg: #facc15;
+  --toast-close-hover-bg: rgba(133, 77, 14, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-type="warning"][data-rich-colors="true"] {
+      --toast-bg: rgba(234, 179, 8, 0.18);
+      --toast-border: rgba(234, 179, 8, 0.4);
+      --toast-fg: #fde68a;
+      --toast-muted-fg: #fde68a;
+      --toast-close-fg: #fde68a;
+      --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-type="warning"][data-rich-colors="true"] {
+    --toast-bg: rgba(234, 179, 8, 0.18);
+    --toast-border: rgba(234, 179, 8, 0.4);
+    --toast-fg: #fde68a;
+    --toast-muted-fg: #fde68a;
+    --toast-close-fg: #fde68a;
+    --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// info
+.aui-toast[data-type="info"][data-rich-colors="true"] {
+  --toast-bg: #eff6ff;
+  --toast-border: #bfdbfe;
+  --toast-fg: #1e3a5f;
+  --toast-muted-fg: #60a5fa;
+  --toast-close-fg: #60a5fa;
+  --toast-close-hover-bg: rgba(30, 58, 95, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-type="info"][data-rich-colors="true"] {
+      --toast-bg: rgba(59, 130, 246, 0.18);
+      --toast-border: rgba(59, 130, 246, 0.4);
+      --toast-fg: #93c5fd;
+      --toast-muted-fg: #93c5fd;
+      --toast-close-fg: #93c5fd;
+      --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-type="info"][data-rich-colors="true"] {
+    --toast-bg: rgba(59, 130, 246, 0.18);
+    --toast-border: rgba(59, 130, 246, 0.4);
+    --toast-fg: #93c5fd;
+    --toast-muted-fg: #93c5fd;
+    --toast-close-fg: #93c5fd;
+    --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// default
+.aui-toast[data-type="default"][data-rich-colors="true"] {
+  --toast-bg: #f8fafc;
+  --toast-border: #e2e8f0;
+  --toast-fg: #475569;
+  --toast-muted-fg: #94a3b8;
+  --toast-close-fg: #94a3b8;
+  --toast-close-hover-bg: rgba(71, 85, 105, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-type="default"][data-rich-colors="true"] {
+      --toast-bg: rgba(100, 116, 139, 0.18);
+      --toast-border: rgba(100, 116, 139, 0.4);
+      --toast-fg: #cbd5e1;
+      --toast-muted-fg: #cbd5e1;
+      --toast-close-fg: #cbd5e1;
+      --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-type="default"][data-rich-colors="true"] {
+    --toast-bg: rgba(100, 116, 139, 0.18);
+    --toast-border: rgba(100, 116, 139, 0.4);
+    --toast-fg: #cbd5e1;
+    --toast-muted-fg: #cbd5e1;
+    --toast-close-fg: #cbd5e1;
+    --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// loading (same as default)
+.aui-toast[data-type="loading"][data-rich-colors="true"] {
+  --toast-bg: #f8fafc;
+  --toast-border: #e2e8f0;
+  --toast-fg: #475569;
+  --toast-muted-fg: #94a3b8;
+  --toast-close-fg: #94a3b8;
+  --toast-close-hover-bg: rgba(71, 85, 105, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-type="loading"][data-rich-colors="true"] {
+      --toast-bg: rgba(100, 116, 139, 0.18);
+      --toast-border: rgba(100, 116, 139, 0.4);
+      --toast-fg: #cbd5e1;
+      --toast-muted-fg: #cbd5e1;
+      --toast-close-fg: #cbd5e1;
+      --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-type="loading"][data-rich-colors="true"] {
+    --toast-bg: rgba(100, 116, 139, 0.18);
+    --toast-border: rgba(100, 116, 139, 0.4);
+    --toast-fg: #cbd5e1;
+    --toast-muted-fg: #cbd5e1;
+    --toast-close-fg: #cbd5e1;
+    --toast-close-hover-bg: rgba(255, 255, 255, 0.12);
+  }
+}
+
+// ─── animations ────────────────────────────────────────────────────────────
+
+// Position-aware enter/exit directions.
+// Top stacks: toast enters from below (positive) and exits downward (positive).
+// Bottom stacks: toast enters from above (negative) and exits upward (negative).
+.aui-toaster[data-position="top-left"],
+.aui-toaster[data-position="top-center"],
+.aui-toaster[data-position="top-right"] {
+  --exit-d: 8px;
+  --enter-d: 12px;
+}
+
+.aui-toaster[data-position="bottom-left"],
+.aui-toaster[data-position="bottom-center"],
+.aui-toaster[data-position="bottom-right"] {
+  --exit-d: -8px;
+  --enter-d: -12px;
+}
+
+@keyframes aui-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--enter-d, 12px)) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Top stacks render newest-first (closest to the top edge) without the
+// script having to reorder DOM nodes.
+.aui-toaster[data-position="top-left"] .aui-toaster__list,
+.aui-toaster[data-position="top-center"] .aui-toaster__list,
+.aui-toaster[data-position="top-right"] .aui-toaster__list {
+  flex-direction: column-reverse;
+}
+
+@keyframes aui-toast-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes aui-toast-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ─── reduced motion ────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+  .aui-toast {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+
+  .aui-toast__icon .aui-toast__spinner-bar {
+    animation-duration: 1ms !important;
+  }
+}
+
+// ─── logical sizing (RTL-ready) ────────────────────────────────────────
+// Toasts size by the writing direction, not physical sides.
+
+@media (max-width: 640px) {
+  .aui-toaster {
+    --toast-max-width: calc(100vw - 32px);
+  }
+}
+
+// ─── RTL ──────────────────────────────────────────────────────────────
+// No [dir="rtl"] overrides needed: every directional rule uses logical
+// properties (inset-inline, padding-inline-*, margin-inline-end,
+// border-inline-start), so stacks mirror automatically under `dir="rtl"`.
+// The swipe-to-dismiss transform stays deliberately physical (gesture =
+// screen-space).
+
+// ─── invert mode ───────────────────────────────────────────────────────────
+
+.aui-toast[data-invert="true"] {
+  background: var(--toast-invert-bg, #e2e8f0);
+  border-color: var(--toast-invert-bg, #e2e8f0);
+  color: var(--toast-invert-fg, #1e293b);
+  --toast-fg: var(--toast-invert-fg, #1e293b);
+  --toast-muted-fg: var(--toast-invert-fg, #1e293b);
+  --toast-close-fg: var(--toast-invert-fg, #1e293b);
+  --toast-close-hover-bg: rgba(255, 255, 255, 0.15);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    .aui-toast[data-invert="true"] {
+      --toast-invert-bg: #334155;
+    }
+  }
+}
+
+[data-theme="dark"] {
+  .aui-toast[data-invert="true"] {
+    --toast-invert-bg: #334155;
+  }
+}
+
+.aui-toast[data-type="success"][data-invert="true"] {
+  --toast-invert-bg: #22c55e;
+}
+
+.aui-toast[data-type="error"][data-invert="true"] {
+  --toast-invert-bg: #ef4444;
+}
+
+.aui-toast[data-type="warning"][data-invert="true"] {
+  --toast-invert-bg: #eab308;
+}
+
+.aui-toast[data-type="info"][data-invert="true"] {
+  --toast-invert-bg: #3b82f6;
+}
+
+.aui-toast[data-type="default"][data-invert="true"] {
+  --toast-invert-bg: #64748b;
+}
+
+.aui-toast[data-type="loading"][data-invert="true"] {
+  --toast-invert-bg: #64748b;
+}
+
+// ─── loading pulse ─────────────────────────────────────────────────────────
+
+.aui-toast[data-type="loading"] {
+  .aui-toast__icon {
+    animation: aui-toast-pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes aui-toast-pulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}

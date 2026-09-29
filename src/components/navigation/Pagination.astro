@@ -1,0 +1,240 @@
+---
+/**
+  * Pagination — zero-JS page navigation.
+  *
+  * Semantic <nav aria-label> wrapping a linked page list. Fully
+  * server-rendered: every page is a real link, so it works without JS
+  * and is crawlable. Pages outside the `siblingCount` window collapse
+  * into ellipsis items. `pageHref` builds each URL from a page number;
+  * use hash/query links or route paths as fits the app.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** 1-based current page. */
+  page: number;
+  /** Total number of pages. */
+  total: number;
+  /** Builds the href for a page number (e.g. (p) => `/blog?page=${p}`). */
+  pageHref: (page: number) => string;
+  /** Pages shown on each side of the current page before truncation. */
+  siblingCount?: number;
+  /** Show the previous/next controls. */
+  showPrevNext?: boolean;
+  /** Accessible name for the nav landmark. */
+  ariaLabel?: string;
+  /** Visual style. */
+  variant?: "outline" | "ghost";
+  /** Scale of the controls. */
+  size?: "sm" | "md" | "lg";
+  /** Renders as arrows-only compact prev/next (pages hidden). */
+  compact?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  page,
+  total,
+  pageHref,
+  siblingCount = 1,
+  showPrevNext = true,
+  ariaLabel = "Pagination",
+  variant = "outline",
+  size = "md",
+  compact = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+/** Page numbers + "ellipsis" markers between the fixed ends. */
+function pageRange(current: number, count: number, siblings: number): (number | "ellipsis")[] {
+  const totalSlots = siblings * 2 + 5;
+  if (count <= totalSlots) {
+    return Array.from({length: count}, (_, i) => i + 1);
+  }
+  const left = Math.max(current - siblings, 1);
+  const right = Math.min(current + siblings, count);
+  const showLeftEllipsis = left > 2;
+  const showRightEllipsis = right < count - 1;
+  const items: (number | "ellipsis")[] = [1];
+  if (showLeftEllipsis) items.push("ellipsis");
+  for (let p = left; p <= right; p++) items.push(p);
+  if (showRightEllipsis) items.push("ellipsis");
+  items.push(count);
+  return items;
+}
+
+const range = compact ? [] : pageRange(page, total, siblingCount);
+
+const classes = cn(
+  "aui-pagination",
+  `aui-pagination--${variant}`,
+  `aui-pagination--${size}`,
+  compact && "aui-pagination--compact",
+  className,
+);
+const control = "aui-pagination__control";
+const linkClass = `${control} aui-pagination__link`;
+---
+
+<nav id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  <ul class="aui-pagination__list">
+    {
+      showPrevNext && (
+        <li>
+          {page > 1 ? (
+            <a class={linkClass} href={pageHref(page - 1)} aria-label="Previous page">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+              </svg>
+            </a>
+          ) : (
+            <span class={`${control} aui-pagination__disabled`} aria-hidden="true">
+							<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+								<path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+							</svg>
+						</span>
+          )}
+        </li>
+      )
+    }
+    {
+      range.map((item) =>
+        item === "ellipsis" ? (
+          <li class="aui-pagination__ellipsis" aria-hidden="true">
+            …
+          </li>
+        ) : item === page ? (
+          <li>
+						<span class={`${control} aui-pagination__current`} aria-current="page">
+							{item}
+						</span>
+          </li>
+        ) : (
+          <li>
+            <a class={linkClass} href={pageHref(item)} aria-label={`Page ${item}`}>
+              {item}
+            </a>
+          </li>
+        ),
+      )
+    }
+    {
+      showPrevNext && (
+        <li>
+          {page < total ? (
+            <a class={linkClass} href={pageHref(page + 1)} aria-label="Next page">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+              </svg>
+            </a>
+          ) : (
+            <span class={`${control} aui-pagination__disabled`} aria-hidden="true">
+							<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+								<path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+							</svg>
+						</span>
+          )}
+        </li>
+      )
+    }
+  </ul>
+</nav>
+
+<style>
+  .aui-pagination {
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-pagination__list {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aui-pagination__control {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+    color: var(--ui-muted-foreground);
+    text-decoration: none;
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-md);
+    transition: color var(--ui-transition-fast),
+    background-color var(--ui-transition-fast),
+    border-color var(--ui-transition-fast);
+  }
+
+  .aui-pagination--outline .aui-pagination__control {
+    border-color: var(--ui-border);
+  }
+
+  .aui-pagination--sm .aui-pagination__control {
+    min-width: 1.75rem;
+    height: 1.75rem;
+    font-size: var(--ui-text-xs);
+    padding: 0 var(--ui-space-1);
+  }
+
+  .aui-pagination--md .aui-pagination__control {
+    min-width: 2rem;
+    height: 2rem;
+    font-size: var(--ui-text-sm);
+    padding: 0 var(--ui-space-1);
+  }
+
+  .aui-pagination--lg .aui-pagination__control {
+    min-width: 2.25rem;
+    height: 2.25rem;
+    font-size: var(--ui-text-base);
+    padding: 0 var(--ui-space-2);
+  }
+
+  a.aui-pagination__link:hover {
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+  }
+
+  a.aui-pagination__link:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-pagination__current {
+    color: var(--ui-primary-foreground);
+    background-color: var(--ui-primary);
+    border-color: var(--ui-primary);
+    font-weight: var(--ui-font-medium);
+  }
+
+  .aui-pagination__disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-pagination__ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    color: var(--ui-muted-foreground);
+    letter-spacing: 0.1em;
+  }
+
+  .aui-pagination--compact .aui-pagination__list {
+    gap: var(--ui-space-2);
+  }
+</style>

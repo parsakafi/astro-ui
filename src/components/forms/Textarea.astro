@@ -1,0 +1,429 @@
+---
+/**
+  * Textarea — multi-line text control with optional progressive extras.
+  *
+  * The core control is a native <textarea> and works without JS. The
+  * optional extras — character counter (showCount / counter), clear
+  * button (clearable), and auto-grow between minRows/maxRows — are
+  * wired by a tiny scoped script and degrade to a plain textarea
+  * without it.
+  *
+  *   <Label for="bio">Bio</Label>
+  *   <Textarea id="bio" name="bio" rows={4} maxlength={280} showCount clearable />
+  *
+  * JavaScript required: Yes
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  name?: string;
+  value?: string | number;
+  placeholder?: string;
+  rows?: number;
+  minlength?: number;
+  maxlength?: number;
+  autocomplete?: string;
+  required?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
+  invalid?: boolean;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  variant?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info";
+  /** Render the character-count readout (shows "n / maxlength" when a cap exists). */
+  showCount?: boolean;
+  /** Alias of showCount. */
+  counter?: boolean;
+  /** Render a clear button, visible only while the field has text. */
+  clearable?: boolean;
+  /** Auto-grow floor (initial height). */
+  minRows?: number;
+  /** Auto-grow ceiling — the control scrolls once exceeded. */
+  maxRows?: number;
+  resize?: "none" | "vertical" | "horizontal" | "both";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+}
+
+const {
+  name,
+  value,
+  placeholder,
+  rows = 4,
+  minlength,
+  maxlength,
+  autocomplete,
+  required = false,
+  disabled = false,
+  readonly = false,
+  invalid = false,
+  size = "md",
+  variant = "inherit",
+  showCount = false,
+  counter = false,
+  clearable = false,
+  minRows,
+  maxRows,
+  resize = "vertical",
+  class: className,
+  id,
+  ariaLabel,
+  ariaDescribedby,
+  ...rest
+} = Astro.props;
+
+const showCounter = showCount || counter;
+const grows = Boolean(minRows || maxRows);
+const hasExtras = showCounter || clearable || grows;
+const initialCount = value == null ? 0 : String(value).length;
+
+const classes = cn(
+  "aui-textarea",
+  `aui-textarea--${size}`,
+  `aui-textarea--variant-${variant}`,
+  `aui-textarea--resize-${grows ? "none" : resize}`,
+  invalid && "aui-textarea--invalid",
+  clearable && "aui-textarea--clearable",
+  className,
+);
+---
+
+{hasExtras ? (
+<span class="aui-textarea__wrap" data-aui-textarea-wrap="">
+		<textarea
+      class={classes}
+      name={name}
+      placeholder={placeholder}
+      rows={grows ? (minRows ?? rows) : rows}
+      minlength={minlength}
+      maxlength={maxlength}
+      autocomplete={autocomplete}
+      required={required || undefined}
+      disabled={disabled || undefined}
+      readonly={readonly || undefined}
+      aria-invalid={invalid || undefined}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedby}
+      id={id}
+      data-aui-textarea=""
+      data-count={showCounter || undefined}
+      data-clearable={clearable || undefined}
+      data-grow={grows || undefined}
+      data-min-rows={minRows || undefined}
+      data-max-rows={maxRows || undefined}
+      {...rest}
+    >{value}</textarea>
+  {clearable && (
+    <button
+      type="button"
+      class="aui-textarea__clear"
+      aria-label="Clear text"
+      data-aui-textarea-clear=""
+      hidden={initialCount === 0}
+    >
+      <svg
+        width="10"
+        height="10"
+        viewBox="0 0 12 12"
+        fill="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M3 3l6 6M9 3l-6 6"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </svg>
+    </button>
+  )}
+  {showCounter && (
+    <span class="aui-textarea__count" data-aui-textarea-count="">
+				{maxlength ? `${initialCount} / ${maxlength}` : initialCount}
+			</span>
+  )}
+	</span>
+  ) : (
+<textarea
+  class={classes}
+  name={name}
+  placeholder={placeholder}
+  rows={grows ? (minRows ?? rows) : rows}
+  minlength={minlength}
+  maxlength={maxlength}
+  autocomplete={autocomplete}
+  required={required || undefined}
+  disabled={disabled || undefined}
+  readonly={readonly || undefined}
+  aria-invalid={invalid || undefined}
+  aria-label={ariaLabel}
+  aria-describedby={ariaDescribedby}
+  id={id}
+  data-aui-textarea=""
+  data-count={showCounter || undefined}
+  data-clearable={clearable || undefined}
+  data-grow={grows || undefined}
+  data-min-rows={minRows || undefined}
+  data-max-rows={maxRows || undefined}
+  {...rest}
+>{value}</textarea>
+  )}
+
+<script>
+  function initTextarea(wrap: HTMLElement): void {
+    if (wrap.dataset.auiTextareaInit === "true") return;
+    wrap.dataset.auiTextareaInit = "true";
+    const ta = wrap.querySelector<HTMLTextAreaElement>("[data-aui-textarea]");
+    if (!ta) return;
+
+    const countEl = wrap.querySelector<HTMLElement>("[data-aui-textarea-count]");
+    const clearEl = wrap.querySelector<HTMLButtonElement>(
+      "[data-aui-textarea-clear]",
+    );
+    const grows = ta.dataset.grow === "true";
+    const minRows = Number(ta.dataset.minRows) || 0;
+    const maxRows = Number(ta.dataset.maxRows) || Infinity;
+    const maxLength = Number(ta.getAttribute("maxlength")) || 0;
+
+    const sync = (): void => {
+      const len = ta.value.length;
+      if (countEl) {
+        countEl.textContent = maxLength
+          ? `${len} / ${maxLength}`
+          : String(len);
+      }
+      if (clearEl) {
+        if (len === 0) clearEl.setAttribute("hidden", "");
+        else clearEl.removeAttribute("hidden");
+      }
+      if (grows) {
+        const cs = getComputedStyle(ta);
+        const lineHeight =
+          parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.5 || 20;
+        const paddingY =
+          parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+        const minH = minRows * lineHeight + paddingY;
+        const maxH = maxRows * lineHeight + paddingY;
+        ta.style.height = "auto";
+        const contentH = ta.scrollHeight;
+        ta.style.height = Math.max(minH, Math.min(contentH, maxH)) + "px";
+        ta.style.overflowY = contentH > maxH ? "auto" : "hidden";
+      }
+    };
+
+    if (clearEl) {
+      clearEl.addEventListener("click", () => {
+        ta.value = "";
+        sync();
+        ta.focus();
+      });
+    }
+
+    ta.addEventListener("input", sync);
+    sync();
+  }
+
+  function initAll(): void {
+    document
+      .querySelectorAll<HTMLElement>("[data-aui-textarea-wrap]")
+      .forEach(initTextarea);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-textarea {
+    display: block;
+    width: 100%;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    transition: border-color var(--ui-transition-fast),
+    box-shadow var(--ui-transition-fast);
+  }
+
+  .aui-textarea::placeholder {
+    color: var(--ui-muted-foreground);
+  }
+
+  /* --- size --- */
+
+  .aui-textarea--xs {
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-textarea--sm {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-textarea--md {
+    padding: var(--ui-space-2) var(--ui-space-3);
+  }
+
+  .aui-textarea--lg {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-textarea--xl {
+    padding: var(--ui-space-4) var(--ui-space-5);
+    font-size: var(--ui-text-lg);
+  }
+
+  /* --- variant borders --- */
+
+  .aui-textarea--variant-inherit {
+    border-color: inherit;
+  }
+
+  .aui-textarea--variant-primary {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-textarea--variant-secondary {
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-textarea--variant-muted {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-textarea--variant-destructive {
+    border-color: var(--ui-error);
+  }
+
+  .aui-textarea--variant-success {
+    border-color: var(--ui-success);
+  }
+
+  .aui-textarea--variant-warning {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-textarea--variant-info {
+    border-color: var(--ui-info);
+  }
+
+  .aui-textarea:focus {
+    outline: none;
+    border-color: var(--ui-ring);
+    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
+    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+  }
+
+  /* Invalid overrides the custom border + focus ring */
+  .aui-textarea--invalid {
+    border-color: var(--ui-error);
+  }
+
+  .aui-textarea--invalid:focus {
+    border-color: var(--ui-error);
+    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
+    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-error);
+  }
+
+  .aui-textarea:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+    background-color: var(--ui-muted);
+  }
+
+  .aui-textarea[readonly] {
+    background-color: var(--ui-muted);
+  }
+
+  /* --- resize --- */
+
+  .aui-textarea--resize-none {
+    resize: none;
+  }
+
+  .aui-textarea--resize-vertical {
+    resize: vertical;
+  }
+
+  .aui-textarea--resize-horizontal {
+    resize: horizontal;
+  }
+
+  .aui-textarea--resize-both {
+    resize: both;
+  }
+
+  /* --- extras: counter, clear button, auto-grow --- */
+
+  .aui-textarea__wrap {
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+
+  .aui-textarea--clearable {
+    padding-inline-end: var(--ui-space-7);
+  }
+
+  .aui-textarea__clear {
+    position: absolute;
+    top: var(--ui-space-2);
+    inset-inline-end: var(--ui-space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    padding: 0;
+    color: var(--ui-muted-foreground);
+    background-color: var(--ui-muted);
+    border: none;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    transition: color var(--ui-transition-fast),
+    background-color var(--ui-transition-fast);
+  }
+
+  .aui-textarea__clear:hover {
+    color: var(--ui-foreground);
+    background-color: color-mix(in srgb, var(--ui-muted-foreground) 15%, var(--ui-muted));
+  }
+
+  .aui-textarea__clear:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-textarea__clear[hidden] {
+    display: none;
+  }
+
+  .aui-textarea__count {
+    display: block;
+    margin-top: var(--ui-space-1);
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+    text-align: end;
+  }
+
+  /* JS sets overflow-y while growing; hidden is the no-JS default. */
+  .aui-textarea[data-grow] {
+    overflow-y: hidden;
+  }
+</style>

@@ -1,0 +1,218 @@
+---
+/**
+  * Popover — a click-triggered anchored layer for interactive content.
+  *
+  * The trigger slot renders a real <button> (aria-expanded +
+  * aria-controls); the content slot renders in an anchored panel below
+  * (or above) it. The scoped script toggles the panel, closes on Escape
+  * and outside-pointer, moves focus into the panel on open, and returns
+  * focus to the trigger on close.
+  *
+  * Positioning is CSS-anchored relative to the trigger wrapper (same
+  * technique as Tooltip), so the panel never needs viewport math.
+  *
+  *   <Popover id="share">
+  *     <span slot="trigger">Share</span>
+  *     <span slot="content">Share via <a href="…">link</a></span>
+  *   </Popover>
+  *
+  * JavaScript required: Yes
+  */
+import {cn} from "../../utils/cn";
+import {uid} from "../../utils/uid";
+
+export interface Props {
+  /** Anchor the panel above the trigger when there is no room below. */
+  placement?: "top" | "bottom";
+  /** Open on first render (SSR). */
+  open?: boolean;
+  /** Disables the trigger button. */
+  disabled?: boolean;
+  /** Accessible name for the trigger (required when trigger text is absent). */
+  triggerLabel?: string;
+  /** Recommended: stable prefix for trigger/panel ids. */
+  id?: string;
+  class?: string;
+}
+
+const {
+  placement = "bottom",
+  open = false,
+  disabled = false,
+  triggerLabel,
+  id,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const base = id ?? uid("aui-popover");
+const triggerId = `${base}-trigger`;
+const panelId = `${base}-panel`;
+
+const classes = cn("aui-popover", `aui-popover--${placement}`, className);
+---
+
+<span
+  id={id}
+  class={classes}
+  data-aui-popover={base}
+  data-open={open ? "" : undefined}
+  {...rest}
+>
+	<button
+    type="button"
+    id={triggerId}
+    class="aui-popover__trigger"
+    aria-expanded={open ? "true" : "false"}
+    aria-controls={panelId}
+    aria-label={triggerLabel}
+    disabled={disabled}
+    data-aui-popover-trigger=""
+  >
+		<slot name="trigger"/>
+	</button>
+	<div
+    id={panelId}
+    class="aui-popover__panel"
+    role="dialog"
+    tabindex="-1"
+    data-aui-popover-panel=""
+    hidden={!open}
+  >
+		<slot name="content"/>
+	</div>
+</span>
+
+<script>
+  const SELECTOR_ROOT = "[data-aui-popover]";
+
+  function initPopover(root: HTMLElement): void {
+    if (root.dataset.auiPopoverInit === "true") return;
+    root.dataset.auiPopoverInit = "true";
+    const trigger = root.querySelector<HTMLButtonElement>(
+      "[data-aui-popover-trigger]",
+    );
+    const panel = root.querySelector<HTMLElement>("[data-aui-popover-panel]");
+    if (!trigger || !panel) return;
+
+    const setOpen = (open: boolean) => {
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        root.setAttribute("data-open", "");
+        panel.removeAttribute("hidden");
+        panel.focus();
+      } else {
+        root.removeAttribute("data-open");
+        panel.setAttribute("hidden", "");
+        trigger.focus();
+      }
+    };
+
+    trigger.addEventListener("click", () => {
+      setOpen(trigger.getAttribute("aria-expanded") !== "true");
+    });
+
+    document.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (!root.hasAttribute("data-open")) return;
+      event.stopPropagation();
+      setOpen(false);
+    });
+
+    document.addEventListener("pointerdown", (event: PointerEvent) => {
+      if (!root.hasAttribute("data-open")) return;
+      if (event.target instanceof Node && root.contains(event.target)) return;
+      setOpen(false);
+    });
+  }
+
+  function initAll(): void {
+    document.querySelectorAll<HTMLElement>(SELECTOR_ROOT).forEach(initPopover);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-popover {
+    position: relative;
+    display: inline-flex;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-popover__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    font: inherit;
+    font-weight: var(--ui-font-medium);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-popover__trigger:hover:not(:disabled) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-popover__trigger:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-popover__trigger:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-popover__trigger[aria-expanded="true"] {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-popover__panel {
+    position: absolute;
+    inset-inline-start: 0;
+    z-index: var(--ui-z-popover);
+    min-width: 12rem;
+    max-width: 20rem;
+    padding: var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  .aui-popover__panel[hidden] {
+    display: none;
+  }
+
+  .aui-popover--bottom .aui-popover__panel {
+    top: calc(100% + var(--ui-space-2));
+  }
+
+  .aui-popover--top .aui-popover__panel {
+    bottom: calc(100% + var(--ui-space-2));
+  }
+
+  .aui-popover__panel:focus-visible {
+    outline: none;
+  }
+
+  /* Slotted panel content belongs to the consumer — :global() only. */
+  .aui-popover__panel > :global(*:first-child) {
+    margin-top: 0;
+  }
+
+  .aui-popover__panel > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+</style>

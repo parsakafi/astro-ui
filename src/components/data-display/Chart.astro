@@ -1,0 +1,1539 @@
+---
+/**
+  * Chart — zero-JS SVG charts driven by a data prop.
+  *
+  * Renders pure SVG at build time: grouped/stacked bars, a combo
+  * chart (bars + overlay line on a secondary axis), line/area chart,
+  * pie/donut, scatter plot, or horizontal progress bars
+  * depending on `type`. Everything reads design tokens, so charts
+  * follow the theme (including dark mode) with no re-render — colors
+  * resolve from --ui-chart-1..6, overridable per-series via the
+  * `colors` prop.
+  *
+  *   <Chart
+  *     type="bar"
+  *     labels={["Jan", "Feb", "Mar"]}
+  *     series={[{ name: "Revenue", data: [12, 30, 24] }]}
+  *   />
+  *
+  * Bar/line/area/scatter take `labels` + `series`; pie/donut take a
+  * single series (first one wins). An accessible fallback table is
+  * always rendered for screen readers; add `title`/`description` for
+  * figure context. Hover titles come from native <title> elements.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface ChartSeries {
+  /** Series name — used in the fallback table and aria labels. */
+  name: string;
+  /** Values aligned with `labels` (bar/line/area/scatter) or per-slice (pie/donut). */
+  data: number[];
+  /** Optional CSS color for this series; falls back to --ui-chart-{index}. */
+  color?: string;
+  /** Area fill paint for this series: texture pattern or the default
+   *  translucent wash; "none" skips the fill entirely (a bare line).
+   *  Overrides the chart-level `fill`. */
+  fill?: "solid" | "dots" | "hatch" | "none";
+  /** Line stroke style for this series (line/area/combo); overrides the
+   *  chart-level `stroke` prop. */
+  stroke?: "solid" | "dashed" | "dotted";
+  /** Mark for this series in combo charts: bars or a line (default bar). */
+  kind?: "bar" | "line";
+}
+
+export interface SankeyNode {
+  /** Node name — matched by SankeyLink.source/target. */
+  name: string;
+  /** Optional CSS color; falls back to --ui-chart-{index}. */
+  color?: string;
+}
+
+export interface SankeyLink {
+  /** Source node name. */
+  source: string;
+  /** Target node name. */
+  target: string;
+  /** Flow value — scales ribbon thickness and node heights. */
+  value: number;
+  /** Optional CSS color; defaults to a source→target color fade. */
+  color?: string;
+}
+
+export interface Props {
+  /** Category labels (x axis for cartesian charts; slice names for
+   *  pie/donut/radial; axis names for radar). Sankey uses nodes/links
+   *  instead and may omit them. */
+  labels?: string[];
+  /** Data series. Sankey charts use nodes/links instead. */
+  series?: ChartSeries[];
+  /** Chart type. */
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey";
+  /** Accessible title (rendered as figcaption, visually hidden is not used — show it). */
+  title?: string;
+  /** Supporting line under the title. */
+  description?: string;
+  /** Show grid lines on cartesian charts. */
+  grid?: boolean;
+  /** Show a legend under the chart. */
+  legend?: boolean;
+  /** Donut hole size (donut only). */
+  innerRadius?: number;
+  /** Gap between slices in degrees (pie/donut). */
+  padAngle?: number;
+  /** Corner rounding of each slice in px (pie/donut) — the padded,
+   *  rounded segment look when paired with padAngle. */
+  sliceRadius?: number;
+  /** Slice callouts (pie/donut): "value" prints the formatted value at
+   *  each slice's centroid, "value-pct" prints "value · pct%", and
+   *  "label" draws the category name outside the pie, connected by an
+   *  elbow leader line. */
+  sliceLabels?: "none" | "value" | "value-pct" | "label";
+  /** Overrides the text of value-style slice callouts. Receives the
+   *  raw value and rounded percent, e.g. (v, pct) => `${v} (${pct}%)`. */
+  sliceLabelFormat?: (value: number, pct: number) => string;
+  /** Pie/donut: merge slices below this percent share into a trailing
+   *  muted "Other" slice (its tooltip lists the merged labels).
+   *  0 disables collapsing. */
+  collapseBelow?: number;
+  /** Highest y value; defaults to the data max (bar/line/area/scatter).
+   *  With stack, defaults to the largest per-label total. */
+  maxY?: number;
+  /** Highest value for the secondary (right) axis in combo charts;
+   *  defaults to the max across that axis's line series. */
+  rightMaxY?: number;
+  /** Line interpolation for line/area/combo line series: true for
+   *  smooth monotone curves, "step" for stepped plateaus, "bump" for
+   *  horizontal-into-S-curve transitions between values. */
+  curve?: boolean | "step" | "bump";
+  /** Line stroke style: solid, dashed, or dotted (line/area/combo
+   *  line series); a per-series stroke overrides this. */
+  stroke?: "solid" | "dashed" | "dotted";
+  /** Area fill paint: texture patterns tinted with each series color,
+   *  or the default translucent wash. Per-series `fill` overrides. */
+  fill?: "solid" | "dots" | "hatch";
+  /** Fade fills toward transparency with per-series gradients
+   *  (area: toward the baseline; bars: per bar/segment;
+   *  pie/donut: rim-strong radial fade toward the center). */
+  gradient?: boolean;
+  /** Multiplier on gradient fade strength — 1 is the default look,
+   *  0.5 is subtler, 2 is stronger (clamped 0.1–2.5). */
+  gradientIntensity?: number;
+  /** Tick count around the gauge arc (gauge only, clamped 8–80). */
+  ticks?: number;
+  /** Ring sweep for radial charts: a full circle or a half-circle
+   *  "rainbow" over the top. */
+  radialSweep?: "full" | "half";
+  /** Flow graph for sankey charts: nodes and source→target links. */
+  nodes?: SankeyNode[];
+  links?: SankeyLink[];
+  /** Stack bar series on top of each other instead of grouping them
+   *  (bar: columns stack with a cumulative y-scale, or "percent" for
+   *  100%-normalized stacking; hbar: one part-to-whole track with a
+   *  segment per series). */
+  stack?: boolean | "percent";
+  /** Value formatting for axis titles/fallback table, e.g. (v) => "$" + v. */
+  format?: (value: number) => string;
+  /** Block height of the plot area. */
+  height?: number;
+  class?: string;
+  id?: string;
+}
+
+const {
+  type = "bar",
+  labels = [],
+  series = [],
+  title,
+  description,
+  grid = true,
+  legend = true,
+  innerRadius = 58,
+  padAngle = 0,
+  sliceRadius = 0,
+  sliceLabels = "none",
+  sliceLabelFormat,
+  collapseBelow = 0,
+  maxY,
+  rightMaxY,
+  stack = false,
+  curve = false,
+  stroke = "solid",
+  fill = "solid",
+  gradient = false,
+  gradientIntensity = 1,
+  radialSweep = "full",
+  nodes = [],
+  links = [],
+  ticks = 36,
+  format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
+  height = 260,
+  class: className,
+  id,
+} = Astro.props;
+
+const colors = [
+  "var(--ui-chart-1, var(--ui-primary))",
+  "var(--ui-chart-2, var(--ui-info))",
+  "var(--ui-chart-3, var(--ui-success))",
+  "var(--ui-chart-4, var(--ui-warning))",
+  "var(--ui-chart-5, var(--ui-error))",
+  "var(--ui-chart-6, var(--ui-muted-foreground))",
+];
+const colorAt = (i: number, s?: ChartSeries) => s?.color ?? colors[i % colors.length];
+
+const W = 640;
+/* Combo needs extra right padding for the secondary axis labels. */
+const PAD = {top: 12, right: type === "combo" ? 36 : 12, bottom: 28, left: 36};
+const plotW = W - PAD.left - PAD.right;
+const plotH = height - PAD.top - PAD.bottom;
+
+const stacked = stack === true && type === "bar";
+const stackPercent = stack === "percent" && type === "bar";
+const combo = type === "combo";
+/* Per-label sums across series — the y-scale ceiling in stacked mode. */
+const stackTotals = labels.map((_, i) => series.reduce((a, s) => a + (s.data[i] ?? 0), 0));
+
+/* --- combo scales: bars on the left axis, lines on the right.
+   Each axis gets its own ceiling, so a count can share a plot with a
+   currency without either being flattened by the other's magnitude. */
+const comboLineIdx = combo ? series.map((s, si) => (s.kind === "line" ? si : -1)).filter((si) => si >= 0) : [];
+const comboLeft = combo ? series.filter((s) => s.kind !== "line") : [];
+const comboRight = combo ? comboLineIdx.map((si) => series[si]) : [];
+const comboRightMaxY = rightMaxY ?? Math.max(...comboRight.flatMap((s) => s.data), 1);
+
+const peak = combo
+  ? Math.max(maxY ?? Math.max(...comboLeft.flatMap((s) => s.data), 1), 1)
+  : maxY ?? (stackPercent ? 100 : stacked ? Math.max(...stackTotals, 1) : Math.max(...series.flatMap((s) => s.data), 1));
+const yMax = peak <= 0 ? 1 : peak;
+const yRMax = combo ? Math.max(comboRightMaxY <= 0 ? 1 : comboRightMaxY, 1) : yMax;
+const niceStep = Math.pow(10, Math.floor(Math.log10(yMax))) / 2;
+const yTicks = stackPercent ? [0, 25, 50, 75, 100] : [0, 1, 2, 3].map((i) => i * (yMax / 3));
+const yRTicks = [0, 1, 2, 3].map((i) => i * (yRMax / 3));
+const x = (i: number, n: number) => PAD.left + (n <= 1 ? plotW / 2 : (i / (n - 1)) * plotW);
+const y = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yMax) * plotH;
+const yR = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yRMax) * plotH;
+
+const cartesian =
+  type === "bar" || type === "line" || type === "area" || type === "scatter" || type === "combo";
+const circular = type === "pie" || type === "donut";
+const isHbar = type === "hbar";
+const isGauge = type === "gauge";
+const isRadar = type === "radar";
+const isRadial = type === "radial";
+const isSankey = type === "sankey";
+
+/* Gradient fills need per-instance ids; multiple charts on one page
+   must not share defs. Derived from content, so builds stay
+   deterministic; an author-supplied id wins when present.
+   (Declared before the bar/area/pie consumers below.) */
+const showGradient = gradient && (type === "area" || type === "bar" || type === "combo" || circular);
+const uidSeed = `${title ?? ""}|${labels.join(",")}|${series.map((s) => `${s.name}:${s.data.join(",")}:${s.color ?? ""}`).join(";")}`;
+let uidHash = 0;
+for (let i = 0; i < uidSeed.length; i++) uidHash = (uidHash * 31 + uidSeed.charCodeAt(i)) >>> 0;
+const uid = id ?? `aui-chart-${uidHash.toString(36)}`;
+const gradientId = (si: number) => `${uid}-grad-${si}`;
+/* Fade strengths scale with gradientIntensity so callers can dial the
+   look from whisper-subtle to saturated without new stop layouts. */
+const gk = Math.max(0.1, Math.min(2.5, gradientIntensity));
+const gTop = Math.min(1, 0.35 * gk);
+const gBottom = Math.min(1, 0.02 * gk);
+const gFloor = Math.min(1, 0.16 * gk);
+const gRim = Math.min(1, 0.52 * gk);
+/* Texture-pattern ids share the uid namespace (called before use via
+   areaFill; pattern elements render in the same defs block as the
+   area series that reference them). */
+const patternId = (si: number) => `${uid}-pat-${si}`;
+
+/* --- circular math --- */
+const pieData = circular
+  ? (() => {
+    const values = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
+    const total = values.reduce((a, b) => a + b, 0) || 1;
+    /* Auto-collapse: slices under collapseBelow percent merge into
+       one trailing "Other" slice, drawn muted with the merged
+       names in its tooltip. Never collapses everything (needs at
+       least one kept slice) and needs 2+ small slices to bother. */
+    let sliceDefs: { label: string; value: number; merged?: string[] }[] = values.map((v, i) => ({
+      label: labels[i] ?? String(i),
+      value: v,
+    }));
+    const thr = Math.max(0, Math.min(collapseBelow, 50));
+    if (thr > 0 && sliceDefs.length > 2) {
+      const small = sliceDefs.filter((s) => (s.value / total) * 100 < thr);
+      if (small.length >= 2 && small.length < sliceDefs.length) {
+        const kept = sliceDefs.filter((s) => (s.value / total) * 100 >= thr);
+        sliceDefs = [
+          ...kept,
+          {label: "Other", value: small.reduce((a, s) => a + s.value, 0), merged: small.map((s) => s.label)},
+        ];
+      }
+    }
+    /* padAngle (degrees) carves a gap between slices; each slice's
+       corners then round by sliceRadius via quadratic corners on
+       both arcs — the padded, rounded-segment donut look. */
+    const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
+    const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
+    const gap = padFits ? pad : 0;
+    const rr = Math.max(0, Math.min(sliceRadius, 40));
+    let angle = -Math.PI / 2;
+    return sliceDefs.map((def, i) => {
+      const v = def.value;
+      const cx = W / 2;
+      const cy = height / 2;
+      /* Outside leader labels need headroom: shrink the pie so the
+       elbow (r+18) plus text stay inside the viewBox. */
+      const r = sliceLabels === "label"
+        ? Math.max(Math.min(W / 2 - 104, height / 2 - 40), 40)
+        : Math.min(W, height) / 2 - 8;
+      const ri = type === "donut" ? r * (innerRadius / 100) : 0;
+      /* Rounded corners via the stroke trick: the path is a plain
+         sharp sector on a shrunk annulus (r-ro / ri+ro), then a
+         same-color round-join stroke of width 2·ro expands it back
+         to the true radii, rounding every corner with exactly ro —
+         stable at any slice size, unlike corner-arc surgery. The
+         stroke widens each radial edge by ro/2, so the path gap
+         adds ro/rm to keep the requested visual pad. */
+      const ro = ri > 0 ? Math.min(rr, (r - ri) / 2 - 0.5) : Math.min(rr, r / 2);
+      const rm = (r + ri) / 2;
+      const pathGap = gap + (ro > 0 ? ro / rm : 0);
+      const span = Math.max((v / total) * Math.PI * 2 - pathGap, 0.02);
+      const s0 = angle + pathGap / 2;
+      const s1 = s0 + span;
+      angle += (v / total) * Math.PI * 2;
+      const large = span > Math.PI ? 1 : 0;
+      /* Callout geometry: the value label sits at the slice
+         centroid; outside labels get an elbow leader (radial stub,
+         then horizontal run) pointing at the slice's mid angle. */
+      const mid = (s0 + s1) / 2;
+      const lr = ri + (r - ri) * 0.62;
+      const lx = cx + lr * Math.cos(mid);
+      const ly = cy + lr * Math.sin(mid);
+      const dir = Math.cos(mid) >= 0 ? 1 : -1;
+      const ax = cx + (r + 4) * Math.cos(mid);
+      const ay = cy + (r + 4) * Math.sin(mid);
+      const bx = cx + (r + 18) * Math.cos(mid);
+      const by = cy + (r + 18) * Math.sin(mid);
+      const tx = bx + dir * 16;
+      const leader = `M ${ax.toFixed(2)} ${ay.toFixed(2)} L ${bx.toFixed(2)} ${by.toFixed(2)} L ${(tx - dir * 2).toFixed(2)} ${by.toFixed(2)}`;
+      const p = (radius: number, a: number) => `${(cx + radius * Math.cos(a)).toFixed(2)} ${(cy + radius * Math.sin(a)).toFixed(2)}`;
+      const rOut = r - ro;
+      const rIn = ri + ro;
+      const arc =
+        `M ${p(rOut, s0)} A ${rOut} ${rOut} 0 ${large} 1 ${p(rOut, s1)}` +
+        (ri > 0
+          ? ` L ${p(rIn, s1)} A ${rIn} ${rIn} 0 ${large} 0 ${p(rIn, s0)} Z`
+          : ` L ${cx.toFixed(2)} ${cy.toFixed(2)} Z`);
+      return {
+        arc,
+        ro,
+        label: def.label,
+        value: v,
+        pct: Math.round((v / total) * 100),
+        color: def.merged ? "var(--ui-muted-foreground)" : colorAt(i, series[0]),
+        tip: def.merged ? `Other (${def.merged.length}): ${def.merged.join(", ")}` : undefined,
+        lx,
+        ly,
+        leader,
+        tx,
+        by,
+        dir,
+      };
+    });
+  })()
+  : [];
+
+/* --- line/area paths --- */
+const straightPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) =>
+  data.map((v, i) => `${i === 0 ? "M" : "L"} ${xAt(i).toFixed(1)} ${yAt(v).toFixed(1)}`).join(" ");
+
+/* Monotone cubic interpolation (Fritsch–Carlson): the curve passes
+   through every data point and never overshoots between samples —
+   no phantom peaks the way a naive spline produces. */
+const curvePath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) => {
+  const n = data.length;
+  if (n < 3) return straightPath(data, yAt, xAt);
+  const px = data.map((_, i) => xAt(i));
+  const py = data.map((v) => yAt(v));
+  const dx: number[] = [];
+  const slope: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    dx[i] = px[i + 1] - px[i];
+    slope[i] = (py[i + 1] - py[i]) / (dx[i] || 1);
+  }
+  const m: number[] = [slope[0]];
+  for (let i = 1; i < n - 1; i++) {
+    if (slope[i - 1] * slope[i] <= 0) m[i] = 0;
+    else {
+      const lim = 3 * Math.min(Math.abs(slope[i - 1]), Math.abs(slope[i]));
+      m[i] = Math.max(-lim, Math.min(lim, (slope[i - 1] + slope[i]) / 2));
+    }
+  }
+  m[n - 1] = slope[n - 2];
+  let d = `M ${px[0].toFixed(1)} ${py[0].toFixed(1)}`;
+  for (let i = 0; i < n - 1; i++) {
+    const c1y = py[i] + (m[i] * dx[i]) / 3;
+    const c2y = py[i + 1] - (m[i + 1] * dx[i]) / 3;
+    d += ` C ${(px[i] + dx[i] / 3).toFixed(1)} ${c1y.toFixed(1)} ${(px[i + 1] - dx[i] / 3).toFixed(1)} ${c2y.toFixed(1)} ${px[i + 1].toFixed(1)} ${py[i + 1].toFixed(1)}`;
+  }
+  return d;
+};
+
+/* Step interpolation: value plateaus hold until the midpoint between
+   samples, then jump vertically — the classic staircase look. */
+const stepPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) => {
+  const n = data.length;
+  if (n < 2) return straightPath(data, yAt, xAt);
+  let d = `M ${xAt(0).toFixed(1)} ${yAt(data[0]).toFixed(1)}`;
+  for (let i = 0; i < n - 1; i++) {
+    const mid = ((xAt(i) + xAt(i + 1)) / 2).toFixed(1);
+    d += ` H ${mid} V ${yAt(data[i + 1]).toFixed(1)} H ${xAt(i + 1).toFixed(1)}`;
+  }
+  return d;
+};
+
+/* Data-line class per series: dashed/dotted ride a modifier class
+   (stroke-dasharray); the background-colored halo path underneath
+   stays solid on purpose — it keeps dash gaps clean where lines cross. */
+const lineCls = (s: ChartSeries) => {
+  const st = s.stroke ?? stroke;
+  return st === "solid" ? "aui-chart__line" : `aui-chart__line aui-chart__line--${st}`;
+};
+
+/* Area fill paint per series. "dots"/"hatch" tile a texture pattern
+   tinted with the series color (SVG <pattern> — the zero-JS cousin of
+   the canvas patternFill idea); "none" renders a bare line; "solid"
+   is the classic translucent wash or the gradient when enabled. */
+const areaFill = (s: ChartSeries, si: number) => {
+  const kind = s.fill ?? fill;
+  if (kind === "none") return {skip: true as const, style: undefined as string | undefined};
+  if (kind === "dots" || kind === "hatch") {
+    return {skip: false as const, style: `fill: url(#${patternId(si)}); opacity: 1`};
+  }
+  if (showGradient) return {skip: false as const, style: `fill: url(#${gradientId(si)}); opacity: 1`};
+  return {skip: false as const, style: undefined as string | undefined};
+};
+
+/* Bump interpolation: leaves each point horizontally and glides
+   through an S-curve to the next — the slope chart look. */
+const bumpPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) => {
+  const n = data.length;
+  if (n < 2) return straightPath(data, yAt, xAt);
+  let d = `M ${xAt(0).toFixed(1)} ${yAt(data[0]).toFixed(1)}`;
+  for (let i = 0; i < n - 1; i++) {
+    const xm = ((xAt(i) + xAt(i + 1)) / 2).toFixed(1);
+    d += ` C ${xm} ${yAt(data[i]).toFixed(1)} ${xm} ${yAt(data[i + 1]).toFixed(1)} ${xAt(i + 1).toFixed(1)} ${yAt(data[i + 1]).toFixed(1)}`;
+  }
+  return d;
+};
+
+const linePath = (data: number[]) => {
+  const xAt = (i: number) => x(i, data.length);
+  return curve === "step" ? stepPath(data, y, xAt) : curve === "bump" ? bumpPath(data, y, xAt) : curve ? curvePath(data, y, xAt) : straightPath(data, y, xAt);
+};
+const areaPath = (data: number[]) =>
+  data.length
+    ? `${linePath(data)} L ${x(data.length - 1, data.length).toFixed(1)} ${PAD.top + plotH} L ${x(0, data.length).toFixed(1)} ${PAD.top + plotH} Z`
+    : "";
+
+/* Combo lines ride the right axis via the yR helper; points sit on
+   bar-slot centers so dots align with their bars. */
+const linePathAt = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) =>
+  curve === "step" ? stepPath(data, yAt, xAt) : curve === "bump" ? bumpPath(data, yAt, xAt) : curve ? curvePath(data, yAt, xAt) : straightPath(data, yAt, xAt);
+
+/* Rounded bar geometry. A plain rx rect rounds ALL corners, which
+   notches every seam of a stacked column (segments share edges).
+   Stacked segments instead get a path with only the column's exposed
+   corners rounded — inner seams stay square. */
+const roundedColumnPath = (bx: number, by: number, bw: number, bh: number, rTop: number, rBottom: number) => {
+  if (bh <= 0 || bw <= 0) return "";
+  const rt = Math.max(0, Math.min(rTop, bh / 2, bw / 2));
+  const rb = Math.max(0, Math.min(rBottom, bh / 2, bw / 2));
+  return [
+    `M ${bx.toFixed(1)} ${(by + rt).toFixed(1)}`,
+    rt > 0 ? `Q ${bx.toFixed(1)} ${by.toFixed(1)} ${(bx + rt).toFixed(1)} ${by.toFixed(1)}` : "",
+    `H ${(bx + bw - rt).toFixed(1)}`,
+    rt > 0 ? `Q ${(bx + bw).toFixed(1)} ${by.toFixed(1)} ${(bx + bw).toFixed(1)} ${(by + rt).toFixed(1)}` : "",
+    `V ${(by + bh - rb).toFixed(1)}`,
+    rb > 0 ? `Q ${(bx + bw).toFixed(1)} ${(by + bh).toFixed(1)} ${(bx + bw - rb).toFixed(1)} ${(by + bh).toFixed(1)}` : "",
+    `H ${(bx + rb).toFixed(1)}`,
+    rb > 0 ? `Q ${bx.toFixed(1)} ${(by + bh).toFixed(1)} ${bx.toFixed(1)} ${(by + bh - rb).toFixed(1)}` : "",
+    "Z",
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+/* --- bars ---
+   Grouped mode splits each label's slot between series; stacked mode gives
+   the whole slot budget to one column and offsets segments by the running
+   total, so segment bottoms land exactly on the previous segment's top.
+   Combo bars share the slot across their bar series only — lines never
+   consume slot width. */
+const barGroupW = plotW / Math.max(labels.length, 1);
+/* Combo line points sit on slot centers so dots align with their bars. */
+const xCombo = (i: number) => PAD.left + i * barGroupW + barGroupW / 2;
+const barCount = combo ? Math.max(comboLeft.length, 1) : Math.max(series.length, 1);
+const barW = stacked
+  ? Math.max(4, Math.min(40, barGroupW * 0.6))
+  : Math.max(4, Math.min(40, (barGroupW * 0.6) / barCount));
+type BarRect = { x: number; y: number; w: number; h: number; fill: string; tip: string; gradId?: string; d?: string };
+const barRects: BarRect[][] =
+  type === "bar" ? labels.map((label, i) => {
+      let cum = 0;
+      /* Only the column's first and last visible segments expose an
+         edge — those get the corner radius, inner seams stay square. */
+      const vis = series.map((s, k) => ((s.data[i] ?? 0) > 0 ? k : -1)).filter((k) => k >= 0);
+      const firstV = vis[0];
+      const lastV = vis[vis.length - 1];
+      return series.map((s, si) => {
+        const v = Math.max(s.data[i] ?? 0, 0);
+        const total = stackTotals[i];
+        /* Percent mode stacks shares of the label total (0–100). */
+        const val = stackPercent && total > 0 ? (v / total) * 100 : v;
+        const base = cum;
+        cum += val;
+        /* Percent mode is a stacked layout too. */
+        const stackedLayout = stacked || stackPercent;
+        const w = stackedLayout ? barW : barW - 2;
+        const xAt = stackedLayout
+          ? PAD.left + i * barGroupW + barGroupW / 2 - barW / 2
+          : PAD.left + i * barGroupW + barGroupW / 2 - (barW * series.length) / 2 + si * barW;
+        const h = stackedLayout
+          ? Math.max(y(base) - y(cum), v > 0 ? 2 : 0)
+          : Math.max((v / yMax) * plotH, v > 0 ? 2 : 0);
+        const yAt = stackedLayout ? y(cum) : PAD.top + plotH - h;
+        const tip = stackPercent
+          ? `${label} — ${s.name}: ${format(v)} (${Math.round(val)}%)`
+          : stacked
+            ? `${label} — ${s.name}: ${format(v)} (total: ${format(stackTotals[i])})`
+            : `${label} — ${s.name}: ${format(v)}`;
+        return {
+          x: xAt,
+          y: yAt,
+          w,
+          h,
+          fill: colorAt(si, s),
+          tip,
+          gradId: showGradient && type === "bar" ? gradientId(si) : undefined,
+          d: stackedLayout
+            ? roundedColumnPath(xAt, yAt, w, h, si === lastV ? 3 : 0, si === firstV ? 3 : 0)
+            : undefined,
+        };
+      });
+    })
+    : combo
+      ? labels.map((label, i) =>
+        comboLeft.map((s, bi) => {
+          const v = Math.max(s.data[i] ?? 0, 0);
+          const h = Math.max((v / yMax) * plotH, v > 0 ? 2 : 0);
+          return {
+            x: PAD.left + i * barGroupW + barGroupW / 2 - (barW * comboLeft.length) / 2 + bi * barW,
+            y: PAD.top + plotH - h,
+            w: barW - 2,
+            h,
+            fill: colorAt(series.indexOf(s), s),
+            tip: `${label} — ${s.name}: ${format(v)}`,
+            gradId: showGradient && combo ? gradientId(series.indexOf(s)) : undefined,
+          };
+        }),
+      )
+      : [];
+
+/* --- gauge: a semicircular arc of radial ticks, filled up to the value.
+   Reads the first value of the first series against maxY (default 100). */
+const gaugeCount = Math.max(8, Math.min(80, ticks));
+const gaugeValue = Math.max(series[0]?.data[0] ?? 0, 0);
+const gaugeMax = Math.max(maxY ?? 100, gaugeValue, 1);
+const gaugeFilled = Math.round(Math.min(gaugeValue / gaugeMax, 1) * gaugeCount);
+const gcx = W / 2;
+const gcy = height - 18;
+const gR2 = Math.min(W / 2 - 12, gcy - 14);
+const gR1 = gR2 - 26;
+const gaugeLines = Array.from({length: gaugeCount}, (_, i) => {
+  const a = Math.PI - (i / (gaugeCount - 1)) * Math.PI;
+  return {
+    d: `M ${(gcx + gR1 * Math.cos(a)).toFixed(1)} ${(gcy - gR1 * Math.sin(a)).toFixed(1)} L ${(gcx + gR2 * Math.cos(a)).toFixed(1)} ${(gcy - gR2 * Math.sin(a)).toFixed(1)}`,
+    filled: i < gaugeFilled,
+  };
+});
+
+/* --- radar: one spoke per label, polygon rings as the grid, one
+   closed polygon per series with dots at each vertex. First axis
+   points up, axes run clockwise; values scale against maxY (default:
+   global data max). --- */
+const radarAxes = Math.max(isRadar ? labels.length : 0, 3);
+const radarCx = W / 2;
+const radarCy = height / 2;
+const radarR = Math.max(Math.min(W / 2 - 64, height / 2 - 28), 40);
+const radarPeak = Math.max(maxY ?? Math.max(...series.flatMap((s) => s.data), 1), 1);
+const radarAngle = (i: number) => -Math.PI / 2 + (i / radarAxes) * Math.PI * 2;
+const radarPt = (i: number, f: number) => ({
+  x: radarCx + radarR * f * Math.cos(radarAngle(i)),
+  y: radarCy + radarR * f * Math.sin(radarAngle(i)),
+});
+const radarRings = [0.25, 0.5, 0.75, 1].map((f) => ({
+  f,
+  d: labels.map((_, i) => {
+    const p = radarPt(i, f);
+    return `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+  }).join(" ") + " Z",
+}));
+const radarSpokes = labels.map((_, i) => {
+  const p = radarPt(i, 1);
+  return `M ${radarCx} ${radarCy} L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+});
+const radarSeries = series.map((s, si) => ({
+  color: colorAt(si, s),
+  poly: s.data.map((v, i) => {
+    const p = radarPt(i, Math.max(Math.min(v / radarPeak, 1), 0));
+    return `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+  }).join(" ") + " Z",
+  dots: s.data.map((v, i) => {
+    const p = radarPt(i, Math.max(Math.min(v / radarPeak, 1), 0));
+    return {...p, tip: `${labels[i]} — ${s.name}: ${format(v)}`};
+  }),
+}));
+/* --- radial: one concentric progress ring per label (values from the
+   first series, like pie/hbar). Each ring rides a muted full track;
+   the colored arc starts at 12 o'clock (full sweep) or the left end
+   (half sweep) and runs clockwise, rounded caps throughout. --- */
+const radialValues = isRadial ? (series[0]?.data ?? []).map((v) => Math.max(v, 0)) : [];
+const radialMax = Math.max(maxY ?? Math.max(...radialValues, 1), 1);
+const radialHalf = radialSweep === "half";
+const radialCx = W / 2;
+const radialCy = radialHalf ? height - 16 : height / 2;
+const radialR0 = radialHalf ? Math.min(W / 2 - 10, height - 30) : Math.min(W, height) / 2 - 10;
+const radialRings = radialValues.map((v, i) => {
+  /* Rings spread evenly from the outer radius down to ~30% of it —
+     evenly spaced like the reference, never collapsing inward. */
+  const n = Math.max(radialValues.length, 1);
+  const R = radialValues.length > 1 ? radialR0 - (radialR0 * 0.7 * i) / (n - 1) : radialR0;
+  const t = Math.max(4, Math.min(16, ((radialR0 * 0.7) / Math.max(n - 1, 1)) * 0.5));
+  const f = Math.min(v / radialMax, 1);
+  const color = colorAt(i, series[0]);
+  const a0 = radialHalf ? Math.PI : -Math.PI / 2;
+  const sweep = f * (radialHalf ? Math.PI : Math.PI * 2);
+  const a1 = a0 + sweep;
+  const large = sweep > Math.PI ? 1 : 0;
+  const sx = radialCx + R * Math.cos(a0);
+  const sy = radialCy + R * Math.sin(a0);
+  const ex = radialCx + R * Math.cos(a1);
+  const ey = radialCy + R * Math.sin(a1);
+  const track = radialHalf ? `M ${(radialCx - R).toFixed(2)} ${radialCy.toFixed(2)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 0 1 ${(radialCx + R).toFixed(2)} ${radialCy.toFixed(2)}` : null;
+  /* A 2π sweep can't be one arc command — only a true full circle
+     needs the <circle> shortcut; a half-sweep 100% is a drawable arc. */
+  const fullSweep = sweep >= Math.PI * 2 - 0.001;
+  const arc = fullSweep || f < 0.002 ? null : `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 ${large} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+  return {R, t, color, f, full: fullSweep, track, arc, label: labels[i] ?? String(i), v};
+});
+
+/* --- sankey: layered flow layout. Nodes are assigned to columns by
+   longest path from any source (a node with no incoming links);
+   node heights are conservation-scaled (max of in/out flow), ribbons
+   are cubic Béziers with source→target color fades. --- */
+const sankey = (() => {
+  if (!isSankey || nodes.length === 0 || links.length === 0) return null;
+  const nameOf = new Map(nodes.map((n, i) => [n.name, {...n, i}]));
+  const unknown = links.filter((l) => !nameOf.has(l.source) || !nameOf.has(l.target));
+  if (unknown.length > 0) return null;
+  /* column = 1 + max(column of sources); sources (no in-links) sit at 0. */
+  const col = new Map<string, number>();
+  const incoming = new Map<string, SankeyLink[]>();
+  const outgoing = new Map<string, SankeyLink[]>();
+  for (const n of nodes) {
+    incoming.set(n.name, []);
+    outgoing.set(n.name, []);
+  }
+  for (const l of links) {
+    outgoing.get(l.source)!.push(l);
+    incoming.get(l.target)!.push(l);
+  }
+  let pending = nodes.filter((n) => incoming.get(n.name)!.length === 0).map((n) => n.name);
+  if (pending.length === 0) pending = [nodes[0].name];
+  for (const s of pending) col.set(s, 0);
+  let guard = 0;
+  while (pending.length && guard++ < 200) {
+    const next: string[] = [];
+    for (const name of pending) {
+      const c = col.get(name)!;
+      for (const l of outgoing.get(name)!) {
+        const t = l.target;
+        if (!col.has(t) || col.get(t)! < c + 1) {
+          col.set(t, c + 1);
+          next.push(t);
+        }
+      }
+    }
+    pending = next;
+  }
+  const colCount = Math.max(...col.values()) + 1;
+  const cols: string[][] = Array.from({length: colCount}, () => []);
+  for (const n of nodes) cols[col.get(n.name) ?? 0].push(n.name);
+  const valueOf = (name: string) =>
+    Math.max(incoming.get(name)!.reduce((a, l) => a + l.value, 0), outgoing.get(name)!.reduce((a, l) => a + l.value, 0));
+  const totalPerCol = cols.map((names) => names.reduce((a, name) => a + valueOf(name), 0));
+  const maxColTotal = Math.max(...totalPerCol, 1);
+  const PAD_Y = 14;
+  const nodeW = 14;
+  /* Reserve side bands for node name/value labels. */
+  const plotLeft = 100;
+  const plotRight = W - 100;
+  const colX = (c: number) => (colCount === 1 ? plotLeft : plotLeft + (c / (colCount - 1)) * (plotRight - plotLeft - nodeW));
+  /* scale: units → px, chosen so the tallest column fills the plot. */
+  const k = (plotH - PAD_Y * (Math.max(...cols.map((c) => c.length), 1) - 1)) / maxColTotal;
+  const geo = new Map<string, { x: number; y: number; h: number; color: string; v: number }>();
+  cols.forEach((names, c) => {
+    let y = PAD.top + Math.max((plotH - (names.reduce((a, name) => a + valueOf(name) * k, 0) + PAD_Y * (names.length - 1))) / 2, 0);
+    for (const name of names) {
+      const h = Math.max(valueOf(name) * k, 3);
+      const nd = nameOf.get(name)!;
+      geo.set(name, {x: colX(c), y, h, color: nd.color ?? colors[nd.i % colors.length], v: valueOf(name)});
+      y += h + PAD_Y;
+    }
+  });
+  /* Ribbon offsets: per node, distribute outgoing (top→bottom by link
+     order) on the right edge; incoming on the left edge. */
+  const outOff = new Map<string, number>();
+  const inOff = new Map<string, number>();
+  const ribbons = links.map((l) => {
+    const s = geo.get(l.source)!;
+    const t = geo.get(l.target)!;
+    const so = outOff.get(l.source) ?? 0;
+    const to = inOff.get(l.target) ?? 0;
+    const h = Math.max(l.value * k, 1.5);
+    outOff.set(l.source, so + h);
+    inOff.set(l.target, to + h);
+    const x0 = s.x + nodeW;
+    const x1 = t.x;
+    const y0 = s.y + so;
+    const y1 = t.y + to;
+    const bend = Math.max((x1 - x0) * 0.5, 24);
+    const d = `M ${x0.toFixed(2)} ${y0.toFixed(2)}` +
+      ` C ${(x0 + bend).toFixed(2)} ${y0.toFixed(2)} ${(x1 - bend).toFixed(2)} ${y1.toFixed(2)} ${x1.toFixed(2)} ${y1.toFixed(2)}` +
+      ` L ${x1.toFixed(2)} ${(y1 + h).toFixed(2)}` +
+      ` C ${(x1 - bend).toFixed(2)} ${(y1 + h).toFixed(2)} ${(x0 + bend).toFixed(2)} ${(y0 + h).toFixed(2)} ${x0.toFixed(2)} ${(y0 + h).toFixed(2)}` +
+      " Z";
+    return {d, source: l.source, target: l.target, value: l.value, h, x0, x1, y0, y1, bend};
+  });
+  return {geo, ribbons, nodeW, k};
+})();
+const sankeyNodes = sankey ? [...sankey.geo.entries()].map(([name, g]) => ({name, ...g})) : [];
+const sankeyLinks = sankey ? sankey.ribbons : [];
+
+const radarAxisLabels = labels.map((label, i) => {
+  const a = radarAngle(i);
+  const c = Math.cos(a);
+  const s = Math.sin(a);
+  return {
+    label,
+    x: radarCx + (radarR + 18) * c,
+    y: radarCy + (radarR + 18) * s + (Math.abs(c) < 0.35 ? (s < 0 ? -4 : 12) : 4),
+    anchor: Math.abs(c) < 0.35 ? "middle" : c > 0 ? "start" : "end",
+  };
+});
+
+const hbarMax = Math.max(...(series[0]?.data ?? [1]), 1);
+const hbarRowH = 2.25;
+/* hbar + stack: one full-width track, one segment per series, sized as
+   a share of the series total (part-to-whole, like the reference
+   "capital inflows" bar). */
+const hbarStacked = isHbar && stack;
+const hbarTotal = Math.max(series.reduce((a, s) => a + s.data.reduce((x, v) => x + Math.max(v, 0), 0), 0), 1);
+const hbarSegments = hbarStacked
+  ? series.map((s, si) => {
+    const v = s.data.reduce((x, val) => x + Math.max(val, 0), 0);
+    return {name: s.name, v, pct: Math.round((v / hbarTotal) * 100), bg: colorAt(si, s)};
+  })
+  : [];
+
+const classes = cn(
+  "aui-chart",
+  `aui-chart--${type}`,
+  stacked && "aui-chart--stacked",
+  className,
+);
+
+const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
+---
+
+<figure id={id} class={classes} data-aui-chart={type}>
+  {
+    (title || description) && (
+      <figcaption class="aui-chart__head">
+        {title && <span class="aui-chart__title">{title}</span>}
+        {description && <span class="aui-chart__desc">{description}</span>}
+      </figcaption>
+    )
+  }
+
+  {
+    cartesian && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${series.map((s) => s.name).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {grid && (
+          <g class="aui-chart__grid" aria-hidden="true">
+            {yTicks.map((t) => (
+              <line x1={PAD.left} x2={W - PAD.right} y1={y(t)} y2={y(t)}/>
+            ))}
+          </g>
+        )}
+        {grid &&
+          yTicks.map((t) => (
+            <text class="aui-chart__tick" x={PAD.left - 6} y={y(t) + 3} text-anchor="end">
+              {format(Math.round(t * 10) / 10)}
+            </text>
+          ))}
+        {combo &&
+          yRTicks.map((t) => (
+            <text class="aui-chart__tick" x={W - PAD.right + 6} y={yR(t) + 3} text-anchor="start">
+              {format(Math.round(t * 10) / 10)}
+            </text>
+          ))}
+        {labels.map((label, i) => (
+          <text
+            class="aui-chart__tick"
+            x={type === "bar" || type === "combo" ? PAD.left + i * barGroupW + barGroupW / 2 : x(i, labels.length)}
+            y={height - 8}
+            text-anchor="middle"
+          >
+            {label}
+          </text>
+        ))}
+
+        {showGradient && (type === "bar" || combo) && (
+          <defs>
+            {series.map((s, si) => (
+              <linearGradient id={gradientId(si)} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${gTop}`}/>
+                <stop offset="100%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${gBottom}`}/>
+              </linearGradient>
+            ))}
+          </defs>
+        )}
+        {(type === "bar" || combo) &&
+          barRects.map((group) =>
+            group.map((r) =>
+              r.d ? (
+                <path class="aui-chart__bar" d={r.d} fill={r.gradId ? `url(#${r.gradId})` : r.fill}>
+                  <title>{r.tip}</title>
+                </path>
+              ) : (
+                <rect class="aui-chart__bar" x={r.x} y={r.y} width={r.w} height={r.h} rx={3}
+                      fill={r.gradId ? `url(#${r.gradId})` : r.fill}>
+                  <title>{r.tip}</title>
+                </rect>),
+            ))
+        }
+
+        {combo &&
+          comboRight.map((s, ci) => {
+            const si = comboLineIdx[ci];
+            return (
+              <g class="aui-chart__plot" style={`color: ${colorAt(si, s)}`}>
+                <path class="aui-chart__line aui-chart__line--stroked" d={linePathAt(s.data, yR, xCombo)}/>
+                <path class={lineCls(s)} d={linePathAt(s.data, yR, xCombo)}/>
+                {s.data.map((v, i) => (
+                  <circle class="aui-chart__dot" cx={xCombo(i)} cy={yR(v)} r={2.5}>
+                    <title>{`${labels[i]} — ${s.name}: ${format(v)}`}</title>
+                  </circle>
+                ))}
+              </g>
+            );
+          })}
+
+        {(type === "line" || type === "area") &&
+          series.map((s, si) => {
+            const areaFillKind = s.fill ?? fill;
+            return (
+              <g class="aui-chart__plot" style={`color: ${colorAt(si, s)}`}>
+                {type === "area" && areaFillKind === "dots" && (
+                  <defs>
+                    <pattern id={patternId(si)} width="7" height="7" patternUnits="userSpaceOnUse">
+                      <circle cx="2" cy="2" r="1.1" style={`fill: ${colorAt(si, s)}; fill-opacity: 0.5`}/>
+                    </pattern>
+                  </defs>
+                )}
+                {type === "area" && areaFillKind === "hatch" && (
+                  <defs>
+                    <pattern id={patternId(si)} width="6" height="6" patternUnits="userSpaceOnUse"
+                             patternTransform="rotate(45)">
+                      <line x1="0" y1="0" x2="0" y2="6"
+                            style={`stroke: ${colorAt(si, s)}; stroke-opacity: 0.45; stroke-width: 1.2`}/>
+                    </pattern>
+                  </defs>
+                )}
+                {showGradient && areaFillKind === "solid" && (
+                  <defs>
+                    <linearGradient id={gradientId(si)} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${gTop}`}/>
+                      <stop offset="100%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${gBottom}`}/>
+                    </linearGradient>
+                  </defs>
+                )}
+                {type === "area" && areaFillKind !== "none" && (
+                  <path
+                    class="aui-chart__area"
+                    d={areaPath(s.data)}
+                    style={areaFill(s, si).style}
+                  />
+                )}
+                {type === "area" &&
+                  <path class="aui-chart__line aui-chart__line--stroked" d={linePath(s.data)}/>}
+                <path class={lineCls(s)} d={linePath(s.data)}/>
+                {s.data.map((v, i) => (
+                  <circle class="aui-chart__dot" cx={x(i, s.data.length)} cy={y(v)} r={2.5}>
+                    <title>{`${labels[i]} — ${s.name}: ${format(v)}`}</title>
+                  </circle>
+                ))}
+              </g>
+            );
+          })}
+
+        {type === "scatter" &&
+          series.map((s, si) =>
+            s.data.map((v, i) => (
+              <circle class="aui-chart__dot aui-chart__dot--lg" cx={x(i, s.data.length)} cy={y(v)} r={3.5}
+                      fill={colorAt(si, s)}>
+                <title>{`${labels[i]} — ${s.name}: ${format(v)}`}</title>
+              </circle>
+            )),
+          )}
+      </svg>
+    )
+  }
+
+  {
+    circular && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${pieData.map((d) => `${d.label} ${d.pct}%`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {showGradient && (
+          <defs>
+            {pieData.map((d, i) => (
+              <radialGradient
+                id={gradientId(i)}
+                gradientUnits="userSpaceOnUse"
+                cx={W / 2}
+                cy={height / 2}
+                r={Math.min(W, height) / 2 - 8}
+              >
+                {/* Floor high enough that the inner edge keeps its color on
+								   light backgrounds — a 4% tint reads as white there. */}
+                <stop offset="0%" style={`stop-color: ${d.color}; stop-opacity: ${gFloor}`}/>
+                <stop
+                  offset={`${type === "donut" ? innerRadius : 30}%`}
+                  style={`stop-color: ${d.color}; stop-opacity: ${gFloor}`}
+                />
+                <stop offset="100%" style={`stop-color: ${d.color}; stop-opacity: ${gRim}`}/>
+              </radialGradient>
+            ))}
+          </defs>
+        )}
+        {pieData.map((d, i) => (
+          <path
+            class="aui-chart__slice"
+            d={d.arc}
+            fill={showGradient ? `url(#${gradientId(i)})` : d.color}
+            style={d.ro > 0 ? `stroke: ${d.color}; stroke-width: ${d.ro * 2}px; stroke-linejoin: round` : undefined}
+          >
+            <title>{d.tip ?? `${d.label}: ${format(d.value)} (${d.pct}%)`}</title>
+          </path>
+        ))}
+        {(sliceLabels === "value" || sliceLabels === "value-pct") &&
+          pieData.map((d) => (
+            <text class="aui-chart__slice-value" x={d.lx} y={d.ly + 5} text-anchor="middle">
+              {sliceLabelFormat
+                ? sliceLabelFormat(d.value, d.pct)
+                : sliceLabels === "value-pct"
+                  ? `${format(d.value)} · ${d.pct}%`
+                  : format(d.value)}
+            </text>
+          ))}
+        {sliceLabels === "label" &&
+          pieData.map((d) => (
+            <g class="aui-chart__slice-label">
+              <path d={d.leader}/>
+              <text x={d.tx + d.dir * 2} y={d.by + 4} text-anchor={d.dir > 0 ? "start" : "end"}>
+                {d.label}
+              </text>
+            </g>
+          ))}
+      </svg>
+    )
+  }
+
+  {
+    isHbar && !hbarStacked && (
+      <ul class="aui-chart__hbar"
+          style={`--aui-chart-hbar-max: ${(series[0]?.data ?? [0]).reduce((a, b) => Math.max(a, b), 1)}`}>
+        {(labels ?? []).map((label, i) => {
+          const v = series[0]?.data[i] ?? 0;
+          return (
+            <li class="aui-chart__hbar-row">
+              <span class="aui-chart__hbar-label">{label}</span>
+              <span
+                class="aui-chart__hbar-track"
+                style={`--v: ${Math.max((v / hbarMax) * 100, 0)}`}
+                title={`${label}: ${format(v)}`}
+              >
+								<span class="aui-chart__hbar-fill" style={`background: ${colorAt(i, series[0])}`}/>
+							</span>
+              <span class="aui-chart__hbar-value">{format(v)}</span>
+            </li>
+          );
+        })}
+      </ul>
+    )
+  }
+
+  {
+    isHbar && hbarStacked && (
+      <ul class="aui-chart__hbar aui-chart__hbar--stacked">
+        <li class="aui-chart__hbar-row aui-chart__hbar-row--stacked">
+					<span class="aui-chart__hbar-track aui-chart__hbar-track--stacked">
+						{hbarSegments.map((seg) => (
+              <span
+                class="aui-chart__hbar-seg"
+                style={`--w: ${seg.pct}; background: ${seg.bg}`}
+                title={`${seg.name}: ${format(seg.v)} (${seg.pct}%)`}
+              />
+            ))}
+					</span>
+        </li>
+      </ul>
+    )
+  }
+
+  {
+    isRadial && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${radialRings.map((r) => `${r.label} ${format(r.v)}`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {radialRings.map((r) => (
+          <g>
+            {r.track ? (
+              <path class="aui-chart__rtrack" d={r.track} style={`stroke-width: ${r.t}px`}/>
+            ) : (
+              <circle class="aui-chart__rtrack" cx={radialCx} cy={radialCy} r={r.R} style={`stroke-width: ${r.t}px`}/>
+            )}
+            {r.full ? (
+              <circle class="aui-chart__rarc" cx={radialCx} cy={radialCy} r={r.R}
+                      style={`stroke: ${r.color}; stroke-width: ${r.t}px`}>
+                <title>{`${r.label}: ${format(r.v)}`}</title>
+              </circle>
+            ) : r.arc ? (
+              <path class="aui-chart__rarc" d={r.arc} style={`stroke: ${r.color}; stroke-width: ${r.t}px`}>
+                <title>{`${r.label}: ${format(r.v)}`}</title>
+              </path>
+            ) : null}
+          </g>
+        ))}
+      </svg>
+    )
+  }
+
+  {
+    isSankey && sankey && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${nodes.length} nodes, ${links.length} flows`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          {sankeyLinks.map((l, i) => (
+            <linearGradient id={`${uid}-sk-${i}`} x1="0" y1="0" x2="1" y2="0" gradientUnits="objectBoundingBox">
+              <stop offset="0%" style={`stop-color: ${sankey.geo.get(l.source)!.color}; stop-opacity: 0.45`}/>
+              <stop offset="100%" style={`stop-color: ${sankey.geo.get(l.target)!.color}; stop-opacity: 0.45`}/>
+            </linearGradient>
+          ))}
+        </defs>
+        {sankeyLinks.map((l, i) => (
+          <path class="aui-chart__slink" d={l.d} fill={`url(#${uid}-sk-${i})`}>
+            <title>{`${l.source} → ${l.target}: ${format(l.value)}`}</title>
+          </path>
+        ))}
+        {sankeyNodes.map((n) => {
+          /* Sources (first column) label left of their bar; every
+             interior/target node labels right, like the reference. */
+          const left = n.x <= 102;
+          const lx = left ? n.x - 8 : n.x + sankey.nodeW + 8;
+          const anchor = left ? "end" : "start";
+          return (
+            <g class="aui-chart__snode">
+              <rect x={n.x} y={n.y} width={sankey.nodeW} height={n.h} rx={3} fill={n.color}>
+                <title>{`${n.name}: ${format(n.v)}`}</title>
+              </rect>
+              <text class="aui-chart__snode-name" x={lx} y={n.y + n.h / 2 - 1} text-anchor={anchor}>
+                {n.name}
+              </text>
+              <text class="aui-chart__snode-value" x={lx} y={n.y + n.h / 2 + 15} text-anchor={anchor}>
+                {format(n.v)}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    )
+  }
+
+  {
+    isRadar && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${series.map((s) => s.name).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g class="aui-chart__radar-grid" aria-hidden="true">
+          {radarRings.map((r) => (
+            <path d={r.d}/>
+          ))}
+          {radarSpokes.map((d) => (
+            <path d={d}/>
+          ))}
+        </g>
+        {radarAxisLabels.map((l) => (
+          <text class="aui-chart__tick" x={l.x} y={l.y} text-anchor={l.anchor}>
+            {l.label}
+          </text>
+        ))}
+        {radarSeries.map((s) => (
+          <g class="aui-chart__radar-poly" style={`color: ${s.color}`}>
+            <path d={s.poly}/>
+            {s.dots.map((d) => (
+              <circle class="aui-chart__dot" cx={d.x} cy={d.y} r={3}>
+                <title>{d.tip}</title>
+              </circle>
+            ))}
+          </g>
+        ))}
+      </svg>
+    )
+  }
+
+  {
+    isGauge && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${format(gaugeValue)} of ${format(gaugeMax)}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {gaugeLines.map((t) => (
+          <path
+            class={`aui-chart__gtick${t.filled ? "" : " aui-chart__gtick--rest"}`}
+            d={t.d}
+            style={t.filled ? `stroke: ${colorAt(0, series[0])}` : undefined}
+          />
+        ))}
+        <text class="aui-chart__gauge-value" x={gcx} y={gcy - gR1 * 0.55} text-anchor="middle">
+          {format(gaugeValue)}
+        </text>
+        {series[0]?.name && (
+          <text class="aui-chart__gauge-label" x={gcx} y={gcy - gR1 * 0.55 + 26} text-anchor="middle">
+            {series[0].name}
+          </text>
+        )}
+      </svg>
+    )
+  }
+
+  {
+    legend && !isGauge && !isSankey && (
+      <ul class="aui-chart__legend" aria-hidden="true">
+        {circular || isRadial
+          ? (circular
+            ? pieData.map((d) => (
+              <li>
+                <span class="aui-chart__swatch" style={`background: ${d.color}`}/>
+                {d.label}
+              </li>
+            ))
+            : radialRings.map((r) => (
+              <li>
+                <span class="aui-chart__swatch" style={`background: ${r.color}`}/>
+                {r.label}
+              </li>
+            )))
+          : series.map((s, i) => (
+            <li>
+              <span class="aui-chart__swatch" style={`background: ${colorAt(i, s)}`}/>
+              {s.name}
+            </li>
+          ))}
+      </ul>
+    )
+  }
+
+  {/* Screen-reader table — the visual is aria-labeled, this carries the data. */}
+  <table class="aui-chart__table">
+    <thead>
+    <tr>
+      <th scope="col">Category</th>
+      {series.map((s) => (
+        <th scope="col">{s.name}</th>
+      ))}
+    </tr>
+    </thead>
+    <tbody>
+    {labels.map((label, i) => (
+      <tr>
+        <th scope="row">{label}</th>
+        {series.map((s) => (
+          <td>{format(s.data[i] ?? 0)}</td>
+        ))}
+      </tr>
+    ))}
+    </tbody>
+  </table>
+</figure>
+
+<style>
+  .aui-chart {
+    display: grid;
+    gap: var(--ui-space-2);
+    /* Stretch to the container even inside flex/grid previews —
+       charts must own the full width or hbar tracks collapse. */
+    inline-size: 100%;
+    min-inline-size: 0;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-chart__head {
+    display: grid;
+    gap: 2px;
+  }
+
+  .aui-chart__title {
+    color: var(--ui-foreground);
+    font-size: var(--ui-text-md);
+    font-weight: var(--ui-font-semibold);
+  }
+
+  .aui-chart__desc {
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-chart__svg {
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* --- shared strokes --- */
+
+  .aui-chart__grid line {
+    stroke: var(--ui-border);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+  }
+
+  .aui-chart__tick {
+    fill: var(--ui-muted-foreground);
+    font-size: 11px;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-chart__bar {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__bar:hover {
+    opacity: 0.85;
+  }
+
+  /* Series color rides on currentcolor (set inline on the <g>), so
+     the inline style wins the cascade over any class rule. */
+  .aui-chart__line {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .aui-chart__line--stroked {
+    stroke: var(--ui-background);
+    stroke-width: 3.5;
+  }
+
+  /* Stroke variants on the data line only — the halo under it stays
+     solid so dash gaps read as clean background, not broken halos. */
+  .aui-chart__line--dashed {
+    stroke-dasharray: 8 6;
+  }
+
+  .aui-chart__line--dotted {
+    stroke-dasharray: 1 7;
+    stroke-linecap: round;
+  }
+
+  .aui-chart__area {
+    fill: currentcolor;
+    stroke: none;
+    opacity: 0.14;
+  }
+
+  .aui-chart__dot {
+    stroke: var(--ui-background);
+    stroke-width: 1.5;
+  }
+
+  /* Line/combo dots live inside a <g> that carries the series color on
+     currentcolor. Scatter dots sit bare in the <svg> and keep their
+     per-series fill attribute — CSS box sizing can't size a circle's
+     geometry, so those carry an r attribute instead. */
+  .aui-chart__plot .aui-chart__dot {
+    fill: currentcolor;
+  }
+
+  /* --- sankey: translucent flow ribbons + slim node bars. */
+  .aui-chart__slink {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__slink:hover {
+    opacity: 0.8;
+  }
+
+  .aui-chart__snode-name {
+    fill: var(--ui-foreground);
+    font-size: 13px;
+    font-weight: var(--ui-font-medium);
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-chart__snode-value {
+    fill: var(--ui-muted-foreground);
+    font-size: 12px;
+    font-family: var(--ui-font-sans);
+    pointer-events: none;
+  }
+
+  /* --- radial rings: muted full tracks + colored arcs, rounded caps. */
+  .aui-chart__rtrack {
+    stroke: var(--ui-muted);
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .aui-chart__rarc {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  /* --- radar: dashed hexagonal grid + translucent series polygons
+     (polygon color rides on currentcolor set inline on the <g>). */
+  .aui-chart__radar-grid path {
+    stroke: var(--ui-border);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+    fill: none;
+  }
+
+  .aui-chart__radar-poly path {
+    fill: currentcolor;
+    fill-opacity: 0.16;
+    stroke: currentcolor;
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  /* --- gauge ticks: filled ticks carry an inline stroke (the series
+     color) because the class rule would override a stroke attribute. */
+  .aui-chart__gtick {
+    stroke: var(--ui-muted);
+    stroke-width: 5;
+    stroke-linecap: round;
+    fill: none;
+  }
+
+  .aui-chart__gauge-value {
+    fill: var(--ui-foreground);
+    font-size: 34px;
+    font-weight: var(--ui-font-semibold);
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-chart__gauge-label {
+    fill: var(--ui-muted-foreground);
+    font-size: 13px;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-chart__slice {
+    stroke: var(--ui-background);
+    stroke-width: 2;
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__slice:hover {
+    opacity: 0.85;
+  }
+
+  /* Slice callouts. The value label is white in both themes — it sits
+     on saturated slice fills, where theme foreground would flip to
+     unreadable in dark mode. */
+  .aui-chart__slice-value {
+    fill: white;
+    font-size: 15px;
+    font-weight: var(--ui-font-semibold);
+    font-family: var(--ui-font-sans);
+    pointer-events: none;
+  }
+
+  .aui-chart__slice-label path {
+    stroke: var(--ui-muted-foreground);
+    stroke-width: 1;
+    fill: none;
+  }
+
+  .aui-chart__slice-label text {
+    fill: var(--ui-foreground);
+    font-size: 13px;
+    font-family: var(--ui-font-sans);
+  }
+
+  /* --- horizontal bars --- */
+
+  .aui-chart__hbar {
+    display: grid;
+    gap: var(--ui-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aui-chart__hbar-row {
+    display: grid;
+    grid-template-columns: minmax(7rem, auto) 1fr auto;
+    align-items: center;
+    gap: var(--ui-space-2);
+  }
+
+  .aui-chart__hbar-label {
+    color: var(--ui-foreground);
+    font-size: var(--ui-text-sm);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .aui-chart__hbar-track {
+    position: relative;
+    display: block;
+    block-size: 0.625rem;
+    background: var(--ui-muted);
+    border-radius: var(--ui-radius-full);
+    overflow: hidden;
+  }
+
+  .aui-chart__hbar-fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: calc(var(--v, 0) * 1%);
+    border-radius: inherit;
+  }
+
+  /* Stacked part-to-whole track: segments sit side by side with
+     small gaps; each segment rounds itself, so the track stays
+     transparent instead of clipping a muted backdrop. */
+  .aui-chart__hbar--stacked {
+    margin: var(--ui-space-1) 0;
+  }
+
+  .aui-chart__hbar-row--stacked {
+    display: block;
+  }
+
+  .aui-chart__hbar-track--stacked {
+    display: flex;
+    gap: var(--ui-space-1);
+    block-size: 0.75rem;
+    background: transparent;
+    overflow: visible;
+  }
+
+  .aui-chart__hbar-seg {
+    display: block;
+    inline-size: calc(var(--w, 0) * 1%);
+    min-inline-size: 8px;
+    block-size: 100%;
+    border-radius: var(--ui-radius-full);
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__hbar-seg:hover {
+    opacity: 0.85;
+  }
+
+  .aui-chart__hbar-value {
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-xs);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- legend --- */
+
+  .aui-chart__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-1) var(--ui-space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-chart__legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-chart__swatch {
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* --- fallback table: visually hidden, real data for AT.
+     display: block is REQUIRED here — an auto-layout <table> treats
+     width as a minimum and would grow past the 1px clip box, painting
+     a visible duplicate of the data on the page. --- */
+
+  .aui-chart__table {
+    display: block;
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>

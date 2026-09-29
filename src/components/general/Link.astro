@@ -1,0 +1,399 @@
+---
+/**
+  * Link — semantic anchor with smart defaults for external/target="_blank"
+  * links, disabled (non-interactive) state, and view-transition support.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  href?: string;
+  /** Renders as a plain anchor with no href; useful for inactive/dimmed links. */
+  disabled?: boolean;
+  /** When true, defaults `rel` to "noopener noreferrer" unless `rel` is explicitly set. */
+  external?: boolean;
+  /** Forces the link to open in a new browsing context. */
+  target?: string;
+  /**
+   * Relationship metadata for the linked resource.
+   * When `external` is true and `rel` is not set, defaults to "noopener noreferrer".
+   */
+  rel?: string;
+  /** When true, omits the `rel` attribute entirely (overrides the external default). */
+  noRel?: boolean;
+  /** Calls `history.replaceState` instead of `pushState` on navigation (HTML
+   * `<a>` only — consumers handle the JS side via events or islands). */
+  replace?: boolean;
+  /** Opt in to View Transitions API on click (HTML `<a>` only). */
+  viewTransition?: boolean;
+  /** When true, the link follows immediately without waiting for the document
+   * to finish parsing. Mirrors the HTML `<link rel="prefetch">` hint intent
+   * as a consumer hook — no browser prefetch is triggered by this prop alone. */
+  prefetch?: boolean;
+  /** Prefer interaction-based prefetch over scroll-into-view prefetch. */
+  prefetchOn?: "visibility" | "interaction";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  /** Arrow-based icon (chevron, arrow, etc.) rendered before the link text. */
+  icon?: "arrow" | "chevron" | "external" | "download";
+  size?: "sm" | "md" | "lg";
+  underline?: boolean;
+  color?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "inherit";
+  /** When true, the link stretches to fill its parent's inline width. */
+  block?: boolean;
+  /** Content of the link when `loading` is true and `loadingText` is not set. */
+  loadingText?: string;
+  /** Replaces link content while resolving (e.g. route prefetch / pending navigation). */
+  loading?: boolean;
+  /** Anchor-level accessible name (required when the link has no text content). */
+  ariaCurrent?: "page" | "step" | "location" | "date" | "true" | "false" | undefined;
+  /** When the link renders only an icon and no text (needs aria-label). */
+  iconOnly?: boolean;
+  /** Anchor-level `download` hint: `true` hints at download; a string sets the filename. */
+  download?: string | boolean;
+  /** Anchor-level `hreflang` hint. */
+  hreflang?: string;
+  /** Anchor-level `ping` URL(s). */
+  ping?: string;
+  /** Anchor-level `referrerPolicy`. */
+  referrerPolicy?:
+    | "strict-origin-when-cross-origin"
+    | "no-referrer"
+    | "no-referrer-when-downgrade"
+    | "origin"
+    | "origin-when-cross-origin"
+    | "same-origin"
+    | "strict-origin"
+    | "unsafe-url"
+    | undefined;
+  /** When the link is already prefetched, apply this class (styling hook for the consumer). */
+  prefetchedClass?: string;
+  /** Escape hatch to disable `prefetch` behavior. */
+  noPrefetch?: boolean;
+}
+
+const {
+  href,
+  disabled = false,
+  external = false,
+  target,
+  rel,
+  noRel = false,
+  replace = false,
+  viewTransition = false,
+  prefetch = false,
+  prefetchOn,
+  prefetchedClass,
+  noPrefetch = false,
+  class: className,
+  id,
+  ariaLabel,
+  icon,
+  iconOnly = false,
+  size = "md",
+  underline = true,
+  color = "primary",
+  block = false,
+  loadingText,
+  loading = false,
+  ariaCurrent,
+  download,
+  hreflang,
+  ping,
+  referrerPolicy,
+  ...rest
+} = Astro.props;
+
+const isDisabled = disabled || loading;
+
+const resolvedRel =
+  rel ||
+  (noRel
+    ? undefined
+    : external || target === "_blank"
+      ? "noopener noreferrer"
+      : undefined);
+
+const classes = cn(
+  "aui-link",
+  `aui-link--${size}`,
+  `aui-link--color-${color}`,
+  !underline && "aui-link--no-underline",
+  block && "aui-link--block",
+  loading && "aui-link--loading",
+  !isDisabled && "aui-link--interactive",
+  className,
+);
+
+const isHref =
+  !!href || external || target === "_blank" || prefetch || !!download;
+---
+
+<a
+  href={isDisabled || !isHref ? undefined : href}
+  id={id}
+  class={classes}
+  aria-label={ariaLabel}
+  aria-disabled={isDisabled || undefined}
+  aria-current={ariaCurrent}
+  rel={resolvedRel}
+  target={target}
+  download={download && typeof download === "string" ? download : download ? "" : undefined}
+  hreflang={hreflang}
+  ping={ping}
+  referrerpolicy={referrerPolicy}
+  data-aui-link
+  data-disabled={isDisabled ? "" : undefined}
+  data-href={isHref && !isDisabled ? "" : undefined}
+  data-prefetch={prefetch ? "" : undefined}
+  data-prefetch-on={prefetchOn}
+  data-prefetched-class={prefetchedClass}
+  data-no-prefetch={noPrefetch ? "" : undefined}
+  data-replace={replace ? "" : undefined}
+  data-view-transition={viewTransition ? "" : undefined}
+  {...rest}
+>
+  {isDisabled ? (
+    <span class="aui-link__text">
+			{loading && loadingText ? loadingText :
+        <slot/>}
+		</span>
+  ) : (
+    <>
+      {!iconOnly && icon && <span class={`aui-link__icon aui-link__icon--${icon}`} aria-hidden="true"/>}
+      <slot/>
+    </>
+  )}
+</a>
+
+<style>
+  .aui-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  /* ---------- size ---------- */
+
+  .aui-link--sm {
+    font-size: var(--ui-text-xs);
+    line-height: var(--ui-leading-tight);
+    vertical-align: text-bottom;
+  }
+
+  .aui-link--md {
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+  }
+
+  .aui-link--lg {
+    font-size: var(--ui-text-base);
+    line-height: var(--ui-leading-tight);
+  }
+
+  /* ---------- color ---------- */
+
+  .aui-link--color-primary {
+    color: var(--ui-primary);
+    --aui-link-underline-color: var(--ui-primary);
+  }
+
+  .aui-link--color-secondary {
+    color: var(--ui-secondary-foreground);
+    --aui-link-underline-color: var(--ui-secondary-foreground);
+  }
+
+  .aui-link--color-muted {
+    color: var(--ui-muted-foreground);
+    --aui-link-underline-color: var(--ui-muted-foreground);
+  }
+
+  .aui-link--color-destructive {
+    color: var(--ui-error);
+    --aui-link-underline-color: var(--ui-error);
+  }
+
+  .aui-link--color-success {
+    color: var(--ui-success);
+    --aui-link-underline-color: var(--ui-success);
+  }
+
+  .aui-link--color-warning {
+    color: var(--ui-warning);
+    --aui-link-underline-color: var(--ui-warning);
+  }
+
+  .aui-link--color-inherit {
+    color: inherit;
+    --aui-link-underline-color: currentColor;
+  }
+
+  /* ---------- underline ---------- */
+
+  .aui-link {
+    text-decoration-color: var(--aui-link-underline-color, var(--ui-primary));
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+    transition: color var(--ui-transition-fast),
+    background-color var(--ui-transition-fast),
+    text-decoration-color var(--ui-transition-fast);
+  }
+
+  .aui-link--no-underline {
+    text-decoration: none;
+  }
+
+  /* ---------- block ---------- */
+
+  .aui-link--block {
+    width: 100%;
+  }
+
+  /* ---------- disabled ---------- */
+
+  .aui-link--interactive {
+    cursor: pointer;
+  }
+
+  .aui-link[data-disabled=""] {
+    cursor: default;
+    pointer-events: none;
+    color: var(--ui-muted-foreground);
+    text-decoration-color: var(--ui-muted-foreground);
+  }
+
+  .aui-link[data-disabled=""] .aui-link__text {
+    opacity: 0.65;
+  }
+
+  /* ---------- hover / focus-visible ---------- */
+
+  .aui-link--interactive:hover {
+    color: var(--ui-primary-hover);
+    text-decoration-color: var(--ui-primary-hover);
+    background-color: var(--ui-secondary);
+    border-radius: var(--ui-radius-sm);
+    padding-inline: var(--ui-space-1);
+    margin-inline: calc(-1 * var(--ui-space-1));
+  }
+
+  .aui-link--color-secondary:hover {
+    color: var(--ui-secondary-foreground);
+    text-decoration-color: var(--ui-secondary-foreground);
+    background-color: var(--ui-secondary-hover);
+  }
+
+  .aui-link--color-muted:hover {
+    color: var(--ui-foreground);
+    text-decoration-color: var(--ui-foreground);
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-link--color-destructive:hover {
+    color: var(--ui-error);
+    filter: brightness(0.92);
+  }
+
+  .aui-link--color-success:hover {
+    color: var(--ui-success);
+    filter: brightness(0.92);
+  }
+
+  .aui-link--color-warning:hover {
+    color: var(--ui-warning);
+    filter: brightness(0.92);
+  }
+
+  .aui-link--color-inherit:hover {
+    color: var(--ui-foreground);
+    text-decoration-color: var(--ui-foreground);
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-link:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+    border-radius: var(--ui-radius-sm);
+  }
+
+  /* ---------- loading ---------- */
+
+  .aui-link--loading {
+    cursor: wait;
+    opacity: var(--ui-disabled-opacity);
+  }
+
+  /* ---------- icon ---------- */
+
+  .aui-link__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1em;
+    height: 1em;
+  }
+
+  .aui-link__icon--arrow::before {
+    content: "";
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  }
+
+  .aui-link__icon--chevron::before {
+    content: "";
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5l7 7-7 7'/></svg>") center / contain no-repeat;
+  }
+
+  .aui-link__icon--external::before {
+    content: "";
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3'/></svg>") center / contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3'/></svg>") center / contain no-repeat;
+  }
+
+  .aui-link__icon--download::before {
+    content: "";
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background: currentColor;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3'/></svg>") center / contain no-repeat;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3'/></svg>") center / contain no-repeat;
+  }
+
+  /* ---------- accessibility: screen-reader-only text for icon-only links ---------- */
+
+  .aui-link--interactive:not([data-href=""]) > :global(svg),
+  .aui-link--interactive:not([data-href=""]) > :global(img) {
+    max-width: 1em;
+    max-height: 1em;
+  }
+
+  /* ---------- prefetch hint ---------- */
+
+  .aui-link[data-prefetch=""] {
+    /*
+     * Consumers who want browser-level prefetch should add:
+     *   <link rel="prefetch" href="…">
+     * in <head> or a framework-level link component.
+     * This attribute is a behavioral hint only.
+     */
+  }
+</style>

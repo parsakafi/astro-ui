@@ -1,0 +1,235 @@
+---
+/**
+  * Spinner — zero-JS loading indicator.
+  *
+  * Built-in visual styles (ring, dots, pulse, spin) render as inline SVG
+  * or CSS shapes — no Iconify dependency, no client JS. The `loading`
+  * prop is forwarded to Button; standalone use is for page/region states.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+  /** Accessible label, e.g. "Loading results". */
+  label?: string;
+  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "carbon" | "accent";
+  /**
+   * Visual style of the spinner.
+   * - `ring` (default): bordered ring rotating around a gap.
+   * - `dots`: three dots bouncing in sequence.
+   * - `pulse`: circle that scales and fades in a loop.
+   * - `spin`: solid circle rotating continuously.
+   */
+  icon?: "ring" | "dots" | "pulse" | "spin";
+  class?: string;
+  id?: string;
+}
+
+const {
+  size = "md",
+  label = "Loading",
+  variant = "primary",
+  icon = "ring",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-spinner",
+  `aui-spinner--${size}`,
+  `aui-spinner--variant-${variant}`,
+  `aui-spinner--icon-${icon}`,
+  className,
+);
+
+const ringSize: Record<string, string> = {
+  xs: "0.75rem",
+  sm: "1.25rem",
+  md: "1.75rem",
+  lg: "2.5rem",
+  xl: "3.5rem",
+  "2xl": "4.5rem",
+};
+
+const dotCount = 3;
+const dots = Array.from({length: dotCount}, (_, i) => i);
+---
+
+<span id={id} class={classes} role="status" {...rest}>
+	{icon === "ring" ? (
+    <span
+      class="aui-spinner__ring"
+      aria-hidden="true"
+      style={`width:${ringSize[size]};height:${ringSize[size]}`}
+    />
+  ) : icon === "dots" ? (
+    <span class="aui-spinner__dots" aria-hidden="true">
+			{dots.map((i) => (
+        <span
+          class="aui-spinner__dot"
+          style={`animation-delay:${(-0.33 * i)}s;--i:${i}`}
+          aria-hidden="true"
+        />
+      ))}
+		</span>
+  ) : icon === "pulse" ? (
+    <span class="aui-spinner__pulse" aria-hidden="true"/>
+  ) : icon === "spin" ? (
+    <span class="aui-spinner__spin" aria-hidden="true"/>
+  ) : null}
+  <span class="aui-sr-only">{label}</span>
+</span>
+
+<style>
+  .aui-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ui-primary);
+  }
+
+  /* --- size --- */
+
+  .aui-spinner--xs {
+    font-size: 0.5rem;
+  }
+
+  .aui-spinner--sm {
+    font-size: 0.75rem;
+  }
+
+  .aui-spinner--md {
+    font-size: 1rem;
+  }
+
+  .aui-spinner--lg {
+    font-size: 1.25rem;
+  }
+
+  .aui-spinner--xl {
+    font-size: 1.5rem;
+  }
+
+  .aui-spinner--2xl {
+    font-size: 1.75rem;
+  }
+
+  /* --- ring icon --- */
+
+  .aui-spinner__ring {
+    border-radius: var(--ui-radius-full);
+    border: 2px solid var(--ui-border);
+    border-top-color: currentColor;
+    animation: aui-spin 0.75s linear infinite;
+  }
+
+  /* --- dots icon --- */
+
+  .aui-spinner__dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25em;
+    height: 1em;
+    width: 1em;
+  }
+
+  .aui-spinner__dot {
+    display: block;
+    width: 0.33em;
+    height: 0.33em;
+    border-radius: var(--ui-radius-full);
+    background-color: currentColor;
+    animation: aui-dots-bounce 1.4s ease-in-out infinite both;
+  }
+
+  /* --- pulse icon --- */
+
+  .aui-spinner__pulse {
+    display: block;
+    width: 1em;
+    height: 1em;
+    border-radius: var(--ui-radius-full);
+    border: 2px solid var(--ui-border);
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    animation: aui-spin 0.8s linear infinite;
+  }
+
+  /* --- spin icon --- */
+
+  .aui-spinner__spin {
+    display: block;
+    width: 1em;
+    height: 1em;
+    border-radius: var(--ui-radius-sm);
+    background-color: currentColor;
+    animation: aui-spin 0.7s linear infinite;
+    opacity: 0.85;
+  }
+
+  /* --- variant colors --- */
+
+  .aui-spinner--variant-primary {
+    color: var(--ui-primary);
+  }
+
+  .aui-spinner--variant-secondary {
+    color: var(--ui-secondary-foreground);
+    opacity: 0.3;
+  }
+
+  .aui-spinner--variant-muted {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-spinner--variant-destructive {
+    color: var(--ui-error);
+  }
+
+  .aui-spinner--variant-success {
+    color: var(--ui-success);
+  }
+
+  .aui-spinner--variant-warning {
+    color: var(--ui-warning);
+  }
+
+  .aui-spinner--variant-info {
+    color: var(--ui-info);
+  }
+
+  .aui-spinner--variant-carbon {
+    color: var(--ui-carbon);
+  }
+
+  .aui-spinner--variant-accent {
+    color: var(--ui-accent);
+    opacity: 0.4;
+  }
+
+  .aui-spinner--variant-inherit {
+    color: currentColor;
+  }
+
+  @keyframes aui-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes aui-dots-bounce {
+    0%,
+    80%,
+    100% {
+      transform: scale(0);
+    }
+    40% {
+      transform: scale(1);
+    }
+  }
+</style>

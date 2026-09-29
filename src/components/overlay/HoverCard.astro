@@ -1,0 +1,123 @@
+---
+/**
+  * HoverCard — a rich preview card on hover and keyboard focus.
+  *
+  * CSS-only sibling of Popover: content that appears after a short delay
+  * when the user hovers or focuses the trigger. Unlike Tooltip the card
+  * stays interactive (links inside work) and carries an aria-label so
+  * assistive tech can announce it.
+  *
+  * Because it is pointer-driven, never put essential information only in
+  * a HoverCard — the trigger itself must carry the primary content.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Placement of the card relative to the trigger. */
+  placement?: "top" | "bottom";
+  /** Accessible name for the card (announced on focus). */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  placement = "bottom",
+  ariaLabel,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn("aui-hover-card", `aui-hover-card--${placement}`, className);
+---
+
+<span id={id} class={classes} {...rest}>
+	<span class="aui-hover-card__trigger" tabindex="0">
+		<slot/>
+	</span>
+	<div
+    class="aui-hover-card__panel"
+    role="note"
+    aria-label={ariaLabel}
+    tabindex="0"
+  >
+		<slot name="content"/>
+	</div>
+</span>
+
+<style>
+  .aui-hover-card {
+    position: relative;
+    display: inline-flex;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-hover-card__trigger {
+    display: inline-flex;
+    outline: none;
+  }
+
+  .aui-hover-card__panel {
+    position: absolute;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    z-index: var(--ui-z-popover);
+    width: max-content;
+    max-width: 20rem;
+    padding: var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    /* Delay before the card appears; no motion for reduced-motion. */
+    transition: opacity var(--ui-transition-fast) var(--ui-transition-delay, 300ms),
+    visibility 0s var(--ui-transition-delay, 300ms);
+  }
+
+  .aui-hover-card--bottom .aui-hover-card__panel {
+    top: calc(100% + var(--ui-space-2));
+  }
+
+  .aui-hover-card--top .aui-hover-card__panel {
+    bottom: calc(100% + var(--ui-space-2));
+  }
+
+  .aui-hover-card:hover .aui-hover-card__panel,
+  .aui-hover-card:focus-within .aui-hover-card__panel {
+    opacity: 1;
+    visibility: visible;
+    /* Appears immediately once shown; hides after the same delay so
+       moving between trigger and card does not flicker. */
+    transition: opacity var(--ui-transition-fast),
+    visibility 0s;
+  }
+
+  .aui-hover-card__panel:focus-visible,
+  .aui-hover-card__trigger:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  /* Slotted card content belongs to the consumer — :global() only. */
+  .aui-hover-card__panel > :global(*:first-child) {
+    margin-top: 0;
+  }
+
+  .aui-hover-card__panel > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-hover-card__panel {
+      transition: none;
+    }
+  }
+</style>

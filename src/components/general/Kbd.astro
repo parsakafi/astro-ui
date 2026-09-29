@@ -1,0 +1,111 @@
+---
+/**
+  * Kbd — zero-JS keyboard key indicator.
+  *
+  * Inline semantic <kbd>. Use inside prose to show keyboard shortcuts
+  * ("Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd>"). A sequence of Kbd elements
+  * should be wrapped in a plain <kbd> or span with an accessible label
+  * describing the shortcut.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Visual style. */
+  variant?: "default" | "outline" | "muted";
+  /** Scale of the key cap. */
+  size?: "sm" | "md" | "lg";
+  /** Adds a raised key-cap shadow. */
+  raised?: boolean;
+  class?: string;
+  id?: string;
+  /** Accessible name when the visible glyph alone isn't meaningful. */
+  ariaLabel?: string;
+}
+
+const {
+  variant = "default",
+  size = "md",
+  raised = false,
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-kbd",
+  `aui-kbd--${variant}`,
+  `aui-kbd--${size}`,
+  raised && "aui-kbd--raised",
+  className,
+);
+---
+
+<kbd id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  <slot/>
+</kbd>
+
+<style>
+  .aui-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.5rem;
+    padding: 0 var(--ui-space-1);
+    font-family: var(--ui-font-mono);
+    font-weight: var(--ui-font-medium);
+    line-height: var(--ui-leading-none);
+    text-align: center;
+    white-space: nowrap;
+    border-radius: var(--ui-radius-sm);
+    border: 1px solid var(--ui-border);
+  }
+
+  /* --- variants --- */
+
+  .aui-kbd--default {
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+  }
+
+  .aui-kbd--outline {
+    background-color: transparent;
+    color: var(--ui-foreground);
+  }
+
+  .aui-kbd--muted {
+    background-color: transparent;
+    color: var(--ui-muted-foreground);
+    border-color: transparent;
+  }
+
+  /* --- sizes --- */
+
+  .aui-kbd--sm {
+    min-width: 1.25rem;
+    font-size: var(--ui-text-2xs);
+    padding: 1px var(--ui-space-1);
+  }
+
+  .aui-kbd--md {
+    min-width: 1.5rem;
+    font-size: var(--ui-text-xs);
+    padding: 1px var(--ui-space-2);
+  }
+
+  .aui-kbd--lg {
+    min-width: 1.75rem;
+    font-size: var(--ui-text-sm);
+    padding: 2px var(--ui-space-2);
+  }
+
+  /* --- raised key cap --- */
+
+  .aui-kbd--raised {
+    box-shadow: 0 1px 0 var(--ui-border),
+    0 2px 0 var(--ui-background),
+    0 3px 0 var(--ui-border);
+  }
+</style>

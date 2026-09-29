@@ -1,0 +1,79 @@
+---
+/**
+  * ButtonGroupSeparator — a visual divider placed inside a ButtonGroup.
+  *
+  * Renders a thin border-colored line between group items to create
+  * distinct sections (e.g. separating a button group from a dropdown).
+  * Orientation follows the parent group by default; pass `orientation`
+  * to override.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Orientation relative to the parent ButtonGroup. */
+  orientation?: "horizontal" | "vertical";
+  /** Accessible label when the separator delimits regions. */
+  label?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  orientation = "vertical",
+  label,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-button-group-separator",
+  `aui-button-group-separator--${orientation}`,
+  className,
+);
+---
+
+{
+  orientation === "horizontal" ? (
+  <hr
+    id={id}
+    class={classes}
+    aria-label={label}
+    role="separator"
+    data-slot="button-group-separator"
+    {...rest}
+  />
+    ) : (
+  <div
+    id={id}
+    class={classes}
+    role="separator"
+    aria-orientation="vertical"
+    aria-label={label}
+    data-slot="button-group-separator"
+    {...rest}
+  />
+    )
+  }
+
+<style>
+  .aui-button-group-separator {
+    border: none;
+    background-color: var(--ui-border);
+    flex-shrink: 0;
+  }
+
+  .aui-button-group-separator--vertical {
+    width: 1px;
+    align-self: stretch;
+    margin: 0 var(--ui-space-1);
+  }
+
+  .aui-button-group-separator--horizontal {
+    height: 1px;
+    width: 100%;
+    margin: var(--ui-space-1) 0;
+  }
+</style>

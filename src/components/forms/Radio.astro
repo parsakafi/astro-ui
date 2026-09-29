@@ -1,0 +1,306 @@
+---
+/**
+  * Radio — zero-JS single-choice control.
+  *
+  * Native <input type="radio"> wrapped in a <label> so the whole row is
+  * clickable with correct semantics. Radios in one group share `name`;
+  * `checked` sets the initial server-rendered state; selection is native
+  * browser behavior (arrows move within the group, Tab enters it).
+  * Group labelling: wrap related radios in <fieldset>/<legend>.
+  * Invalid state is visual (error ring) — pair with `ariaDescribedby`
+  * pointing at error text, since `aria-invalid` is not allowed on the
+  * radio role.
+  *
+  *   <fieldset>
+  *     <legend>Plan</legend>
+  *     <Radio name="plan" value="free" checked>Free</Radio>
+  *     <Radio name="plan" value="pro">Pro</Radio>
+  *   </fieldset>
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  name?: string;
+  value?: string;
+  checked?: boolean;
+  required?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+}
+
+const {
+  name,
+  value,
+  checked = false,
+  required = false,
+  disabled = false,
+  invalid = false,
+  size = "md",
+  variant = "primary",
+  class: className,
+  id,
+  ariaLabel,
+  ariaDescribedby,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-radio",
+  `aui-radio--${size}`,
+  `aui-radio--variant-${variant}`,
+  disabled && "aui-radio--disabled",
+  invalid && "aui-radio--invalid",
+  className,
+);
+---
+
+<label class={classes}>
+  <input
+    type="radio"
+    class="aui-radio__input"
+    name={name}
+    value={value}
+    checked={checked || undefined}
+    required={required || undefined}
+    disabled={disabled || undefined}
+    aria-label={ariaLabel}
+    aria-describedby={ariaDescribedby}
+    id={id}
+    {...rest}
+  />
+  <span class="aui-radio__circle" aria-hidden="true">
+		<span class="aui-radio__dot" aria-hidden="true"/>
+	</span>
+  <span class="aui-radio__label">
+		<slot/>
+	</span>
+</label>
+
+<style>
+  .aui-radio {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: var(--ui-space-2);
+    font-family: var(--ui-font-sans);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    cursor: pointer;
+  }
+
+  .aui-radio--disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-radio__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .aui-radio__circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-full);
+    transition: border-color var(--ui-transition-fast);
+    margin-top: 1px;
+  }
+
+  /* --- size --- */
+
+  .aui-radio--xs .aui-radio__circle {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .aui-radio--sm .aui-radio__circle {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .aui-radio--md .aui-radio__circle {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .aui-radio--lg .aui-radio__circle {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .aui-radio--xl .aui-radio__circle {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  /* --- color: circle border --- */
+
+  .aui-radio--variant-primary .aui-radio__circle {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-radio--variant-secondary .aui-radio__circle {
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-radio--variant-muted .aui-radio__circle {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-radio--variant-destructive .aui-radio__circle {
+    border-color: var(--ui-error);
+  }
+
+  .aui-radio--variant-success .aui-radio__circle {
+    border-color: var(--ui-success);
+  }
+
+  .aui-radio--variant-warning .aui-radio__circle {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-radio--variant-info .aui-radio__circle {
+    border-color: var(--ui-info);
+  }
+
+  .aui-radio--variant-inherit .aui-radio__circle {
+    border-color: currentColor;
+  }
+
+  .aui-radio__dot {
+    border-radius: var(--ui-radius-full);
+    background-color: var(--ui-primary);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity var(--ui-transition-fast),
+    transform var(--ui-transition-fast);
+  }
+
+  .aui-radio--xs .aui-radio__dot {
+    width: 0.3rem;
+    height: 0.3rem;
+  }
+
+  .aui-radio--sm .aui-radio__dot {
+    width: 0.375rem;
+    height: 0.375rem;
+  }
+
+  .aui-radio--md .aui-radio__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+
+  .aui-radio--lg .aui-radio__dot {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  .aui-radio--xl .aui-radio__dot {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  /* --- color: dot --- */
+
+  .aui-radio--variant-primary .aui-radio__dot {
+    background-color: var(--ui-primary);
+  }
+
+  .aui-radio--variant-secondary .aui-radio__dot {
+    background-color: var(--ui-secondary-foreground);
+  }
+
+  .aui-radio--variant-muted .aui-radio__dot {
+    background-color: var(--ui-muted-foreground);
+  }
+
+  .aui-radio--variant-destructive .aui-radio__dot {
+    background-color: var(--ui-error);
+  }
+
+  .aui-radio--variant-success .aui-radio__dot {
+    background-color: var(--ui-success);
+  }
+
+  .aui-radio--variant-warning .aui-radio__dot {
+    background-color: var(--ui-warning);
+  }
+
+  .aui-radio--variant-info .aui-radio__dot {
+    background-color: var(--ui-info);
+  }
+
+  .aui-radio--variant-inherit .aui-radio__dot {
+    background-color: currentColor;
+  }
+
+  .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-radio__input:checked + .aui-radio__circle .aui-radio__dot {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  /* Checked state uses the variant color (variant class lives on the
+     root label; the input and circle are descendants). */
+  .aui-radio--variant-primary .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-radio--variant-secondary .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-secondary-foreground);
+  }
+
+  .aui-radio--variant-muted .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-radio--variant-destructive .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-error);
+  }
+
+  .aui-radio--variant-success .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-success);
+  }
+
+  .aui-radio--variant-warning .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-radio--variant-info .aui-radio__input:checked + .aui-radio__circle {
+    border-color: var(--ui-info);
+  }
+
+  .aui-radio--variant-inherit .aui-radio__input:checked + .aui-radio__circle {
+    border-color: currentColor;
+  }
+
+  .aui-radio__input:focus-visible + .aui-radio__circle {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-radio--invalid .aui-radio__circle {
+    border-color: var(--ui-error);
+  }
+
+  .aui-radio__label:empty {
+    display: none;
+  }
+</style>

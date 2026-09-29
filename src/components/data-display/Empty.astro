@@ -1,0 +1,148 @@
+---
+/**
+  * Empty — zero-JS empty-state placeholder.
+  *
+  * A semantic <div> block for "no data" moments, composing through
+  * slots: media (icon/illustration), title, description, and footer
+  * (actions). Minimal by default; every part is optional.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Scale of the block's spacing and text. */
+  size?: "sm" | "md" | "lg";
+  class?: string;
+  id?: string;
+  /** Accessible name when the state needs one (e.g. described by context). */
+  ariaLabel?: string;
+}
+
+const {
+  size = "md",
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const classes = cn("aui-empty", `aui-empty--${size}`, className);
+
+const hasTitle = Astro.slots.has("title");
+const hasDescription = Astro.slots.has("description");
+---
+
+<div id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  {
+    Astro.slots.has("media") && (
+      <div class="aui-empty__media">
+        <slot name="media"/>
+      </div>
+    )
+  }
+  <div class="aui-empty__body">
+    {
+      hasTitle && (
+        <div class="aui-empty__title">
+          <slot name="title"/>
+        </div>
+      )
+    }
+    {
+      hasDescription && (
+        <div class="aui-empty__description">
+          <slot name="description"/>
+        </div>
+      )
+    }
+  </div>
+  {
+    Astro.slots.has("footer") && (
+      <div class="aui-empty__footer">
+        <slot name="footer"/>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .aui-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: var(--ui-font-sans);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-empty--sm {
+    gap: var(--ui-space-3);
+    padding: var(--ui-space-6);
+  }
+
+  .aui-empty--md {
+    gap: var(--ui-space-4);
+    padding: var(--ui-space-8);
+  }
+
+  .aui-empty--lg {
+    gap: var(--ui-space-6);
+    padding: var(--ui-space-12);
+  }
+
+  .aui-empty__media {
+    display: grid;
+    place-items: center;
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-empty--sm .aui-empty__media {
+    font-size: var(--ui-text-2xl);
+  }
+
+  .aui-empty--md .aui-empty__media {
+    font-size: calc(var(--ui-text-2xl) * 1.33);
+  }
+
+  .aui-empty--lg .aui-empty__media {
+    font-size: calc(var(--ui-text-2xl) * 1.67);
+  }
+
+  .aui-empty__body {
+    display: grid;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-empty__title {
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-semibold);
+  }
+
+  .aui-empty--sm .aui-empty__title {
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-empty--md .aui-empty__title {
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-empty--lg .aui-empty__title {
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-empty__description {
+    max-width: 40ch;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+  }
+
+  .aui-empty__footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ui-space-3);
+    margin-block-start: var(--ui-space-2);
+  }
+</style>

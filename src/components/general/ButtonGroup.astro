@@ -1,0 +1,116 @@
+---
+/**
+  * ButtonGroup — zero-JS button container.
+  *
+  * Groups buttons visually by merging borders and adjusting corner radii so
+  * adjacent buttons form one continuous control. Only the outer corners of
+  * the first and last children stay rounded; inner borders overlap and are
+  * hidden by z-index stacking on hover/focus.
+  *
+  * Children should be Button components or other inline interactive elements.
+  * Composes with ButtonGroupText (non-button text) and ButtonGroupSeparator
+  * (a visual divider) for richer toolbars.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Layout direction. */
+  orientation?: "horizontal" | "vertical";
+  /** Semantic ARIA role for the container. */
+  role?: "group" | "toolbar";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+}
+
+const {
+  orientation = "horizontal",
+  role = "group",
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-button-group",
+  `aui-button-group--${orientation}`,
+  className,
+);
+---
+
+<div
+  id={id}
+  role={role}
+  class={classes}
+  data-orientation={orientation}
+  aria-label={ariaLabel}
+  {...rest}
+>
+  <slot/>
+</div>
+
+<style>
+  .aui-button-group {
+    display: inline-flex;
+    width: fit-content;
+    align-items: stretch;
+  }
+
+  /* Child selectors need :global() — slotted children carry their own scope
+     attribute, not this component's. The doubled group class outranks the
+     child's own border-radius declaration regardless of stylesheet order. */
+
+  /* --- orientation: horizontal --- */
+
+  .aui-button-group--horizontal {
+    flex-direction: row;
+  }
+
+  /* Remove left border-radius for all children except the first */
+  .aui-button-group.aui-button-group--horizontal > :global(*:not(:first-child)) {
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    margin-inline-start: calc(var(--ui-border-width, 1px) * -1);
+  }
+
+  /* Remove right border-radius for all children except the last */
+  .aui-button-group.aui-button-group--horizontal > :global(*:not(:last-child)) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* --- orientation: vertical --- */
+
+  .aui-button-group--vertical {
+    flex-direction: column;
+  }
+
+  /* Remove top border-radius for all children except the first */
+  .aui-button-group.aui-button-group--vertical > :global(*:not(:first-child)) {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;
+    margin-block-start: calc(var(--ui-border-width, 1px) * -1);
+  }
+
+  /* Remove bottom border-radius for all children except the last */
+  .aui-button-group.aui-button-group--vertical > :global(*:not(:last-child)) {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* Ensure focus states appear above siblings for full border visibility */
+  .aui-button-group > :global(*:focus-visible),
+  .aui-button-group > :global(*:focus-within) {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Ensure hovered items appear above siblings to show full border */
+  .aui-button-group > :global(*:hover) {
+    position: relative;
+    z-index: 5;
+  }
+</style>

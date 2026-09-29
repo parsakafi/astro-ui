@@ -1,0 +1,419 @@
+---
+/** Progress — zero-JS progress indicator.
+
+  * Determinate (bar or circle) or indeterminate bar. `value` sets
+  * the filled fraction 0–100. For indeterminate loading, use `Spinner`
+  * instead.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Filled percentage, 0–100. When omitted, renders indeterminate. */
+  value?: number;
+  /** Visual variant. */
+  variant?: "bar" | "circle";
+  /** Visual size. */
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+  /** Fill color. */
+  color?: "primary" | "secondary" | "success" | "warning" | "error" | "info" | "muted" | "destructive";
+  /** Optional label above/beside the track. */
+  label?: string;
+  /** Optional current value text (e.g. "64%"). Shown when `label` is set. */
+  showValue?: boolean;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+}
+
+const {
+  value,
+  variant = "bar",
+  size = "md",
+  color = "primary",
+  label,
+  showValue = false,
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const isDeterminate = value !== undefined && value !== null;
+const percent = Math.min(100, Math.max(0, value ?? 0));
+
+// SVG circle geometry: viewBox 0 0 36 36, r=15.9155 → circumference ≈ 100
+const CIRCUMFERENCE = 100;
+const CIRCLE_OFFSET = CIRCUMFERENCE;
+
+const classes = cn(
+  "aui-progress",
+  `aui-progress--${variant}`,
+  `aui-progress--${size}`,
+  `aui-progress--color-${color}`,
+  isDeterminate && "aui-progress--determinate",
+  !isDeterminate && "aui-progress--indeterminate",
+  className,
+);
+
+const circleSizeMap: Record<string, { size: string; labelFontSize: string }> = {
+  xs: {size: "32px", labelFontSize: "10px"},
+  sm: {size: "40px", labelFontSize: "var(--ui-text-xs)"},
+  md: {size: "48px", labelFontSize: "var(--ui-text-sm)"},
+  lg: {size: "64px", labelFontSize: "var(--ui-text-base)"},
+  xl: {size: "80px", labelFontSize: "var(--ui-text-lg)"},
+  "2xl": {size: "96px", labelFontSize: "var(--ui-text-xl)"},
+};
+
+const barSizeMap: Record<string, { height: string; width: string }> = {
+  xs: {height: "4px", width: "8rem"},
+  sm: {height: "6px", width: "10rem"},
+  md: {height: "8px", width: "12rem"},
+  lg: {height: "12px", width: "16rem"},
+  xl: {height: "16px", width: "20rem"},
+  "2xl": {height: "20px", width: "24rem"},
+};
+
+const bar = barSizeMap[size] ?? barSizeMap.md;
+const circle = circleSizeMap[size] ?? circleSizeMap.md;
+---
+{
+  variant === "circle" ? (
+  <span
+    id={id}
+    class={classes}
+    role="progressbar"
+    aria-valuenow={isDeterminate ? percent : undefined}
+    aria-valuemin={0}
+    aria-valuemax={100}
+    aria-label={ariaLabel}
+    style={`width:${circle.size};height:${circle.size}`}
+    {...rest}
+  >
+			<svg
+        class="aui-progress__svg"
+        width={circle.size}
+        height={circle.size}
+        viewBox="0 0 36 36"
+        aria-hidden="true"
+      >
+				<!-- track ring -->
+				<circle
+          class="aui-progress__track"
+          cx="18"
+          cy="18"
+          r="15.9155"
+          fill="none"
+          stroke-width="3"
+        />
+        <!-- fill ring — stroke-dashoffset animates 0→100 → empty→full -->
+				<circle
+          class="aui-progress__fill"
+          cx="18"
+          cy="18"
+          r="15.9155"
+          fill="none"
+          stroke-width="3"
+          stroke-linecap="round"
+          stroke-dasharray={CIRCUMFERENCE}
+          style={isDeterminate
+            ? `stroke-dashoffset:${CIRCLE_OFFSET - percent};transition:stroke-dashoffset 0.3s ease-in-out`
+            : `stroke-dashoffset:${CIRCLE_OFFSET - 40}`
+          }
+          aria-hidden="true"
+        />
+			</svg>
+    {isDeterminate && showValue && (
+      <span class="aui-progress__value" aria-hidden="true">
+					{percent}%
+				</span>
+    )}
+		</span>
+    ) : (
+  <div
+    id={id}
+    class={classes}
+    role="progressbar"
+    aria-valuenow={isDeterminate ? percent : undefined}
+    aria-valuemin={0}
+    aria-valuemax={100}
+    aria-label={ariaLabel}
+    style={`--aui-progress-bar-height:${bar.height};width:${bar.width}`}
+    {...rest}
+  >
+    {(label || label === '0') && (
+      <span class="aui-progress__label">
+					{label}
+				</span>
+    )}
+    <span class="aui-progress__track" aria-hidden="true"
+          style={isDeterminate ? `--aui-progress-percent:${percent}` : undefined}>
+				<span
+          class="aui-progress__fill"
+          style={isDeterminate
+            ? `width:${percent}%;transition:width 0.3s ease-in-out`
+            : undefined}
+          aria-hidden="true"
+        />
+      {isDeterminate && showValue && (
+        <span class="aui-progress__value" aria-hidden="true">
+						{percent}%
+					</span>
+      )}
+			</span>
+  </div>
+    )
+  }
+
+<style>
+  .aui-progress {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-3);
+    font-family: var(--ui-font-sans);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-foreground);
+  }
+
+  /* ---------- bar ---------- */
+
+  .aui-progress--bar .aui-progress__track {
+    flex: 1;
+    height: var(--aui-progress-bar-height, var(--ui-space-2));
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-full);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .aui-progress--bar .aui-progress__fill {
+    position: relative;
+    display: block;
+    height: 100%;
+    border-radius: var(--ui-radius-full);
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .aui-progress--bar .aui-progress__value {
+    position: absolute;
+    top: 50%;
+    inset-inline-start: calc(var(--aui-progress-percent, 0) * 0.5%);
+    transform: translate(-50%, -50%);
+    font-size: var(--ui-text-xs);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-primary-foreground);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .aui-progress--bar.aui-progress--color-secondary .aui-progress__value {
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-progress--bar.aui-progress--color-success .aui-progress__value {
+    color: var(--ui-success-foreground);
+  }
+
+  .aui-progress--bar.aui-progress--color-warning .aui-progress__value {
+    color: var(--ui-warning-foreground);
+  }
+
+  .aui-progress--bar.aui-progress--color-error .aui-progress__value {
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-progress--bar.aui-progress--color-info .aui-progress__value {
+    color: var(--ui-info-foreground);
+  }
+
+  .aui-progress--bar.aui-progress--color-muted .aui-progress__value {
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-progress--bar.aui-progress--color-destructive .aui-progress__value {
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-progress--indeterminate.aui-progress--bar .aui-progress__fill {
+    width: 40%;
+    opacity: 0.8;
+    animation: aui-progress-indeterminate 1.4s ease-in-out infinite;
+  }
+
+  .aui-progress--bar .aui-progress__label {
+    display: inline;
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-foreground);
+  }
+
+  /* ---------- circle (SVG ring) ---------- */
+
+  .aui-progress--circle {
+    position: relative;
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-progress__svg {
+    display: block;
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-progress__track {
+    stroke: var(--ui-muted);
+  }
+
+  .aui-progress__fill {
+    stroke: var(--ui-primary);
+  }
+
+  .aui-progress--indeterminate.aui-progress--circle .aui-progress__fill {
+    animation: aui-progress-circle-indeterminate 1.4s ease-in-out infinite;
+  }
+
+  .aui-progress--circle .aui-progress__value {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-foreground);
+  }
+
+  .aui-progress--circle .aui-progress__fill {
+    transform: rotate(-90deg);
+    transform-origin: center;
+  }
+
+  /* ---------- sizes ---------- */
+
+  .aui-progress--xs.aui-progress--circle .aui-progress__value {
+    font-size: 10px;
+  }
+
+  .aui-progress--sm.aui-progress--circle .aui-progress__value {
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-progress--md.aui-progress--circle .aui-progress__value {
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-progress--lg.aui-progress--circle .aui-progress__value {
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-progress--xl.aui-progress--circle .aui-progress__value {
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-progress--2xl.aui-progress--circle .aui-progress__value {
+    font-size: var(--ui-text-xl);
+  }
+
+  /* ---------- colors ---------- */
+
+  .aui-progress--color-primary .aui-progress__fill {
+    stroke: var(--ui-primary);
+    background-color: var(--ui-primary);
+  }
+
+  .aui-progress--color-secondary .aui-progress__fill {
+    stroke: var(--ui-secondary-foreground);
+    background-color: var(--ui-secondary-foreground);
+  }
+
+  .aui-progress--color-success .aui-progress__fill {
+    stroke: var(--ui-success);
+    background-color: var(--ui-success);
+  }
+
+  .aui-progress--color-warning .aui-progress__fill {
+    stroke: var(--ui-warning);
+    background-color: var(--ui-warning);
+  }
+
+  .aui-progress--color-error .aui-progress__fill {
+    stroke: var(--ui-error);
+    background-color: var(--ui-error);
+  }
+
+  .aui-progress--color-info .aui-progress__fill {
+    stroke: var(--ui-info);
+    background-color: var(--ui-info);
+  }
+
+  .aui-progress--color-muted .aui-progress__fill {
+    stroke: var(--ui-muted-foreground);
+    background-color: var(--ui-muted-foreground);
+  }
+
+  .aui-progress--color-destructive .aui-progress__fill {
+    stroke: var(--ui-error);
+    background-color: var(--ui-error);
+  }
+
+  .aui-progress--color-primary.aui-progress--circle .aui-progress__value {
+    color: var(--ui-primary);
+  }
+
+  .aui-progress--color-secondary.aui-progress--circle .aui-progress__value {
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-progress--color-success.aui-progress--circle .aui-progress__value {
+    color: var(--ui-success);
+  }
+
+  .aui-progress--color-warning.aui-progress--circle .aui-progress__value {
+    color: var(--ui-warning);
+  }
+
+  .aui-progress--color-error.aui-progress--circle .aui-progress__value {
+    color: var(--ui-error);
+  }
+
+  .aui-progress--color-info.aui-progress--circle .aui-progress__value {
+    color: var(--ui-info);
+  }
+
+  .aui-progress--color-muted.aui-progress--circle .aui-progress__value {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-progress--color-destructive.aui-progress--circle .aui-progress__value {
+    color: var(--ui-error);
+  }
+
+  /* ---------- animations ---------- */
+
+  @keyframes aui-progress-indeterminate {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(250%);
+    }
+  }
+
+  @keyframes aui-progress-circle-indeterminate {
+    0% {
+      stroke-dashoffset: 60;
+    }
+    50% {
+      stroke-dashoffset: 20;
+    }
+    100% {
+      stroke-dashoffset: 60;
+    }
+  }
+
+  /* prevent layout shift from the SVG circle's initial render */
+  .aui-progress--circle .aui-progress__fill {
+    stroke-dashoffset: 100;
+  }
+</style>

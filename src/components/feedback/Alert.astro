@@ -1,0 +1,477 @@
+---
+/** Alert — zero-JS feedback message.
+  *
+  * `role` defaults by variant: "alert" for errors (announced
+  * immediately), "status" otherwise (polite). Override via `role`.
+  * Compose with `title` slot + default slot for description.
+  * Dismiss behavior needs app-level JS — see docs for the recipe.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  variant?: "primary" | "destructive" | "success" | "warning" | "info" | "carbon" | "secondary" | "accent";
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  role?: "alert" | "status" | "none";
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  closable?: boolean;
+  closeLabel?: string;
+}
+
+const {
+  variant = "primary",
+  size = "md",
+  role,
+  class: className,
+  id,
+  ariaLabel,
+  closable = false,
+  closeLabel = "Close",
+  ...rest
+} = Astro.props;
+
+const resolvedRole = role ?? (variant === "destructive" ? "alert" : "status");
+const classes = cn(
+  "aui-alert",
+  `aui-alert--variant-${variant}`,
+  `aui-alert--size-${size}`,
+  closable && "aui-alert--closable",
+  className,
+);
+---
+
+<div
+  id={id}
+  class={classes}
+  role={resolvedRole === "none" ? undefined : resolvedRole}
+  aria-label={ariaLabel}
+  {...rest}
+>
+	<span class="aui-alert__icon" aria-hidden="true">
+		<slot name="icon">
+			{variant === "success" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M2 6.5 4.8 9 10 3.5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      )}
+      {variant === "warning" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M6 2.5 6 9M4.5 7 7.5 7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      )}
+      {variant === "destructive" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M3 3l6 6M9 3 3 9"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      )}
+      {variant === "info" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M6 2.5v4M6 8.5v.5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      )}
+      {variant === "primary" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M6 2.5v4M6 8.5v.5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      )}
+      {variant === "carbon" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M6 3.5v5M6 8.5v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      )}
+      {variant === "secondary" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M2 4.5h8M2 6.5h8M2 8.5h8"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      )}
+      {variant === "accent" && (
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path
+            d="M6 2.5l5 5M6 2.5L1 7.5M6 2.5v5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      )}
+		</slot>
+	</span>
+  <div class="aui-alert__body">
+    {Astro.slots.has("title") && (
+      <p class="aui-alert__title">
+        <slot name="title"/>
+      </p>
+    )}
+    <div class="aui-alert__description">
+      <slot/>
+    </div>
+  </div>
+  {closable && (
+    <button
+      type="button"
+      class="aui-alert__close"
+      aria-label={closeLabel}
+      data-alert-close
+    >
+      <span aria-hidden="true">×</span>
+    </button>
+  )}
+</div>
+
+<style>
+  .aui-alert {
+    display: flex;
+    gap: var(--ui-space-3);
+    border: 1px solid transparent;
+    border-radius: var(--ui-radius-md);
+    font-family: var(--ui-font-sans);
+    line-height: var(--ui-leading-normal);
+    overflow: hidden;
+  }
+
+  /* --- sizes --- */
+
+  .aui-alert--size-xs {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-2xs);
+    gap: var(--ui-space-2);
+  }
+
+  .aui-alert--size-sm {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+    gap: var(--ui-space-2);
+  }
+
+  .aui-alert--size-md {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+    gap: var(--ui-space-3);
+  }
+
+  .aui-alert--size-lg {
+    padding: var(--ui-space-4) var(--ui-space-5);
+    font-size: var(--ui-text-base);
+    gap: var(--ui-space-3);
+  }
+
+  .aui-alert--size-xl {
+    padding: var(--ui-space-5) var(--ui-space-6);
+    font-size: var(--ui-text-lg);
+    gap: var(--ui-space-3);
+  }
+
+  /* --- color: solid --- */
+
+  .aui-alert--variant-primary {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+    border-color: var(--ui-primary);
+  }
+
+  .aui-alert--variant-destructive {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+    border-color: var(--ui-error);
+  }
+
+  .aui-alert--variant-success {
+    background-color: var(--ui-success);
+    color: var(--ui-success-foreground);
+    border-color: var(--ui-success);
+  }
+
+  .aui-alert--variant-warning {
+    background-color: var(--ui-warning);
+    color: var(--ui-warning-foreground);
+    border-color: var(--ui-warning);
+  }
+
+  .aui-alert--variant-info {
+    background-color: var(--ui-info);
+    color: var(--ui-info-foreground);
+    border-color: var(--ui-info);
+  }
+
+  .aui-alert--variant-carbon {
+    background-color: var(--ui-carbon);
+    color: var(--ui-carbon-foreground);
+    border-color: var(--ui-carbon);
+  }
+
+  .aui-alert--variant-secondary {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-alert--variant-accent {
+    background-color: var(--ui-accent);
+    color: var(--ui-accent-foreground);
+    border-color: var(--ui-accent);
+  }
+
+  /* --- icon --- */
+
+  .aui-alert__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: var(--ui-radius-full);
+    color: var(--ui-foreground);
+  }
+
+  .aui-alert--size-xs .aui-alert__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .aui-alert--size-sm .aui-alert__icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .aui-alert--size-md .aui-alert__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .aui-alert--size-lg .aui-alert__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  .aui-alert--size-xl .aui-alert__icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .aui-alert--variant-primary .aui-alert__icon {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+  }
+
+  .aui-alert--variant-destructive .aui-alert__icon {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+  }
+
+  .aui-alert--variant-success .aui-alert__icon {
+    background-color: var(--ui-success);
+    color: var(--ui-success-foreground);
+  }
+
+  .aui-alert--variant-warning .aui-alert__icon {
+    background-color: var(--ui-warning);
+    color: var(--ui-warning-foreground);
+  }
+
+  .aui-alert--variant-info .aui-alert__icon {
+    background-color: var(--ui-info);
+    color: var(--ui-info-foreground);
+  }
+
+  .aui-alert--variant-carbon .aui-alert__icon {
+    background-color: var(--ui-carbon);
+    color: var(--ui-carbon-foreground);
+  }
+
+  .aui-alert--variant-secondary .aui-alert__icon {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+  }
+
+  .aui-alert--variant-accent .aui-alert__icon {
+    background-color: var(--ui-accent);
+    color: var(--ui-accent-foreground);
+  }
+
+  .aui-alert__icon svg {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .aui-alert--size-xs .aui-alert__icon svg {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  .aui-alert--size-sm .aui-alert__icon svg {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  .aui-alert--size-lg .aui-alert__icon svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .aui-alert--size-xl .aui-alert__icon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* --- body --- */
+
+  .aui-alert__body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-alert--size-xs .aui-alert__body {
+    gap: 0.25rem;
+  }
+
+  .aui-alert--size-sm .aui-alert__body {
+    gap: 0.25rem;
+  }
+
+  .aui-alert--size-md .aui-alert__body {
+    gap: var(--ui-space-1);
+  }
+
+  .aui-alert--size-lg .aui-alert__body {
+    gap: var(--ui-space-1);
+  }
+
+  .aui-alert--size-xl .aui-alert__body {
+    gap: var(--ui-space-1);
+  }
+
+  .aui-alert__title {
+    margin: 0;
+    font-weight: var(--ui-font-semibold);
+  }
+
+  .aui-alert__description {
+    margin: 0;
+  }
+
+  .aui-alert__description :first-child {
+    margin-top: 0;
+  }
+
+  .aui-alert__description :last-child {
+    margin-bottom: 0;
+  }
+
+  /* --- closable --- */
+
+  .aui-alert--closable {
+    padding-inline-end: var(--ui-space-2);
+  }
+
+  .aui-alert__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-lg);
+    line-height: var(--ui-leading-none);
+    transition: background-color var(--ui-transition-fast),
+    color var(--ui-transition-fast);
+  }
+
+  .aui-alert__close:hover {
+    background-color: var(--ui-secondary);
+    color: var(--ui-foreground);
+  }
+
+  .aui-alert--size-xs .aui-alert__close {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-alert--size-sm .aui-alert__close {
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-alert--size-lg .aui-alert__close {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: var(--ui-text-xl);
+  }
+
+  .aui-alert--size-xl .aui-alert__close {
+    width: 2rem;
+    height: 2rem;
+    font-size: var(--ui-text-2xl);
+  }
+
+  .aui-alert--closable.aui-alert--size-xs {
+    padding-inline-end: var(--ui-space-2);
+  }
+
+  .aui-alert--closable.aui-alert--size-sm {
+    padding-inline-end: var(--ui-space-2);
+  }
+
+  .aui-alert--closable.aui-alert--size-md {
+    padding-inline-end: var(--ui-space-4);
+  }
+
+  .aui-alert--closable.aui-alert--size-lg {
+    padding-inline-end: calc(var(--ui-space-5) + var(--ui-space-1));
+  }
+
+  .aui-alert--closable.aui-alert--size-xl {
+    padding-inline-end: calc(var(--ui-space-6) + var(--ui-space-2));
+  }
+</style>

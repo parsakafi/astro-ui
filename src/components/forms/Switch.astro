@@ -1,0 +1,292 @@
+---
+/**
+  * Switch — zero-JS on/off toggle.
+  *
+  * Native <input type="checkbox" role="switch"> wrapped in a <label> so
+  * the whole row is clickable with correct semantics. Screen readers
+  * announce "On"/"Off"; keyboard support is native Tab/Space; `checked`
+  * sets the initial server-rendered state; toggling is native browser
+  * behavior. Use Switch for settings that take effect immediately, and
+  * Checkbox for multi-select lists or agreements.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  name?: string;
+  value?: string;
+  checked?: boolean;
+  required?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  shape?: "rounded" | "square";
+  /** Short label rendered after the thumb when no slot content is provided. */
+  label?: string;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+  ariaDescribedby?: string;
+}
+
+const {
+  name,
+  value,
+  checked = false,
+  required = false,
+  disabled = false,
+  invalid = false,
+  size = "md",
+  variant = "primary",
+  shape = "rounded",
+  label,
+  class: className,
+  id,
+  ariaLabel,
+  ariaDescribedby,
+  ...rest
+} = Astro.props;
+
+const hasSlotContent = Astro.slots.has("default");
+const displayLabel = hasSlotContent ? undefined : label;
+const classes = cn(
+  "aui-switch",
+  `aui-switch--${size}`,
+  `aui-switch--variant-${variant}`,
+  shape === "square" && "aui-switch--square",
+  disabled && "aui-switch--disabled",
+  className,
+);
+---
+<label class={classes}>
+  <input
+    type="checkbox"
+    role="switch"
+    class="aui-switch__input"
+    name={name}
+    value={value}
+    checked={checked || undefined}
+    required={required || undefined}
+    disabled={disabled || undefined}
+    aria-invalid={invalid || undefined}
+    aria-label={ariaLabel}
+    aria-describedby={ariaDescribedby}
+    id={id}
+    {...rest}
+  />
+  <span class="aui-switch__track" aria-hidden="true">
+		<span class="aui-switch__thumb" aria-hidden="true"/>
+	</span>
+  <span class="aui-switch__label">
+		<slot/>
+    {displayLabel}
+	</span>
+</label>
+
+<style>
+  .aui-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    color: var(--ui-foreground);
+    cursor: pointer;
+  }
+
+  .aui-switch--disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-switch__input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .aui-switch__track {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    background-color: var(--ui-input);
+    border-radius: var(--ui-radius-full);
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-switch--square .aui-switch__track {
+    border-radius: var(--ui-radius-sm);
+  }
+
+  /* --- size --- */
+
+  .aui-switch--xs .aui-switch__track {
+    width: 1.75rem;
+    height: 0.875rem;
+    padding: 2px;
+  }
+
+  .aui-switch--sm .aui-switch__track {
+    width: 2rem;
+    height: 1.125rem;
+    padding: 2px;
+  }
+
+  .aui-switch--md .aui-switch__track {
+    width: 2.5rem;
+    height: 1.625rem;
+    padding: var(--ui-space-1);
+  }
+
+  .aui-switch--lg .aui-switch__track {
+    width: 2.75rem;
+    height: 1.75rem;
+    padding: var(--ui-space-1);
+  }
+
+  .aui-switch--xl .aui-switch__track {
+    width: 3rem;
+    height: 2rem;
+    padding: var(--ui-space-1);
+  }
+
+  /* --- thumb --- */
+
+  .aui-switch__thumb {
+    display: block;
+    border-radius: var(--ui-radius-full);
+    background-color: var(--ui-primary-foreground);
+    box-shadow: var(--ui-shadow-sm);
+    transition: transform var(--ui-transition-fast);
+    /* Small offset so thumb is never flush against the track edge. */
+    transform: translateX(var(--ui-switch-thumb-offset, 0));
+  }
+
+  .aui-switch--square .aui-switch__thumb {
+    border-radius: var(--ui-radius-sm);
+  }
+
+  .aui-switch--xs .aui-switch__thumb {
+    width: 0.625rem;
+    height: 0.625rem;
+  }
+
+  .aui-switch--sm .aui-switch__thumb {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+
+  .aui-switch--md .aui-switch__thumb {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .aui-switch--lg .aui-switch__thumb {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .aui-switch--xl .aui-switch__thumb {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  /* --- checked color --- */
+
+  .aui-switch--variant-primary .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: var(--ui-primary);
+  }
+
+  .aui-switch--variant-secondary .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: var(--ui-secondary);
+  }
+
+  .aui-switch--variant-muted .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: var(--ui-muted-foreground);
+  }
+
+  .aui-switch--variant-destructive .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: var(--ui-error);
+  }
+
+  .aui-switch--variant-success .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: var(--ui-success);
+  }
+
+  .aui-switch--variant-warning .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: var(--ui-warning);
+  }
+
+  .aui-switch--variant-info .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: var(--ui-info);
+  }
+
+  .aui-switch--variant-inherit .aui-switch__input:checked ~ .aui-switch__track {
+    background-color: currentColor;
+  }
+
+  /* --- checked thumb --- */
+
+  .aui-switch__input:checked ~ .aui-switch__track .aui-switch__thumb {
+    transform: translateX(
+      calc(
+        var(--ui-switch-track-width) - var(--ui-switch-thumb-size) - var(--ui-switch-padding-x) * 2 - var(--ui-switch-thumb-offset, 0)
+      )
+    );
+  }
+
+  .aui-switch--xs {
+    --ui-switch-track-width: 1.75rem;
+    --ui-switch-thumb-size: 0.625rem;
+    --ui-switch-padding-x: 0.125rem;
+    --ui-switch-thumb-offset: 0.125rem;
+  }
+
+  .aui-switch--sm {
+    --ui-switch-track-width: 2rem;
+    --ui-switch-thumb-size: 0.875rem;
+    --ui-switch-padding-x: 0.125rem;
+    --ui-switch-thumb-offset: 0.125rem;
+  }
+
+  .aui-switch--md {
+    --ui-switch-track-width: 2.5rem;
+    --ui-switch-thumb-size: 1.125rem;
+    --ui-switch-padding-x: var(--ui-space-1);
+    --ui-switch-thumb-offset: 0.125rem;
+  }
+
+  .aui-switch--lg {
+    --ui-switch-track-width: 2.75rem;
+    --ui-switch-thumb-size: 1.25rem;
+    --ui-switch-padding-x: var(--ui-space-1);
+    --ui-switch-thumb-offset: 0.125rem;
+  }
+
+  .aui-switch--xl {
+    --ui-switch-track-width: 3rem;
+    --ui-switch-thumb-size: 1.5rem;
+    --ui-switch-padding-x: var(--ui-space-1);
+    --ui-switch-thumb-offset: 0.125rem;
+  }
+
+  /* --- focus ring --- */
+
+  .aui-switch__input:focus-visible + .aui-switch__track {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-switch__input[aria-invalid="true"] + .aui-switch__track {
+    outline: var(--ui-focus-ring-width) solid var(--ui-error);
+    outline-offset: 1px;
+  }
+
+  .aui-switch__label:empty {
+    display: none;
+  }
+</style>

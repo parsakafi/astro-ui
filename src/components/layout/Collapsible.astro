@@ -1,0 +1,234 @@
+---
+/**
+  * Collapsible — an expand/collapse region with a dedicated trigger.
+  *
+  * Unlike Accordion (native <details>, content authored as data), the
+  * trigger here is a separate button that can live anywhere in the
+  * markup, and the panel is arbitrary composed content. The scoped
+  * script toggles hidden + aria-expanded, and closes on Escape.
+  * Multiple collapsibles on one page are supported — each root is wired
+  * independently by its data attribute.
+  *
+  * The closed panel is hidden with hidden="until-found" where supported:
+  * find-in-page (Ctrl/Cmd+F), #hash deep links, and :~:text= fragment
+  * navigation can still match and reveal collapsed content — the browser
+  * fires `beforematch` and removes the attribute itself. Browsers without
+  * support fall back to plain hidden (display: none). A `beforematch`
+  * listener keeps aria-expanded in sync when the browser reveals the panel.
+  *
+  *   <Collapsible id="filters" open>
+  *     <span slot="trigger">Filters</span>
+  *     <p>Any composed content…</p>
+  *   </Collapsible>
+  *
+  * JavaScript required: Yes
+  */
+import {cn} from "../../utils/cn";
+import {uid} from "../../utils/uid";
+
+export interface Props {
+  /** Open on first render (SSR). */
+  open?: boolean;
+  /** Disables the trigger. */
+  disabled?: boolean;
+  /** Recommended: stable prefix for trigger/panel ids. */
+  id?: string;
+  class?: string;
+}
+
+const {
+  open = false,
+  disabled = false,
+  id,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const hasTrigger = Astro.slots.has("trigger");
+
+const base = id ?? uid("aui-collapsible");
+const triggerId = `${base}-trigger`;
+const panelId = `${base}-panel`;
+
+const classes = cn("aui-collapsible", className);
+---
+
+<div
+  id={id}
+  class={classes}
+  data-aui-collapsible={base}
+  data-open={open ? "" : undefined}
+  {...rest}
+>
+  {
+    hasTrigger && (
+      <button
+        type="button"
+        id={triggerId}
+        class="aui-collapsible__trigger"
+        aria-expanded={open ? "true" : "false"}
+        aria-controls={panelId}
+        disabled={disabled}
+        data-aui-collapsible-trigger=""
+      >
+        <slot name="trigger"/>
+        <svg
+          class="aui-collapsible__chevron"
+          width="14"
+          height="14"
+          viewBox="0 0 16 16"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 6l4 4 4-4"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    )
+  }
+  <div
+    id={panelId}
+    class="aui-collapsible__panel"
+    role="region"
+    aria-labelledby={hasTrigger ? triggerId : undefined}
+    data-aui-collapsible-panel=""
+    hidden={open ? undefined : "until-found"}
+  >
+    <slot/>
+  </div>
+</div>
+
+<script>
+  const SELECTOR_ROOT = "[data-aui-collapsible]";
+
+  function initCollapsible(root: HTMLElement): void {
+    if (root.dataset.auiCollapsibleInit === "true") return;
+    root.dataset.auiCollapsibleInit = "true";
+    const trigger = root.querySelector<HTMLButtonElement>(
+      "[data-aui-collapsible-trigger]",
+    );
+    const panel = root.querySelector<HTMLElement>(
+      "[data-aui-collapsible-panel]",
+    );
+    if (!trigger || !panel) return;
+
+    const setOpen = (open: boolean) => {
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        root.setAttribute("data-open", "");
+        panel.removeAttribute("hidden");
+      } else {
+        root.removeAttribute("data-open");
+        // until-found keeps collapsed content reachable by find-in-page
+        // and fragment navigation; unsupported browsers treat it as
+        // plain hidden (display: none).
+        panel.setAttribute("hidden", "until-found");
+      }
+    };
+
+    // The browser reveals an until-found panel on a find/deep-link match
+    // before this script sees it — keep aria-expanded honest.
+    panel.addEventListener("beforematch", () => {
+      trigger.setAttribute("aria-expanded", "true");
+      root.setAttribute("data-open", "");
+    });
+
+    trigger.addEventListener("click", () => {
+      setOpen(trigger.getAttribute("aria-expanded") !== "true");
+    });
+
+    root.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !panel.hidden) {
+        setOpen(false);
+        trigger.focus();
+      }
+    });
+  }
+
+  function initAll(): void {
+    document
+      .querySelectorAll<HTMLElement>(SELECTOR_ROOT)
+      .forEach(initCollapsible);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-collapsible {
+    display: grid;
+    gap: var(--ui-space-2);
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-collapsible__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+    width: fit-content;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font: inherit;
+    font-weight: var(--ui-font-medium);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-collapsible__trigger:hover:not(:disabled) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-collapsible__trigger:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-collapsible__trigger:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-collapsible__chevron {
+    flex-shrink: 0;
+    color: var(--ui-muted-foreground);
+    transition: transform var(--ui-transition-normal);
+  }
+
+  .aui-collapsible[data-open] .aui-collapsible__chevron {
+    transform: rotate(180deg);
+  }
+
+  .aui-collapsible__panel {
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+    line-height: var(--ui-leading-normal);
+  }
+
+  /* Colapsed hiding is the UA's job: hidden="until-found" maps to
+     content-visibility: hidden (which keeps the content findable), while
+     a blunt [hidden] { display: none } author rule would CANCEL that
+     behavior. Only force display: none where until-found is unsupported,
+     detected via the boolean-hidden UA fallback. */
+  @supports not selector(:modal) {
+    .aui-collapsible__panel[hidden] {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-collapsible__chevron {
+      transition: none;
+    }
+  }
+</style>

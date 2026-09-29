@@ -1,0 +1,220 @@
+---
+/**
+  * Breadcrumb — zero-JS breadcrumb trail.
+  *
+  * Two authoring modes. Data-driven (default): pass `items` and get a
+  * <nav aria-label> of links — the current page is a non-link span with
+  * aria-current="page", separators are drawn in CSS. Composed: omit
+  * `items` and author your own <span class="aui-breadcrumb__item">
+  * children in the default slot — for badges, avatars, dropdown
+  * triggers, and buttons. No list markup: the trail is a plain flex
+  * container, so consumer markup stays flat.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface BreadcrumbItem {
+  /** Link target. Omit `href` for the current (non-link) page. */
+  href?: string;
+  /** Visible text. */
+  label?: string;
+  /** Skips the item entirely (e.g. a middle page hidden on small screens). */
+  hidden?: boolean;
+  /** Trusted inline SVG markup rendered before the label (opt-in raw HTML). */
+  icon?: string;
+  /** Render a condensed ellipsis for a collapsed path segment. */
+  ellipsis?: boolean;
+}
+
+export interface Props {
+  /** Trail in display order; last item without href is the current page.
+   Omit to author items in the default slot instead. */
+  items?: BreadcrumbItem[];
+  /** Accessible name for the nav landmark. */
+  ariaLabel?: string;
+  /** Scale of the trail. */
+  size?: "sm" | "md" | "lg";
+  /** Visual style of the separators. `custom` uses --aui-breadcrumb-separator. */
+  separator?: "slash" | "chevron" | "chevrons" | "dot" | "custom";
+  /** Renders the trail in a muted pill (for frames, headers, toolbars). */
+  pill?: boolean;
+  /** Inline styles, e.g. `--aui-breadcrumb-separator: '//'` for separator="custom". */
+  style?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  items,
+  ariaLabel = "Breadcrumb",
+  size = "md",
+  separator = "slash",
+  pill = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const hasSlot = Astro.slots.has("default");
+
+const classes = cn(
+  "aui-breadcrumb",
+  `aui-breadcrumb--${size}`,
+  `aui-breadcrumb--${separator}`,
+  pill && "aui-breadcrumb--pill",
+  className,
+);
+---
+
+<nav id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  <div class="aui-breadcrumb__list">
+    {
+      (items?.filter((item) => !item.hidden) ?? []).map((item) => (
+        <span class="aui-breadcrumb__item">
+					{item.ellipsis ? (
+            <span class="aui-breadcrumb__ellipsis" aria-hidden="true">
+							…
+						</span>
+          ) : item.href ? (
+            <a class="aui-breadcrumb__link" href={item.href}>
+              {item.icon &&
+                <Fragment set:html={item.icon}/>}
+              {item.label}
+            </a>
+          ) : (
+            <span class="aui-breadcrumb__current" aria-current="page">
+							{item.icon &&
+                <Fragment set:html={item.icon}/>}
+              {item.label}
+						</span>)
+          }
+				</span>
+      ))
+    }
+    {!items?.length && hasSlot &&
+      <slot/>}
+  </div>
+</nav>
+
+<style is:global>
+  /* Global so composed slot items (authored by consumers) get the same
+     treatment as prop-rendered items. All classes are aui-namespaced. */
+  .aui-breadcrumb {
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-breadcrumb__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-breadcrumb__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  /* Separator: drawn with a pseudo-element on every item except the
+     first — no separator markup in the DOM. */
+  .aui-breadcrumb__item + .aui-breadcrumb__item::before {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-breadcrumb--slash .aui-breadcrumb__item + .aui-breadcrumb__item::before {
+    content: "/";
+  }
+
+  .aui-breadcrumb--chevron .aui-breadcrumb__item + .aui-breadcrumb__item::before {
+    content: "›";
+  }
+
+  .aui-breadcrumb--chevrons .aui-breadcrumb__item + .aui-breadcrumb__item::before {
+    content: "››";
+    letter-spacing: -0.1em;
+  }
+
+  .aui-breadcrumb--dot .aui-breadcrumb__item + .aui-breadcrumb__item::before {
+    content: "·";
+  }
+
+  .aui-breadcrumb--custom .aui-breadcrumb__item + .aui-breadcrumb__item::before {
+    content: var(--aui-breadcrumb-separator, "/");
+  }
+
+  /* --- pill --- */
+
+  .aui-breadcrumb--pill .aui-breadcrumb__list {
+    padding: var(--ui-space-1) var(--ui-space-3);
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-full);
+    inline-size: fit-content;
+  }
+
+  /* --- sizes --- */
+
+  .aui-breadcrumb--sm .aui-breadcrumb__item {
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-breadcrumb--md .aui-breadcrumb__item {
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-breadcrumb--lg .aui-breadcrumb__item {
+    font-size: var(--ui-text-md);
+  }
+
+  /* --- links & current --- */
+
+  .aui-breadcrumb__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    color: var(--ui-muted-foreground);
+    text-decoration: none;
+    border-radius: var(--ui-radius-sm);
+    transition: color var(--ui-transition-fast);
+  }
+
+  .aui-breadcrumb__link:hover,
+  .aui-breadcrumb__link:focus-visible {
+    color: var(--ui-foreground);
+    text-decoration: underline;
+  }
+
+  .aui-breadcrumb__link:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-breadcrumb__current {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-medium);
+  }
+
+  /* Inline SVG icons (from the icon field or composed items) track the text. */
+  .aui-breadcrumb__link svg,
+  .aui-breadcrumb__current svg {
+    inline-size: 1em;
+    block-size: 1em;
+    flex-shrink: 0;
+  }
+
+  /* --- collapsed-path ellipsis --- */
+
+  .aui-breadcrumb__ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 1.5rem;
+    padding: 0 0.25rem;
+    color: var(--ui-muted-foreground);
+    letter-spacing: 0.05em;
+  }
+</style>
