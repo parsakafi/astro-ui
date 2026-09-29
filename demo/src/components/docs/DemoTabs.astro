@@ -1,0 +1,35 @@
+---
+/**
+  * DemoTabs — Preview/Code switcher for demo blocks.
+  * Wraps the library's own Tabs (card variant) so the docs eat their
+  * own cooking: the switcher IS an astro-ui component.
+  */
+import {Tabs} from "astro-ui";
+
+interface Props {
+  /** Unique id prefixing generated tab/panel ids. */
+  id: string;
+  /** Modifier class for the preview surface (e.g. docs-demo-preview-light). */
+  previewClass?: string;
+}
+
+const {id, previewClass} = Astro.props;
+---
+
+<Tabs
+  id={id}
+  ariaLabel="Demo view"
+  variant="card"
+  size="sm"
+  items={[
+    {value: "preview", label: "Preview"},
+    {value: "code", label: "Code"},
+  ]}
+>
+  <div data-tab="preview" class:list={["docs-demo-preview", previewClass]}>
+    <slot name="preview"/>
+  </div>
+  <div data-tab="code" class="docs-demo-code">
+    <slot name="code"/>
+  </div>
+</Tabs>

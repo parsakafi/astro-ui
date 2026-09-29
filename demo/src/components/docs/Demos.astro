@@ -1,0 +1,4948 @@
+---
+/**
+  * Demos — renders the live preview markup for each demo of a component.
+  *
+  * Previews are REAL astro-ui components authored here (single source of
+  * truth for rendering); the code tab shows the matching snippet from the
+  * registry via getDemoCode(). The CONTENT COLLECTION gates + orders which
+  * demos appear (via the demoIds prop from frontmatter); Toast/Dialog
+  * behavior is wired in one scoped script at the bottom.
+  */
+import DemoTabs from "./DemoTabs.astro";
+import {codeToHtml} from "shiki";
+import {bySlug} from "../../lib/components";
+import {
+  barRevenue,
+  groupedDesktop,
+  groupedMobile,
+  lineThisWeek,
+  lineLastWeek,
+  forecast,
+  strokeActual,
+  strokeTarget,
+  strokeStretch,
+  visitors,
+  signups,
+  scatterA,
+  scatterB,
+  pageViews,
+  ping,
+} from "../../lib/chart-demo-data";
+import {
+  Accordion,
+  AlertDialog,
+  Alert,
+  AspectRatio,
+  Attachment,
+  Autocomplete,
+  Avatar,
+  AvatarGroup,
+  Badge,
+  Breadcrumb,
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+  Button,
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+  Card,
+  Chart,
+  Checkbox,
+  Clipboard,
+  Collapsible,
+  Dialog,
+  Empty,
+  Field,
+  HoverCard,
+  Input,
+  Kbd,
+  Label,
+  Link,
+  Pagination,
+  Popover,
+  Progress,
+  Radio,
+  Rating,
+  ScrollArea,
+  Select,
+  Separator,
+  Sheet,
+  Skeleton,
+  Slider,
+  Spinner,
+  Stepper,
+  Switch,
+  Table,
+  Tag,
+  Tabs,
+  Textarea,
+  Toaster,
+  Toggle,
+  ToggleGroup,
+  Tooltip,
+} from "astro-ui";
+import BlockDemo from "./BlockDemo.astro";
+
+interface Props {
+  /** Component slug — keys the per-component demo switch below. */
+  slug: string;
+  /** Demo ids from the docs collection frontmatter (order + gating). */
+  demoIds: string[];
+}
+
+const {slug, demoIds} = Astro.props;
+const component = bySlug(slug);
+// Collection referenced an unknown slug — the page gates on demoIds
+// being non-empty, so this only fires on a data bug.
+if (!component) throw new Error(`Demos: unknown component slug "${slug}"`);
+
+// Shiki-highlight every snippet used by this component up front.
+const codeCache = new Map<string, string>();
+for (const id of demoIds) {
+  const demo = component.demos.find((d) => d.id === id);
+  if (!demo) continue; // unknown id in frontmatter — gated out, nothing to highlight
+  codeCache.set(
+    demo.id,
+    await codeToHtml(demo.code.trim(), {
+      lang: "astro",
+      themes: {light: "github-light", dark: "github-dark-default"},
+    }),
+  );
+}
+---
+
+<script>
+  import {toast} from "astro-ui/toast";
+
+  const wire = (id: string, fn: () => void) =>
+    document.getElementById(id)?.addEventListener("click", fn);
+  wire("dm-toast-default", () => toast("Event has been created"));
+  wire("dm-toast-success", () => toast.success("Saved!"));
+  wire("dm-toast-error", () => toast.error("Something broke"));
+  wire("dm-toast-m-default", () => toast("Event has been created"));
+  wire("dm-toast-m-success", () => toast.success("Changes saved"));
+  wire("dm-toast-m-error", () => toast.error("Failed to save"));
+  wire("dm-toast-m-warning", () => toast.warning("Storage almost full"));
+  wire("dm-toast-m-info", () => toast.info("New version available"));
+  wire("dm-toast-m-loading", () => toast.loading("Uploading…"));
+  wire("dm-toast-d-rich", () =>
+    toast.warning("Storage almost full", {
+      description: "You have used 93% of your plan. Upgrade to keep syncing.",
+      richColors: true,
+      closeButton: true,
+      duration: 8000,
+    }),
+  );
+  wire("dm-toast-d-plain", () =>
+    toast.info("Deploy finished", {description: "32 files changed in 4.2s"}),
+  );
+  wire("dm-toast-d-close", () =>
+    toast.info("Session expires soon", {closeButton: true, duration: 10000}),
+  );
+  wire("dm-toast-act", () =>
+    toast("Event has been created", {
+      action: {label: "Undo", onClick: () => console.log("Undo")},
+    }),
+  );
+  wire("dm-toast-pos-btn", () =>
+    toast("Top-left position", {position: "top-left", duration: 6000}),
+  );
+  wire("dm-toast-load-btn", () => {
+    const id = toast.loading("Uploading…");
+    window.setTimeout(() => toast.update(id, {type: "success", title: "Uploaded!"}), 1500);
+  });
+  wire("dm-toast-x-collapse", () => {
+    toast.dismiss();
+    for (const msg of ["First", "Second", "Third"]) {
+      toast(msg, {duration: 10000});
+    }
+  });
+  wire("dm-toast-x-expand", () => {
+    toast.dismiss();
+    for (const msg of ["First", "Second", "Third"]) {
+      toast(msg, {expand: true, duration: 10000});
+    }
+  });
+</script>
+
+{
+  component.slug === "button" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-button-basic">
+              <Fragment slot="preview">
+                <Button>Primary</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variant" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variant</h3>
+            <DemoTabs id="dm-button-variant">
+              <Fragment slot="preview">
+                <Button>Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+                <Button variant="outline">Outline</Button>
+                <Button variant="ghost">Ghost</Button>
+                <Button variant="destructive">Destructive</Button>
+                <Button variant="link">Link</Button>
+                <Button variant="solid">Solid</Button>
+                <Button variant="dashed">Dashed</Button>
+                <Button variant="soft">Soft</Button>
+                <Button variant="plain">Plain</Button>
+                <Button variant="pure">Pure</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variant")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "color" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Color</h3>
+            <DemoTabs id="dm-button-color">
+              <Fragment slot="preview">
+                <Button color="success">Success</Button>
+                <Button color="warning">Warning</Button>
+                <Button color="info">Info</Button>
+                <Button color="accent">Accent</Button>
+                <Button variant="outline" color="destructive">Outline danger</Button>
+                <Button variant="soft" color="info">Soft info</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("color")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "size" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Size</h3>
+            <DemoTabs id="dm-button-size">
+              <Fragment slot="preview">
+                <Button size="xs">Extra small</Button>
+                <Button size="sm">Small</Button>
+                <Button size="md">Medium</Button>
+                <Button size="lg">Large</Button>
+                <Button size="xl">Extra large</Button>
+                <Button size="2xl">2XL</Button>
+                <Button size="icon" ariaLabel="Search">⌕</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("size")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "loading" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Loading</h3>
+            <DemoTabs id="dm-button-loading">
+              <Fragment slot="preview">
+                <Button loading>Submitting</Button>
+                <Button loading loadingPosition="center" loadingText="Saving…">Save</Button>
+                <Button loading loadingIcon="dots">Dots</Button>
+                <Button loading loadingIcon="pulse">Pulse</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("loading")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "invalid" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Invalid</h3>
+            <DemoTabs id="dm-button-invalid">
+              <Fragment slot="preview">
+                <Button invalid>Invalid state</Button>
+                <Button variant="outline" invalid>Invalid outline</Button>
+                <Button variant="ghost" invalid>Invalid ghost</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("invalid")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "shape-shadow" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Shape &amp; shadow</h3>
+            <DemoTabs id="dm-button-shape">
+              <Fragment slot="preview">
+                <Button variant="outline" shape="rounded">Round</Button>
+                <Button variant="outline" ariaLabel="Go">→</Button>
+                <Button variant="outline" shadow="md">Shadow md</Button>
+                <Button disabled>Disabled</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("shape-shadow")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "button-group" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-button-group-basic">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button variant="outline">Previous</Button>
+                  <Button variant="outline">Next</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-button-group-vertical">
+              <Fragment slot="preview">
+                <ButtonGroup orientation="vertical">
+                  <Button variant="outline">Copy</Button>
+                  <Button variant="outline">Paste</Button>
+                  <Button variant="outline">Delete</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-button-group-variants">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button>Primary</Button>
+                  <Button variant="secondary">Secondary</Button>
+                </ButtonGroup>
+                <ButtonGroup>
+                  <Button variant="outline">Edit</Button>
+                  <Button variant="outline">Delete</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "icons" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icons</h3>
+            <DemoTabs id="dm-button-group-icons">
+              <Fragment slot="preview">
+                <ButtonGroup ariaLabel="Text alignment">
+                  <Button variant="outline" size="icon" ariaLabel="Left">⇤</Button>
+                  <Button variant="outline" size="icon" ariaLabel="Center">↔</Button>
+                  <Button variant="outline" size="icon" ariaLabel="Right">⇥</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("icons")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "with-separator" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With separator</h3>
+            <DemoTabs id="dm-button-group-separator">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button variant="outline">Filter</Button>
+                  <Button variant="outline">Sort</Button>
+                  <ButtonGroupSeparator/>
+                  <Button variant="outline">More</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("with-separator")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "with-text" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With text</h3>
+            <DemoTabs id="dm-button-group-text">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button variant="outline">Star</Button>
+                  <ButtonGroupText>2.4k</ButtonGroupText>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("with-text")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+
+{
+  component.slug === "badge" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-badge-variants">
+              <Fragment slot="preview">
+                <Badge>Primary</Badge>
+                <Badge variant="secondary">Secondary</Badge>
+                <Badge variant="outline">Outline</Badge>
+                <Badge variant="success">Active</Badge>
+                <Badge variant="warning">Pending</Badge>
+                <Badge variant="error">Failed</Badge>
+                <Badge variant="info">New</Badge>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-badge-sizes">
+              <Fragment slot="preview">
+                <Badge size="sm">sm</Badge>
+                <Badge size="md">md</Badge>
+                <Badge size="lg">lg</Badge>
+                <Badge size="xl">xl</Badge>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "icon" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with icon</h3>
+            <DemoTabs id="dm-badge-icon">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="lg">
+                    <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    Verified
+                  </Badge>
+                  <Badge variant="soft" size="lg">
+                    <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    Action required
+                  </Badge>
+                </div>
+                <p class="docs-demo-hint">
+                  Anything in the <code>icon</code> slot is boxed at
+                  <code>--aui-badge-icon</code> (default <code>0.875em</code>) and scales with the badge size.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("icon")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dot" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with status dot</h3>
+            <DemoTabs id="dm-badge-dot">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="success" dot>Operational</Badge>
+                  <Badge variant="warning" dot>Degraded</Badge>
+                  <Badge variant="error" dot>Outage</Badge>
+                </div>
+                <p class="docs-demo-hint">The dot inherits the variant's text color — set it and forget it.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("dot")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with avatar</h3>
+            <DemoTabs id="dm-badge-avatar">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="xl">
+                    <Avatar name="Ada Lovelace" size="xs"/>
+                    Ada
+                  </Badge>
+                  <Badge variant="muted" size="xl">
+                    <Avatar name="Grace Hopper" size="xs" status="online"/>
+                    Grace
+                  </Badge>
+                </div>
+                <p class="docs-demo-hint">Drop an <code>Avatar</code> in the default slot — optical alignment against
+                  the pill padding is built in.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("avatar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "flag" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with flag image</h3>
+            <DemoTabs id="dm-badge-flag">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="lg" style="--aui-badge-icon: 1rem">
+                    <img slot="icon" src="/flags/us.svg" alt="" width="16" height="16" style="border-radius: 2px"/>
+                    United States
+                  </Badge>
+                  <Badge variant="outline" size="lg" style="--aui-badge-icon: 1rem">
+                    <img slot="icon" src="/flags/de.svg" alt="" width="16" height="16" style="border-radius: 2px"/>
+                    Germany
+                  </Badge>
+                </div>
+                <p class="docs-demo-hint">Pass a flag through the <code>icon</code> slot and size it via <code>--aui-badge-icon</code>.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("flag")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dismiss" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with dismiss button</h3>
+            <DemoTabs id="dm-badge-dismiss">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="lg" closable>Design</Badge>
+                  <Badge variant="outline" size="lg" closable closeLabel="Remove Research filter">Research</Badge>
+                  <Badge variant="soft" size="lg" closable>Docs</Badge>
+                </div>
+                <p class="docs-demo-hint">
+                  <code>closable</code> renders a labeled, focusable × button — Badge stays zero-JS, so wire the removal
+                  app-side.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("dismiss")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "overlay" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Overlay bubble</h3>
+            <DemoTabs id="dm-badge-overlay">
+              <Fragment slot="preview">
+                <div class="demo-row">
+							<span class="docs-badge-anchor">
+								<Button variant="outline">Inbox</Button>
+								<Badge position="top-right" content="3" variant="destructive" ariaLabel="3 unread messages"/>
+							</span>
+                  <span class="docs-badge-anchor">
+								<Button variant="outline">Feed</Button>
+								<Badge position="bottom-left" content="New" variant="success" ariaLabel="New items"/>
+							</span>
+                  <span class="docs-badge-anchor">
+								<Button variant="outline">Cart</Button>
+								<Badge position="top-left" content="8" variant="info" ariaLabel="8 items in cart"/>
+							</span>
+                  <span class="docs-badge-anchor">
+								<Button variant="outline">Chat</Button>
+								<Badge position="bottom-right" variant="destructive" ariaLabel="Unread messages"/>
+							</span>
+                </div>
+                <p class="docs-demo-hint">
+                  The bubble anchors to the marked parent (<code>position: relative</code>) —
+                  place the Badge inside any positioned element. A dot bubble renders when no
+                  content is passed.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("overlay")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "card" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-card-basic">
+              <Fragment slot="preview">
+                <Card>
+                  <h3 slot="header">Default card</h3>
+                  <p>Header, content and footer compose through slots.</p>
+                  <div slot="footer">
+                    <Button size="sm">Confirm</Button>
+                  </div>
+                </Card>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-card-variants">
+              <Fragment slot="preview">
+                <Card variant="outline"><p>Outline — flat surface.</p></Card>
+                <Card variant="ghost"><p>Ghost card.</p></Card>
+                <Card variant="bordered"><p>Bordered.</p></Card>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "split" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Split &amp; sizes</h3>
+            <DemoTabs id="dm-card-split">
+              <Fragment slot="preview">
+                <Card split>
+                  <h3 slot="header">Split dividers</h3>
+                  <p>Borders separate header, content, and footer.</p>
+                </Card>
+                <Card size="sm"><p>Small card.</p></Card>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("split")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "avatar" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-avatar-basic">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radius" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Different border radiuses</h3>
+            <DemoTabs id="dm-avatar-radius">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" radius="sm"/>
+                  <Avatar name="Grace Hopper" radius="md"/>
+                  <Avatar name="Alan Turing" radius="lg"/>
+                  <Avatar name="Edsger Dijkstra" radius="full"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("radius")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Different sizes</h3>
+            <DemoTabs id="dm-avatar-sizes">
+              <Fragment slot="preview">
+                <Avatar name="Ada Lovelace" size="xs"/>
+                <Avatar name="Ada Lovelace" size="sm"/>
+                <Avatar name="Ada Lovelace" size="md"/>
+                <Avatar name="Ada Lovelace" size="lg"/>
+                <Avatar name="Ada Lovelace" size="xl"/>
+                <Avatar name="Ada Lovelace" size="2xl"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "custom-size" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom sizes</h3>
+            <DemoTabs id="dm-avatar-custom-size">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" customSize={16}/>
+                  <Avatar name="Grace Hopper" customSize={32}/>
+                  <Avatar name="Alan Turing" customSize={56}/>
+                  <Avatar name="Edsger Dijkstra" customSize="4.5rem"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("custom-size")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "status" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Online status</h3>
+            <DemoTabs id="dm-avatar-status">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" status="online"/>
+                  <Avatar name="Grace Hopper" status="away"/>
+                  <Avatar name="Alan Turing" status="busy"/>
+                  <Avatar name="Edsger Dijkstra" status="offline"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("status")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "status-positions" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Status badge positions</h3>
+            <DemoTabs id="dm-avatar-status-positions">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" status="online" statusPosition="top-left"/>
+                  <Avatar name="Grace Hopper" status="online" statusPosition="top-right"/>
+                  <Avatar name="Alan Turing" status="online" statusPosition="bottom-left"/>
+                  <Avatar name="Edsger Dijkstra" status="online" statusPosition="bottom-right"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("status-positions")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic avatar group</h3>
+            <DemoTabs id="dm-avatar-group-basic">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Project contributors">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group-basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-icon-count" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar group with icon count</h3>
+            <DemoTabs id="dm-avatar-group-icon-count">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Project contributors">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                  <Fragment slot="count"><span aria-hidden="true">+</span></Fragment>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group-icon-count")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-numeric-count" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar group with numerical count</h3>
+            <DemoTabs id="dm-avatar-group-numeric-count">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Project contributors">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                  <Fragment slot="count">+5</Fragment>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group-numeric-count")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "badge-icon" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar with badge icon</h3>
+            <DemoTabs id="dm-avatar-badge-icon">
+              <Fragment slot="preview">
+                <Avatar name="Ada Lovelace" size="xl">
+                  <Badge slot="badge" variant="primary" size="sm">+1</Badge>
+                </Avatar>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("badge-icon")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "solid-fallback" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Solid background fallback</h3>
+            <DemoTabs id="dm-avatar-solid-fallback">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" variant="primary"/>
+                  <Avatar name="Grace Hopper" variant="success"/>
+                  <Avatar name="Alan Turing" variant="warning"/>
+                  <Avatar name="Edsger Dijkstra" variant="info"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("solid-fallback")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-status" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar group with online status</h3>
+            <DemoTabs id="dm-avatar-group-status">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Team members">
+                  <Avatar name="Ada Lovelace" status="online"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group-status")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "grayscale" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Grayscale image filter</h3>
+            <DemoTabs id="dm-avatar-grayscale">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar
+                    name="Ada Lovelace"
+                    src="https://i.pravatar.cc/150?img=47"
+                    filter="grayscale"
+                    filterHover
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("grayscale")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-hover" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar group with hover effect</h3>
+            <DemoTabs id="dm-avatar-group-hover">
+              <Fragment slot="preview">
+                <AvatarGroup hover ariaLabel="Team members">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                  <Avatar name="Edsger Dijkstra"/>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group-hover")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "custom-badge" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom verification badge</h3>
+            <DemoTabs id="dm-avatar-custom-badge">
+              <Fragment slot="preview">
+                <Avatar name="Ada Lovelace" size="xl">
+                  <Badge slot="badge" variant="success" size="sm" ariaLabel="Verified">
+                    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="m2.5 6.5 2.25 2.25L9.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round"/>
+                    </svg>
+                  </Badge>
+                </Avatar>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("custom-badge")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "multi-badge" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar with multiple badges</h3>
+            <DemoTabs id="dm-avatar-multi-badge">
+              <Fragment slot="preview">
+                <div class="avatar-multi-badge-demo">
+                  <Avatar name="Ada Lovelace" status="online" statusPosition="bottom-right">
+                    <span class="avatar-count-badge" slot="badge" aria-label="3 notifications">3</span>
+                  </Avatar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("multi-badge")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "ring-gradient" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient animated ring</h3>
+            <DemoTabs id="dm-avatar-ring-gradient">
+              <Fragment slot="preview">
+                <div class="avatar-ring-demo">
+							<span class="avatar-gradient-ring">
+								<Avatar name="Ada Lovelace"/>
+							</span>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("ring-gradient")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "ring-animated" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Animated ring</h3>
+            <DemoTabs id="dm-avatar-ring-animated">
+              <Fragment slot="preview">
+                <div class="avatar-ring-demo">
+							<span class="avatar-story-ring">
+								<Avatar name="Grace Hopper"/>
+							</span>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("ring-animated")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "loading" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Loading state</h3>
+            <DemoTabs id="dm-avatar-loading">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" size="xs" loading/>
+                  <Avatar name="Ada Lovelace" size="sm" loading/>
+                  <Avatar name="Ada Lovelace" size="md" loading/>
+                  <Avatar name="Ada Lovelace" size="lg" loading/>
+                  <Avatar name="Ada Lovelace" size="xl" loading/>
+                  <Avatar name="Ada Lovelace" size="2xl" loading/>
+                  <Avatar name="Ada Lovelace" size="3xl" loading/>
+                </div>
+                <p class="docs-demo-hint">The spinner scales with the avatar (em-based) — with a 10px floor on xs.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("loading")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "shapes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Shapes &amp; variants</h3>
+            <DemoTabs id="dm-avatar-shapes">
+              <Fragment slot="preview">
+                <Avatar name="Grace Hopper"/>
+                <Avatar name="Grace Hopper" shape="rounded"/>
+                <Avatar name="Grace Hopper" shape="square"/>
+                <Avatar name="Alan Turing" variant="primary"/>
+                <Avatar name="Alan Turing" variant="muted"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("shapes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "image" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Image</h3>
+            <DemoTabs id="dm-avatar-image">
+              <Fragment slot="preview">
+                <Avatar src="https://placehold.co/64x64/1f2937/9ca3af?text=ada" alt="Ada Lovelace"/>
+                <Avatar src="https://placehold.co/64x64/1f2937/9ca3af?text=hopper" alt="Grace Hopper" fit="contain"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("image")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "compact-social-proof" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Compact social proof with initials</h3>
+            <DemoTabs id="dm-avatar-compact-social-proof">
+              <Fragment slot="preview">
+                <BlockDemo id="compact-social-proof"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("compact-social-proof")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-group-hover-tooltips" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar group with hover tooltips and lift effect</h3>
+            <DemoTabs id="dm-avatar-group-hover-tooltips">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-group-hover-tooltips"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("avatar-group-hover-tooltips")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-social-proof-label" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar social proof with text label</h3>
+            <DemoTabs id="dm-avatar-social-proof-label">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-social-proof-label"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("avatar-social-proof-label")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pill-button-with-avatar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Pill small outline button with avatar</h3>
+            <DemoTabs id="dm-avatar-pill-button">
+              <Fragment slot="preview">
+                <BlockDemo id="pill-button-with-avatar"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("pill-button-with-avatar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-group-hover-tooltips-v2" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar group with hover effect and tooltips</h3>
+            <DemoTabs id="dm-avatar-group-hover-tooltips-v2">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-group-hover-tooltips-v2"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("avatar-group-hover-tooltips-v2")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-empty-state" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Avatar inside an empty state</h3>
+            <DemoTabs id="dm-avatar-empty-state">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-empty-state"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("avatar-empty-state")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "alert" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-alert-variants">
+              <Fragment slot="preview">
+                <Alert variant="success">
+                  <Fragment slot="title">Saved</Fragment>
+                  Your changes are live.
+                </Alert>
+                <Alert variant="destructive">
+                  <Fragment slot="title">Failed</Fragment>
+                  Announced immediately via role="alert".
+                </Alert>
+                <Alert variant="warning">
+                  <Fragment slot="title">Heads up</Fragment>
+                  This action cannot be undone.
+                </Alert>
+                <Alert variant="info">
+                  <Fragment slot="title">Info</Fragment>
+                  Secondary information.
+                </Alert>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "closable" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Closable</h3>
+            <DemoTabs id="dm-alert-closable">
+              <Fragment slot="preview">
+                <Alert variant="destructive" closable>
+                  <Fragment slot="title">Dismiss me</Fragment>
+                  Click the × to close (wire the click app-side).
+                </Alert>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("closable")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "spinner" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "styles" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Styles</h3>
+            <DemoTabs id="dm-spinner-styles">
+              <Fragment slot="preview">
+                <Spinner label="Ring"/>
+                <Spinner icon="dots" label="Dots"/>
+                <Spinner icon="pulse" label="Pulse"/>
+                <Spinner icon="spin" label="Spin"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("styles")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes-colors" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes &amp; colors</h3>
+            <DemoTabs id="dm-spinner-sizes">
+              <Fragment slot="preview">
+                <Spinner size="xs" label="xs"/>
+                <Spinner size="sm" label="sm"/>
+                <Spinner size="lg" label="lg"/>
+                <Spinner variant="success" label="Success"/>
+                <Spinner variant="warning" label="Warning"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes-colors")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "skeleton" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "compose" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Compose a layout</h3>
+            <DemoTabs id="dm-skeleton-compose" previewClass="docs-demo-preview-light">
+              <Fragment slot="preview">
+                <div style="display:flex;gap:1rem;align-items:flex-start;width:100%">
+                  <Skeleton variant="circle"/>
+                  <div style="flex:1;display:grid;gap:.5rem">
+                    <Skeleton variant="text" width="40%"/>
+                    <Skeleton variant="text"/>
+                    <Skeleton variant="rect" height="4rem"/>
+                  </div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("compose")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "separator" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "both" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal &amp; vertical</h3>
+            <DemoTabs id="dm-separator-both">
+              <Fragment slot="preview">
+                <p class="demo-hint">Above the rule.</p>
+                <Separator/>
+                <p class="demo-hint">Below the rule.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("both")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Line variants</h3>
+            <DemoTabs id="dm-separator-variants">
+              <Fragment slot="preview">
+                <div style="width: 100%">
+                  <Separator/>
+                  <Separator variant="dashed"/>
+                  <Separator variant="dotted"/>
+                  <Separator variant="double"/>
+                  <Separator variant="gradient"/>
+                  <Separator variant="faded"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical-variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical variants</h3>
+            <DemoTabs id="dm-separator-vertical-variants">
+              <Fragment slot="preview">
+                <div class="demo-row" style="height: 4rem;">
+                  <span class="demo-hint">Before</span>
+                  <Separator orientation="vertical" variant="dashed"/>
+                  <span class="demo-hint">After</span>
+                  <Separator orientation="vertical" variant="double"/>
+                  <span class="demo-hint">End</span>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("vertical-variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "labeled" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Labeled divider</h3>
+            <DemoTabs id="dm-separator-labeled">
+              <Fragment slot="preview">
+                <p class="demo-hint">Some content above.</p>
+                <Separator variant="labeled">or continue with</Separator>
+                <p class="demo-hint">Some content below.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("labeled")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "scroll-area" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-scroll-area-vertical">
+              <Fragment slot="preview">
+                <ScrollArea class="h-40 w-full">
+                  <div class="demo-field">
+                    <p>Row one — the scrollbar is themed from design tokens.</p>
+                    <p>Row two</p>
+                    <p>Row three</p>
+                    <p>Row four</p>
+                    <p>Row five</p>
+                    <p>Row six</p>
+                    <p>Row seven</p>
+                    <p>Row eight</p>
+                  </div>
+                </ScrollArea>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "horizontal" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal</h3>
+            <DemoTabs id="dm-scroll-area-horizontal">
+              <Fragment slot="preview">
+                <ScrollArea orientation="horizontal" class="w-full">
+                  <div class="demo-row" style="width:max-content">
+                    <Tag>Jan</Tag>
+                    <Tag>Feb</Tag>
+                    <Tag>Mar</Tag>
+                    <Tag>Apr</Tag>
+                    <Tag>May</Tag>
+                    <Tag>Jun</Tag>
+                    <Tag>Jul</Tag>
+                    <Tag>Aug</Tag>
+                  </div>
+                </ScrollArea>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("horizontal")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "aspect-ratio" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "ratios" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Common ratios</h3>
+            <DemoTabs id="dm-aspect-ratio-ratios">
+              <Fragment slot="preview">
+                <div class="demo-grid">
+                  <AspectRatio ratio="16 / 9">
+                    <img src="https://placehold.co/640x360/1f2937/9ca3af?text=wide" alt="Landscape photo in a 16:9 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio="4 / 3">
+                    <img src="https://placehold.co/480x360/1f2937/9ca3af?text=four%20thirds" alt="Photo in a 4:3 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio={1}>
+                    <img src="https://placehold.co/400x400/1f2937/9ca3af?text=square" alt="Photo in a square box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("ratios")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "widescreen" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Widescreen</h3>
+            <DemoTabs id="dm-aspect-ratio-widescreen">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:28rem">
+                  <AspectRatio ratio="21 / 9">
+                    <img src="https://placehold.co/840x360/1f2937/9ca3af?text=cinema"
+                         alt="Cinematic panorama in a 21:9 box" class="object-cover"
+                         style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio="16 / 10">
+                    <img src="https://placehold.co/640x400/1f2937/9ca3af?text=viewport"
+                         alt="Desktop viewport in a 16:10 box" class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("widescreen")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "portrait" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Portrait</h3>
+            <DemoTabs id="dm-aspect-ratio-portrait">
+              <Fragment slot="preview">
+                <div class="demo-grid" style="max-inline-size:26rem">
+                  <AspectRatio ratio="9 / 16">
+                    <img src="https://placehold.co/360x640/1f2937/9ca3af?text=vertical"
+                         alt="Vertical video in a 9:16 box" class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio="4 / 5">
+                    <img src="https://placehold.co/400x500/1f2937/9ca3af?text=social" alt="Social post in a 4:5 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("portrait")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "photo" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Photo</h3>
+            <DemoTabs id="dm-aspect-ratio-photo">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:28rem">
+                  <AspectRatio ratio="3 / 2">
+                    <img src="https://placehold.co/600x400/1f2937/9ca3af?text=photo" alt="Classic photo in a 3:2 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio={1}>
+                    <img src="https://placehold.co/400x400/1f2937/9ca3af?text=quad" alt="Product shot in a 1:1 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("photo")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "attachment" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-attachment-basic">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:26rem">
+                  <Attachment title="quarterly-report.pdf" description="PDF · 2.4 MB">
+                    <Button variant="ghost" size="icon" slot="actions" aria-label="Remove file">✕</Button>
+                  </Attachment>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">States</h3>
+            <DemoTabs id="dm-attachment-states">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:26rem">
+                  <Attachment state="idle" title="Drop files here" description="or browse"/>
+                  <Attachment state="uploading" title="upload.csv" description="64% · 1.2 MB of 1.9 MB" progress={64}/>
+                  <Attachment state="processing" title="scan.zip" description="Scanning for viruses…"/>
+                  <Attachment state="error" title="installer.exe" description="File type not allowed"/>
+                  <Attachment state="done" title="logo.svg" description="SVG · 12 KB"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-attachment-sizes">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:26rem">
+                  <Attachment size="xs" title="notes.txt" description="1 KB"/>
+                  <Attachment size="sm" title="notes.txt" description="1 KB"/>
+                  <Attachment size="md" title="notes.txt" description="1 KB"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical with image</h3>
+            <DemoTabs id="dm-attachment-vertical">
+              <Fragment slot="preview">
+                <div class="demo-grid" style="max-inline-size:26rem">
+                  <Attachment orientation="vertical" media="image" title="cover-art.png" description="PNG · 480 KB">
+                    <img slot="media" src="https://placehold.co/640x360/1f2937/9ca3af?text=attach%20cover" alt=""/>
+                    <Button variant="ghost" size="icon" slot="actions" aria-label="Remove image"
+                            style="font-size:0.625rem">✕
+                    </Button>
+                  </Attachment>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Group</h3>
+            <DemoTabs id="dm-attachment-group">
+              <Fragment slot="preview">
+                <div class="demo-grid" role="list" aria-label="Attached files">
+                  <Attachment role="listitem" title="brief.pdf" description="PDF · 2.4 MB"/>
+                  <Attachment role="listitem" title="photo.png" description="PNG · 800 KB"/>
+                  <Attachment role="listitem" state="error" title="video.mov" description="Exceeds 10 MB limit"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "autocomplete" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-autocomplete-basic">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-basic"
+                    name="framework"
+                    placeholder="Pick a framework…"
+                    items={["Astro", "Next.js", "Nuxt", "SvelteKit", "Remix", "SolidStart"]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hints" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Options with hints</h3>
+            <DemoTabs id="dm-autocomplete-hints">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-hints"
+                    name="city"
+                    placeholder="Choose a city…"
+                    items={[
+                      {value: "jp-tokyo", label: "Tokyo", hint: "Japan"},
+                      {value: "fr-paris", label: "Paris", hint: "France"},
+                      {value: "us-nyc", label: "New York", hint: "United States"},
+                      {value: "de-berlin", label: "Berlin", hint: "Germany"},
+                    ]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("hints")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "groups" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Groups</h3>
+            <DemoTabs id="dm-autocomplete-groups">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-groups"
+                    name="stack"
+                    placeholder="Search the stack…"
+                    groups={[
+                      {label: "Frontend", items: ["Astro", "Next.js", "Nuxt"]},
+                      {label: "Backend", items: ["Node", "Deno", "Bun"]},
+                    ]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("groups")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-autocomplete-sizes">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:20rem">
+                  <Autocomplete id="ac-xs" size="xs" placeholder="xs" items={["One", "Two"]}/>
+                  <Autocomplete id="ac-sm" size="sm" placeholder="sm" items={["One", "Two"]}/>
+                  <Autocomplete id="ac-md" size="md" placeholder="md" items={["One", "Two"]}/>
+                  <Autocomplete id="ac-lg" size="lg" placeholder="lg" items={["One", "Two"]}/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "clearable" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Clearable + open on focus</h3>
+            <DemoTabs id="dm-autocomplete-clearable">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-clear"
+                    name="search"
+                    placeholder="Search…"
+                    clearable
+                    openOnFocus
+                    autoHighlight
+                    items={["Components", "Blocks", "Docs", "Releases", "Roadmap"]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("clearable")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "label" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-label-basic">
+              <Fragment slot="preview">
+                <div class="demo-field">
+                  <Label for="dm-lbl" required>Email</Label>
+                  <Input id="dm-lbl" type="email" placeholder="ada@example.com"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "field" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Label &amp; hint</h3>
+            <DemoTabs id="dm-field-basic">
+              <Fragment slot="preview">
+                <Field id="dm-field-email">
+                  <span slot="label">Email</span>
+                  <Input id="dm-field-email-control" type="email" placeholder="ada@example.com"/>
+                  <span slot="hint">We never share it.</span>
+                </Field>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "error" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Required &amp; error</h3>
+            <DemoTabs id="dm-field-error">
+              <Fragment slot="preview">
+                <Field id="dm-field-user" required>
+                  <span slot="label">Username</span>
+                  <Input
+                    id="dm-field-user-control"
+                    invalid
+                    value="ada"
+                    ariaDescribedby="dm-field-user-error"
+                  />
+                  <span slot="error">Username is taken.</span>
+                </Field>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("error")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "input" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "types" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Common types</h3>
+            <DemoTabs id="dm-input-types">
+              <Fragment slot="preview">
+                <div class="demo-grid">
+                  <div class="demo-field"><Label for="dm-i-text">Text</Label><Input id="dm-i-text"
+                                                                                    placeholder="Plain text"/></div>
+                  <div class="demo-field"><Label for="dm-i-email">Email</Label><Input id="dm-i-email" type="email"
+                                                                                      placeholder="ada@example.com"/>
+                  </div>
+                  <div class="demo-field"><Label for="dm-i-pass">Password</Label><Input id="dm-i-pass" type="password"
+                                                                                        value="s3cret"/></div>
+                  <div class="demo-field"><Label for="dm-i-date">Date</Label><Input id="dm-i-date" type="date"/></div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("types")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">States</h3>
+            <DemoTabs id="dm-input-states">
+              <Fragment slot="preview">
+                <div class="demo-grid">
+                  <div class="demo-field"><Label for="dm-i-inv">Invalid</Label><Input id="dm-i-inv" invalid value="ada"
+                                                                                      ariaDescribedby="dm-i-inv-err"/>
+                    <p id="dm-i-inv-err">Username is taken.</p></div>
+                  <div class="demo-field"><Label for="dm-i-dis">Disabled</Label><Input id="dm-i-dis" disabled
+                                                                                       value="Cannot edit"/></div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-input-sizes">
+              <Fragment slot="preview">
+                <Input size="sm" placeholder="sm"/>
+                <Input size="md" placeholder="md"/>
+                <Input size="lg" placeholder="lg"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "textarea" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic + counter + clear</h3>
+            <DemoTabs id="dm-textarea-basic">
+              <Fragment slot="preview">
+                <div class="demo-field" style="width:100%">
+                  <Label for="dm-bio">Bio</Label>
+                  <Textarea id="dm-bio" rows={3} maxlength={280} placeholder="Tell us about yourself" showCount
+                            clearable/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "grow" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Auto-grow</h3>
+            <DemoTabs id="dm-textarea-grow">
+              <Fragment slot="preview">
+                <Textarea placeholder="Grows with input" minRows={2} maxRows={5}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("grow")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "resize" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Resize</h3>
+            <DemoTabs id="dm-textarea-resize">
+              <Fragment slot="preview">
+                <Textarea placeholder="Vertical resize" resize="vertical" rows={2}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("resize")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "select" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-select-basic">
+              <Fragment slot="preview">
+                <div class="demo-field">
+                  <Label for="dm-fruit">Fruit</Label>
+                  <Select id="dm-fruit" placeholder="Choose a fruit">
+                    <option value="apple">Apple</option>
+                    <option value="pear">Pear</option>
+                  </Select>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">States &amp; sizes</h3>
+            <DemoTabs id="dm-select-states">
+              <Fragment slot="preview">
+                <Select invalid placeholder="Invalid">
+                  <option>Option</option>
+                </Select>
+                <Select disabled placeholder="Disabled">
+                  <option>Option</option>
+                </Select>
+                <Select size="lg" placeholder="Large">
+                  <option>Option</option>
+                </Select>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "checkbox" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-checkbox-basic">
+              <Fragment slot="preview">
+                <Checkbox name="dm-news" checked>Email me news</Checkbox>
+                <Checkbox name="dm-sms" disabled>SMS (unavailable)</Checkbox>
+                <Checkbox name="dm-ind" indeterminate label="Indeterminate"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants &amp; shapes</h3>
+            <DemoTabs id="dm-checkbox-variants">
+              <Fragment slot="preview">
+                <Checkbox name="dm-sq" shape="square" checked label="Square"/>
+                <Checkbox name="dm-rd" shape="rounded" checked label="Rounded"/>
+                <Checkbox name="dm-suc" variant="success" checked label="Success"/>
+                <Checkbox name="dm-err" variant="destructive" checked label="Destructive"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "radio" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "group" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Group</h3>
+            <DemoTabs id="dm-radio-group">
+              <Fragment slot="preview">
+                <Radio name="dm-plan" value="free" checked>Free</Radio>
+                <Radio name="dm-plan" value="pro">Pro</Radio>
+                <Radio name="dm-plan" value="ent" disabled>Enterprise (unavailable)</Radio>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "switch" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-switch-basic">
+              <Fragment slot="preview">
+                <Switch name="dm-wifi" checked>Wi-Fi</Switch>
+                <Switch name="dm-bt">Bluetooth</Switch>
+                <Switch name="dm-air" disabled>Airplane (disabled)</Switch>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "shapes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Shapes &amp; sizes</h3>
+            <DemoTabs id="dm-switch-shapes">
+              <Fragment slot="preview">
+                <Switch name="dm-rd" checked label="Rounded"/>
+                <Switch name="dm-sq" shape="square" checked label="Square"/>
+                <Switch name="dm-sm" size="sm" checked label="Small"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("shapes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "toggle" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-toggle-variants">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Toggle variant="default" ariaLabel="Bold">B</Toggle>
+                  <Toggle variant="outline" ariaLabel="Italic">I</Toggle>
+                  <Toggle variant="outline" pressed ariaLabel="Underline">U</Toggle>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-toggle-sizes">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Toggle size="sm">Sm</Toggle>
+                  <Toggle size="md">Md</Toggle>
+                  <Toggle size="lg">Lg</Toggle>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "toggle-group" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "horizontal" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal</h3>
+            <DemoTabs id="dm-toggle-group-horizontal">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <ToggleGroup ariaLabel="Text align">
+                    <Toggle ariaLabel="Left align">Left</Toggle>
+                    <Toggle ariaLabel="Center align" pressed>Center</Toggle>
+                    <Toggle ariaLabel="Right align">Right</Toggle>
+                  </ToggleGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("horizontal")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-toggle-group-vertical">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <ToggleGroup orientation="vertical" ariaLabel="View">
+                    <Toggle ariaLabel="List view">List</Toggle>
+                    <Toggle ariaLabel="Grid view" pressed>Grid</Toggle>
+                  </ToggleGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "table" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-table-basic">
+              <Fragment slot="preview">
+                <Table>
+                  <tr slot="head">
+                    <th class="aui-table__head-cell">Name</th>
+                    <th class="aui-table__head-cell">Role</th>
+                  </tr>
+                  <tr>
+                    <td class="aui-table__cell">Ada Lovelace</td>
+                    <td class="aui-table__cell">Developer</td>
+                  </tr>
+                  <tr>
+                    <td class="aui-table__cell">Grace Hopper</td>
+                    <td class="aui-table__cell">Engineer</td>
+                  </tr>
+                </Table>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "bordered-striped" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bordered + striped</h3>
+            <DemoTabs id="dm-table-striped">
+              <Fragment slot="preview">
+                <Table bordered striped>
+                  <tr slot="head">
+                    <th class="aui-table__head-cell">Name</th>
+                    <th class="aui-table__head-cell">Status</th>
+                  </tr>
+                  <tr>
+                    <td class="aui-table__cell">Ada</td>
+                    <td class="aui-table__cell">Active</td>
+                  </tr>
+                  <tr>
+                    <td class="aui-table__cell">Grace</td>
+                    <td class="aui-table__cell">Active</td>
+                  </tr>
+                  <tr>
+                    <td class="aui-table__cell">Alan</td>
+                    <td class="aui-table__cell">Inactive</td>
+                  </tr>
+                </Table>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("bordered-striped")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "tabs" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Line variant</h3>
+            <DemoTabs id="dm-tabs-line">
+              <Fragment slot="preview">
+                <Tabs
+                  id="dm-tabs-line-inner"
+                  ariaLabel="Line"
+                  defaultValue="billing"
+                  items={[
+                    {value: "account", label: "Account"},
+                    {value: "billing", label: "Billing"},
+                  ]}
+                >
+                  <div data-tab="account">Account panel.</div>
+                  <div data-tab="billing">Billing panel.</div>
+                </Tabs>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "card-variant" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Card variant</h3>
+            <DemoTabs id="dm-tabs-card">
+              <Fragment slot="preview">
+                <Tabs
+                  id="dm-tabs-card-inner"
+                  ariaLabel="Card"
+                  variant="card"
+                  items={[
+                    {value: "one", label: "One"},
+                    {value: "two", label: "Two"},
+                  ]}
+                >
+                  <div data-tab="one">Panel one.</div>
+                  <div data-tab="two">Panel two.</div>
+                </Tabs>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("card-variant")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-tabs-vertical">
+              <Fragment slot="preview">
+                <Tabs
+                  id="dm-tabs-vert-inner"
+                  ariaLabel="Vertical"
+                  orientation="vertical"
+                  items={[
+                    {value: "general", label: "General"},
+                    {value: "security", label: "Security"},
+                  ]}
+                >
+                  <div data-tab="general">General settings.</div>
+                  <div data-tab="security">Security settings.</div>
+                </Tabs>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "progress" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bar</h3>
+            <DemoTabs id="dm-progress-bar">
+              <Fragment slot="preview">
+                <Progress value={25} label="25%" showValue/>
+                <Progress value={64} label="64%" showValue/>
+                <Progress/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "circle" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Circle</h3>
+            <DemoTabs id="dm-progress-circle">
+              <Fragment slot="preview">
+                <Progress variant="circle" value={60} size="md" showValue/>
+                <Progress variant="circle" value={80} size="lg" showValue/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("circle")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "dialog" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic modal</h3>
+            <DemoTabs id="dm-dialog-basic">
+              <Fragment slot="preview">
+                <Button id="dm-dialog-open">Open preferences</Button>
+                <Dialog id="dm-dialog-prefs">
+                  <h2 slot="title">Preferences</h2>
+                  <p slot="description">These settings apply to this device only.</p>
+                  <p>Modal, backdrop, focus containment, and Esc come from the platform.</p>
+                  <div slot="footer">
+                    <form method="dialog">
+                      <Button value="cancel" variant="ghost">Close</Button>
+                    </form>
+                  </div>
+                </Dialog>
+                <script is:inline>
+                  document.getElementById("dm-dialog-open")?.addEventListener("click", () => {
+                    const dlg = document.getElementById("dm-dialog-prefs");
+                    if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "alert-dialog" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "confirm" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Confirm a destructive action</h3>
+            <DemoTabs id="dm-alert-dialog-confirm">
+              <Fragment slot="preview">
+                <Button id="dm-alert-dialog-open" variant="destructive">Delete project</Button>
+                <AlertDialog id="dm-alert-dialog">
+                  <h2 slot="title">Delete project?</h2>
+                  <p slot="description">This cannot be undone.</p>
+                  <Fragment slot="footer">
+                    <form method="dialog">
+                      <Button variant="outline">Cancel</Button>
+                    </form>
+                    <form method="dialog">
+                      <Button variant="destructive" value="confirm">Delete</Button>
+                    </form>
+                  </Fragment>
+                </AlertDialog>
+                <script is:inline>
+                  document.getElementById("dm-alert-dialog-open")?.addEventListener("click", () => {
+                    const dlg = document.getElementById("dm-alert-dialog");
+                    if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("confirm")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-alert-dialog-sizes">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-ad-xs-open" variant="outline">Open xs</Button>
+                  <Button id="dm-ad-lg-open" variant="outline">Open lg</Button>
+                </div>
+                <AlertDialog id="dm-ad-xs" size="xs">
+                  <h2 slot="title">Extra small</h2>
+                  <p slot="description">20rem panel for short confirmations.</p>
+                  <Fragment slot="footer">
+                    <form method="dialog">
+                      <Button variant="ghost">Close</Button>
+                    </form>
+                  </Fragment>
+                </AlertDialog>
+                <AlertDialog id="dm-ad-lg" size="lg">
+                  <h2 slot="title">Large</h2>
+                  <p slot="description">32rem panel when the message needs room.</p>
+                  <Fragment slot="footer">
+                    <form method="dialog">
+                      <Button variant="ghost">Close</Button>
+                    </form>
+                  </Fragment>
+                </AlertDialog>
+                <script is:inline>
+                  for (const [btnId, dlgId] of [
+                    ["dm-ad-xs-open", "dm-ad-xs"],
+                    ["dm-ad-lg-open", "dm-ad-lg"],
+                  ]) {
+                    document.getElementById(btnId)?.addEventListener("click", () => {
+                      const dlg = document.getElementById(dlgId);
+                      if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                    });
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "sheet" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Slide-in panel</h3>
+            <DemoTabs id="dm-sheet-basic">
+              <Fragment slot="preview">
+                <Button id="dm-sheet-open">Open sheet</Button>
+                <Sheet id="dm-sheet">
+                  <h2 slot="title">Sheet title</h2>
+                  <p>
+                    Modality, backdrop, Escape-to-close, and focus containment come
+                    from native &lt;dialog&gt;. The × button closes with zero JS.
+                  </p>
+                  <form method="dialog">
+                    <Button variant="outline" value="done">Done</Button>
+                  </form>
+                </Sheet>
+                <script is:inline>
+                  document.getElementById("dm-sheet-open")?.addEventListener("click", () => {
+                    const dlg = document.getElementById("dm-sheet");
+                    if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sides" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">From any edge</h3>
+            <DemoTabs id="dm-sheet-sides">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-sheet-left-open" variant="outline">Left</Button>
+                  <Button id="dm-sheet-right-open" variant="outline">Right</Button>
+                  <Button id="dm-sheet-top-open" variant="outline">Top</Button>
+                  <Button id="dm-sheet-bottom-open" variant="outline">Bottom</Button>
+                </div>
+                <Sheet id="dm-sheet-left" side="left">
+                  <h2 slot="title">Left</h2>
+                  <p>Slides in from the start edge.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-right" side="right">
+                  <h2 slot="title">Right</h2>
+                  <p>Slides in from the end edge.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-top" side="top">
+                  <h2 slot="title">Top</h2>
+                  <p>Drops in from the top — capped at 85vh.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-bottom" side="bottom">
+                  <h2 slot="title">Bottom</h2>
+                  <p>Rises from the bottom — capped at 85vh.</p>
+                </Sheet>
+                <script is:inline>
+                  for (const [btnId, dlgId] of [
+                    ["dm-sheet-left-open", "dm-sheet-left"],
+                    ["dm-sheet-right-open", "dm-sheet-right"],
+                    ["dm-sheet-top-open", "dm-sheet-top"],
+                    ["dm-sheet-bottom-open", "dm-sheet-bottom"],
+                  ]) {
+                    document.getElementById(btnId)?.addEventListener("click", () => {
+                      const dlg = document.getElementById(dlgId);
+                      if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                    });
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sides")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "backdrop" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Backdrop dismiss</h3>
+            <DemoTabs id="dm-sheet-backdrop">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-sheet-bd-open" variant="outline">Dismissable backdrop</Button>
+                  <Button id="dm-sheet-nbd-open" variant="outline">Locked backdrop</Button>
+                </div>
+                <Sheet id="dm-sheet-bd">
+                  <h2 slot="title">Default</h2>
+                  <p>Click the dark layer to close — Escape works too.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-nbd" closeOnBackdrop={false}>
+                  <h2 slot="title">Locked</h2>
+                  <p>Stays open when clicking the dark layer — close with × or Escape.</p>
+                </Sheet>
+                <script>
+                  for (const [btnId, dlgId] of [
+                    ["dm-sheet-bd-open", "dm-sheet-bd"],
+                    ["dm-sheet-nbd-open", "dm-sheet-nbd"],
+                  ]) {
+                    document.getElementById(btnId)?.addEventListener("click", () => {
+                      const dlg = document.getElementById(dlgId);
+                      if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                    });
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("backdrop")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "toast" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic variants</h3>
+            <DemoTabs id="dm-toast-basic">
+              <Fragment slot="preview">
+                <Button id="dm-toast-default">Default</Button>
+                <Button id="dm-toast-success" variant="outline">Success</Button>
+                <Button id="dm-toast-error" variant="destructive">Error</Button>
+                <Toaster/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "modes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">All modes</h3>
+            <DemoTabs id="dm-toast-modes">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-toast-m-default" size="sm">Default</Button>
+                  <Button id="dm-toast-m-success" size="sm" variant="outline">Success</Button>
+                  <Button id="dm-toast-m-error" size="sm" variant="destructive">Error</Button>
+                  <Button id="dm-toast-m-warning" size="sm" variant="outline">Warning</Button>
+                  <Button id="dm-toast-m-info" size="sm" variant="outline">Info</Button>
+                  <Button id="dm-toast-m-loading" size="sm" variant="outline">Loading</Button>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("modes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "description" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Description &amp; styling</h3>
+            <DemoTabs id="dm-toast-desc">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-toast-d-rich" size="sm" variant="outline">Rich colors + description</Button>
+                  <Button id="dm-toast-d-plain" size="sm" variant="outline">Info + description</Button>
+                  <Button id="dm-toast-d-close" size="sm" variant="outline">Close button</Button>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("description")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "action" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With action</h3>
+            <DemoTabs id="dm-toast-action">
+              <Fragment slot="preview">
+                <Button id="dm-toast-act" variant="outline">With action</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("action")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "position" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom position</h3>
+            <DemoTabs id="dm-toast-pos">
+              <Fragment slot="preview">
+                <Button id="dm-toast-pos-btn" variant="outline">Top-left toast</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("position")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "promise" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Loading flow</h3>
+            <DemoTabs id="dm-toast-load">
+              <Fragment slot="preview">
+                <Button id="dm-toast-load-btn" variant="outline">Loading flow</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("promise")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "expand" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Expand control</h3>
+            <DemoTabs id="dm-toast-expand">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-toast-x-collapse" size="sm" variant="outline">Fire 3 (collapses)</Button>
+                  <Button id="dm-toast-x-expand" size="sm" variant="outline">Fire 3 (expand: true)</Button>
+                </div>
+                <p class="docs-demo-hint">
+                  First fires a collapsed stack — hover it to expand. Second stays open: every toast pins its stack with
+                  expand: true.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("expand")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "accordion" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-accordion-basic">
+              <Fragment slot="preview">
+                <Accordion
+                  id="dm-acc"
+                  items={[
+                    {value: "q1", title: "What is astro-ui?", content: "A zero-JS Astro component library."},
+                    {
+                      value: "q2",
+                      title: "Does it need JavaScript?",
+                      content: "Not for this accordion — it's native details."
+                    },
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "bordered" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bordered &amp; pre-opened</h3>
+            <DemoTabs id="dm-accordion-bordered">
+              <Fragment slot="preview">
+                <Accordion
+                  id="dm-acc-b"
+                  variant="bordered"
+                  items={[
+                    {value: "a", title: "Opened", content: "This panel starts open.", open: true},
+                    {value: "b", title: "Closed", content: "Click to expand."},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("bordered")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "animated" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Animated expand</h3>
+            <DemoTabs id="dm-accordion-animated">
+              <Fragment slot="preview">
+                <Accordion
+                  id="dm-acc-anim"
+                  animated
+                  items={[
+                    {
+                      value: "a",
+                      title: "Smooth height",
+                      content: "The panel animates open and closed instead of snapping."
+                    },
+                    {
+                      value: "b",
+                      title: "Still zero JS",
+                      content: "Pure CSS: ::details-content + interpolate-size. Unsupported browsers snap instantly."
+                    },
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("animated")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "collapsible" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-collapsible-basic">
+              <Fragment slot="preview">
+                <Collapsible id="dm-collapsible">
+                  <span slot="trigger">Filters</span>
+                  <p>
+                    Any composed content lives in the panel — labels, inputs,
+                    lists — with Escape closing it and returning focus to the
+                    trigger.
+                  </p>
+                </Collapsible>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "open" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Open by default</h3>
+            <DemoTabs id="dm-collapsible-open">
+              <Fragment slot="preview">
+                <Collapsible id="dm-collapsible-open" open>
+                  <span slot="trigger">Advanced</span>
+                  <p>The open prop renders the panel expanded on first paint.</p>
+                </Collapsible>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("open")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "searchable" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Searchable collapsed content</h3>
+            <DemoTabs id="dm-collapsible-searchable">
+              <Fragment slot="preview">
+                <p class="docs-demo-hint">
+                  Keep this panel closed and press Ctrl/Cmd+F, then search for
+                  <b>kyoto reservation code</b> — the browser finds it inside
+                  the closed panel and reveals it (hidden=&quot;until-found&quot;).
+                  Navigating to <code>#dm-collapsible-searchable-panel</code> works too.
+                </p>
+                <Collapsible id="dm-collapsible-searchable">
+                  <span slot="trigger">Booking details</span>
+                  <p>Your kyoto reservation code is AOK-2291.</p>
+                </Collapsible>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("searchable")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "bubble" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "billing-thread" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Two-sided billing thread</h3>
+            <DemoTabs id="dm-bubble-billing">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <p class="docs-bubble-meta">Support · 09:12</p>
+                  <Bubble align="start" variant="outline">
+                    <BubbleContent>Hi! I see a double charge on your last invoice.</BubbleContent>
+                  </Bubble>
+                  <p class="docs-bubble-meta docs-bubble-meta--end">You · 09:14</p>
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Yes — my card was charged twice for the renewal.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Refunding the duplicate now. It lands in 3–5 business days.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="end" variant="tinted">
+                    <BubbleContent>Confirmed — thank you!</BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("billing-thread")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "deploy-thread" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Seven variants in one deploy thread</h3>
+            <DemoTabs id="dm-bubble-deploy">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Deploy the preview build to production.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="secondary">
+                    <BubbleContent>On it — building #412.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Last production deploy was v2.4.1, two days ago.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="tinted">
+                    <BubbleContent>Build passed in 1m 32s.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="outline">
+                    <BubbleContent>3 files changed, 128 additions, 12 deletions.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="destructive">
+                    <BubbleContent>Coverage dropped below 80% — consider adding tests.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="ghost">
+                    <BubbleContent>Run #412 · runner eu-west-1 · log retained 30 days</BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("deploy-thread")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Consecutive turns in a BubbleGroup</h3>
+            <DemoTabs id="dm-bubble-group">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <p class="docs-bubble-meta docs-bubble-meta--end">Ada · just now</p>
+                  <BubbleGroup ariaLabel="Three messages from Ada">
+                    <Bubble align="end" variant="primary">
+                      <BubbleContent>Pushed the fix to staging.</BubbleContent>
+                    </Bubble>
+                    <Bubble align="end" variant="primary">
+                      <BubbleContent>Can you re-run the smoke tests?</BubbleContent>
+                    </Bubble>
+                    <Bubble align="end" variant="primary">
+                      <BubbleContent>Then we're clear for the release.</BubbleContent>
+                    </Bubble>
+                  </BubbleGroup>
+                  <p class="docs-bubble-meta">Grace · 1 min ago</p>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Running them now.</BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("group")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "reactions" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Reaction rows</h3>
+            <DemoTabs id="dm-bubble-reactions">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread docs-bubble-thread--spaced">
+                  <Bubble align="start" variant="outline">
+                    <BubbleContent>The release notes are ready for review.</BubbleContent>
+                    <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">
+                      <span aria-hidden="true">👍 4</span>
+                      <span aria-hidden="true">🚀 2</span>
+                    </BubbleReactions>
+                  </Bubble>
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Great — leaving a celebration on it.</BubbleContent>
+                    <BubbleReactions side="bottom" align="start" ariaLabel="Reactions">
+                      <button type="button" aria-pressed="true" aria-label="Celebrate, 3 reactions">
+                        <span aria-hidden="true">🎉</span> 3
+                      </button>
+                    </BubbleReactions>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Deployment window opens at 14:00 UTC.</BubbleContent>
+                    <BubbleReactions side="top" align="end" ariaLabel="Reactions">
+                      <span aria-hidden="true">⏰ 1</span>
+                    </BubbleReactions>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("reactions")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "ghost-rich" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Ghost bubble with rich content</h3>
+            <DemoTabs id="dm-bubble-ghost">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="start" variant="ghost">
+                    <BubbleContent>
+                      <h4>What changed in v2.5</h4>
+                      <ul>
+                        <li><strong>Bubble</strong> components for conversational UIs</li>
+                        <li>Logical-property separators in <code>Breadcrumb</code></li>
+                        <li><em>40% faster</em> docs generation</li>
+                      </ul>
+                      <p>Upgrade with <code>npm install astro-ui@latest</code>.</p>
+                    </BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("ghost-rich")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "collapsible-answer" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Long answer behind a Collapsible</h3>
+            <DemoTabs id="dm-bubble-collapsible">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Explain how the reactions pill positions itself.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>
+                      <p>
+                        The pill is absolutely positioned inside the bubble and pushed
+                        out with a translate of 75% of its own height, so it straddles
+                        the edge without occupying flow space.
+                      </p>
+                      <Collapsible id="dm-bubble-more">
+                        <span slot="trigger">Show the details</span>
+                        <p>
+                          A 3px ring in the page background separates the pill from the
+                          bubble and any media behind it. side picks the edge (top or
+                          bottom) and align picks the horizontal anchor (start or end) —
+                          both logical, so they mirror in RTL layouts.
+                        </p>
+                      </Collapsible>
+                    </BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("collapsible-answer")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "interactive" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Tinted bubbles as buttons + action row</h3>
+            <DemoTabs id="dm-bubble-interactive">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Two plans fit your usage. Pick one:</BubbleContent>
+                  </Bubble>
+                  <Bubble align="end" variant="tinted">
+                    <button type="button" class="aui-bubble__content">Pro — $19/mo, priority builds</button>
+                  </Bubble>
+                  <Bubble align="end" variant="tinted">
+                    <button type="button" class="aui-bubble__content">Team — $49/mo, shared themes</button>
+                  </Bubble>
+                  <Bubble align="start" variant="outline">
+                    <a class="aui-bubble__content" href="#">Compare all plans</a>
+                  </Bubble>
+                  <div class="docs-bubble-actions">
+                    <Button variant="ghost" size="sm">Regenerate</Button>
+                    <Button variant="outline" size="sm">Copy summary</Button>
+                  </div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("interactive")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "breadcrumb" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-breadcrumb-basic">
+              <Fragment slot="preview">
+                <Breadcrumb
+                  items={[
+                    {href: "/", label: "Home"},
+                    {href: "/components/", label: "Components"},
+                    {label: "Button"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "chevron" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Chevron separator</h3>
+            <DemoTabs id="dm-breadcrumb-chevron">
+              <Fragment slot="preview">
+                <Breadcrumb
+                  separator="chevron"
+                  items={[
+                    {href: "/", label: "Home"},
+                    {label: "Docs"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("chevron")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dropdown" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Breadcrumb with dropdown menu</h3>
+            <DemoTabs id="dm-breadcrumb-dropdown">
+              <Fragment slot="preview">
+                <Breadcrumb ariaLabel="Breadcrumb with collapsed path">
+							<span class="aui-breadcrumb__item">
+								<a class="aui-breadcrumb__link" href="/">Home</a>
+							</span>
+                  <span class="aui-breadcrumb__item">
+								<Popover id="bc-menu" triggerLabel="Show hidden path segments">
+									<span slot="trigger">
+										<span class="aui-breadcrumb__ellipsis" aria-hidden="true">…</span>
+									</span>
+									<span slot="content" class="docs-breadcrumb-menu">
+										<a href="#">Documentation</a>
+										<a href="#">Themes</a>
+										<a href="#">GitHub</a>
+									</span>
+								</Popover>
+							</span>
+                  <span class="aui-breadcrumb__item">
+								<a class="aui-breadcrumb__link" href="#">Components</a>
+							</span>
+                  <span class="aui-breadcrumb__item">
+								<span class="aui-breadcrumb__current" aria-current="page">Breadcrumb</span>
+							</span>
+                </Breadcrumb>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("dropdown")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "slash" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom slash separator</h3>
+            <DemoTabs id="dm-breadcrumb-slash">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Breadcrumb
+                    separator="custom"
+                    style="--aui-breadcrumb-separator: '//'"
+                    items={[
+                      {href: "/", label: "usr"},
+                      {href: "#", label: "local"},
+                      {label: "bin"},
+                    ]}
+                  />
+                  <Breadcrumb
+                    separator="custom"
+                    style="--aui-breadcrumb-separator: '\\2022'"
+                    items={[
+                      {href: "/", label: "Home"},
+                      {label: "Settings"},
+                    ]}
+                  />
+                </div>
+                <p class="docs-demo-hint">Custom glyphs — double slash and bullet — via <code>separator="custom"</code>.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("slash")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "ellipsis" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Ellipsis for long paths</h3>
+            <DemoTabs id="dm-breadcrumb-ellipsis">
+              <Fragment slot="preview">
+                <Breadcrumb
+                  items={[
+                    {href: "/", label: "Home"},
+                    {ellipsis: true, label: "More"},
+                    {href: "#", label: "Components"},
+                    {label: "Breadcrumb"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("ellipsis")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "icons" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icons for each item</h3>
+            <DemoTabs id="dm-breadcrumb-icons">
+              <Fragment slot="preview">
+                <Breadcrumb separator="chevron"
+                            items={[
+                              {
+                                href: "/",
+                                label: "Home",
+                                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>'
+                              },
+                              {
+                                href: "#",
+                                label: "Library",
+                                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>'
+                              },
+                              {
+                                label: "Breadcrumb",
+                                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M15 2v5h5"/></svg>'
+                              },
+                            ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("icons")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "chevrons" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Double chevron separators</h3>
+            <DemoTabs id="dm-breadcrumb-chevrons">
+              <Fragment slot="preview">
+                <Breadcrumb separator="chevrons"
+                            items={[
+                              {href: "/", label: "Dashboard"},
+                              {href: "#", label: "Resources"},
+                              {label: "Documentation"},
+                            ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("chevrons")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pill-frame" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Pill-style breadcrumb inside frame</h3>
+            <DemoTabs id="dm-breadcrumb-pill">
+              <Fragment slot="preview">
+                <div class="docs-breadcrumb-frame">
+                  <Breadcrumb pill separator="chevron"
+                              items={[
+                                {
+                                  href: "/",
+                                  label: "Home",
+                                  icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>'
+                                },
+                                {href: "#", label: "Products"},
+                                {label: "Checkout"},
+                              ]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("pill-frame")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "home-icon" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Home icon item</h3>
+            <DemoTabs id="dm-breadcrumb-home">
+              <Fragment slot="preview">
+                <Breadcrumb
+                  items={[
+                    {
+                      href: "/",
+                      label: "Home",
+                      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>'
+                    },
+                    {href: "#", label: "Products"},
+                    {label: "Checkout"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("home-icon")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "badge-count" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with count</h3>
+            <DemoTabs id="dm-breadcrumb-badge">
+              <Fragment slot="preview">
+                <Breadcrumb ariaLabel="Mailbox">
+							<span class="aui-breadcrumb__item">
+								<a class="aui-breadcrumb__link" href="#">
+									Inbox
+									<Badge variant="destructive" size="sm" ariaLabel="3 unread messages" style="min-inline-size: 1.25rem">3</Badge>
+								</a>
+							</span>
+                  <span class="aui-breadcrumb__item">
+								<a class="aui-breadcrumb__link" href="#">Labels</a>
+							</span>
+                  <span class="aui-breadcrumb__item">
+								<span class="aui-breadcrumb__current" aria-current="page">Important</span>
+							</span>
+                </Breadcrumb>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("badge-count")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "buttons" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Button-style breadcrumb</h3>
+            <DemoTabs id="dm-breadcrumb-buttons">
+              <Fragment slot="preview">
+                <Breadcrumb ariaLabel="Help center">
+							<span class="aui-breadcrumb__item">
+							<Button variant="outline" size="xs" shape="rounded" aria-label="Home">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path
+                  d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+							</Button>
+							</span>
+                  <span class="aui-breadcrumb__item">
+								<a class="aui-breadcrumb__link" href="#">Help Center</a>
+							</span>
+                  <span class="aui-breadcrumb__item">
+								<span class="aui-breadcrumb__current" aria-current="page">Getting Started</span>
+							</span>
+                </Breadcrumb>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("buttons")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "card" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Breadcrumb inside card</h3>
+            <DemoTabs id="dm-breadcrumb-card">
+              <Fragment slot="preview">
+                <Card size="sm">
+                  <Breadcrumb separator="chevron"
+                              items={[
+                                {href: "/", label: "Home"},
+                                {href: "#", label: "Products"},
+                                {label: "Checkout"},
+                              ]}
+                  />
+                </Card>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("card")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "chart" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bar</h3>
+            <DemoTabs id="dm-chart-bar">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  title="Revenue growth"
+                  description="Monthly revenue, 2026"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Revenue", data: barRevenue}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "grouped-bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Grouped bars</h3>
+            <DemoTabs id="dm-chart-grouped">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  title="Desktop vs mobile"
+                  labels={["Jan", "Feb", "Mar", "Apr"]}
+                  series={[
+                    {name: "Desktop", data: groupedDesktop},
+                    {name: "Mobile", data: groupedMobile},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("grouped-bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "stacked-bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Stacked bars</h3>
+            <DemoTabs id="dm-chart-stacked">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  stack
+                  title="Sessions by source"
+                  description="Stacked per day — axis spans daily totals"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[
+                    {name: "Direct", data: [320, 360, 310, 420, 480, 260, 210]},
+                    {name: "Search", data: [280, 300, 340, 380, 410, 220, 180]},
+                    {name: "Social", data: [120, 140, 110, 160, 190, 240, 200]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("stacked-bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "percent-stack" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">100% stacked bars</h3>
+            <DemoTabs id="dm-chart-percent-stack">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  stack="percent"
+                  title="Traffic mix"
+                  description="Each column normalized to 100% of its daily total"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri"]}
+                  series={[
+                    {name: "Direct", data: [320, 360, 310, 420, 480]},
+                    {name: "Search", data: [280, 300, 340, 380, 410]},
+                    {name: "Social", data: [120, 140, 110, 160, 190]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("percent-stack")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "combo" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Combo (bars + line)</h3>
+            <DemoTabs id="dm-chart-combo">
+              <Fragment slot="preview">
+                <Chart
+                  type="combo"
+                  title="Orders vs revenue"
+                  description="Bars ride the left axis, the line a secondary right axis"
+                  labels={["Oct 1", "Oct 2", "Oct 3", "Oct 4", "Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9"]}
+                  series={[
+                    {name: "Revenue", data: [4200, 4600, 5100, 4900, 5600, 6100, 6900, 5800, 5400]},
+                    {
+                      name: "Orders",
+                      data: [148, 158, 172, 165, 184, 196, 210, 186, 178],
+                      kind: "line",
+                      color: "var(--ui-success)"
+                    },
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("combo")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Line</h3>
+            <DemoTabs id="dm-chart-line">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  title="Active users"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[
+                    {name: "This week", data: lineThisWeek},
+                    {name: "Last week", data: lineLastWeek},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "step-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Step line</h3>
+            <DemoTabs id="dm-chart-step">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  curve="step"
+                  title="Desktop vs mobile"
+                  description="Plateaus hold until the midpoint between values, then step"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]}
+                  series={[
+                    {name: "Desktop", data: [420, 615, 545, 760, 480, 825, 570, 690, 515, 735, 610, 455]},
+                    {name: "Mobile", data: [265, 430, 350, 505, 390, 545, 415, 585, 445, 615, 520, 380]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("step-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dashed-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Dashed & dotted</h3>
+            <DemoTabs id="dm-chart-stroke">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  stroke="dashed"
+                  title="Forecast"
+                  description="Whole series dashed — chart-level stroke, per-series override"
+                  labels={["Apr 1", "Apr 5", "Apr 10", "Apr 15", "Apr 18"]}
+                  series={[{name: "Sessions", data: forecast}]}
+                />
+                <Chart
+                  type="line"
+                  title="Solid vs dashed vs dotted"
+                  labels={["Jan", "Feb", "Mar", "Apr"]}
+                  series={[
+                    {name: "Actual", data: strokeActual},
+                    {name: "Target", data: strokeTarget, stroke: "dashed"},
+                    {name: "Stretch", data: strokeStretch, stroke: "dotted"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("dashed-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pattern-fill" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Pattern fills (dots & hatch)</h3>
+            <DemoTabs id="dm-chart-pattern">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve="step"
+                  fill="dots"
+                  title="Portfolio swing"
+                  description="Texture fills tinted with each series color"
+                  labels={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]}
+                  series={[
+                    {name: "Fund A", data: [312, 388, 340, 296, 274, 246, 231, 224]},
+                    {name: "Fund B", data: [268, 231, 205, 214, 248, 289, 331, 352], fill: "hatch"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("pattern-fill")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pattern-mix" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Actual vs target (hatch + bare line)</h3>
+            <DemoTabs id="dm-chart-pattern-mix">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve="step"
+                  title="Weekly signups"
+                  description="275 this week — +12.2% vs target"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[
+                    {name: "Actual", data: [240, 178, 262, 335, 212, 275], fill: "hatch"},
+                    {name: "Target", data: [122, 202, 128, 390, 305, 172], fill: "none", stroke: "dashed"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("pattern-mix")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "bump-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bump curve</h3>
+            <DemoTabs id="dm-chart-bump">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  curve="bump"
+                  title="Rank changes"
+                  description="Flat out of each point, S-curve into the next"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[
+                    {name: "Desktop", data: [320, 180, 420, 260, 510, 380]},
+                    {name: "Mobile", data: [180, 320, 240, 450, 290, 460]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("bump-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "curved-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Curved line</h3>
+            <DemoTabs id="dm-chart-curved">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  curve
+                  title="Visitor flow"
+                  description="Monotone cubic smoothing — the curve never overshoots the data"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Visitor-line", data: visitors}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("curved-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "area" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Area</h3>
+            <DemoTabs id="dm-chart-area">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  title="Signups"
+                  labels={["Q1", "Q2", "Q3", "Q4"]}
+                  series={[{name: "Signups", data: signups}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("area")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "curved-area" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Curved area</h3>
+            <DemoTabs id="dm-chart-curved-area">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  title="Campaign traffic"
+                  description="Smoothed area — the fill follows the monotone curve"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Sessions", data: [820, 1210, 940, 580, 1120, 990]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("curved-area")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-area" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient area</h3>
+            <DemoTabs id="dm-chart-gradient">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  gradient
+                  title="API requests"
+                  description="Series color fades toward the baseline"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[{name: "Requests", data: [4200, 5100, 4800, 6300, 7100, 3900, 3400]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("gradient-area")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-custom" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient area, custom color</h3>
+            <DemoTabs id="dm-chart-gradient-custom">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  gradient
+                  title="Revenue"
+                  description="The series color drives the line, the fill, and the gradient"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Revenue", data: [12, 18, 15, 22, 19, 26], color: "var(--ui-success)"}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("gradient-custom")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient bars</h3>
+            <DemoTabs id="dm-chart-gradient-bar">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  gradient
+                  title="Deploys per week"
+                  description="Each bar fades toward the baseline"
+                  labels={["W1", "W2", "W3", "W4", "W5", "W6"]}
+                  series={[{name: "Deploys", data: [14, 22, 18, 27, 31, 24]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("gradient-bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-donut" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient donut</h3>
+            <DemoTabs id="dm-chart-gradient-donut">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  gradient
+                  gradientIntensity={3}
+                  title="Storage by type"
+                  description="Radial fade — strong at the rim, clear toward the center"
+                  labels={["Images", "Video", "Docs", "Other"]}
+                  series={[{name: "GB", data: [42, 66, 21, 11]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("gradient-donut")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "donut-rounded" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Rounded donut (padded slices)</h3>
+            <DemoTabs id="dm-chart-donut-rounded">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  padAngle={4}
+                  sliceRadius={22}
+                  title="Browser share"
+                  description="padAngle gaps the slices, sliceRadius rounds their corners"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Share", data: [38, 24, 16, 12, 10]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("donut-rounded")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pie" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Pie</h3>
+            <DemoTabs id="dm-chart-pie">
+              <Fragment slot="preview">
+                <Chart
+                  type="pie"
+                  title="Traffic sources"
+                  labels={["Direct", "Search", "Social", "Referral"]}
+                  series={[{name: "Share", data: [435, 286, 151, 96]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("pie")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "donut" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Donut</h3>
+            <DemoTabs id="dm-chart-donut">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  title="Storage by type"
+                  labels={["Images", "Video", "Docs", "Other"]}
+                  series={[{name: "GB", data: [42, 66, 21, 11]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("donut")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "slice-labels" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Slice labels (value & leader lines)</h3>
+            <DemoTabs id="dm-chart-slice-labels">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  padAngle={4}
+                  sliceRadius={18}
+                  sliceLabels="value"
+                  title="Browser share"
+                  description="Formatted values printed at each slice centroid"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  legend={false}
+                />
+                <Chart
+                  type="pie"
+                  sliceLabels="label"
+                  title="Browser share"
+                  description="Category names outside, connected by elbow leader lines"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("slice-labels")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "slice-labels-combined" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Slice labels, value + percent</h3>
+            <DemoTabs id="dm-chart-slice-labels-combined">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  padAngle={3}
+                  sliceRadius={14}
+                  sliceLabels="value-pct"
+                  title="Plan distribution"
+                  description="Value and share together at each slice centroid"
+                  labels={["Free", "Pro", "Team", "Enterprise"]}
+                  series={[{name: "Accounts", data: [412, 268, 143, 77]}]}
+                  legend={false}
+                />
+                <Chart
+                  type="donut"
+                  sliceLabels="value-pct"
+                  sliceLabelFormat={(v: number, pct: number) => pct + "% of " + v.toLocaleString()}
+                  title="Storage by type"
+                  description="sliceLabelFormat takes (value, pct) and returns any string"
+                  labels={["Images", "Video", "Docs", "Other"]}
+                  series={[{name: "GB", data: [42, 66, 21, 11]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("slice-labels-combined")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "slice-collapse" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Auto-collapsed slices</h3>
+            <DemoTabs id="dm-chart-slice-collapse">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  collapseBelow={8}
+                  sliceLabels="value-pct"
+                  title="Entry pages"
+                  description="Slices under 8% merge into the trailing Other slice"
+                  labels={["/", "/pricing", "/blog", "/docs", "/changelog", "/about", "/careers"]}
+                  series={[{name: "Sessions", data: [4820, 2130, 1640, 1180, 310, 240, 180]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("slice-collapse")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "scatter" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Scatter</h3>
+            <DemoTabs id="dm-chart-scatter">
+              <Fragment slot="preview">
+                <Chart
+                  type="scatter"
+                  title="Deploys per day"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri"]}
+                  series={[
+                    {name: "Team A", data: scatterA},
+                    {name: "Team B", data: scatterB},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("scatter")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hbar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal bars</h3>
+            <DemoTabs id="dm-chart-hbar">
+              <Fragment slot="preview">
+                <Chart
+                  type="hbar"
+                  title="Top pages"
+                  labels={["/docs/get-started", "/components", "/blocks", "/docs/rtl"]}
+                  series={[{name: "Views", data: pageViews}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("hbar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hbar-stacked" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Stacked hbar (part-to-whole)</h3>
+            <DemoTabs id="dm-chart-hbar-stacked">
+              <Fragment slot="preview">
+                <Chart
+                  type="hbar"
+                  stack
+                  legend={false}
+                  title="Capital inflows"
+                  labels={["Funds"]}
+                  series={[
+                    {name: "WaveMark Capital", data: [22], color: "var(--ui-success)"},
+                    {name: "Envato Finances", data: [10], color: "var(--ui-warning)"},
+                    {name: "QBridge Tech", data: [15], color: "var(--ui-error)"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("hbar-stacked")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "custom-colors" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom colors</h3>
+            <DemoTabs id="dm-chart-colors">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  title="Plan distribution"
+                  labels={["Free", "Pro", "Team"]}
+                  series={[{name: "Plans", data: [640, 310, 90]}]}
+                />
+                <p class="docs-demo-hint">Slices fall back to <code>--ui-chart-1..6</code> tokens — override them
+                  globally or pass <code>color</code> per series.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("custom-colors")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gauge" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radial gauge</h3>
+            <DemoTabs id="dm-chart-gauge">
+              <Fragment slot="preview">
+                <Chart
+                  type="gauge"
+                  title="Storage used"
+                  description="Tick marks fill clockwise with the value"
+                  labels={["Used"]}
+                  series={[{name: "of 8 TB", data: [64]}]}
+                  maxY={100}
+                  ticks={40}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("gauge")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gauge-half" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gauge at half</h3>
+            <DemoTabs id="dm-chart-gauge-half">
+              <Fragment slot="preview">
+                <Chart
+                  type="gauge"
+                  title="Monthly goal"
+                  labels={["Reached"]}
+                  series={[{name: "of 200 deals", data: [102]}]}
+                  maxY={200}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("gauge-half")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-intensity" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient intensity</h3>
+            <DemoTabs id="dm-chart-gradient-intensity">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  gradient
+                  gradientIntensity={2}
+                  title="Strong fade"
+                  description="gradientIntensity scales every fade — 1 is the default, 2 is saturated"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[{name: "Requests", data: [4200, 5100, 4800, 6300, 7100, 3900, 3400]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("gradient-intensity")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radar</h3>
+            <DemoTabs id="dm-chart-radar">
+              <Fragment slot="preview">
+                <Chart
+                  type="radar"
+                  title="Skill coverage"
+                  description="One axis per label, filled polygons per series"
+                  labels={["JavaScript", "Python", "CSS", "Node.js", "React", "TypeScript"]}
+                  series={[
+                    {name: "Desktop", data: [78, 85, 90, 62, 74, 96]},
+                    {name: "Mobile", data: [52, 58, 66, 54, 41, 60]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("radar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radial" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radial rings</h3>
+            <DemoTabs id="dm-chart-radial">
+              <Fragment slot="preview">
+                <Chart
+                  type="radial"
+                  title="Browser share"
+                  description="One concentric ring per category — outer ring first"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  maxY={275}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("radial")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radial-half" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radial half (rainbow)</h3>
+            <DemoTabs id="dm-chart-radial-half">
+              <Fragment slot="preview">
+                <Chart
+                  type="radial"
+                  radialSweep="half"
+                  title="Browser share"
+                  description="Half-circle rings over the top — outer ring first"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  maxY={275}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("radial-half")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sankey" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sankey flow</h3>
+            <DemoTabs id="dm-chart-sankey">
+              <Fragment slot="preview">
+                <Chart
+                  type="sankey"
+                  title="Traffic funnel"
+                  description="Flow value scales each ribbon and node"
+                  nodes={[
+                    {name: "Organic Search", color: "var(--ui-success)"},
+                    {name: "Paid Ads", color: "var(--ui-error)"},
+                    {name: "Social Media", color: "var(--ui-chart-5, var(--ui-warning))"},
+                    {name: "Landing Page", color: "var(--ui-info)"},
+                    {name: "Product Page", color: "var(--ui-chart-2, var(--ui-info))"},
+                    {name: "Cart", color: "var(--ui-warning)"},
+                    {name: "Bounced", color: "var(--ui-error)"},
+                    {name: "Purchase", color: "var(--ui-success)"},
+                  ]}
+                  links={[
+                    {source: "Organic Search", target: "Landing Page", value: 42000},
+                    {source: "Paid Ads", target: "Landing Page", value: 28000},
+                    {source: "Social Media", target: "Landing Page", value: 18000},
+                    {source: "Landing Page", target: "Product Page", value: 52000},
+                    {source: "Landing Page", target: "Bounced", value: 36000},
+                    {source: "Product Page", target: "Cart", value: 31000},
+                    {source: "Product Page", target: "Bounced", value: 21000},
+                    {source: "Cart", target: "Purchase", value: 24000},
+                    {source: "Cart", target: "Bounced", value: 7000},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sankey")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "no-grid" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Minimal</h3>
+            <DemoTabs id="dm-chart-minimal">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  grid={false}
+                  legend={false}
+                  title="Ping"
+                  labels={["12am", "6am", "12pm", "6pm"]}
+                  series={[{name: "ms", data: ping}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("no-grid")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "clipboard" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icon trigger</h3>
+            <DemoTabs id="dm-clipboard-basic">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Clipboard value="npm install astro-ui" auto/>
+                  <Clipboard value="npm install astro-ui" auto icon={false}/>
+                </div>
+                <p class="docs-demo-hint">Click either — the copy icon swaps to a green check for 1.5s.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "only-icon" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icon only</h3>
+            <DemoTabs id="dm-clipboard-only-icon">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Clipboard value="npx astro add" auto onlyIcon/>
+                  <Clipboard value="npx astro add" auto onlyIcon variant="soft"/>
+                  <Clipboard value="npx astro add" auto onlyIcon variant="ghost"/>
+                </div>
+                <p class="docs-demo-hint">The accessible name derives from the value: <code>aria-label="Copy npx astro
+                  add"</code>.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("only-icon")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-clipboard-variants">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Clipboard value="outline" auto variant="outline" label="Outline"/>
+                  <Clipboard value="ghost" auto variant="ghost" label="Ghost"/>
+                  <Clipboard value="soft" auto variant="soft" label="Soft"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-clipboard-sizes">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Clipboard value="small command" auto size="sm"/>
+                  <Clipboard value="regular command" auto size="md"/>
+                  <Clipboard value="small square" auto size="sm" onlyIcon/>
+                  <Clipboard value="regular square" auto size="md" onlyIcon/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "feedback" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom feedback</h3>
+            <DemoTabs id="dm-clipboard-feedback">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Clipboard value="pnpm add astro-ui" auto feedback="Install command copied"/>
+                  <Clipboard value="pnpm add astro-ui" auto feedback={null}/>
+                </div>
+                <p class="docs-demo-hint"><code>feedback={null}</code> skips the text entirely — the check icon alone
+                  confirms.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("feedback")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "disabled" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Disabled</h3>
+            <DemoTabs id="dm-clipboard-disabled">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Clipboard value="locked" auto disabled label="Copy"/>
+                  <Clipboard value="locked" auto disabled onlyIcon/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("disabled")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "manual" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Manual wiring (zero JS shipped by the component)</h3>
+            <DemoTabs id="dm-clipboard-manual">
+              <Fragment slot="preview">
+                <Clipboard value="npx astro add"/>
+                <p class="docs-demo-hint">
+                  This instance ships no script — the docs page wires <code>data-aui-clipboard</code> globally, exactly
+                  as the copy source shows.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("manual")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "code-block" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">In a code block</h3>
+            <DemoTabs id="dm-clipboard-code-block">
+              <Fragment slot="preview">
+                <div class="docs-clipboard-code-pill">
+                  <code>npm install astro-ui</code>
+                  <Clipboard value="npm install astro-ui" auto onlyIcon variant="ghost" size="sm"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("code-block")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "empty" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-empty-basic">
+              <Fragment slot="preview">
+                <Empty>
+                  <span slot="media" aria-hidden="true">⌀</span>
+                  <span slot="title">No results</span>
+                  <span slot="description">Try adjusting your filters.</span>
+                  <Button slot="footer" size="sm" variant="outline">Clear filters</Button>
+                </Empty>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "kbd" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-kbd-basic">
+              <Fragment slot="preview">
+                <p>Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to search.</p>
+                <p><Kbd variant="outline" raised>Enter</Kbd> to submit.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "link" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-link-basic">
+              <Fragment slot="preview">
+                <Link href="#">Default link</Link>
+                <Link href="#" underline={false}>No underline</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "external" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">External & icons</h3>
+            <DemoTabs id="dm-link-external">
+              <Fragment slot="preview">
+                <Link href="https://astro.build" external icon="external">Astro docs</Link>
+                <Link href="#" icon="arrow">Next step</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("external")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "colors" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Colors & sizes</h3>
+            <DemoTabs id="dm-link-colors">
+              <Fragment slot="preview">
+                <Link href="#" color="muted">Muted</Link>
+                <Link href="#" color="destructive">Delete account</Link>
+                <Link href="#" size="lg">Large</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("colors")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "disabled" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Disabled / loading</h3>
+            <DemoTabs id="dm-link-disabled">
+              <Fragment slot="preview">
+                <Link disabled>Unavailable</Link>
+                <Link loading loadingText="Opening…">Docs</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("disabled")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+}
+
+{
+  component.slug === "pagination" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-pagination-basic">
+              <Fragment slot="preview">
+                <Pagination page={4} total={12} pageHref={(p: any) => `?page=${p}`}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "compact" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Compact</h3>
+            <DemoTabs id="dm-pagination-compact">
+              <Fragment slot="preview">
+                <Pagination compact page={2} total={5} pageHref={(p: any) => `?p=${p}`}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("compact")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "rating" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Interactive &amp; readonly</h3>
+            <DemoTabs id="dm-rating-basic">
+              <Fragment slot="preview">
+                <Rating name="dm-score" value={4}/>
+                <Rating value={3.5} readonly/>
+                <Rating value={2} readonly size="lg" variant="primary"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes &amp; variants</h3>
+            <DemoTabs id="dm-rating-sizes">
+              <Fragment slot="preview">
+                <Rating name="dm-s-sm" value={3} size="sm"/>
+                <Rating name="dm-s-md" value={3} size="md"/>
+                <Rating name="dm-s-lg" value={3} size="lg"/>
+                <Rating name="dm-s-primary" value={3} variant="primary" size="lg"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "icons" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icon presets &amp; custom</h3>
+            <DemoTabs id="dm-rating-icons">
+              <Fragment slot="preview">
+                <Rating name="dm-heart" value={4} icon="heart"/>
+                <Rating name="dm-thumb" value={4} icon="thumb"/>
+                <Rating name="dm-circle" value={3} icon="circle"/>
+                <Rating name="dm-square" value={3} icon="square"/>
+                <Rating name="dm-bar" value={2} icon="bar"/>
+                <Rating
+                  name="dm-custom"
+                  value={3}
+                  iconPath="M8 1l2.1 4.3 4.7.7-3.4 3.3.8 4.7L8 11.8 3.8 14l.8-4.7L1.2 6l4.7-.7z"
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("icons")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "emoji" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Emoji sentiment</h3>
+            <DemoTabs id="dm-rating-emoji">
+              <Fragment slot="preview">
+                <Rating name="dm-mood" value={4} icon="emoji" ariaLabel="How do you feel?"/>
+                <Rating value={2} icon="emoji" readonly/>
+                <Rating value={5} icon="emoji" readonly size="lg"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("emoji")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "scale" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Satisfaction scale</h3>
+            <DemoTabs id="dm-rating-scale">
+              <Fragment slot="preview">
+                <Rating
+                  name="dm-satisfaction"
+                  value={2}
+                  colorScale
+                  showLabels
+                  labels={["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]}
+                  ariaLabel="Overall satisfaction"
+                />
+                <Rating
+                  value={4}
+                  readonly
+                  colorScale
+                  showLabels
+                  labels={["Very bad", "Bad", "OK", "Good", "Excellent"]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("scale")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "nps" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Single highlight (NPS-style)</h3>
+            <DemoTabs id="dm-rating-nps">
+              <Fragment slot="preview">
+                <Rating
+                  name="dm-nps"
+                  value={9}
+                  max={10}
+                  single
+                  variant="primary"
+                  showLabels
+                  labels={["Not likely", "Extremely likely"]}
+                  ariaLabel="How likely will you recommend us?"
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("nps")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "slider" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-slider-basic">
+              <Fragment slot="preview">
+                <Slider name="dm-volume" label="Volume" value={70} showValue/>
+                <Slider name="dm-temp" label="Temperature" value={22} min={16} max={30}
+                        marks={["Cold", "Warm", "Hot"]}/>
+                <Slider name="dm-dis" label="Disabled" value={40} disabled/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "tooltip" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Thumb tooltip</h3>
+            <DemoTabs id="dm-slider-tooltip">
+              <Fragment slot="preview">
+                <Slider name="dm-bright" label="Brightness" value={65} tooltip/>
+                <Slider name="dm-temp2" label="Temperature" value={22} min={16} max={30} tooltip showValue/>
+                <Slider name="dm-zoom" label="Zoom" value={110} min={50} max={200} step={10} tooltip
+                        marks={["50%", "125%", "200%"]}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("tooltip")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "stepper" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-stepper-basic">
+              <Fragment slot="preview">
+                <Stepper
+                  items={[
+                    {label: "Cart", complete: true},
+                    {label: "Shipping", current: true, description: "Address & delivery"},
+                    {label: "Payment"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-stepper-vertical">
+              <Fragment slot="preview">
+                <Stepper
+                  orientation="vertical"
+                  items={[
+                    {label: "Account", complete: true},
+                    {label: "Profile", current: true},
+                    {label: "Done"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "tag" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants &amp; shapes</h3>
+            <DemoTabs id="dm-tag-basic">
+              <Fragment slot="preview">
+                <Tag>astro</Tag>
+                <Tag variant="soft">design</Tag>
+                <Tag variant="outline">zero-js</Tag>
+                <Tag variant="success" shape="square">stable</Tag>
+                <Tag variant="info" closable closeLabel="Remove token">tokens</Tag>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "tooltip" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-tooltip-basic">
+              <Fragment slot="preview">
+                <Tooltip ariaLabel="Save document">
+                  <Button variant="outline">Save</Button>
+                  <span slot="content">Saves to your workspace</span>
+                </Tooltip>
+                <Tooltip placement="bottom" variant="light" ariaLabel="Help">
+                  <Button variant="ghost">Help</Button>
+                  <span slot="content">Light bubble, bottom placement</span>
+                </Tooltip>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "popover" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-popover-basic">
+              <Fragment slot="preview">
+                <Popover id="dm-popover">
+                  <span slot="trigger">Share</span>
+                  <span slot="content">
+								Share via <a href="/components/popover/">this link</a>.
+							</span>
+                </Popover>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "top" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Top placement</h3>
+            <DemoTabs id="dm-popover-top">
+              <Fragment slot="preview">
+                <Popover id="dm-popover-top" placement="top">
+                  <span slot="trigger">Embed</span>
+                  <span slot="content">Copy the embed code from here.</span>
+                </Popover>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("top")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "hover-card" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-hover-card-basic">
+              <Fragment slot="preview">
+                <HoverCard ariaLabel="Profile preview">
+                  <a href="/components/hover-card/">@ada</a>
+                  <div slot="content">
+                    <div class="demo-field">
+                      <p><strong>Ada Lovelace</strong></p>
+                      <p>Notes on the Analytical Engine.</p>
+                    </div>
+                  </div>
+                </HoverCard>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "top" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Top placement</h3>
+            <DemoTabs id="dm-hover-card-top">
+              <Fragment slot="preview">
+                <HoverCard placement="top" ariaLabel="Profile preview">
+                  <a href="/components/hover-card/">@grace</a>
+                  <div slot="content">
+                    <div class="demo-field">
+                      <p><strong>Grace Hopper</strong></p>
+                      <p>Compiler pioneer, US Navy.</p>
+                    </div>
+                  </div>
+                </HoverCard>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("top")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+

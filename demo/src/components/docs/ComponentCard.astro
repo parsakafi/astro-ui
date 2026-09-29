@@ -1,0 +1,32 @@
+---
+/**
+  * ComponentCard — grid card linking to a component's docs page.
+  * Accepts the content-collection meta shape (no demo/usage data needed).
+  */
+import {categories} from "../../lib/components";
+
+interface Props {
+  slug: string;
+  name: string;
+  description: string;
+  category: (typeof categories)[number]["id"];
+  js: boolean;
+  isNew?: boolean;
+}
+
+const {slug, name, description, category, js, isNew} = Astro.props;
+const categoryMeta = categories.find((c) => c.id === category);
+---
+
+<a class="docs-comp-card" href={`/components/${slug}/`}>
+  <div class="docs-comp-card-top">
+    <span class="docs-comp-card-icon" aria-hidden="true">{categoryMeta?.icon}</span>
+    <span class="docs-comp-card-cat">{categoryMeta?.name}</span>
+  </div>
+  <h3 class="docs-comp-card-name">{name}</h3>
+  <p class="docs-comp-card-desc">{description}</p>
+  <div class="docs-comp-card-foot">
+    <span>{js ? "JS required" : "Zero JS"}{isNew ? " · New" : ""}</span>
+    <span class="docs-comp-card-cta" aria-hidden="true">→</span>
+  </div>
+</a>

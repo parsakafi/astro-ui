@@ -1,0 +1,107 @@
+/**
+ * Demo-site brand layer — aligns the docs site with astro.build's visual
+ * identity while leaving the astro-ui library tokens untouched for users.
+ *
+ * Sampled from astro.build: deep near-black space canvas (#060913),
+ * off-white text (#f2f6fa), and the signature violet→royal-blue gradient
+ * voltage (#b845ed → #3245ff, rendered live as #881abd → #1321ac).
+ * The gradient is atmosphere (hero washes, CTA bands); chrome stays
+ * neutral, matching the main site. Light theme keeps the violet as
+ * primary on a warm-white canvas.
+ *
+ * Loaded after astro-ui/tokens.css so these override per-site only.
+ */
+
+:root {
+  /* Astro brand voltage */
+  --astro-violet: #b845ed;
+  --astro-royal: #3245ff;
+  /* Continuous squircle corners across the demo site — the demo of
+     the --ui-corner-shape theme hook. Set "round" to revert. */
+  --ui-corner-shape: squircle;
+  --astro-fuchsia: #881abd;
+  --astro-deep: #1321ac;
+  --astro-space: #060913;
+  --astro-star: #f2f6fa;
+
+  /* Gradient atmosphere — the signature move */
+  --astro-gradient: linear-gradient(
+    to right top,
+    var(--astro-deep),
+    var(--astro-fuchsia)
+  );
+}
+
+/* ---------- Dark (default canvas = astro.build's deep space) ---------- */
+
+/* :root bumps specificity (0-2-1) to out-rank astro-ui's
+   :root:not([data-theme="light"]) system-dark rule in tokens.css —
+   brand.css loads last, so an equal-specificity tie resolves to brand. */
+html[data-theme="dark"]:root {
+  --ui-background: var(--astro-space);
+  --ui-foreground: var(--astro-star);
+
+  --ui-primary: var(--astro-violet);
+  --ui-primary-hover: color-mix(in srgb, var(--astro-violet) 80%, white);
+  --ui-primary-foreground: #ffffff;
+
+  --ui-muted: #12172b;
+  --ui-muted-foreground: #9aa3b8;
+  --ui-secondary: #1a2036;
+  --ui-secondary-foreground: var(--astro-star);
+  --ui-secondary-hover: #232b47;
+
+  --ui-border: #232b45;
+  --ui-input: #2a3352;
+}
+
+/* ---------- Light: violet primary on warm white ---------- */
+
+html[data-theme="light"]:root {
+  --ui-primary: var(--astro-fuchsia);
+  --ui-primary-hover: var(--astro-violet);
+  --ui-primary-foreground: #ffffff;
+}
+
+/* ---------- Atmosphere helpers ---------- */
+
+/* Hero wash: radial mesh like astro.build's headline backdrop */
+.docs-hero-atmosphere {
+  background: radial-gradient(
+    60% 90% at 70% 10%,
+    color-mix(in srgb, var(--astro-violet) 22%, transparent),
+    transparent
+  ),
+  radial-gradient(
+    50% 80% at 20% 20%,
+    color-mix(in srgb, var(--astro-royal) 24%, transparent),
+    transparent
+  );
+}
+
+/* Text gradient for headline voltage */
+.docs-text-gradient {
+  background: linear-gradient(
+    100deg,
+    var(--astro-violet),
+    #7c6cf0 55%,
+    var(--astro-royal)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Brand hairline: gradient rule between major sections */
+.docs-gradient-rule {
+  block-size: 1px;
+  border: none;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--astro-violet) 60%, transparent),
+    color-mix(in srgb, var(--astro-royal) 60%, transparent),
+    transparent
+  );
+  margin-block: var(--ui-space-8);
+}

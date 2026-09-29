@@ -1,0 +1,115 @@
+---
+/**
+  * /docs/styling/ — the token model and how to override it.
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import {Button, Badge} from "astro-ui";
+
+const toc = [
+  {id: "model", label: "The token model"},
+  {id: "override", label: "Overriding tokens"},
+  {id: "dark", label: "Dark mode"},
+  {id: "utility", label: "Utility classes"},
+];
+---
+
+<DocsLayout title="Styling" description="The astro-ui token model and theming." activePath="docs" toc={toc}>
+  <article class="docs-article docs-prose">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">Docs · Guide</p>
+      <h1>Styling</h1>
+      <p>
+        Every visual value in astro-ui is a CSS custom property. There is no
+        theme config — the tokens are the theming API.
+      </p>
+    </section>
+
+    <section id="model">
+      <h2>The token model</h2>
+      <p>
+        Tokens live on <code>:root</code> (light) and
+        <code>[data-theme="dark"]</code>, grouped by role:
+      </p>
+      <CodeBlock
+        code={`:root {
+  /* surfaces */
+  --ui-background: #ffffff;
+  --ui-foreground: #18181b;
+  --ui-muted: #f4f4f5;
+  --ui-border: #e4e4e7;
+
+  /* brand */
+  --ui-primary: #2563eb;
+  --ui-primary-foreground: #ffffff;
+
+  /* feedback */
+  --ui-success: #16a34a;
+  --ui-warning: #d97706;
+  --ui-error: #dc2626;
+
+  /* shape & type */
+  --ui-radius-md: 0.5rem;
+  --ui-text-sm: 0.875rem;
+  --ui-space-4: 1rem;
+}`}
+        lang="css"
+      />
+      <p>
+        Components never hard-code colors — they read tokens. Variant classes
+        (<code>aui-badge--success</code>, for example) just point at a
+        different token.
+      </p>
+    </section>
+
+    <section id="override">
+      <h2>Overriding tokens</h2>
+      <p>
+        Set the variables anywhere after the token import — your global CSS,
+        a page, or an element. One override re-skins everything that reads
+        it:
+      </p>
+      <CodeBlock
+        code={`:root {
+  --ui-primary: oklch(0.55 0.21 264);
+  --ui-radius-md: 0.75rem;
+}`}
+        lang="css"
+      />
+      <div class="docs-demo-preview">
+        <Button>Themed button</Button>
+        <Badge variant="primary">Themed badge</Badge>
+      </div>
+      <p class="docs-muted-note">
+        (These two are themed by this site's brand layer — the same
+        mechanism, overriding <code>--ui-primary</code>.)
+      </p>
+    </section>
+
+    <section id="dark">
+      <h2>Dark mode</h2>
+      <p>
+        Dark values live under <code>[data-theme="dark"]</code>. Flip the
+        attribute — before paint, to avoid a flash:
+      </p>
+      <CodeBlock
+        code={`<script is:inline>
+  const saved = localStorage.getItem("theme");
+  if (saved) document.documentElement.dataset.theme = saved;
+</script>`}
+        lang="html"
+      />
+    </section>
+
+    <section id="utility">
+      <h2>Utility classes</h2>
+      <p>
+        Components style themselves from tokens; compose layouts with your
+        own utilities. The demo site uses a small utility layer plus
+        Tailwind where convenient — but nothing in the library requires
+        Tailwind. Class merging (the <code>class</code> prop on every
+        component) keeps overrides clean.
+      </p>
+    </section>
+  </article>
+</DocsLayout>

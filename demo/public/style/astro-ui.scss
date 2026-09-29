@@ -1,0 +1,5 @@
+@use "astro-ui/style/style.scss" with (
+  $accent: #fff,
+  $cssreset: true,
+  //$btn-primary-bg-color: #f00
+);

@@ -1,0 +1,298 @@
+---
+/**
+  * SiteNav — top navigation with mega menus.
+  *
+  * Three dropdown triggers (Components, Blocks, Resources) open panels on
+  * hover AND on click/Enter (button semantics), close on Escape and outside
+  * click. Panels are real lists of anchor links; CSS :hover/:focus-within
+  * opens them without JS, the toggle script only handles aria-expanded +
+  * outside-click. Single links (Docs, Roadmap) stay plain anchors.
+  */
+import {SITE} from "../../lib/site";
+import SearchPalette from "./SearchPalette.astro";
+
+interface MenuLink {
+  href: string;
+  title: string;
+  desc: string;
+  /** Renders as the featured gradient banner */
+  featured?: boolean;
+}
+
+interface MenuSection {
+  label: string;
+  links: MenuLink[];
+}
+
+interface Props {
+  /** Path prefix used for active-link highlighting, e.g. "/components". */
+  active?: string;
+}
+
+const {active = ""} = Astro.props;
+
+const componentLinks: MenuSection[] = [
+  {
+    label: "Browse",
+    links: [
+      {
+        href: "/components/",
+        title: "All components",
+        desc: "Full catalog by category",
+        // Renders as the featured gradient banner.
+        featured: true,
+      },
+      {href: "/components/#cat-general", title: "General", desc: "Button, Link, Kbd, Clipboard…"},
+      {href: "/components/#cat-layout", title: "Layout", desc: "Card, Accordion, Separator…"},
+      {href: "/components/#cat-navigation", title: "Navigation", desc: "Tabs, Pagination, Stepper…"},
+      {href: "/components/#cat-forms", title: "Forms", desc: "Input, Select, Rating, Slider…"},
+      {href: "/components/#cat-data-display", title: "Data display", desc: "Table, Badge, Avatar, Tag…"},
+      {href: "/components/#cat-feedback", title: "Feedback", desc: "Alert, Spinner, Progress, Toast…"},
+      {href: "/components/#cat-overlay", title: "Overlay", desc: "Dialog, Sheet, Popover, Tooltip…"},
+    ],
+  },
+];
+
+const popularLinks: MenuSection = {
+  label: "Popular",
+  links: [
+    {href: "/components/button/", title: "Button", desc: "Variants, sizes, loading states"},
+    {href: "/components/dialog/", title: "Dialog", desc: "Modal with native <dialog>"},
+    {href: "/components/toast/", title: "Toast", desc: "Stacked notifications"},
+    {href: "/components/select/", title: "Select", desc: "Native form control styling"},
+    {href: "/components/tabs/", title: "Tabs", desc: "Keyboard-navigable panels"},
+    {href: "/components/table/", title: "Table", desc: "Sortable, token-themed data"},
+  ],
+};
+
+const blockLinks: MenuSection[] = [
+  {
+    label: "Composed blocks",
+    links: [
+      {href: "/blocks/", title: "All blocks", desc: "Sections built from components"},
+      {href: "/blocks/application/", title: "Application", desc: "Settings, members, empty states"},
+      {href: "/blocks/auth/", title: "Auth", desc: "Sign-in, sign-up, recovery"},
+      {href: "/blocks/marketing/", title: "Marketing", desc: "Pricing, stats, CTA bands"},
+      {href: "/blocks/content/", title: "Content", desc: "FAQ, changelog entries"},
+    ],
+  },
+];
+
+const resourceLinks: MenuSection[] = [
+  {
+    label: "Learn",
+    links: [
+      {href: "/docs/", title: "Documentation", desc: "Guides: get started, styling, RTL"},
+      {href: "/docs/get-started/", title: "Get started", desc: "Install and first component"},
+      {href: "/docs/styling/", title: "Styling", desc: "Tokens and theming model"},
+      {href: "/docs/rtl/", title: "RTL", desc: "Logical properties, mirroring"},
+      {href: "/docs/changelog/", title: "Changelog", desc: "Release history"},
+      {href: "/docs/releases/", title: "Releases", desc: "What shipped, by version"},
+    ],
+  },
+  {
+    label: "Project",
+    links: [
+      {href: "/docs/roadmap/", title: "Roadmap", desc: "What's next for the library"},
+      {href: SITE.repo, title: "GitHub", desc: "Source, issues, discussions"},
+    ],
+  },
+];
+
+const menus = [
+  {
+    id: "components",
+    label: "Components",
+    match: "/components",
+    // Two sections fill the panel's 2-column grid — a lone section leaves
+    // the right column as blank white space.
+    sections: [...componentLinks, popularLinks],
+  },
+  {id: "blocks", label: "Blocks", match: "/blocks", sections: blockLinks},
+  {id: "docs", label: "Docs", match: "/docs", sections: resourceLinks},
+];
+
+/**
+ * Icon per menu link, keyed by title (all titles are unique site-wide).
+ * Values are the inner SVG markup for a 16×16 stroke icon; the wrapper
+ * <svg> carries stroke/fill so each path stays a single `d`. Links whose
+ * title has no entry simply render without an icon (safe fallback).
+ */
+const menuIcons: Record<string, string> = {
+  "All components":
+    '<path d="M2.5 2.5H7V7H2.5z" /><path d="M9 2.5h4.5V7H9z" /><path d="M2.5 9H7v4.5H2.5z" /><path d="M9 9h4.5v4.5H9z" />',
+  General:
+    '<path d="M8 1.8 14 5v6l-6 3.2L2 11V5z" /><path d="m2 5 6 3 6-3M8 8v6.2" />',
+  Layout:
+    '<rect x="2.5" y="2.5" width="11" height="11" rx="1.5" /><path d="M2.5 6.5h11M6.5 6.5v7" />',
+  Navigation:
+    '<circle cx="8" cy="8" r="5.5" /><path d="M10.5 5.5 9.2 9.2 5.5 10.5 6.8 6.8z" />',
+  Forms:
+    '<rect x="2" y="5" width="12" height="6" rx="1.5" /><path d="M5 8h3" />',
+  "Data display":
+    '<path d="M3 13.5V9M8 13.5V4.5M13 13.5V7" />',
+  Feedback:
+    '<path d="M13.5 8a5.5 5.5 0 0 1-8.1 4.8L2.5 13.5l.7-2.9A5.5 5.5 0 1 1 13.5 8z" />',
+  Overlay:
+    '<path d="M8 2 14 5 8 8 2 5z" /><path d="m2.5 8.5 5.5 3 5.5-3" />',
+  Button:
+    '<rect x="2" y="5.5" width="12" height="6" rx="3" /><circle cx="8" cy="8.5" r="1" />',
+  Dialog:
+    '<rect x="2" y="2.5" width="12" height="11" rx="1.5" /><path d="M2 5.5h12M4.2 4h.01" />',
+  Toast:
+    '<path d="M8 2a4 4 0 0 1 4 4v3l1.5 2.5h-11L4 9V6a4 4 0 0 1 4-4z" /><path d="M6.5 13.5a1.5 1.5 0 0 0 3 0" />',
+  Select:
+    '<rect x="2.5" y="2.5" width="11" height="11" rx="1.5" /><path d="m5.5 7 2.5 2.5L10.5 7" />',
+  Tabs:
+    '<path d="M2 5.5V4a1.5 1.5 0 0 1 1.5-1.5H6l1.5 2h5A1.5 1.5 0 0 1 14 6v6a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12z" />',
+  Table:
+    '<rect x="2" y="2.5" width="12" height="11" rx="1.5" /><path d="M2 6.5h12M2 10.5h12M8 6.5v7" />',
+  "All blocks":
+    '<rect x="4.5" y="1.5" width="8" height="8" rx="1" /><rect x="2.5" y="6.5" width="8" height="8" rx="1" />',
+  Application:
+    '<rect x="2" y="2.5" width="12" height="11" rx="1.5" /><path d="M6 2.5v11" />',
+  Auth:
+    '<rect x="3" y="7" width="10" height="6.5" rx="1.5" /><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />',
+  Marketing:
+    '<path d="m2.5 11.5 4-4 2.5 2.5 4.5-4.5" /><path d="M10 5.5h3.5V9" />',
+  Content:
+    '<path d="M4 1.5h5.5L13 5v9.5H4z" /><path d="M9.5 1.5V5H13M6 8.5h4M6 11h4" />',
+  Documentation:
+    '<path d="M3 3a1.5 1.5 0 0 1 1.5-1.5H13V13H4.5A1.5 1.5 0 0 0 3 14.5z" /><path d="M13 10.5H4.5A1.5 1.5 0 0 0 3 12" />',
+  "Get started":
+    '<circle cx="8" cy="8" r="5.5" /><path d="M6.8 6l3.2 2-3.2 2z" />',
+  Styling:
+    '<path d="M8 1.8s4.5 4.6 4.5 8a4.5 4.5 0 0 1-9 0c0-3.4 4.5-8 4.5-8z" />',
+  RTL:
+    '<path d="M2.5 5.5h11M11 3l2.5 2.5L11 8" /><path d="M13.5 10.5h-11M5 8l-2.5 2.5L5 13" />',
+  Changelog:
+    '<circle cx="8" cy="8" r="5.5" /><path d="M8 4.5V8l2.5 1.5" />',
+  Releases:
+    '<path d="M2.5 7.2V2.5h4.7L14 9.3 9.3 14z" /><circle cx="5.5" cy="5.5" r="1" />',
+  Roadmap:
+    '<path d="M8 14s4.5-4 4.5-7.5a4.5 4.5 0 0 0-9 0C3.5 10 8 14 8 14z" /><circle cx="8" cy="6.5" r="1.5" />',
+  GitHub:
+    '<path d="M6.5 3.5h-4v10h10v-4" /><path d="M9.5 2.5h4v4M13.5 2.5 7.5 8.5" />',
+};
+---
+
+<header class="docs-header">
+  <nav class="docs-nav" aria-label="Main">
+    <a class="docs-brand" href="/">
+      <span class="docs-brand-mark" aria-hidden="true">▲</span>
+      {SITE.name}
+      <span class="docs-brand-version">{SITE.version}</span>
+    </a>
+
+    <div class="docs-nav-links">
+      {
+        menus.map((menu) => (
+          <div class="docs-mega" data-mega={menu.id}>
+            <button
+              type="button"
+              class:list={{
+                "docs-nav-link": true,
+                "docs-mega-trigger": true,
+                "is-active": active.startsWith(menu.match)
+              }}
+              aria-expanded="false"
+              aria-controls={`mega-${menu.id}`}
+            >
+              {menu.label}
+              <svg class="docs-mega-chevron" width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="docs-mega-panel" id={`mega-${menu.id}`} role="group" aria-label={`${menu.label} menu`}>
+              <div class="docs-mega-grid">
+                {menu.sections.map((section) => (
+                  <div class="docs-mega-section">
+                    <p class="docs-mega-label">{section.label}</p>
+                    <ul class="docs-mega-list">              {section.links.map((link) => (
+                      <li>
+                        <a
+                          class:list={{"docs-mega-link": true, "docs-mega-link--featured": link.featured}}
+                          href={link.href}
+                        >
+                          {menuIcons[link.title] && (
+                            <svg
+                              class="docs-mega-icon"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              aria-hidden="true"
+                              set:html={menuIcons[link.title]}
+                            />
+                          )}
+                          <span class="docs-mega-text">
+											<span class="docs-mega-title">{link.title}</span>
+											<span class="docs-mega-desc">{link.desc}</span>
+										</span>
+                          {link.featured && (
+                            <svg class="docs-mega-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                 aria-hidden="true">
+                              <path d="M3 8h9.5M9 4.5 12.5 8 9 11.5" stroke="currentColor" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          )}
+                        </a>
+                      </li>
+                    ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="docs-nav-end">
+      <SearchPalette/>
+      <a class="docs-nav-link docs-github-link" href={SITE.repo} target="_blank" rel="noreferrer noopener"
+         aria-label="GitHub repository">
+        <svg class="docs-github-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path
+            d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        <span class="docs-github-label">GitHub</span>
+      </a>
+      <button id="theme-toggle" type="button" class="docs-theme-btn" aria-label="Toggle theme">
+        <span class="docs-theme-icon" aria-hidden="true">◐</span>
+        <span class="docs-theme-label">Theme</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<script>
+  // Mega-menu toggle: CSS opens panels on :hover/:focus-within; this
+  // script keeps aria-expanded honest and supports click + Escape +
+  // outside-click for pointerless flows.
+  const triggers = document.querySelectorAll<HTMLButtonElement>(".docs-mega-trigger");
+  const closeAll = (except?: HTMLButtonElement) => {
+    triggers.forEach((t) => {
+      if (t !== except) t.setAttribute("aria-expanded", "false");
+    });
+  };
+  for (const trigger of triggers) {
+    trigger.addEventListener("click", () => {
+      const open = trigger.getAttribute("aria-expanded") === "true";
+      closeAll(trigger);
+      trigger.setAttribute("aria-expanded", open ? "false" : "true");
+    });
+  }
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeAll();
+  });
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && !event.target.closest(".docs-mega")) closeAll();
+  });
+</script>

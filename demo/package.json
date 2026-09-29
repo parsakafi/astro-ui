@@ -1,0 +1,28 @@
+{
+  "name": "astroui-test",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "css": "sass src/styles:src/styles --no-source-map",
+    "css:watch": "sass --watch src/styles:src/styles --no-source-map",
+    "build": "npm run css && astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "audit:render": "npx tsx scripts/audit-render.ts"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.10",
+    "astro": "^7.3.3",
+    "astro-ui": "../astro-ui",
+    "typescript": "^6.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.2",
+    "sass": "^1.105.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.0.13"
+  }
+}

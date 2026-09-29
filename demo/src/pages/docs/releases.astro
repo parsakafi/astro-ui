@@ -1,0 +1,120 @@
+---
+/**
+  * /docs/releases/ — release-notes structure: a fixed legend header
+  * (✚ Added / ◐ Fixed / ↻ Changed), then dated release groups rendered
+  * from astro-ui/CHANGELOG.md (Keep a Changelog).
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import {Button} from "astro-ui";
+import {parseChangelog, renderBullet} from "../../lib/changelog";
+import {SITE} from "../../lib/site";
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
+
+const SITE_REPO_URL = SITE.repo;
+
+// CHANGELOG lives in the sibling package; builds run from demo/, so
+// resolve through the node_modules symlink from the current working dir.
+const changelogRaw = readFileSync(
+  resolve(process.cwd(), "node_modules/astro-ui/CHANGELOG.md"),
+  "utf8",
+);
+
+const entries = parseChangelog(changelogRaw);
+
+const sectionIcons: Record<string, string> = {
+  added: "✚",
+  fixed: "◐",
+  changed: "↻",
+  deprecated: "⚠",
+  removed: "✕",
+  security: "🔒",
+};
+
+// Legend mirrors the Keep a Changelog sections that actually occur.
+const legend = Object.entries(sectionIcons).filter(([key]) =>
+  entries.some((e) => e.sections[key]?.length > 0),
+);
+
+const totalChanges = entries.reduce(
+  (sum, e) => sum + Object.values(e.sections).reduce((s, b) => s + b.length, 0),
+  0,
+);
+---
+
+<DocsLayout title="Releases" description="Release notes for astro-ui." activePath="docs"
+            toc={entries.map((e) => ({id: `v-${e.version}`, label: e.version}))}>
+  <article class="docs-article">
+    <section id="overview">
+      <p class="docs-hero-kicker">Release notes</p>
+      <h1>What's new in astro-ui</h1>
+      <p>
+        Every notable change, grouped by release. Follows
+        <a href="https://keepachangelog.com/en/1.0.0/" target="_blank" rel="noreferrer noopener">Keep a Changelog</a>
+        conventions — {entries.length} releases, {totalChanges} changes and
+        counting.
+      </p>
+      <div class="docs-hero-actions">
+        <Button href="/components/" variant="outline" size="sm">Component catalog</Button>
+        <Button href={SITE_REPO_URL} variant="ghost" size="sm">Full changelog ↗</Button>
+      </div>
+    </section>
+
+    <!-- Legend: what the section icons mean -->
+    <nav class="docs-release-legend" aria-label="Change type legend">
+      {
+        legend.map(([key, icon]) => (
+          <span class="docs-release-legend-item">
+						<span class="docs-release-icon" aria-hidden="true">{icon}</span>
+            {key.charAt(0).toUpperCase() + key.slice(1)}
+					</span>
+        ))
+      }
+    </nav>
+
+    <section>
+      {
+        entries.map((entry) => {
+          const changeCount = Object.values(entry.sections).reduce(
+            (s, b) => s + b.length,
+            0,
+          );
+          return (
+            <article class="docs-release" id={`v-${entry.version}`}>
+              <header class="docs-release-head">
+                {entry.url ? (
+                  <a class="docs-release-version" href={entry.url} target="_blank" rel="noreferrer noopener">
+                    v{entry.version} ↗
+                  </a>
+                ) : (
+                  <span class="docs-release-version">v{entry.version}</span>
+                )}
+                {entry.date && (
+                  <span class="docs-release-date">{entry.date} updates</span>
+                )}
+                <span class="docs-release-count">
+									{changeCount} change{changeCount === 1 ? "" : "s"}
+								</span>
+              </header>
+              {Object.entries(entry.sections).map(([section, bullets]) => (
+                <div class="docs-release-section">
+                  <p class="docs-release-section-title">
+										<span class="docs-release-icon" aria-hidden="true">
+											{sectionIcons[section] ?? "•"}
+										</span>
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </p>
+                  <ul>
+                    {bullets.map((bullet) => (
+                      <li set:html={renderBullet(bullet)}/>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </article>
+          );
+        })
+      }
+    </section>
+  </article>
+</DocsLayout>

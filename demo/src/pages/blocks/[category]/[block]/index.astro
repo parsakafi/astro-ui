@@ -1,0 +1,110 @@
+---
+/**
+  * /blocks/[category]/[block]/ — one block, dedicated page:
+  * full-width live demo, recipe, complexity, prev/next pager, and the
+  * sibling blocks from the same category.
+  */
+import DocsLayout from "../../../../layouts/DocsLayout.astro";
+import BlockTabs from "../../../../components/docs/BlockTabs.astro";
+import BlockRecipe from "../../../../components/docs/BlockRecipe.astro";
+import {blockCategories, findBlock, blockHref, categoryHref} from "../../../../lib/blocks";
+import Badge from "astro-ui/badge";
+
+export function getStaticPaths() {
+  return blockCategories.flatMap((category) =>
+    category.blocks.map((block) => ({
+      params: {category: category.id, block: block.id},
+      props: {category, block},
+    })),
+  );
+}
+
+const {category, block} = Astro.props;
+const found = findBlock(category.id, block.id);
+if (!found) throw new Error(`Unknown block: ${category.id}/${block.id}`);
+const {prev, next} = found;
+
+const siblings = category.blocks.filter((b) => b.id !== block.id);
+
+const toc = [
+  {id: "overview", label: "Overview"},
+  {id: "demo", label: "Demo"},
+  ...(siblings.length > 0 ? [{id: "related", label: "Related blocks"}] : []),
+];
+---
+
+<DocsLayout
+  title={`${block.title} block`}
+  description={block.description}
+  activePath="blocks"
+  blocksSidebar
+  blockCategory={category.id}
+  blockId={block.id}
+  toc={toc}
+>
+  <article class="docs-article">
+    <section id="overview">
+      <p class="docs-hero-kicker">
+        <a href={categoryHref(category.id)}>{category.label}</a>
+      </p>
+      <h1>{block.title}</h1>
+      <p>{block.description}</p>
+      <div class="docs-block-meta-row">
+        <Badge variant="muted" size="sm">{block.complexity ?? "medium"}</Badge>
+        <Badge variant="info" size="sm">{category.blocks.length} in {category.label}</Badge>
+      </div>
+      <BlockRecipe recipe={block.recipe}/>
+    </section>
+
+    <section id="demo">
+      <h2>Demo</h2>
+      <div class="docs-block-canvas docs-block-canvas--full">
+        <BlockTabs id={`bt-${block.id}`} blockId={block.id} idPrefix="detail"/>
+      </div>
+      <p class="docs-block-hint">
+        Zero new CSS — every element reads the library tokens. Switch to the
+        Code tab and hit Copy for paste-ready source; form ids here are
+        prefixed per instance so multiple copies can coexist on one page.
+      </p>
+    </section>
+
+    {
+      siblings.length > 0 && (
+        <section id="related">
+          <h2>Related blocks</h2>
+          <div class="docs-block-related">
+            {siblings.map((sibling) => (
+              <a class="docs-block-related-card" href={blockHref({...sibling, categoryId: category.id})}>
+                <span class="docs-block-related-title">{sibling.title}</span>
+                <span class="docs-block-related-desc">{sibling.description}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="docs-pager" aria-label="Block pagination">
+      {
+        prev ? (
+          <a class="docs-pager-link" href={blockHref(prev)}>
+            <span class="docs-pager-dir">← Previous</span>
+            <span class="docs-pager-title">{prev.title}</span>
+          </a>
+        ) : (
+          <span/>
+        )
+      }
+      {
+        next ? (
+          <a class="docs-pager-link docs-pager-link--next" href={blockHref(next)}>
+            <span class="docs-pager-dir">Next →</span>
+            <span class="docs-pager-title">{next.title}</span>
+          </a>
+        ) : (
+          <span/>
+        )
+      }
+    </nav>
+  </article>
+</DocsLayout>

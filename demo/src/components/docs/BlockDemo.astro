@@ -1,0 +1,855 @@
+---
+/**
+  * BlockDemo — renders the live markup for one block by id.
+  *
+  * The single source of truth for block previews: category pages,
+  * detail pages, and the catalog all render through here so a block
+  * looks identical everywhere. Blocks are REAL astro-ui components
+  * composed per the recipe in lib/blocks.
+  */
+import {
+  Button,
+  Badge,
+  Card,
+  Chart,
+  Tabs,
+  Input,
+  Checkbox,
+  Separator,
+  Switch,
+  Accordion,
+  Avatar,
+  AvatarGroup,
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+  Breadcrumb,
+  Tag,
+  Empty,
+  Kbd,
+  Progress,
+  Tooltip
+} from "astro-ui";
+
+interface Props {
+  /** Block id from the registry (lib/blocks). */
+  id: string;
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {id, idPrefix = "bd"} = Astro.props;
+const fid = (name: string) => `${idPrefix}-${name}`;
+
+const avatars = [
+  {name: "Ada Lovelace"},
+  {name: "Grace Hopper"},
+  {name: "Alan Turing"},
+  {name: "Edsger Dijkstra"},
+  {name: "Barbara Liskov"},
+];
+
+/** Pricing tiers — tiered comparison layout (3–4 options max, popular
+ tier highlighted, features scannable, CTAs in the same place). */
+const pricingPlans = [
+  {
+    name: "Starter",
+    price: "$0",
+    note: "forever",
+    blurb: "Everything you need to evaluate the library.",
+    features: ["43 components", "Tokens & base CSS", "Community support"],
+    cta: "Start free",
+    variant: "outline" as const,
+  },
+  {
+    name: "Pro",
+    price: "$19",
+    note: "per month",
+    blurb: "For teams shipping production sites.",
+    features: ["Everything in Starter", "Priority examples", "Blocks library", "Email support"],
+    cta: "Get Pro",
+    variant: "primary" as const,
+    featured: true,
+  },
+  {
+    name: "Team",
+    price: "$49",
+    note: "per month",
+    blurb: "For organizations standardizing on astro-ui.",
+    features: ["Everything in Pro", "Unlimited projects", "Shared token themes", "Slack support"],
+    cta: "Contact us",
+    variant: "outline" as const,
+  },
+];
+---
+{
+  id === "signin" && (
+  <Card class="docs-block-auth">
+    <h3 slot="header">Sign in to your account</h3>
+    <div class="docs-block-form">
+      <div class="docs-block-field"><label for={fid("email")}>Email</label><Input type="email" name={fid("email")}
+                                                                                  id={fid("email")}
+                                                                                  placeholder="you@example.com"/></div>
+      <div class="docs-block-field"><label for={fid("pass")}>Password</label><Input type="password" name={fid("pass")}
+                                                                                    id={fid("pass")}
+                                                                                    placeholder="••••••••"/></div>
+      <div class="docs-block-form-row">
+        <Checkbox name={fid("remember")} label="Remember me"/>
+        <a href="#" class="docs-block-link">Forgot password?</a>
+      </div>
+      <Button class="docs-block-btn-full">Sign in</Button>
+      <Separator label="or"/>
+      <Button variant="outline" class="docs-block-btn-full">Continue with GitHub</Button>
+    </div>
+  </Card>
+    )
+  }
+
+{
+  id === "signup" && (
+  <Card class="docs-block-auth">
+    <h3 slot="header">Create your account</h3>
+    <div class="docs-block-form">
+      <div class="docs-block-field"><label for={fid("name")}>Full name</label><Input name={fid("name")} id={fid("name")}
+                                                                                     placeholder="Ada Lovelace"/></div>
+      <div class="docs-block-field"><label for={fid("email")}>Email</label><Input type="email" name={fid("email")}
+                                                                                  id={fid("email")}
+                                                                                  placeholder="you@example.com"/></div>
+      <div class="docs-block-field"><label for={fid("pass")}>Password</label><Input type="password" name={fid("pass")}
+                                                                                    id={fid("pass")}
+                                                                                    placeholder="8+ characters"/></div>
+      <Checkbox name={fid("terms")} label="I agree to the terms of service"/>
+      <Button class="docs-block-btn-full">Create account</Button>
+    </div>
+  </Card>
+    )
+  }
+
+{
+  id === "forgot-password" && (
+  <Card class="docs-block-auth docs-block-auth--narrow">
+    <h3 slot="header">Reset your password</h3>
+    <div class="docs-block-form">
+      <p class="docs-block-hint">Enter your account email and we'll send a recovery link.</p>
+      <div class="docs-block-field"><label for={fid("email")}>Email</label><Input type="email" name={fid("email")}
+                                                                                  id={fid("email")}
+                                                                                  placeholder="you@example.com"/></div>
+      <Button class="docs-block-btn-full">Send recovery link</Button>
+    </div>
+  </Card>
+    )
+  }
+
+{
+  id === "pricing-tiers" && (
+  <div class="docs-block-canvas-grid docs-block-pricing">
+    {pricingPlans.map((plan) => (
+      <Card class:list={["docs-block-plan", plan.featured && "docs-block-plan--featured"]}>
+        <h3 slot="header">
+          {plan.name}
+          {plan.featured &&
+            <Badge variant="primary" size="sm">Popular</Badge>}
+        </h3>
+        <div class="docs-block-plan__body">
+          <p class="docs-block-price">
+            <strong>{plan.price}</strong> <span>{plan.note}</span>
+          </p>
+          <p class="docs-block-hint">{plan.blurb}</p>
+          <ul class="docs-block-features">
+            {plan.features.map((feature) =>
+              <li>{feature}</li>)}
+          </ul>
+        </div>
+        <Button variant={plan.variant} class="docs-block-btn-full docs-block-plan__cta">
+          {plan.cta}
+        </Button>
+      </Card>
+    ))}
+  </div>
+    )
+  }
+{
+  id === "stats-circles" && (
+  <div class="docs-block-canvas-grid">
+    {[
+      {
+        label: "Storage used",
+        value: 76,
+        display: "76%",
+        badge: {text: "4.1 GB left", variant: "muted" as const},
+        color: "primary" as const,
+        size: "lg" as const
+      },
+      {
+        label: "Build success",
+        value: 98,
+        display: "98%",
+        badge: {text: "30-day avg", variant: "success" as const},
+        color: "success" as const,
+        size: "lg" as const
+      },
+      {
+        label: "CPU load",
+        value: 41,
+        display: "41%",
+        badge: {text: "normal", variant: "info" as const},
+        color: "warning" as const,
+        size: "lg" as const
+      },
+    ].map((stat) => (
+      <Card>
+        <div class="docs-block-stat docs-block-stat--circle">
+          <div class="docs-block-stat-head">
+            <span class="docs-block-stat-label">{stat.label}</span>
+            <Badge variant={stat.badge.variant} size="sm">{stat.badge.text}</Badge>
+          </div>
+          <Progress variant="circle" value={stat.value} color={stat.color} size={stat.size}
+                    label={`${stat.label} progress`} showValue/>
+        </div>
+      </Card>
+    ))}
+  </div>
+    )
+  }
+{
+  id === "stats-band" && (
+  <div class="docs-block-canvas-grid">
+    {[
+      {label: "Downloads / month", value: "48.2k", progress: 72, badge: {text: "+12%", variant: "success" as const}},
+      {label: "GitHub stars", value: "3,214", progress: 58, badge: {text: "+3.1%", variant: "success" as const}},
+      {label: "Open issues", value: "27", progress: 18, badge: {text: "stable", variant: "info" as const}},
+    ].map((stat) => (
+      <Card>
+        <div class="docs-block-stat">
+          <div class="docs-block-stat-head">
+            <span class="docs-block-stat-label">{stat.label}</span>
+            <Badge variant={stat.badge.variant} size="sm">{stat.badge.text}</Badge>
+          </div>
+          <span class="docs-block-stat-value">{stat.value}</span>
+          <Progress value={stat.progress}/>
+        </div>
+      </Card>
+    ))}
+  </div>
+    )
+  }
+
+{
+  id === "cta-band" && (
+  <div class="docs-cta-band docs-hero-atmosphere">
+    <Badge variant="muted">v1.0 — stable</Badge>
+    <h2>Ship your next Astro site faster</h2>
+    <p>Install once, import tokens, compose pages from blocks like this one.</p>
+    <div class="docs-hero-actions">
+      <Button href="/docs/get-started/">Get started</Button>
+      <Button href="/components/" variant="outline">Components</Button>
+    </div>
+  </div>
+    )
+  }
+
+{
+  id === "settings-panel" && (
+  <div class="docs-block-canvas-grid">
+    <Card>
+      <h3 slot="header">Notifications</h3>
+      <div class="docs-block-settings">
+        <Switch name={fid("n1")} checked label="Product updates"/>
+        <Switch name={fid("n2")} label="Weekly digest"/>
+        <Switch name={fid("n3")} checked label="Security alerts"/>
+      </div>
+    </Card>
+    <Card>
+      <h3 slot="header">Workspace</h3>
+      <div class="docs-block-form">
+        <div class="docs-block-field"><label for={fid("ws")}>Workspace name</label><Input name={fid("ws")}
+                                                                                          id={fid("ws")}
+                                                                                          value="Acme Inc"/></div>
+        <div class="docs-block-form-row">
+          <span class="docs-block-plan-label">Plan</span>
+          <Tag variant="primary">Pro</Tag>
+        </div>
+        <Button variant="outline">Save changes</Button>
+      </div>
+    </Card>
+  </div>
+    )
+  }
+
+{
+  id === "capital-inflows" && (
+  <Card class="docs-block-capital">
+    <div class="docs-block-capital__head">
+      <h3 class="docs-block-capital__title">Capital Inflows</h3>
+      <Button variant="outline" size="sm">Top 3 Funds <span aria-hidden="true">⌄</span></Button>
+    </div>
+    <p class="docs-block-capital__total">
+      $12.7M
+      <Badge variant="success" size="sm">↗ $425k</Badge>
+    </p>
+    <Chart
+      type="hbar"
+      stack
+      legend={false}
+      labels={["WaveMark Capital", "Envato Finances", "QBridge Tech"]}
+      series={[
+        {name: "WaveMark Capital", data: [7652000], color: "var(--ui-success)"},
+        {name: "Envato Finances", data: [3879100], color: "var(--ui-warning)"},
+        {name: "QBridge Tech", data: [1248600], color: "var(--ui-error)"},
+      ]}
+    />
+    <ul class="docs-block-capital__rows">
+      {["WaveMark Capital", "Envato Finances", "QBridge Tech"].map((fund, i) => (
+        <li class="docs-block-capital__row">
+          <Avatar name={fund} size="sm"/>
+          <span class="docs-block-capital__fund">{fund}</span>
+          <span class="docs-block-capital__right">
+            <span class="docs-block-capital__cap">Capital In</span>
+            <span class="docs-block-capital__val">{["$7,652,000", "$3,879,100", "$1,248,600"][i]}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Card>
+    )
+  }
+
+{
+  id === "team-members" && (
+  <Card>
+    <h3 slot="header">Members</h3>
+    <ul class="docs-block-team">
+      {[
+        {name: "Parsa M", role: "Owner", badge: "owner"},
+        {name: "Devin V", role: "Maintainer", badge: "maintainer"},
+        {name: "Robin H", role: "Contributor", badge: "member"},
+      ].map((member) => (
+        <li class="docs-block-team-row">
+          <Avatar name={member.name} size="sm"/>
+          <span class="docs-block-team-name">{member.name}</span>
+          <Badge variant={member.badge === "owner" ? "primary" : member.badge === "maintainer" ? "info" : "muted"}
+                 size="sm">
+            {member.badge}
+          </Badge>
+          <span class="docs-block-team-role">{member.role}</span>
+        </li>
+      ))}
+    </ul>
+    <Button slot="footer" variant="outline" size="sm">Invite member</Button>
+  </Card>
+    )
+  }
+
+{
+  id === "empty-state" && (
+  <Empty class="docs-block-empty">
+    <span slot="media" class="docs-block-empty-icon" aria-hidden="true">◈</span>
+    <span slot="title">No projects yet</span>
+    <span slot="description">Create your first project to see analytics, deploys, and team activity here.</span>
+    <Button size="sm">New project</Button>
+    <Button size="sm" variant="ghost" href="/docs/get-started/">Read the guide</Button>
+  </Empty>
+    )
+  }
+
+{
+  id === "faq-accordion" && (
+  <Accordion
+    id={fid("faq")}
+    variant="bordered"
+    items={[
+      {
+        value: "f1",
+        title: "Can I use blocks without the CLI?",
+        content: "Yes — every block is plain Astro markup. Copy the section, paste it into a page, and adjust the content. No registry or generator required.",
+      },
+      {
+        value: "f2",
+        title: "Do blocks add JavaScript?",
+        content: "Only what their parts need. An FAQ block is zero-JS (native details); a settings block ships a few hundred bytes for the switches.",
+      },
+      {
+        value: "f3",
+        title: "How do I theme a block?",
+        content: "Blocks read the same tokens as components. Override --ui-primary once and every block — and every component inside it — follows.",
+      },
+    ]}
+  />
+    )
+  }
+
+{
+  id === "changelog-entry" && (
+  <Card>
+    <h3 slot="header">
+      v1.1.0
+      <Badge variant="success" size="sm">Latest</Badge>
+    </h3>
+    <p class="docs-block-hint">Released Sep 24, 2026</p>
+    <ul class="docs-block-features">
+      <li>
+        <Badge variant="success" size="sm">Added</Badge>
+        Rating scale modes and predefined icons
+      </li>
+      <li>
+        <Badge variant="info" size="sm">Changed</Badge>
+        Slider tooltip follows logical properties in RTL
+      </li>
+      <li>
+        <Badge variant="warning" size="sm">Fixed</Badge>
+        Badge overlay anchoring in RTL layouts
+      </li>
+    </ul>
+    <div class="docs-block-form-row">
+      <span class="docs-block-plan-label">Full notes</span>
+      <span><Kbd>Ctrl</Kbd> <Kbd>K</Kbd> to search the changelog</span>
+    </div>
+  </Card>
+    )
+  }
+
+{
+  id === "compact-social-proof" && (
+  <div class="docs-block-social-proof">
+    <div class="docs-block-social-proof__row">
+      <Avatar name="Ada Lovelace" size="xs" status="online"/>
+      <Avatar name="Grace Hopper" size="xs"/>
+      <Avatar name="Alan Turing" size="xs"/>
+      <Avatar name="Edsger Dijkstra" size="xs" variant="primary"/>
+      <Avatar name="Barbara Liskov" size="xs"/>
+    </div>
+    <p class="docs-block-social-proof__label">Trusted by engineers at</p>
+    <p class="docs-block-social-proof__name">Ada Lovelace, Grace Hopper, Alan Turing, and 247 more</p>
+  </div>
+    )
+  }
+
+{
+  id === "avatar-group-hover-tooltips" && (
+  <AvatarGroup hover>
+    {
+      avatars.slice(0, 4).map((a) => (
+        <Tooltip ariaLabel={a.name} placement="top">
+          <Fragment slot="content">{a.name}</Fragment>
+          <Avatar name={a.name}/>
+        </Tooltip>
+      ))
+    }
+    <Fragment slot="count">+2</Fragment>
+  </AvatarGroup>
+    )
+  }
+
+{
+  id === "avatar-social-proof-label" && (
+  <div class="docs-block-social-proof-label">
+    <AvatarGroup>
+      {
+        avatars.slice(0, 5).map((a) => (
+          <Avatar
+            name={a.name}
+            status={a.name === "Ada Lovelace" ? "online" : undefined}
+          />
+        ))
+      }
+    </AvatarGroup>
+    <div class="docs-block-social-proof-label__text">
+      <p class="docs-block-social-proof-label__headline">Joined by 2,411 developers this week</p>
+      <p class="docs-block-social-proof-label__sub">See why teams choose this stack for production Astro sites.</p>
+    </div>
+  </div>
+    )
+  }
+
+{
+  id === "pill-button-with-avatar" && (
+  <div class="docs-block-pill-buttons">
+    <Button variant="outline" size="sm" shape="rounded" class="docs-block-pill-btn">
+      <Avatar name="Ada Lovelace" size="xs"/>
+      <span style="margin-inline-start:var(--ui-space-2)">Ada</span>
+    </Button>
+    <Button variant="outline" size="sm" shape="rounded" class="docs-block-pill-btn">
+      <Avatar name="Grace Hopper" size="xs"/>
+      <span style="margin-inline-start:var(--ui-space-2)">Grace</span>
+    </Button>
+    <Button variant="outline" size="sm" shape="rounded" class="docs-block-pill-btn">
+      <Avatar name="Alan Turing" size="xs" status="online"/>
+      <span style="margin-inline-start:var(--ui-space-2)">Alan</span>
+    </Button>
+  </div>
+    )
+  }
+
+{
+  id === "avatar-group-hover-tooltips-v2" && (
+  <div class="docs-block-avatar-hover-tooltip">
+    <AvatarGroup hover>
+      {
+        avatars.slice(0, 5).map((a, i) => (
+          <Tooltip ariaLabel={a.name} placement="bottom" variant="light">
+            <Fragment slot="content">{a.name}</Fragment>
+            <Avatar
+              name={a.name}
+              ring={i === 2 ? "success" : i === 4 ? "primary" : undefined}
+              status={i === 0 ? "online" : undefined}
+            />
+          </Tooltip>
+        ))
+      }
+      <Fragment slot="count">+3</Fragment>
+    </AvatarGroup>
+  </div>
+    )
+  }
+
+{
+  id === "breadcrumb-project-info" && (
+  <Breadcrumb ariaLabel="Project breadcrumb">
+    <span class="aui-breadcrumb__item">
+      <a class="aui-breadcrumb__link" href="#">
+        <Avatar name="Acme Design" size="xs" variant="primary"/>
+        Acme Design
+      </a>
+    </span>
+    <span class="aui-breadcrumb__item">
+      <a class="aui-breadcrumb__link" href="#">
+        <Avatar name="Ada Lovelace" size="xs" status="online"/>
+        Ada Lovelace
+      </a>
+    </span>
+    <span class="aui-breadcrumb__item">
+      <span class="aui-breadcrumb__current" aria-current="page">
+        homepage.fig
+        <Badge variant="muted" size="sm">v4</Badge>
+      </span>
+    </span>
+  </Breadcrumb>
+    )
+  }
+
+{
+  id === "breadcrumb-avatars" && (
+  <Breadcrumb separator="chevron" ariaLabel="Team breadcrumb">
+    {[
+      {name: "Acme Design", initial: "A"},
+      {name: "Ada Lovelace", initial: "AL"},
+      {name: "Grace Hopper", initial: "GH"},
+    ].map((person, i) =>
+      i < 2 ? (
+        <span class="aui-breadcrumb__item">
+          <a class="aui-breadcrumb__link" href="#">
+            <Avatar name={person.name} size="xs"/>
+            {person.name}
+          </a>
+        </span>
+      ) : (
+        <span class="aui-breadcrumb__item">
+          <span class="aui-breadcrumb__current" aria-current="page">
+            <Avatar name={person.name} size="xs" status="online"/>
+            {person.name}
+          </span>
+        </span>
+      )
+    )}
+  </Breadcrumb>
+    )
+  }
+
+{
+  id === "analytics-dashboard" && (
+  <div class="docs-block-analytics">
+    <div class="docs-block-analytics__kpis">
+      <Card size="sm">
+        <div class="docs-block-analytics__kpi">
+          <span class="docs-block-analytics__kpi-label">Active users</span>
+          <span class="docs-block-analytics__kpi-value">24,803</span>
+          <Badge variant="success" size="sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true" width="10" height="10">
+              <path d="M22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <path d="M16 7h6v6"/>
+            </svg>
+            +12.4%
+          </Badge>
+        </div>
+      </Card>
+      <Card size="sm">
+        <div class="docs-block-analytics__kpi">
+          <span class="docs-block-analytics__kpi-label">Sessions</span>
+          <span class="docs-block-analytics__kpi-value">108,392</span>
+          <Badge variant="success" size="sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true" width="10" height="10">
+              <path d="M22 7 13.5 15.5 8.5 10.5 2 17"/>
+              <path d="M16 7h6v6"/>
+            </svg>
+            +8.1%
+          </Badge>
+        </div>
+      </Card>
+      <Card size="sm">
+        <div class="docs-block-analytics__kpi">
+          <span class="docs-block-analytics__kpi-label">Bounce rate</span>
+          <span class="docs-block-analytics__kpi-value">31.6%</span>
+          <Badge variant="error" size="sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                 stroke-linejoin="round" aria-hidden="true" width="10" height="10">
+              <path d="m22 17-8.5-8.5-5 5L2 7"/>
+              <path d="M16 17h6v-6"/>
+            </svg>
+            +2.3%
+          </Badge>
+        </div>
+      </Card>
+      <Card size="sm">
+        <div class="docs-block-analytics__kpi">
+          <span class="docs-block-analytics__kpi-label">Avg. session</span>
+          <span class="docs-block-analytics__kpi-value">4m 12s</span>
+          <Badge variant="muted" size="sm">stable</Badge>
+        </div>
+      </Card>
+    </div>
+    <div class="docs-block-analytics__charts">
+      <Card class="docs-block-analytics__engagement">
+        <div class="docs-block-analytics__panel-head">
+          <div>
+            <h3 class="docs-block-analytics__panel-title">Engagement</h3>
+            <p class="docs-block-analytics__panel-sub">Daily active users</p>
+          </div>
+        </div>
+        <Tabs
+          id="bd-analytics-range"
+          class="docs-block-analytics__range"
+          variant="pill"
+          size="xs"
+          ariaLabel="Date range"
+          defaultValue="7d"
+          items={[
+            {value: "7d", label: "7d"},
+            {value: "30d", label: "30d"},
+            {value: "90d", label: "90d"},
+          ]}
+        >
+          <div data-tab="7d">
+            <Chart
+              type="area"
+              curve
+              gradient
+              grid
+              legend
+              height={220}
+              labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+              series={[
+                {name: "This week", data: [4200, 5100, 4800, 6400, 7200, 5900, 8100]},
+                {name: "Last week", data: [3800, 4200, 4500, 4800, 5200, 6100, 7000]},
+              ]}
+            />
+          </div>
+          <div data-tab="30d">
+            <Chart
+              type="area"
+              curve
+              gradient
+              grid
+              legend
+              height={220}
+              labels={["W1", "W2", "W3", "W4"]}
+              series={[
+                {name: "This month", data: [31500, 34200, 32800, 38900]},
+                {name: "Last month", data: [28400, 30100, 31900, 33400]},
+              ]}
+            />
+          </div>
+          <div data-tab="90d">
+            <Chart
+              type="area"
+              curve
+              gradient
+              grid
+              legend
+              height={220}
+              labels={["May", "Jun", "Jul"]}
+              series={[
+                {name: "This quarter", data: [121000, 134600, 147200]},
+                {name: "Last quarter", data: [108300, 115900, 124100]},
+              ]}
+            />
+          </div>
+        </Tabs>
+      </Card>
+      <Card>
+        <div class="docs-block-analytics__panel-head">
+          <div>
+            <h3 class="docs-block-analytics__panel-title">Traffic sources</h3>
+            <p class="docs-block-analytics__panel-sub">Share of sessions</p>
+          </div>
+        </div>
+        <Chart
+          type="donut"
+          gradient
+          height={220}
+          labels={["Direct", "Search", "Social", "Referral"]}
+          series={[{name: "Share", data: [435, 286, 151, 96]}]}
+        />
+      </Card>
+    </div>
+  </div>
+    )
+  }
+
+{
+  id === "chat-support" && (
+  <div class="docs-block-chat">
+    <div class="docs-block-chat__head">
+      <Avatar name="Mira Chen" size="sm" status="online"/>
+      <div class="docs-block-chat__who">
+        <span class="docs-block-chat__name">Mira · Support</span>
+        <span class="docs-block-chat__sub">Typically replies in minutes</span>
+      </div>
+      <Badge variant="success" size="sm">Online</Badge>
+    </div>
+    <div class="docs-block-chat__thread">
+      <p class="docs-block-chat__meta">Today · 09:12</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <BubbleGroup ariaLabel="Messages from Mira" class="docs-block-chat__group">
+          <Bubble align="start" variant="muted">
+            <BubbleContent>👋 Hi! I'm Mira from support. I see ticket #4821 opened on your account — the double charge on
+              last month's invoice, right?
+            </BubbleContent>
+          </Bubble>
+          <Bubble align="start" variant="muted">
+            <BubbleContent>I've already pulled up the billing log.</BubbleContent>
+          </Bubble>
+        </BubbleGroup>
+      </div>
+      <p class="docs-block-chat__meta docs-block-chat__meta--end">You · 09:14</p>
+      <div class="docs-block-chat__turn docs-block-chat__turn--end">
+        <BubbleGroup ariaLabel="Messages from you" class="docs-block-chat__group">
+          <Bubble align="end" variant="primary">
+            <BubbleContent>Yes! My card was charged twice for the renewal 🙁</BubbleContent>
+          </Bubble>
+          <Bubble align="end" variant="primary">
+            <BubbleContent>(and the renewal email never arrived either)</BubbleContent>
+            <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">
+              <button type="button" aria-pressed="true" aria-label="Heart, 1 reaction">
+                <span aria-hidden="true">❤️</span> 1
+              </button>
+            </BubbleReactions>
+          </Bubble>
+        </BubbleGroup>
+        <Avatar name="Sam Visitor" size="sm"/>
+      </div>
+      <p class="docs-block-chat__meta">Mira · 09:15</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <Bubble align="start" variant="muted">
+          <BubbleContent>
+            Confirmed — duplicate transaction at 14:02. Refund approved, lands in 3–5 business days.
+          </BubbleContent>
+        </Bubble>
+      </div>
+      <p class="docs-block-chat__meta">You · 09:16</p>
+      <div class="docs-block-chat__turn docs-block-chat__turn--end">
+        <Bubble align="end" variant="primary">
+          <BubbleContent>Amazing, thank you! Will I get a confirmation email?</BubbleContent>
+          <BubbleReactions side="bottom" align="start" ariaLabel="Reactions">
+            <span aria-hidden="true">🙏 2</span>
+          </BubbleReactions>
+        </Bubble>
+      </div>
+      <p class="docs-block-chat__meta">Mira · 09:17</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <BubbleGroup ariaLabel="Messages from Mira" class="docs-block-chat__group">
+          <Bubble align="start" variant="muted">
+            <BubbleContent>You will — and here's the refund reference for your records:</BubbleContent>
+          </Bubble>
+          <Bubble align="start" variant="outline">
+            <BubbleContent><code>RFND-2026-09482</code></BubbleContent>
+          </Bubble>
+        </BubbleGroup>
+      </div>
+      <p class="docs-block-chat__meta">You · 09:18</p>
+      <div class="docs-block-chat__turn docs-block-chat__turn--end">
+        <Bubble align="end" variant="tinted">
+          <button type="button" class="aui-bubble__content">Perfect — anything else I should know?</button>
+        </Bubble>
+      </div>
+      <p class="docs-block-chat__meta">Mira · 09:19</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <Bubble align="start" variant="muted">
+          <BubbleContent>All set on my side! I'll stay in this thread if anything else comes up. Quick actions before
+            you go:
+          </BubbleContent>
+        </Bubble>
+      </div>
+      <div class="docs-block-chat__quick">
+        <Button variant="outline" size="sm" shape="rounded">Email me the transcript</Button>
+        <Button variant="outline" size="sm" shape="rounded">Rate this chat</Button>
+        <Button variant="primary" size="sm" shape="rounded">Open new ticket</Button>
+      </div>
+      <div class="docs-block-chat__resolved">
+        <Bubble align="start" variant="ghost">
+          <BubbleContent>Ticket #4821 marked as <strong>resolved</strong> · Mira · 09:21</BubbleContent>
+        </Bubble>
+      </div>
+    </div>
+    <div class="docs-block-chat__composer">
+      <Input name="chat-message" placeholder="Type and press enter…" ariaLabel="Message"/>
+      <Button variant="primary" size="icon" shape="rounded" ariaLabel="Send message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m22 2-7 20-4-9-9-4Z"/>
+          <path d="M22 2 11 13"/>
+        </svg>
+      </Button>
+    </div>
+  </div>
+    )
+  }
+
+{
+  id === "breadcrumb-icons" && (
+  <Card size="sm">
+    <Breadcrumb
+      separator="chevron"
+      items={[
+        {
+          href: "#",
+          label: "Home",
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>'
+        },
+        {
+          href: "#",
+          label: "Library",
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>'
+        },
+        {
+          label: "Breadcrumb",
+          icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M15 2v5h5"/></svg>'
+        },
+      ]}
+    />
+  </Card>
+    )
+  }
+
+{
+  id === "avatar-empty-state" && (
+  <Empty size="lg" ariaLabel="No team members yet">
+			<span slot="media" class="docs-block-empty-avatar" aria-hidden="true">
+				<Avatar name="Your team" size="xl" variant="primary" ring="primary"/>
+			</span>
+    <span slot="title">No team members yet</span>
+    <span
+      slot="description">Invite your first teammate to start collaborating on projects, deploys, and analytics.</span>
+    <Fragment slot="footer">
+      <Button size="sm">Invite member</Button>
+      <Button size="sm" variant="ghost" href="/docs/get-started/">Read the guide</Button>
+    </Fragment>
+  </Empty>
+    )
+  }

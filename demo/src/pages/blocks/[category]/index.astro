@@ -1,0 +1,68 @@
+---
+/**
+  * /blocks/[category]/ — every block in one subject category.
+  * Each block renders live with its description and component recipe;
+  * the sidebar highlights the active category. Block titles link to
+  * their detail pages.
+  */
+import DocsLayout from "../../../layouts/DocsLayout.astro";
+import BlockTabs from "../../../components/docs/BlockTabs.astro";
+import BlockRecipe from "../../../components/docs/BlockRecipe.astro";
+import {blockCategories, categoryHref, blocksIndexHref} from "../../../lib/blocks";
+
+export function getStaticPaths() {
+  return blockCategories.map((category) => ({
+    params: {category: category.id},
+    props: {category},
+  }));
+}
+
+const {category} = Astro.props;
+const toc = [
+  ...category.blocks.map((b) => ({id: b.id, label: b.title})),
+];
+---
+
+<DocsLayout
+  title={`${category.label} blocks`}
+  description={category.description}
+  activePath="blocks"
+  blocksSidebar
+  blockCategory={category.id}
+  toc={toc}
+>
+  <article class="docs-article">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">
+        <a href={blocksIndexHref}>Blocks</a> · {category.label}
+      </p>
+      <h1>{category.label} <span class="docs-side-count">{category.blocks.length}</span></h1>
+      <p>{category.description}</p>
+    </section>
+
+    {
+      category.blocks.map((block) => (
+        <section id={block.id} class="docs-block-demo">
+          <div class="docs-block-demo-head">
+            <div>
+              <h2>
+                <a class="docs-block-title-link" href={`/blocks/${category.id}/${block.id}/`}>
+                  {block.title}
+                </a>
+              </h2>
+              <p>{block.description}</p>
+            </div>
+            <BlockRecipe recipe={block.recipe}/>
+          </div>
+          <div class="docs-block-canvas">
+            <BlockTabs
+              id={`bt-${category.id}-${block.id}`}
+              blockId={block.id}
+              idPrefix={`pg-${block.id}`}
+            />
+          </div>
+        </section>
+      ))
+    }
+  </article>
+</DocsLayout>

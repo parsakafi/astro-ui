@@ -1,0 +1,137 @@
+---
+/**
+  * DocsLayout — three-column docs shell (sidebar · content · toc).
+  * Falls back to the centered single column for home/catalog.
+  * Owns the global styles + theme toggle (demo-app behavior).
+  */
+import SiteNav from "../components/docs/SiteNav.astro";
+import SiteFooter from "../components/docs/SiteFooter.astro";
+import DocsSidebar from "../components/docs/DocsSidebar.astro";
+import BlocksSidebar from "../components/docs/BlocksSidebar.astro";
+import Toc from "../components/docs/Toc.astro";
+import "astro-ui/tokens.css";
+import "astro-ui/base.css";
+import "../styles/tailwind.css";
+import "../styles/demo.css";
+import "../styles/docs.css";
+import "../styles/brand.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** Component slug for sidebar highlighting (detail pages). */
+  slug?: string;
+  /** Show the components sidebar (catalog + detail pages). */
+  sidebar?: boolean;
+  /** Show the blocks sidebar instead of the components one. */
+  blocksSidebar?: boolean;
+  /** Block id for blocks-sidebar highlighting (detail pages). */
+  blockId?: string;
+  /** Block category id for blocks-sidebar highlighting. */
+  blockCategory?: string;
+  /** Right-hand TOC entries. */
+  toc?: { id: string; label: string }[];
+  /** Nav active-match override (e.g. "blocks", "roadmap", "docs"). */
+  activePath?: string;
+}
+
+const {
+  title,
+  description,
+  slug,
+  sidebar = false,
+  blocksSidebar = false,
+  blockId,
+  blockCategory,
+  toc,
+  activePath = "docs",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="description" content={description}/>
+  <meta name="viewport" content="width=device-width"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <meta name="generator" content={Astro.generator}/>
+  <title>{title} · Astro UI</title>
+  <script is:inline>
+    // Theme init: runs before paint to avoid FOUC (demo-app behavior).
+    try {
+      const saved = localStorage.getItem("astroui-theme");
+      document.documentElement.dataset.theme =
+        saved === "light" || saved === "dark"
+          ? saved
+          : window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+    } catch {
+      /* private mode — fall back to system preference */
+      document.documentElement.dataset.theme = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches
+        ? "dark"
+        : "light";
+    }
+  </script>
+</head>
+<body>
+<SiteNav active={sidebar || blocksSidebar ? (blocksSidebar ? "blocks" : "components") : activePath}/>
+
+{
+  blocksSidebar ? (
+    <div class="docs-shell">
+      <BlocksSidebar currentBlockId={blockId} currentCategoryId={blockCategory} isCatalog={!blockId && !blockCategory}/>
+      <div class="docs-content-wrap">
+        <main class="docs-main" id="main">
+          <slot/>
+        </main>
+        <Toc items={toc ?? []}/>
+      </div>
+    </div>
+  ) : sidebar ? (
+    <div class="docs-shell">
+      <DocsSidebar currentSlug={slug}/>
+      <div class="docs-content-wrap">
+        <main class="docs-main" id="main">
+          <slot/>
+        </main>
+        <Toc items={toc ?? []}/>
+      </div>
+    </div>
+  ) : toc && toc.length > 0 ? (
+    <div class="docs-shell docs-shell--no-side">
+      <div class="docs-content-wrap">
+        <main class="docs-main" id="main">
+          <slot/>
+        </main>
+        <Toc items={toc}/>
+      </div>
+    </div>
+  ) : (
+    <main class="docs-main docs-main--wide" id="main">
+      <slot/>
+    </main>
+  )
+}
+
+<SiteFooter/>
+
+<script>
+  // Theme toggle: demo-app behavior (not library code).
+  const btn = document.getElementById("theme-toggle");
+  btn?.addEventListener("click", () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem("astroui-theme", next);
+    } catch {
+      /* ignore */
+    }
+  });
+</script>
+</body>
+</html>
