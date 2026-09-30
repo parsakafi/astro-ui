@@ -144,6 +144,14 @@ export const blockCategories: BlockCategory[] = [
                 complexity: "simple",
             },
             {
+                id: "password-generator",
+                title: "Password generator",
+                sidebarTitle: "Password generator",
+                description: "Generate a strong password: length slider, character-set switches, and a one-click generate action.",
+                recipe: "Card · Slider · Switch · Button",
+                complexity: "medium",
+            },
+            {
                 id: "capital-inflows",
                 title: "Capital inflows summary",
                 sidebarTitle: "Capital inflows",

@@ -1421,6 +1421,72 @@ $docs-anchor-offset: 7.5rem;
   font-variant-numeric: tabular-nums;
 }
 
+/* password generator block — output, length slider, switches, action */
+.docs-block-passgen {
+  display: grid;
+  justify-items: center;
+}
+
+.docs-block-passgen__card {
+  inline-size: min(24rem, 100%);
+}
+
+.docs-block-passgen__title {
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-lg);
+  font-weight: var(--ui-font-semibold);
+}
+
+.docs-block-passgen__out {
+  display: block;
+  padding: var(--ui-space-3) var(--ui-space-4);
+  margin-block-end: var(--ui-space-4);
+  background-color: var(--ui-muted);
+  border-radius: var(--ui-radius-md);
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-md);
+  letter-spacing: 0.08em;
+  text-align: center;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.docs-block-passgen__field {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin-block-end: var(--ui-space-4);
+}
+
+.docs-block-passgen__lab {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-block-passgen__lab b {
+  color: var(--ui-foreground);
+}
+
+.docs-block-passgen__bounds {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+.docs-block-passgen__opts {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-passgen__btn {
+  inline-size: 100%;
+  margin-block-start: var(--ui-space-2);
+}
+
 /* support chat block — thread surface, turns, quick replies, composer */
 .docs-block-chat {
   display: grid;

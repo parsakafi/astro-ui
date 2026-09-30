@@ -29,6 +29,7 @@ import {
   Empty,
   Kbd,
   Progress,
+  Slider,
   Tooltip
 } from "astro-ui";
 
@@ -274,6 +275,83 @@ const pricingPlans = [
       </div>
     </Card>
   </div>
+    )
+  }
+
+{
+  id === "password-generator" && (
+  <div class="docs-block-passgen">
+    <Card class="docs-block-passgen__card">
+      <h3 slot="header" class="docs-block-passgen__title">Generate Password</h3>
+      <output class="docs-block-passgen__out" data-passgen-output aria-live="polite">CLICK GENERATE</output>
+      <div class="docs-block-passgen__field">
+        <span class="docs-block-passgen__lab">Length <b data-passgen-length>{16}</b></span>
+        <Slider
+          name={`${fid("length")}`}
+          id={fid("length")}
+          min={4}
+          max={32}
+          value={16}
+          ariaStartLabel="Password length"
+        />
+        <div class="docs-block-passgen__bounds" aria-hidden="true">
+          <span>4</span>
+          <span>32</span>
+        </div>
+      </div>
+      <div class="docs-block-passgen__field">
+        <span class="docs-block-passgen__lab">Settings</span>
+        <div class="docs-block-passgen__opts">
+          <Switch name={fid("upper")} checked label="Include Uppercase"/>
+          <Switch name={fid("lower")} checked label="Include Lowercase"/>
+          <Switch name={fid("num")} checked label="Include Numbers"/>
+          <Switch name={fid("sym")} label="Include Symbols"/>
+        </div>
+      </div>
+      <Button variant="primary" data-passgen-generate class="docs-block-passgen__btn">
+        Generate Password
+      </Button>
+    </Card>
+  </div>
+  <script>
+    // Password generator: read length + switches, generate, display.
+    document.querySelectorAll("[data-passgen-generate]").forEach(function (btn) {
+      const root = btn.closest(".docs-block-passgen__card");
+      if (!root) return;
+      const output = root.querySelector<HTMLElement>("[data-passgen-output]");
+      const lenOut = root.querySelector<HTMLElement>("[data-passgen-length]");
+      const range = root.querySelector<HTMLInputElement>("input[type='range']");
+      const boxes = Array.from(root.querySelectorAll<HTMLInputElement>("input[type='checkbox']"));
+      const SETS = {
+        upper: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        lower: "abcdefghijklmnopqrstuvwxyz",
+        num: "0123456789",
+        sym: "!@#$%^&*()_+-=[]{};:,.<>?/",
+      };
+      const generate = () => {
+        if (!output || !range) return;
+        const len = Number(range.value) || 16;
+        let pool = "";
+        boxes.forEach((b, i) => {
+          if (b.checked) pool += [SETS.upper, SETS.lower, SETS.num, SETS.sym][i];
+        });
+        if (!pool) {
+          output.textContent = "SELECT AT LEAST ONE SET";
+          return;
+        }
+        const bytes = crypto.getRandomValues(new Uint32Array(len));
+        let pass = "";
+        for (let i = 0; i < len; i++) pass += pool[bytes[i] % pool.length];
+        output.textContent = pass;
+      };
+      btn.addEventListener("click", generate);
+      if (range) {
+        range.addEventListener("input", () => {
+          if (lenOut) lenOut.textContent = range.value;
+        });
+      }
+    });
+  </script>
     )
   }
 
