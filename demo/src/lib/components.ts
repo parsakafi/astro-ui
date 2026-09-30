@@ -2012,7 +2012,7 @@ import { Separator } from "astro-ui";
         name: "Progress",
         description: "Determinate/indeterminate progress bar and circle.",
         overview:
-            "Progress shows task completion as a bar or circle. Omit value for indeterminate. The circle uses an SVG ring with stroke-dashoffset math; the bar anchors its fill inline-start with a riding percentage label.",
+            "Progress shows task completion as a bar or circle. Omit value for indeterminate. `stripes` overlays diagonal stripes on the bar fill (optionally animated), `stripedTrack` hatches the empty remainder, `segmented` renders discrete blocks, and `squared` separates fill and track with a gap. The circle uses an SVG ring with stroke-dashoffset math.",
         importPath: "astro-ui",
         exportName: "Progress",
         category: "data-display",
@@ -2023,6 +2023,8 @@ import { Separator } from "astro-ui";
             "Bar and circle variants",
             "Determinate (value) or indeterminate",
             "6 sizes, 8 colors",
+            "stripes: static or animated diagonal stripes on the bar fill",
+            "stripedTrack / segmented / squared bar styles",
             "label + showValue text",
             "RTL: fill and label mirror via logical properties",
         ],
@@ -2043,6 +2045,30 @@ import { Separator } from "astro-ui";
                 code: `<Progress variant="circle" value={60} showValue />
 <Progress variant="circle" value={80} size="lg" showValue />`,
             },
+            {
+                id: "stripes",
+                title: "Stripes",
+                code: `<Progress value={82} stripes />
+<Progress value={82} stripes="static" color="success" />`,
+            },
+            {
+                id: "striped-track",
+                title: "Striped track",
+                code: `<Progress value={38} stripedTrack />
+<Progress value={72} stripedTrack color="success" />`,
+            },
+            {
+                id: "segmented",
+                title: "Segmented",
+                code: `<Progress value={60} segmented />
+<Progress value={45} segmented={8} color="success" />`,
+            },
+            {
+                id: "squared",
+                title: "Squared",
+                code: `<Progress value={40} squared />
+<Progress value={90} squared color="success" />`,
+            },
         ],
         props: [
             t("value", "number", "—", "0–100; omit for indeterminate."),
@@ -2051,6 +2077,10 @@ import { Separator } from "astro-ui";
             t("color", `"primary" | "secondary" | "success" | "warning" | "error" | "info" | "muted" | "destructive"`, `"primary"`, "Fill color."),
             t("label", "string", "—", "Text label."),
             t("showValue", "boolean", "false", "Show the percentage."),
+            t("stripes", `boolean | "static"`, "false", "Diagonal stripes on the bar fill; true animates them."),
+            t("stripedTrack", "boolean", "false", "Hatch the empty remainder inside an outlined track."),
+            t("segmented", `boolean | number`, "false", "Discrete blocks; a number sets the count."),
+            t("squared", "boolean", "false", "Gap between fill and track."),
             ...common(),
         ],
         faq: [
@@ -2792,6 +2822,16 @@ for (const msg of ["First", "Second", "Third"]) {
                 code: `<Chart\n  type="bar"\n  stack="percent"\n  title="Traffic mix"\n  description="Each column normalized to 100% of its daily total"\n  labels={["Mon", "Tue", "Wed", "Thu", "Fri"]}\n  series={[\n    { name: "Direct", data: [320, 360, 310, 420, 480] },\n    { name: "Search", data: [280, 300, 340, 380, 410] },\n    { name: "Social", data: [120, 140, 110, 160, 190] },\n  ]}\n/>\n<!-- stack: true | "percent" -->`,
             },
             {
+                id: "gradient-bar",
+                title: "Gradient bars",
+                code: `<Chart\n  type="bar"\n  gradient\n  title="Deploys per week"\n  description="Each bar fades toward the baseline"\n  labels={["W1", "W2", "W3", "W4", "W5", "W6"]}\n  series={[{ name: "Deploys", data: [14, 22, 18, 27, 31, 24] }]}\n/>\n\n<!-- gradient works on bar, combo bars, pie and donut too -->`,
+            },
+            {
+                id: "pill-bar",
+                title: "Pill bars",
+                code: `<Chart\n  type="bar"\n  barStyle="pill"\n  title="Pulse"\n  description="Thin rounded columns — an equalizer look"\n  labels={["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"]}\n  series={[{ name: "Load", data: [8,14,22,30,38,44,40,32,20,10,16,28,40,46,42,30,18,10,26,44] }]}\n  legend={false}\n/>\n<!-- barStyle="pill" renders one thin fully-rounded column per label;\n     colors follow the series (use one series per color band) -->`,
+            },
+            {
                 id: "combo",
                 title: "Combo (bars + line)",
                 code: `<Chart\n  type="combo"\n  title="Orders vs revenue"\n  description="Bars ride the left axis, the line a secondary right axis"\n  labels={["Oct 1", "Oct 2", "Oct 3", "Oct 4", "Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9"]}\n  series={[\n    { name: "Revenue", data: [4200, 4600, 5100, 4900, 5600, 6100, 6900, 5800, 5400] },\n    { name: "Orders", data: [148, 158, 172, 165, 184, 196, 210, 186, 178], kind: "line", color: "var(--ui-success)" }\n  ]}\n/>\n\n<!-- per-series kind: "bar" (default) or "line"; rightMaxY overrides the right-axis ceiling -->`,
@@ -2814,9 +2854,25 @@ for (const msg of ["First", "Second", "Third"]) {
                 }))} },\n  ]}\n/>`,
             },
             {
+                id: "curved-line",
+                title: "Curved line",
+                code: `<Chart\n  type="line"\n  curve\n  title="Visitor flow"\n  description="Monotone cubic smoothing — the curve never overshoots the data"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[\n    { name: "Visitor-line", data: ${JSON.stringify(series({
+                    seed: "chart:curve:visitor",
+                    n: 6,
+                    min: 60,
+                    max: 400,
+                    smooth: 0.5
+                }))} },\n  ]}\n/>`,
+            },
+            {
                 id: "step-line",
                 title: "Step line",
                 code: `<Chart\n  type="line"\n  curve="step"\n  title="Desktop vs mobile"\n  description="Plateaus hold until the midpoint between values, then step"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]}\n  series={[\n    { name: "Desktop", data: [420, 615, 545, 760, 480, 825, 570, 690, 515, 735, 610, 455] },\n    { name: "Mobile", data: [265, 430, 350, 505, 390, 545, 415, 585, 445, 615, 520, 380] },\n  ]}\n/>\n<!-- curve accepts true (smooth) or "step"; combine with per-series color freely -->`,
+            },
+            {
+                id: "bump-line",
+                title: "Bump curve",
+                code: `<Chart\n  type="line"\n  curve="bump"\n  title="Rank changes"\n  description="Flat out of each point, S-curve into the next"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[\n    { name: "Desktop", data: [320, 180, 420, 260, 510, 380] },\n    { name: "Mobile", data: [180, 320, 240, 450, 290, 460] },\n  ]}\n/>\n<!-- curve: true | "step" | "bump" -->`,
             },
             {
                 id: "dashed-line",
@@ -2848,35 +2904,21 @@ for (const msg of ["First", "Second", "Third"]) {
                 }))}, stroke: "dotted" },\n  ]}\n/>\n<!-- stroke: "solid" | "dashed" | "dotted", at chart or series level -->`,
             },
             {
-                id: "pattern-fill",
-                title: "Pattern fills (dots & hatch)",
-                code: `<Chart\n  type="area"\n  curve="step"\n  fill="dots"\n  title="Portfolio swing"\n  description="Texture fills tinted with each series color"\n  labels={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]}\n  series={[\n    { name: "Fund A", data: [312, 388, 340, 296, 274, 246, 231, 224] },\n    { name: "Fund B", data: [268, 231, 205, 214, 248, 289, 331, 352], fill: "hatch" },\n  ]}\n/>\n<!-- fill: "solid" | "dots" | "hatch" | "none", at chart or series level -->`,
+                id: "line-gradient",
+                title: "Line with bottom fade",
+                code: `<Chart\n  type="line"\n  gradient\n  title="Portfolio value"\n  description="gradient on a line renders a soft wash under the stroke"\n  labels={["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]}\n  series={[{ name: "NAV", data: [42,45,44,48,52,50,55,58,57,62,66,71], color: "var(--ui-success)" }]}\n  legend={false}\n/>\n<!-- gradient on a line: a gradient wash fills under the stroke and a\n     blurred mirror of the line adds a glow that hugs the curve -->`,
             },
             {
-                id: "pattern-mix",
-                title: "Actual vs target (hatch + bare line)",
-                code: `<Chart\n  type="area"\n  curve="step"\n  title="Weekly signups"\n  description="275 this week \u2014 +12.2% vs target"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[\n    { name: "Actual", data: [240, 178, 262, 335, 212, 275], fill: "hatch" },\n    { name: "Target", data: [122, 202, 128, 390, 305, 172], fill: "none", stroke: "dashed" },\n  ]}\n/>\n<!-- fill="none" renders a bare reference line; hatch/dots texture the area -->`,
-            },
-            {
-                id: "bump-line",
-                title: "Bump curve",
-                code: `<Chart\n  type="line"\n  curve="bump"\n  title="Rank changes"\n  description="Flat out of each point, S-curve into the next"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[\n    { name: "Desktop", data: [320, 180, 420, 260, 510, 380] },\n    { name: "Mobile", data: [180, 320, 240, 450, 290, 460] },\n  ]}\n/>\n<!-- curve: true | "step" | "bump" -->`,
-            },
-            {
-                id: "curved-line",
-                title: "Curved line",
-                code: `<Chart\n  type="line"\n  curve\n  title="Visitor flow"\n  description="Monotone cubic smoothing — the curve never overshoots the data"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[\n    { name: "Visitor-line", data: ${JSON.stringify(series({
-                    seed: "chart:curve:visitor",
-                    n: 6,
-                    min: 60,
-                    max: 400,
-                    smooth: 0.5
-                }))} },\n  ]}\n/>`,
-            },
-            {
-                id: "curved-area",
-                title: "Curved area",
-                code: `<Chart\n  type="area"\n  curve\n  title="Campaign traffic"\n  description="Smoothed area — the fill follows the monotone curve"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[{ name: "Sessions", data: [820, 1210, 940, 580, 1120, 990] }]}\n/>`,
+                id: "no-grid",
+                title: "Minimal (no grid, no legend)",
+                code: `<Chart\n  type="line"\n  grid={false}\n  legend={false}\n  title="Ping"\n  labels={["12am", "6am", "12pm", "6pm"]}\n  series={[{ name: "ms", data: ${JSON.stringify(series({
+                    seed: "chart:minimal:ping",
+                    n: 4,
+                    min: 18,
+                    max: 70,
+                    smooth: 0.8
+                }))} ]}\n/>`,
+
             },
             {
                 id: "area",
@@ -2890,6 +2932,11 @@ for (const msg of ["First", "Second", "Third"]) {
                 }))} ]}\n/>`,
             },
             {
+                id: "curved-area",
+                title: "Curved area",
+                code: `<Chart\n  type="area"\n  curve\n  title="Campaign traffic"\n  description="Smoothed area — the fill follows the monotone curve"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[{ name: "Sessions", data: [820, 1210, 940, 580, 1120, 990] }]}\n/>`,
+            },
+            {
                 id: "gradient-area",
                 title: "Gradient area",
                 code: `<Chart\n  type="area"\n  curve\n  gradient\n  title="API requests"\n  description="Series color fades toward the baseline"\n  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}\n  series={[{ name: "Requests", data: [4200, 5100, 4800, 6300, 7100, 3900, 3400] }]}\n/>\n\n<!-- gradient fades the series color to transparent at the baseline; combine with curve freely -->`,
@@ -2900,14 +2947,19 @@ for (const msg of ["First", "Second", "Third"]) {
                 code: `<Chart\n  type="area"\n  curve\n  gradient\n  title="Revenue"\n  description="The series color drives the line, the fill, and the gradient"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[{ name: "Revenue", data: [12, 18, 15, 22, 19, 26], color: "var(--ui-success)" }]}\n/>\n\n<!-- fill + gradient always follow the series color: pass color per series,\n     or retheme globally via --ui-chart-1..6 (area fallback is --ui-chart-1) -->`,
             },
             {
-                id: "gradient-bar",
-                title: "Gradient bars",
-                code: `<Chart\n  type="bar"\n  gradient\n  title="Deploys per week"\n  description="Each bar fades toward the baseline"\n  labels={["W1", "W2", "W3", "W4", "W5", "W6"]}\n  series={[{ name: "Deploys", data: [14, 22, 18, 27, 31, 24] }]}\n/>\n\n<!-- gradient works on bar, combo bars, pie and donut too -->`,
+                id: "gradient-intensity",
+                title: "Gradient intensity",
+                code: `<Chart\n  type="area"\n  curve\n  gradient\n  gradientIntensity={2}\n  title="Strong fade"\n  description="gradientIntensity scales every fade \u2014 1 is the default, 2 is saturated"\n  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}\n  series={[{ name: "Requests", data: [4200, 5100, 4800, 6300, 7100, 3900, 3400] }]}\n/>\n\n<!-- try 0.5 for a whisper-subtle fill; works on area, bar, pie and donut fades -->`,
             },
             {
-                id: "gradient-donut",
-                title: "Gradient donut",
-                code: `<Chart\n  type="donut"\n  gradient\n  title="Storage by type"\n  description="Radial fade — strong at the rim, clear toward the center"\n  labels={["Images", "Video", "Docs", "Other"]}\n  series={[{ name: "GB", data: [42, 66, 21, 11] }]}\n  legend={false}\n/>`,
+                id: "pattern-fill",
+                title: "Pattern fills (dots & hatch)",
+                code: `<Chart\n  type="area"\n  curve="step"\n  fill="dots"\n  title="Portfolio swing"\n  description="Texture fills tinted with each series color"\n  labels={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]}\n  series={[\n    { name: "Fund A", data: [312, 388, 340, 296, 274, 246, 231, 224] },\n    { name: "Fund B", data: [268, 231, 205, 214, 248, 289, 331, 352], fill: "hatch" },\n  ]}\n/>\n<!-- fill: "solid" | "dots" | "hatch" | "none", at chart or series level -->`,
+            },
+            {
+                id: "pattern-mix",
+                title: "Actual vs target (hatch + bare line)",
+                code: `<Chart\n  type="area"\n  curve="step"\n  title="Weekly signups"\n  description="275 this week \u2014 +12.2% vs target"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[\n    { name: "Actual", data: [240, 178, 262, 335, 212, 275], fill: "hatch" },\n    { name: "Target", data: [122, 202, 128, 390, 305, 172], fill: "none", stroke: "dashed" },\n  ]}\n/>\n<!-- fill="none" renders a bare reference line; hatch/dots texture the area -->`,
             },
             {
                 id: "pie",
@@ -2938,6 +2990,16 @@ for (const msg of ["First", "Second", "Third"]) {
                 id: "slice-collapse",
                 title: "Auto-collapsed slices",
                 code: `<Chart\n  type="donut"\n  collapseBelow={8}\n  sliceLabels="value-pct"\n  title="Entry pages"\n  description="Slices under 8% merge into the trailing Other slice"\n  labels={["/", "/pricing", "/blog", "/docs", "/changelog", "/about", "/careers"]}\n  series={[{ name: "Sessions", data: [4820, 2130, 1640, 1180, 310, 240, 180] }]}\n  legend={false}\n/>\n<!-- collapseBelow: percent threshold (0 = off); merged slice is muted,\n     hover lists what it contains -->`,
+            },
+            {
+                id: "gradient-donut",
+                title: "Gradient donut",
+                code: `<Chart\n  type="donut"\n  gradient\n  title="Storage by type"\n  description="Radial fade — strong at the rim, clear toward the center"\n  labels={["Images", "Video", "Docs", "Other"]}\n  series={[{ name: "GB", data: [42, 66, 21, 11] }]}\n  legend={false}\n/>`,
+            },
+            {
+                id: "custom-colors",
+                title: "Custom colors",
+                code: `<Chart\n  type="donut"\n  title="Plan distribution"\n  labels={["Free", "Pro", "Team"]}\n  series={[\n    { name: "Plans", data: [640, 310, 90], color: "var(--ui-primary)" },\n  ]}\n  legend\n/>\n\n<!-- per-series colors: color prop or --ui-chart-1..6 tokens -->`,
             },
             {
                 id: "scatter",
@@ -2973,11 +3035,6 @@ for (const msg of ["First", "Second", "Third"]) {
                 code: `<Chart\n  type="hbar"\n  stack\n  legend={false}\n  title="Capital inflows"\n  labels={["Funds"]}\n  series={[\n    { name: "WaveMark Capital", data: [8372000], color: "var(--ui-success)" },\n    { name: "Envato Finances", data: [2962400], color: "var(--ui-warning)" },\n    { name: "QBridge Tech", data: [1545600], color: "var(--ui-error)" },\n  ]}\n/>\n<!-- one full-width track; each series becomes a segment sized by its share of the total -->`,
             },
             {
-                id: "custom-colors",
-                title: "Custom colors",
-                code: `<Chart\n  type="donut"\n  title="Plan distribution"\n  labels={["Free", "Pro", "Team"]}\n  series={[\n    { name: "Plans", data: [640, 310, 90], color: "var(--ui-primary)" },\n  ]}\n  legend\n/>\n\n<!-- per-series colors: color prop or --ui-chart-1..6 tokens -->`,
-            },
-            {
                 id: "gauge",
                 title: "Radial gauge",
                 code: `<Chart\n  type="gauge"\n  title="Storage used"\n  description="Tick marks fill clockwise with the value"\n  labels={["Used"]}\n  series={[{ name: "of 8 TB", data: [64] }]}\n  maxY={100}\n  ticks={40}\n  legend={false}\n/>\n<!-- value = series[0].data[0], scale = maxY (default 100); ticks clamps 8\u201380 -->`,
@@ -2988,14 +3045,9 @@ for (const msg of ["First", "Second", "Third"]) {
                 code: `<Chart\n  type="gauge"\n  title="Monthly goal"\n  labels={["Reached"]}\n  series={[{ name: "of 200 deals", data: [102] }]}\n  maxY={200}\n  legend={false}\n/>`,
             },
             {
-                id: "gradient-intensity",
-                title: "Gradient intensity",
-                code: `<Chart\n  type="area"\n  curve\n  gradient\n  gradientIntensity={2}\n  title="Strong fade"\n  description="gradientIntensity scales every fade \u2014 1 is the default, 2 is saturated"\n  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}\n  series={[{ name: "Requests", data: [4200, 5100, 4800, 6300, 7100, 3900, 3400] }]}\n/>\n\n<!-- try 0.5 for a whisper-subtle fill; works on area, bar, pie and donut fades -->`,
-            },
-            {
-                id: "radar",
-                title: "Radar",
-                code: `<Chart\n  type="radar"\n  title="Skill coverage"\n  description="One axis per label, filled polygons per series"\n  labels={["JavaScript", "Python", "CSS", "Node.js", "React", "TypeScript"]}\n  series={[\n    { name: "Desktop", data: [78, 85, 90, 62, 74, 96] },\n    { name: "Mobile", data: [52, 58, 66, 54, 41, 60] },\n  ]}\n/>\n<!-- values scale against maxY (default: global data max); one axis per label -->`,
+                id: "gauge-block",
+                title: "Block gauge",
+                code: `<Chart\n  type="gauge"\n  gaugeStyle="block"\n  gaugeRamp={["var(--ui-success)", "var(--ui-info)", "var(--ui-primary)"]}\n  title="Total expenses"\n  labels={["Spent"]}\n  series={[{ name: "of $80k budget", data: [44220] }]}\n  maxY={80000}\n  format={(v) => \`$\${v.toLocaleString("en-US")}\`}\n  ticks={16}\n  legend={false}\n/>\n<!-- gaugeStyle="block" renders stadium segments; gaugeRamp interpolates\n     colors across the arc so blocks show position (start \u2192 end) -->`,
             },
             {
                 id: "radial",
@@ -3008,21 +3060,14 @@ for (const msg of ["First", "Second", "Third"]) {
                 code: `<Chart\n  type="radial"\n  radialSweep="half"\n  title="Browser share"\n  description="Half-circle rings over the top \u2014 outer ring first"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Users", data: [275, 200, 187, 173, 90] }]}\n  maxY={275}\n  legend={false}\n/>\n<!-- radialSweep: "full" | "half" -->`,
             },
             {
-                id: "sankey",
-                title: "Sankey flow",
-                code: `<Chart\n  type="sankey"\n  title="Traffic funnel"\n  description="Flow value scales each ribbon and node"\n  nodes={[\n    { name: "Organic Search", color: "var(--ui-success)" },\n    { name: "Paid Ads", color: "var(--ui-error)" },\n    { name: "Social Media", color: "var(--ui-chart-5, var(--ui-warning))" },\n    { name: "Landing Page", color: "var(--ui-info)" },\n    { name: "Product Page", color: "var(--ui-chart-2, var(--ui-info))" },\n    { name: "Cart", color: "var(--ui-warning)" },\n    { name: "Bounced", color: "var(--ui-error)" },\n    { name: "Purchase", color: "var(--ui-success)" },\n  ]}\n  links={[\n    { source: "Organic Search", target: "Landing Page", value: 42000 },\n    { source: "Paid Ads", target: "Landing Page", value: 28000 },\n    { source: "Social Media", target: "Landing Page", value: 18000 },\n    { source: "Landing Page", target: "Product Page", value: 52000 },\n    { source: "Landing Page", target: "Bounced", value: 36000 },\n    { source: "Product Page", target: "Cart", value: 31000 },\n    { source: "Product Page", target: "Bounced", value: 21000 },\n    { source: "Cart", target: "Purchase", value: 24000 },\n    { source: "Cart", target: "Bounced", value: 7000 },\n  ]}\n/>\n<!-- links reference nodes by name; node value = max(in, out) flow -->`,
+                id: "radar",
+                title: "Radar",
+                code: `<Chart\n  type="radar"\n  title="Skill coverage"\n  description="One axis per label, filled polygons per series"\n  labels={["JavaScript", "Python", "CSS", "Node.js", "React", "TypeScript"]}\n  series={[\n    { name: "Desktop", data: [78, 85, 90, 62, 74, 96] },\n    { name: "Mobile", data: [52, 58, 66, 54, 41, 60] },\n  ]}\n/>\n<!-- values scale against maxY (default: global data max); one axis per label -->`,
             },
             {
-                id: "no-grid",
-                title: "Minimal (no grid, no legend)",
-                code: `<Chart\n  type="line"\n  grid={false}\n  legend={false}\n  title="Ping"\n  labels={["12am", "6am", "12pm", "6pm"]}\n  series={[{ name: "ms", data: ${JSON.stringify(series({
-                    seed: "chart:minimal:ping",
-                    n: 4,
-                    min: 18,
-                    max: 70,
-                    smooth: 0.8
-                }))} ]}\n/>`,
-            },
+                id: "sankey",
+                title: "Sankey flow",
+                code: `<Chart\n  type="sankey"\n  title="Traffic funnel"\n  description="Flow value scales each ribbon and node"\n  nodes={[\n    { name: "Organic Search", color: "var(--ui-success)" },\n    { name: "Paid Ads", color: "var(--ui-error)" },\n    { name: "Social Media", color: "var(--ui-chart-5, var(--ui-warning))" },\n    { name: "Landing Page", color: "var(--ui-info)" },\n    { name: "Product Page", color: "var(--ui-chart-2, var(--ui-info))" },\n    { name: "Cart", color: "var(--ui-warning)" },\n    { name: "Bounced", color: "var(--ui-error)" },\n    { name: "Purchase", color: "var(--ui-success)" },\n  ]}\n  links={[\n    { source: "Organic Search", target: "Landing Page", value: 42000 },\n    { source: "Paid Ads", target: "Landing Page", value: 28000 },\n    { source: "Social Media", target: "Landing Page", value: 18000 },\n    { source: "Landing Page", target: "Product Page", value: 52000 },\n    { source: "Landing Page", target: "Bounced", value: 36000 },\n    { source: "Product Page", target: "Cart", value: 31000 },\n    { source: "Product Page", target: "Bounced", value: 21000 },\n    { source: "Cart", target: "Purchase", value: 24000 },\n    { source: "Cart", target: "Bounced", value: 7000 },\n  ]}\n/>\n<!-- links reference nodes by name; node value = max(in, out) flow -->`,            },
         ],
         props: [
             t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar"'`, `'"bar"'`, "Chart type."),
@@ -3048,6 +3093,9 @@ for (const msg of ["First", "Second", "Third"]) {
             t("fill", '"solid" | "dots" | "hatch"', '"solid"', "Area fill paint — texture patterns tinted per series color; per-series fill (also \"none\") overrides."),
             t("gradient", "boolean", "false", "Gradient fills: area fades toward the baseline, bars per bar, pie/donut rim-strong radial fade."),
             t("ticks", "number", "36", "Tick count around the gauge arc (gauge only, clamped 8\u201380)."),
+            t("barStyle", `"rect" | "pill"`, `"rect"`, "Rectangular or thin fully-rounded pill columns (bar)."),
+            t("gaugeStyle", `"line" | "block"`, `"line"`, "Thin ticks or thick rounded block segments (gauge)."),
+            t("gaugeRamp", "string[]", "\u2014", "2+ CSS colors interpolated across the gauge arc (block style)."),
             t("gradientIntensity", "number", "1", "Multiplier on gradient fade strength (clamped 0.1\u20132.5) — applies to every gradient type."),
             t("stack", 'boolean | "percent"', "false", "Stack bar series (cumulative totals) or normalize each column to 100% with \"percent\"."),
             t("format", "(value: number) => string", "—", "Value formatting for ticks and the data table."),
@@ -3479,7 +3527,7 @@ for (const msg of ["First", "Second", "Third"]) {
         name: "Slider",
         description: "Native range input themed with tokens — drag, keys, form value.",
         overview:
-            "Slider wraps &lt;input type=\"range\"&gt; with token styling: the platform owns dragging, arrow keys, Home/End, and form submission. Optional tick marks, a value readout, and a tooltip bubble that rides the thumb complete it.",
+            "Slider wraps &lt;input type=\"range\"&gt; with token styling: the platform owns dragging, arrow keys, Home/End, and form submission. Three presentations share one API — horizontal, vertical (min at the bottom), and a radial dial — plus a two-thumb range mode. Optional tick marks, a value readout, and a tooltip bubble that rides the thumb complete it. The track fills from the minimum and mirrors in RTL.",
         importPath: "astro-ui",
         exportName: "Slider",
         category: "forms",
@@ -3487,10 +3535,11 @@ for (const msg of ["First", "Second", "Third"]) {
         usage:
             `---\nimport { Slider } from "astro-ui";\n---\n\n<Slider name="volume" label="Volume" value={70} showValue />\n<Slider name="temp" min={16} max={30} marks={["Cold", "Warm", "Hot"]} />`,
         features: [
-            "Native range input — zero JS",
-            "min/max/step via native attributes",
-            "Marks/ticks row",
-            "Value readout",
+            "Native range input — platform drag, keys, form value",
+            "Horizontal + vertical orientations",
+            "Range mode: two thumbs, filled span",
+            "Radial dial mode (SVG arc, pointer drag)",
+            "Marks/ticks row + value readout",
             "Thumb tooltip bubble (opt-in script, RTL-aware)",
             "5 color variants, 3 sizes",
         ],
@@ -3510,15 +3559,52 @@ for (const msg of ["First", "Second", "Third"]) {
                 title: "Thumb tooltip",
                 code: `{/* Bubble appears on hover, drag, and keyboard focus */}\n<Slider name="brightness" label="Brightness" value={65} tooltip />\n\n{/* Tooltip + live readout in the header */}\n<Slider name="temp" label="Temperature" value={22} min={16} max={30}\n  tooltip showValue />\n\n{/* Works with marks and non-zero minimums too */}\n<Slider name="zoom" label="Zoom" value={110} min={50} max={200} step={10}\n  tooltip marks={["50%", "125%", "200%"]} />`,
             },
+            {
+                id: "range",
+                title: "Range",
+                code: `{/* Two thumbs bound a filled span; keyboard works on each */}
+<Slider name="price" label="Price range" range value={25} valueEnd={75}
+  showValue tooltip />
+
+{/* Range with marks */}
+<Slider name="budget" range value={20} valueEnd={60}
+  marks={["0", "50", "100"]} />`,
+            },
+            {
+                id: "vertical",
+                title: "Vertical",
+                code: `{/* min at the bottom; height controls the track length */}
+<Slider name="level" label="Level" orientation="vertical" value={70}
+  showValue />
+
+{/* Vertical range */}
+<Slider name="band" orientation="vertical" range value={30} valueEnd={70} />`,
+            },
+            {
+                id: "radial",
+                title: "Radial",
+                code: `{/* SVG dial: drag the ring or use arrow keys; 12 o'clock = min */}
+<Slider name="opacity" label="Opacity" radial value={33} showValue />
+
+{/* Radial range */}
+<Slider name="window" radial range value={10} valueEnd={70} showValue />`,
+            },
         ],
         props: [
-            t("name", "string", "—", "Field name."),
-            t("value", "number", "50", "Initial value."),
+            t("name", "string", "—", "Field name. Range end submits as `nameEnd` (default `${name}-end`)."),
+            t("value", "number", "50", "Initial value (range start)."),
+            t("valueEnd", "number", "—", "Range end (range mode)."),
             t("min / max", "number", "0 / 100", "Bounds."),
             t("step", "number", "1", "Increment."),
+            t("orientation", `"horizontal" | "vertical"`, `"horizontal"`, "Track direction; vertical keeps min at the bottom."),
+            t("range", "boolean", "false", "Two thumbs bounding a filled span."),
+            t("radial", "boolean", "false", "SVG dial presentation (supports range)."),
+            t("height", "string", `"10rem"`, "Track length in vertical orientation."),
             t("marks", "string[]", "—", "Tick labels under the track."),
             t("showValue", "boolean", "false", "Value readout."),
             t("tooltip", "boolean", "false", "Value bubble above the thumb (hover/drag/focus)."),
+            t("ariaStartLabel", "string", "—", "Accessible name for the start thumb (range)."),
+            t("ariaEndLabel", "string", "—", "Accessible name for the end thumb (range)."),
             t("label", "string", "—", "Label above the track."),
             t("variant", `"primary" | "success" | "warning" | "error" | "info"`, `"primary"`, "Accent color."),
             t("size", `"sm" | "md" | "lg"`, `"md"`, "Scale."),
