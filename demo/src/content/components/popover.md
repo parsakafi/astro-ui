@@ -22,7 +22,7 @@ usage: |-
   ---
   import { Popover } from "astro-ui";
   ---
-
+  
   <Popover id="share">
     <span slot="trigger">Share</span>
     <span slot="content">Share via <a href="…">link</a></span>
@@ -67,8 +67,4 @@ faq:
     a: "Popover = click-triggered, dismissible, focus-managed — use for interactive content (forms, links). HoverCard = pointer/focus preview — use for passive rich previews."
 ---
 
-Popover is a click-triggered anchored layer for interactive content — the trigger slot renders a real &lt;button&gt;
-(aria-expanded + aria-controls) and the content slot renders in an anchored panel below (or above) it. The scoped script
-toggles the panel, closes on Escape and outside-pointer, moves focus into the panel on open, and returns focus to the
-trigger on close. Positioning is CSS-anchored relative to the trigger wrapper (same technique as Tooltip), so the panel
-never needs viewport math.
+Popover is a click-triggered anchored layer for interactive content — the trigger slot renders a real &lt;button&gt; (aria-expanded + aria-controls) and the content slot renders in an anchored panel below (or above) it. The scoped script toggles the panel, closes on Escape and outside-pointer, moves focus into the panel on open, and returns focus to the trigger on close. Positioning is CSS-anchored relative to the trigger wrapper (same technique as Tooltip), so the panel never needs viewport math.

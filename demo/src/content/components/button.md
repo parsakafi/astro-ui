@@ -29,7 +29,7 @@ usage: |-
   ---
   import { Button } from "astro-ui";
   ---
-
+  
   <Button>Primary</Button>
   <Button variant="outline" href="/docs">Read docs</Button>
   <Button color="success">Approve</Button>
@@ -132,6 +132,4 @@ faq:
     a: "Yes — the component renders a semantic <a> with link styling and forwards rel/target. Form attributes are ignored in anchor mode."
 ---
 
-Button is the workhorse of the library: a zero-JS action trigger that renders a &lt;button&gt; — or an &lt;a&gt; when
-href is set — with eleven variants, eight theme colors, seven sizes, four loading-spinner styles, and native form
-participation. Extra attributes forward untouched.
+Button is the workhorse of the library: a zero-JS action trigger that renders a &lt;button&gt; — or an &lt;a&gt; when href is set — with eleven variants, eight theme colors, seven sizes, four loading-spinner styles, and native form participation. Extra attributes forward untouched.

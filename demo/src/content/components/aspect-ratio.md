@@ -22,7 +22,7 @@ usage: |-
   ---
   import { AspectRatio } from "astro-ui";
   ---
-
+  
   <AspectRatio ratio="16 / 9">
     <img src="hero.jpg" alt="Hero" class="object-cover" />
   </AspectRatio>
@@ -48,5 +48,4 @@ faq:
     a: "The child is stretched to 100%×100% — add object-cover (or object-contain) on the img so it fills without distortion."
 ---
 
-AspectRatio wraps a single child (img, video, iframe, or div) in a box with a fixed CSS aspect-ratio and stretches the
-child to fill it. Drop media in and it covers the box without layout shift — object-fit stays in your hands.
+AspectRatio wraps a single child (img, video, iframe, or div) in a box with a fixed CSS aspect-ratio and stretches the child to fill it. Drop media in and it covers the box without layout shift — object-fit stays in your hands.

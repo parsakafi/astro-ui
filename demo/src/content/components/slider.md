@@ -11,10 +11,11 @@ since: "1.0.0"
 isNew: false
 related: ["rating", "progress", "input"]
 features:
-  - "Native range input — zero JS"
-  - "min/max/step via native attributes"
-  - "Marks/ticks row"
-  - "Value readout"
+  - "Native range input — platform drag, keys, form value"
+  - "Horizontal + vertical orientations"
+  - "Range mode: two thumbs, filled span"
+  - "Radial dial mode (SVG arc, pointer drag)"
+  - "Marks/ticks row + value readout"
   - "Thumb tooltip bubble (opt-in script, RTL-aware)"
   - "5 color variants, 3 sizes"
 a11y:
@@ -25,19 +26,23 @@ usage: |-
   ---
   import { Slider } from "astro-ui";
   ---
-
+  
   <Slider name="volume" label="Volume" value={70} showValue />
   <Slider name="temp" min={16} max={30} marks={["Cold", "Warm", "Hot"]} />
-demoIds: ["basic", "tooltip"]
+demoIds: ["basic", "tooltip", "range", "vertical", "radial"]
 props:
   - name: "name"
     type: "string"
     def: "—"
-    description: "Field name."
+    description: "Field name. Range end submits as `nameEnd` (default `${name}-end`)."
   - name: "value"
     type: "number"
     def: "50"
-    description: "Initial value."
+    description: "Initial value (range start)."
+  - name: "valueEnd"
+    type: "number"
+    def: "—"
+    description: "Range end (range mode)."
   - name: "min / max"
     type: "number"
     def: "0 / 100"
@@ -46,6 +51,22 @@ props:
     type: "number"
     def: "1"
     description: "Increment."
+  - name: "orientation"
+    type: "\"horizontal\" | \"vertical\""
+    def: "\"horizontal\""
+    description: "Track direction; vertical keeps min at the bottom."
+  - name: "range"
+    type: "boolean"
+    def: "false"
+    description: "Two thumbs bounding a filled span."
+  - name: "radial"
+    type: "boolean"
+    def: "false"
+    description: "SVG dial presentation (supports range)."
+  - name: "height"
+    type: "string"
+    def: "\"10rem\""
+    description: "Track length in vertical orientation."
   - name: "marks"
     type: "string[]"
     def: "—"
@@ -58,6 +79,14 @@ props:
     type: "boolean"
     def: "false"
     description: "Value bubble above the thumb (hover/drag/focus)."
+  - name: "ariaStartLabel"
+    type: "string"
+    def: "—"
+    description: "Accessible name for the start thumb (range)."
+  - name: "ariaEndLabel"
+    type: "string"
+    def: "—"
+    description: "Accessible name for the end thumb (range)."
   - name: "label"
     type: "string"
     def: "—"
@@ -84,5 +113,4 @@ props:
     description: "Element id."
 ---
 
-Slider wraps &lt;input type="range"&gt; with token styling: the platform owns dragging, arrow keys, Home/End, and form
-submission. Optional tick marks, a value readout, and a tooltip bubble that rides the thumb complete it.
+Slider wraps &lt;input type="range"&gt; with token styling: the platform owns dragging, arrow keys, Home/End, and form submission. Three presentations share one API — horizontal, vertical (min at the bottom), and a radial dial — plus a two-thumb range mode. Optional tick marks, a value readout, and a tooltip bubble that rides the thumb complete it. The track fills from the minimum and mirrors in RTL.

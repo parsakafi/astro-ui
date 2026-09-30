@@ -25,7 +25,7 @@ usage: |-
   ---
   import { Accordion } from "astro-ui";
   ---
-
+  
   <Accordion
     id="faq"
     items={[
@@ -80,6 +80,4 @@ faq:
     a: "`animated` animates the native ::details-content pseudo between block-size 0 and auto (interpolate-size: allow-keywords). Browsers without support ignore it and snap instantly — never broken."
 ---
 
-Accordion provides collapsible content sections on native &lt;details&gt;/&lt;summary&gt;: expand/collapse, keyboard
-(Space/Enter), and announcements come from the platform. A bordered variant and chevron indicator round out the
-presentation.
+Accordion provides collapsible content sections on native &lt;details&gt;/&lt;summary&gt;: expand/collapse, keyboard (Space/Enter), and announcements come from the platform. A bordered variant and chevron indicator round out the presentation.

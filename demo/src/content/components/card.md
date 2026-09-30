@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Card, Button } from "astro-ui";
   ---
-
+  
   <Card>
     <h3 slot="header">Title</h3>
     <p>Body content.</p>
@@ -80,5 +80,4 @@ faq:
     a: "Slots — they keep your heading hierarchy and allow rich content. title/description exist only for trivial text-only cards."
 ---
 
-Card composes through named slots — header, default content, footer — and renders a semantic &lt;article&gt;. Four
-variants, six sizes, optional split dividers and a scrollable body. Prefer slots over title/description props.
+Card composes through named slots — header, default content, footer — and renders a semantic &lt;article&gt;. Four variants, six sizes, optional split dividers and a scrollable body. Prefer slots over title/description props.

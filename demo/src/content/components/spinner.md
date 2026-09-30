@@ -23,7 +23,7 @@ usage: |-
   ---
   import { Spinner } from "astro-ui";
   ---
-
+  
   <Spinner />
   <Spinner variant="dots" size="lg" />
 demoIds: ["basic", "sizes"]
@@ -53,5 +53,4 @@ faq:
     a: "Button has built-in loading that swaps its label for a spinner. Use standalone Spinner for page regions and inline waits."
 ---
 
-Spinner communicates in-flight work with pure CSS animation — ring, dots, bars, and pulse styles at six sizes. Color
-follows the text color; wrap it in a button or surface and it inherits.
+Spinner communicates in-flight work with pure CSS animation — ring, dots, bars, and pulse styles at six sizes. Color follows the text color; wrap it in a button or surface and it inherits.

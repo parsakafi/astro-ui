@@ -23,7 +23,7 @@ usage: |-
   ---
   import { Radio } from "astro-ui";
   ---
-
+  
   <Radio name="plan" value="free" checked>Free</Radio>
   <Radio name="plan" value="pro">Pro</Radio>
 demoIds: ["group"]
@@ -65,5 +65,4 @@ faq:
     a: "Exactly like HTML: same name across Radios forms the group. The browser handles mutual exclusion and arrow-key navigation."
 ---
 
-Radio mirrors Checkbox with a circle-and-dot indicator. Group behavior comes from the native shared name attribute —
-zero JS, perfect announcements.
+Radio mirrors Checkbox with a circle-and-dot indicator. Group behavior comes from the native shared name attribute — zero JS, perfect announcements.

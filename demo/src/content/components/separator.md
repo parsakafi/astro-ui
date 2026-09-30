@@ -23,7 +23,7 @@ usage: |-
   ---
   import { Separator } from "astro-ui";
   ---
-
+  
   <Separator />
   <Separator orientation="vertical" style="height:2rem" />
   <Separator label="or" />
@@ -61,5 +61,4 @@ faq:
     a: "Semantic <hr> by default — it announces a thematic break. Pass decorative when the rule is purely visual spacing."
 ---
 
-Separator renders a themed rule between sections — semantic hr (or a decorated span when purely visual), with
-orientation, style, and label support.
+Separator renders a themed rule between sections — semantic hr (or a decorated span when purely visual), with orientation, style, and label support.

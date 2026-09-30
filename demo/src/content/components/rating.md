@@ -27,7 +27,7 @@ usage: |-
   ---
   import { Rating } from "astro-ui";
   ---
-
+  
   <Rating name="score" value={4} />
   <Rating name="mood" value={4} icon="emoji" />
   <Rating
@@ -116,7 +116,4 @@ faq:
     a: "Pass iconPath (one icon for every step) or icons (one path per step) with SVG path data drawn in a 16×16 viewBox. Paths render as-is — keep them simple, filled shapes."
 ---
 
-Rating is a fieldset of radio inputs styled as rating icons: arrow keys, form submission, and per-step labels ("3 out of
-5") come from the platform. Pick an icon preset (star, heart, circle, square, bar, thumb) or emoji faces, supply custom
-SVG paths, tint each step with colorScale for satisfaction scales, or highlight only the selected step with single for
-NPS-style questions. readonly renders a fractional display-only value.
+Rating is a fieldset of radio inputs styled as rating icons: arrow keys, form submission, and per-step labels ("3 out of 5") come from the platform. Pick an icon preset (star, heart, circle, square, bar, thumb) or emoji faces, supply custom SVG paths, tint each step with colorScale for satisfaction scales, or highlight only the selected step with single for NPS-style questions. readonly renders a fractional display-only value.

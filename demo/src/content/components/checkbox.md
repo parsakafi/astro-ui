@@ -25,7 +25,7 @@ usage: |-
   ---
   import { Checkbox } from "astro-ui";
   ---
-
+  
   <Checkbox name="news" checked>Email me news</Checkbox>
 demoIds: ["basic", "variants"]
 props:
@@ -78,5 +78,4 @@ faq:
     a: "No — it's purely visual (like the platform). The form value follows the underlying checked state only."
 ---
 
-Checkbox styles the native input inside a label wrapper — square or rounded indicator, indeterminate support, and full
-native keyboard/announcement behavior.
+Checkbox styles the native input inside a label wrapper — square or rounded indicator, indeterminate support, and full native keyboard/announcement behavior.

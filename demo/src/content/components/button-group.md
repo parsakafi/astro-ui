@@ -27,12 +27,12 @@ usage: |-
   ---
   import { Button, ButtonGroup } from "astro-ui";
   ---
-
+  
   <ButtonGroup>
     <Button variant="outline">Previous</Button>
     <Button variant="outline">Next</Button>
   </ButtonGroup>
-
+  
   <ButtonGroup orientation="vertical">
     <Button variant="outline">Copy</Button>
     <Button variant="outline">Paste</Button>
@@ -74,7 +74,4 @@ faq:
     a: "Focused and hovered children get position: relative with elevated z-index, so their full border appears above siblings. This prevents border clipping."
 ---
 
-ButtonGroup is a zero-JS layout container that visually groups buttons or other inline interactive elements by merging
-their borders and rounding only the outer corners. Children remain fully independent — the group is purely
-presentational. Horizontal and vertical orientations, plus proper focus/hover z-index handling, make it the foundation
-for toolbars, pagination controls, and segmented button sets.
+ButtonGroup is a zero-JS layout container that visually groups buttons or other inline interactive elements by merging their borders and rounding only the outer corners. Children remain fully independent — the group is purely presentational. Horizontal and vertical orientations, plus proper focus/hover z-index handling, make it the foundation for toolbars, pagination controls, and segmented button sets.

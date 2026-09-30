@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Select, Label } from "astro-ui";
   ---
-
+  
   <Label for="fruit" required>Fruit</Label>
   <Select id="fruit" placeholder="Choose a fruit" required>
     <option value="apple">Apple</option>
@@ -76,5 +76,4 @@ faq:
     a: "Native selects keep keyboard nav, screen-reader semantics, and mobile pickers for free — that's the astro-ui philosophy: platform first."
 ---
 
-Select wraps the native &lt;select&gt; so keyboard support and mobile pickers stay perfect — with token styling, a
-custom chevron, placeholder support, and options composed through the default slot.
+Select wraps the native &lt;select&gt; so keyboard support and mobile pickers stay perfect — with token styling, a custom chevron, placeholder support, and options composed through the default slot.

@@ -25,14 +25,14 @@ usage: |-
   ---
   import { Chart } from "astro-ui";
   ---
-
+  
   <Chart
     type="bar"
     title="Revenue by month"
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "combo", "line", "step-line", "dashed-line", "pattern-fill", "pattern-mix", "bump-line", "curved-line", "curved-area", "area", "gradient-area", "gradient-custom", "gradient-bar", "gradient-donut", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "scatter", "hbar", "hbar-stacked", "custom-colors", "gauge", "gauge-half", "gradient-intensity", "radar", "radial", "radial-half", "sankey", "no-grid"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey"]
 props:
   - name: "type"
     type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\"'"
@@ -126,6 +126,18 @@ props:
     type: "number"
     def: "36"
     description: "Tick count around the gauge arc (gauge only, clamped 8–80)."
+  - name: "barStyle"
+    type: "\"rect\" | \"pill\""
+    def: "\"rect\""
+    description: "Rectangular or thin fully-rounded pill columns (bar)."
+  - name: "gaugeStyle"
+    type: "\"line\" | \"block\""
+    def: "\"line\""
+    description: "Thin ticks or thick rounded block segments (gauge)."
+  - name: "gaugeRamp"
+    type: "string[]"
+    def: "—"
+    description: "2+ CSS colors interpolated across the gauge arc (block style)."
   - name: "gradientIntensity"
     type: "number"
     def: "1"
@@ -159,7 +171,4 @@ faq:
     a: "Three ways: the svg has role=img with a summary aria-label, a visually hidden table mirrors every value, and each mark has a <title>."
 ---
 
-Chart renders pure SVG at build time from a data prop — no chart library, no client JS. Seven types share one API:
-cartesian charts (bar, line, area, scatter) take labels + series; pie/donut take a single series; hbar renders labeled
-horizontal progress rows. Colors read --ui-chart-1..6 tokens so charts follow the theme, and a visually hidden data
-table carries the values for screen readers.
+Chart renders pure SVG at build time from a data prop — no chart library, no client JS. Seven types share one API: cartesian charts (bar, line, area, scatter) take labels + series; pie/donut take a single series; hbar renders labeled horizontal progress rows. Colors read --ui-chart-1..6 tokens so charts follow the theme, and a visually hidden data table carries the values for screen readers.

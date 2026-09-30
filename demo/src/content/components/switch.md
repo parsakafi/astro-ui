@@ -23,7 +23,7 @@ usage: |-
   ---
   import { Switch } from "astro-ui";
   ---
-
+  
   <Switch name="wifi" checked>Wi-Fi</Switch>
 demoIds: ["basic", "shapes"]
 props:
@@ -68,5 +68,4 @@ faq:
     a: "Switch = immediate effect (settings toggle). Checkbox = submit-time selection. They're built on the same native input, so either submits identically."
 ---
 
-Switch is an on/off toggle built on a native checkbox carrying role="switch" — screen readers announce On/Off, Tab and
-Space work natively, and the form value is a real checkbox value.
+Switch is an on/off toggle built on a native checkbox carrying role="switch" — screen readers announce On/Off, Tab and Space work natively, and the form value is a real checkbox value.

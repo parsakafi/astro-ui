@@ -14,6 +14,8 @@ features:
   - "Bar and circle variants"
   - "Determinate (value) or indeterminate"
   - "6 sizes, 8 colors"
+  - "stripes: static or animated diagonal stripes on the bar fill"
+  - "stripedTrack / segmented / squared bar styles"
   - "label + showValue text"
   - "RTL: fill and label mirror via logical properties"
 a11y:
@@ -23,10 +25,10 @@ usage: |-
   ---
   import { Progress } from "astro-ui";
   ---
-
+  
   <Progress value={64} label="Uploading" showValue />
   <Progress variant="circle" value={80} showValue />
-demoIds: ["bar", "circle"]
+demoIds: ["bar", "circle", "stripes", "striped-track", "segmented", "squared"]
 props:
   - name: "value"
     type: "number"
@@ -52,6 +54,22 @@ props:
     type: "boolean"
     def: "false"
     description: "Show the percentage."
+  - name: "stripes"
+    type: "boolean | \"static\""
+    def: "false"
+    description: "Diagonal stripes on the bar fill; true animates them."
+  - name: "stripedTrack"
+    type: "boolean"
+    def: "false"
+    description: "Hatch the empty remainder inside an outlined track."
+  - name: "segmented"
+    type: "boolean | number"
+    def: "false"
+    description: "Discrete blocks; a number sets the count."
+  - name: "squared"
+    type: "boolean"
+    def: "false"
+    description: "Gap between fill and track."
   - name: "class"
     type: "string"
     def: "—"
@@ -69,5 +87,4 @@ faq:
     a: "When label is set the component exposes a role=\"progressbar\" with aria-valuenow. Without label, treat it as decorative."
 ---
 
-Progress shows task completion as a bar or circle. Omit value for indeterminate. The circle uses an SVG ring with
-stroke-dashoffset math; the bar anchors its fill inline-start with a riding percentage label.
+Progress shows task completion as a bar or circle. Omit value for indeterminate. `stripes` overlays diagonal stripes on the bar fill (optionally animated), `stripedTrack` hatches the empty remainder, `segmented` renders discrete blocks, and `squared` separates fill and track with a gap. The circle uses an SVG ring with stroke-dashoffset math.

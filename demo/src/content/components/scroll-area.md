@@ -22,7 +22,7 @@ usage: |-
   ---
   import { ScrollArea } from "astro-ui";
   ---
-
+  
   <ScrollArea height="12rem">
     {longList.map((item) => <p>{item}</p>)}
   </ScrollArea>
@@ -56,5 +56,4 @@ faq:
     a: "Native overflow with themed scrollbar styles — no JS scroll simulation, so momentum, keyboard, and touch behaviors all stay native."
 ---
 
-ScrollArea wraps any content in a fixed-size region with a custom-styled, token-themed scrollbar — consistent across
-platforms where the native scrollbar clashes with the design.
+ScrollArea wraps any content in a fixed-size region with a custom-styled, token-themed scrollbar — consistent across platforms where the native scrollbar clashes with the design.

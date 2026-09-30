@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Stepper } from "astro-ui";
   ---
-
+  
   <Stepper
     ariaLabel="Checkout progress"
     items={[
@@ -65,5 +65,4 @@ props:
     description: "Element id."
 ---
 
-Stepper visualizes multi-step progress as a semantic &lt;ol&gt;: numbered markers, ✓ for completed steps, and optional
-links per step. Connectors are CSS pseudo-elements; states are data-attributes.
+Stepper visualizes multi-step progress as a semantic &lt;ol&gt;: numbered markers, ✓ for completed steps, and optional links per step. Connectors are CSS pseudo-elements; states are data-attributes.

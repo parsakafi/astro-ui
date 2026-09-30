@@ -23,7 +23,7 @@ usage: |-
   ---
   import { Field, Input } from "astro-ui";
   ---
-
+  
   <Field id="email" required>
     <span slot="label">Email</span>
     <Input id="email-control" type="email" invalid ariaDescribedby="email-error" />
@@ -58,6 +58,4 @@ faq:
     a: "Give Field an id and the control the matching id=\"{id}-control\", plus aria-describedby=\"{id}-error\" when invalid — Input/Textarea's invalid prop already sets aria-invalid."
 ---
 
-Field composes a form control with its chrome: the default slot carries the control (Input, Select, Textarea…), the
-named slots carry label, hint, and error text. When id is set the wiring is automatic — the label points at
-{id}-control, hint and error get stable ids, and the wrapper exposes data-invalid so themes can recolor the chrome.
+Field composes a form control with its chrome: the default slot carries the control (Input, Select, Textarea…), the named slots carry label, hint, and error text. When id is set the wiring is automatic — the label points at {id}-control, hint and error get stable ids, and the wrapper exposes data-invalid so themes can recolor the chrome.

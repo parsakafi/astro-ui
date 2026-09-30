@@ -22,7 +22,7 @@ usage: |-
   ---
   import { Tag } from "astro-ui";
   ---
-
+  
   <Tag>astro</Tag>
   <Tag variant="soft" shape="pill">design</Tag>
   <Tag variant="outline" closable closeLabel="Remove astro">astro</Tag>
@@ -69,5 +69,4 @@ faq:
     a: "Tag = membership in a set (filter chips, keywords). Badge = status or count attached to something else."
 ---
 
-Tag marks membership in a set — categories, filters, keywords. Unlike Badge (status/count), Tag is for grouping.
-Optional closable renders an accessible × button that stays zero-JS.
+Tag marks membership in a set — categories, filters, keywords. Unlike Badge (status/count), Tag is for grouping. Optional closable renders an accessible × button that stays zero-JS.

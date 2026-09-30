@@ -88,6 +88,4 @@ faq:
     a: "Stacks of 2+ collapse: older cards tuck behind the newest. Hover or focus expands; pass expand: true to pin a stack open."
 ---
 
-Toaster renders stacked notification toasts. Import the toast function, place &lt;Toaster /&gt; once in your layout, and
-fire from anywhere: six semantic helpers, action buttons, per-toast positions, durations, expand/collapse stacks, and
-swipe-free dismiss. The store is a tiny module — no framework island.
+Toaster renders stacked notification toasts. Import the toast function, place &lt;Toaster /&gt; once in your layout, and fire from anywhere: six semantic helpers, action buttons, per-toast positions, durations, expand/collapse stacks, and swipe-free dismiss. The store is a tiny module — no framework island.

@@ -21,7 +21,7 @@ usage: |-
   ---
   import { Empty, Button } from "astro-ui";
   ---
-
+  
   <Empty>
     <span slot="media" aria-hidden="true">⌀</span>
     <span slot="title">No results</span>
@@ -57,5 +57,4 @@ slots:
     description: "Action row (buttons)."
 ---
 
-Empty marks the 'no data' moment: an icon or illustration slot, a title, a description, and an action footer. Every part
-is optional — compose what the state needs.
+Empty marks the 'no data' moment: an icon or illustration slot, a title, a description, and an action footer. Every part is optional — compose what the state needs.

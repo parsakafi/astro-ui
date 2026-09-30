@@ -21,7 +21,7 @@ usage: |-
   ---
   import { Label, Input } from "astro-ui";
   ---
-
+  
   <Label for="email" required>Email</Label>
   <Input id="email" type="email" />
 demoIds: ["basic"]
@@ -55,5 +55,4 @@ faq:
     a: "Wrapping works, but explicit for/id keeps the association when the control isn't a direct child (grids, portals) and is what this component enforces."
 ---
 
-Label renders a semantic &lt;label&gt; tied to a control via for. Required adds a visual marker; disabled dims the text
-to match a disabled control.
+Label renders a semantic &lt;label&gt; tied to a control via for. Required adds a visual marker; disabled dims the text to match a disabled control.

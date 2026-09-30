@@ -22,7 +22,7 @@ usage: |-
   ---
   import { HoverCard } from "astro-ui";
   ---
-
+  
   <HoverCard ariaLabel="Profile preview">
     <a href="/users/ada">@ada</a>
     <div slot="content">
@@ -58,7 +58,4 @@ faq:
     a: "No — it's pointer-driven and dismissible. The trigger must carry the primary content; the card is an enhancement (same rule as Tooltip)."
 ---
 
-HoverCard is the CSS-only sibling of Popover: content that appears after a short delay when the user hovers or focuses
-the trigger. Unlike Tooltip the card stays interactive (links inside work) and carries an aria-label so assistive tech
-can announce it. Because it is pointer-driven, never put essential information only in a HoverCard — the trigger itself
-must carry the primary content.
+HoverCard is the CSS-only sibling of Popover: content that appears after a short delay when the user hovers or focuses the trigger. Unlike Tooltip the card stays interactive (links inside work) and carries an aria-label so assistive tech can announce it. Because it is pointer-driven, never put essential information only in a HoverCard — the trigger itself must carry the primary content.

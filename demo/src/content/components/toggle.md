@@ -22,9 +22,9 @@ usage: |-
   ---
   import { Toggle } from "astro-ui";
   ---
-
+  
   <Toggle ariaLabel="Bold"><strong>B</strong></Toggle>
-
+  
   <script>
     document.querySelectorAll(".aui-toggle").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -69,7 +69,4 @@ faq:
     a: "Nowhere — Toggle is SSR-only. Flip aria-pressed (and toggle the aui-toggle--pressed class) in a one-line app script; see the usage example."
 ---
 
-Toggle is a semantic &lt;button type="button"&gt; that carries aria-pressed. State is server-rendered: pass pressed for
-SSR-controlled state (e.g. a filter that is on for the initial page load), and flip the attribute with your own one-line
-script when the user clicks. Styles mirror Button: default (muted fill when pressed) and outline (primary fill) variants
-at three sizes.
+Toggle is a semantic &lt;button type="button"&gt; that carries aria-pressed. State is server-rendered: pass pressed for SSR-controlled state (e.g. a filter that is on for the initial page load), and flip the attribute with your own one-line script when the user clicks. Styles mirror Button: default (muted fill when pressed) and outline (primary fill) variants at three sizes.

@@ -25,7 +25,7 @@ usage: |-
   ---
   import { Collapsible } from "astro-ui";
   ---
-
+  
   <Collapsible id="filters" open>
     <span slot="trigger">Filters</span>
     <p>Any composed content…</p>
@@ -64,9 +64,4 @@ faq:
     a: "Yes. Closed panels use hidden=\"until-found\", so Ctrl/Cmd+F, #hash links, and :~:text= fragments match collapsed content and the browser reveals it (firing beforematch — the component keeps aria-expanded in sync). Native <details> accordions get the same behavior from the platform. Falls back to display: none where unsupported."
 ---
 
-Collapsible is an expand/collapse region whose trigger is a separate button that can live anywhere in the markup, and
-whose panel is arbitrary composed content — unlike Accordion, which uses native &lt;details&gt; with content authored as
-data. The scoped script toggles hidden + aria-expanded and closes on Escape. Closed panels use hidden="until-found":
-find-in-page, #hash deep links, and :~:text= fragments can still match and reveal collapsed content (the browser fires
-beforematch and removes the attribute; aria-expanded stays in sync). Multiple collapsibles on one page are supported —
-each root is wired independently by its data attribute.
+Collapsible is an expand/collapse region whose trigger is a separate button that can live anywhere in the markup, and whose panel is arbitrary composed content — unlike Accordion, which uses native &lt;details&gt; with content authored as data. The scoped script toggles hidden + aria-expanded and closes on Escape. Closed panels use hidden="until-found": find-in-page, #hash deep links, and :~:text= fragments can still match and reveal collapsed content (the browser fires beforematch and removes the attribute; aria-expanded stays in sync). Multiple collapsibles on one page are supported — each root is wired independently by its data attribute.

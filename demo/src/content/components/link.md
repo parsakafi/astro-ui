@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Link } from "astro-ui";
   ---
-
+  
   <Link href="https://astro.build" external icon="external">Astro</Link>
 demoIds: ["basic", "external", "colors", "disabled"]
 props:
@@ -116,7 +116,4 @@ faq:
     a: "No — deliberately. They render data-* attributes so a router, an Astro island, or a small script can adopt them. The component itself ships zero JavaScript."
 ---
 
-Link renders a styled &lt;a&gt; with smart defaults: external or target="_blank" links automatically get rel="noopener
-noreferrer" (opt out with noRel or a custom rel). Disabled links drop their href and mute out. Icons are currentColor
-CSS masks — no JS, no icon dependency. Navigation hints like prefetch, replace, and viewTransition only render data-*
-attributes for your router or islands to adopt.
+Link renders a styled &lt;a&gt; with smart defaults: external or target="_blank" links automatically get rel="noopener noreferrer" (opt out with noRel or a custom rel). Disabled links drop their href and mute out. Icons are currentColor CSS masks — no JS, no icon dependency. Navigation hints like prefetch, replace, and viewTransition only render data-* attributes for your router or islands to adopt.

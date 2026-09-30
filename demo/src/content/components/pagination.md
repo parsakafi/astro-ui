@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Pagination } from "astro-ui";
   ---
-
+  
   <Pagination
     page={2}
     total={9}
@@ -77,5 +77,4 @@ faq:
     a: "Pagination navigates — real anchors keep it functional without JS, shareable, and indexable. SPA-style paging can layer on top app-side."
 ---
 
-Pagination renders fully server-rendered page links — every page is a real &lt;a&gt;, so it works without JS and is
-crawlable. Pages outside the sibling window collapse into ellipsis; prev/next disable at the ends.
+Pagination renders fully server-rendered page links — every page is a real &lt;a&gt;, so it works without JS and is crawlable. Pages outside the sibling window collapse into ellipsis; prev/next disable at the ends.

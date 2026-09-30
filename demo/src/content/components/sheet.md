@@ -24,13 +24,13 @@ usage: |-
   ---
   import { Button, Sheet } from "astro-ui";
   ---
-
+  
   <Button id="open-menu">Menu</Button>
   <Sheet id="menu" side="left">
     <h2 slot="title">Menu</h2>
     <p>Sheet body…</p>
   </Sheet>
-
+  
   <script>
     document.getElementById("open-menu")?.addEventListener("click", () => {
       document.getElementById("menu")?.showModal();
@@ -84,7 +84,4 @@ faq:
     a: "No — left/right panels are width: min(100%, 100vw) and top/bottom panels cap at max-height: 85vh; the size prop just tunes the base scale."
 ---
 
-Sheet is a dialog panel that slides in from a screen edge — built on the same native &lt;dialog&gt; foundation as
-Dialog: modality, ::backdrop, Escape-to-close, and focus containment come from the platform and the component ships zero
-JS. Closing needs no JS: any &lt;form method="dialog"&gt; button, the optional built-in close button, or Escape
-dismisses natively. When id is set, the title slot gets {id}-title and the sheet points aria-labelledby at it.
+Sheet is a dialog panel that slides in from a screen edge — built on the same native &lt;dialog&gt; foundation as Dialog: modality, ::backdrop, Escape-to-close, and focus containment come from the platform and the component ships zero JS. Closing needs no JS: any &lt;form method="dialog"&gt; button, the optional built-in close button, or Escape dismisses natively. When id is set, the title slot gets {id}-title and the sheet points aria-labelledby at it.

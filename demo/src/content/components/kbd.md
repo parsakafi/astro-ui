@@ -21,7 +21,7 @@ usage: |-
   ---
   import { Kbd } from "astro-ui";
   ---
-
+  
   <p>Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to search.</p>
 demoIds: ["basic"]
 props:
@@ -51,5 +51,4 @@ props:
     description: "Accessible name."
 ---
 
-Kbd renders an inline semantic &lt;kbd&gt; styled as a key cap. Optional raised shadow gives physical depth. Use inside
-prose; describe sequences with an accessible label on a wrapper.
+Kbd renders an inline semantic &lt;kbd&gt; styled as a key cap. Optional raised shadow gives physical depth. Use inside prose; describe sequences with an accessible label on a wrapper.

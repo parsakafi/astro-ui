@@ -23,7 +23,7 @@ usage: |-
   ---
   import { Button, AlertDialog } from "astro-ui";
   ---
-
+  
   <Button id="open-delete">Delete project</Button>
   <AlertDialog id="delete">
     <h2 slot="title">Delete project?</h2>
@@ -35,7 +35,7 @@ usage: |-
       </form>
     </Fragment>
   </AlertDialog>
-
+  
   <script>
     document.getElementById("open-delete")?.addEventListener("click", () => {
       document.getElementById("delete")?.showModal();
@@ -75,8 +75,4 @@ faq:
     a: "No — only the app-level trigger (showModal()) is yours; modality, focus containment, and Escape all come from native <dialog>."
 ---
 
-AlertDialog is a modal that interrupts for a decision — role="alertdialog" tells assistive tech to announce the message
-immediately. Structure mirrors Dialog (native &lt;dialog&gt;, platform modality/focus containment, zero JS in the
-component) with an action-oriented footer: cancel buttons are plain &lt;form method="dialog"&gt; submissions, so
-dismissal needs no JS. The dialog's returnValue receives the submitting button's value, so the app can tell which action
-dismissed it.
+AlertDialog is a modal that interrupts for a decision — role="alertdialog" tells assistive tech to announce the message immediately. Structure mirrors Dialog (native &lt;dialog&gt;, platform modality/focus containment, zero JS in the component) with an action-oriented footer: cancel buttons are plain &lt;form method="dialog"&gt; submissions, so dismissal needs no JS. The dialog's returnValue receives the submitting button's value, so the app can tell which action dismissed it.

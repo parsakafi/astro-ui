@@ -28,11 +28,11 @@ usage: |-
   ---
   import { Avatar, AvatarGroup } from "astro-ui";
   ---
-
+  
   <Avatar name="Ada Lovelace" src="/ada.jpg" />
   <Avatar name="Grace" status="online" />
   <Avatar name="Alan" ring="primary" size="lg" />
-
+  
   <AvatarGroup hover>
     <Avatar name="Ada" /><Avatar name="Grace" />
     <Fragment slot="count">+3</Fragment>
@@ -110,8 +110,4 @@ faq:
     a: "The ring demos compose a wrapper with a conic-gradient background behind the avatar (see each demo's code tab). The ring prop covers static rings; animated story rings stay in user CSS."
 ---
 
-Avatar renders an <img> when src is provided, otherwise initials derived from name. Beyond the base surface it composes
-the extras design systems need: an online status badge (four states, four corners), colored rings, radius overrides,
-custom explicit sizes, a grayscale filter (with hover-to-restore), a loading spinner veil, and a badge slot for counts
-or checkmarks. AvatarGroup stacks avatars with overlap and an optional trailing count chip (numeric or icon) with an
-optional hover-spread.
+Avatar renders an <img> when src is provided, otherwise initials derived from name. Beyond the base surface it composes the extras design systems need: an online status badge (four states, four corners), colored rings, radius overrides, custom explicit sizes, a grayscale filter (with hover-to-restore), a loading spinner veil, and a badge slot for counts or checkmarks. AvatarGroup stacks avatars with overlap and an optional trailing count chip (numeric or icon) with an optional hover-spread.

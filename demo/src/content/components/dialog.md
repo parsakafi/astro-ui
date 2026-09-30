@@ -25,7 +25,7 @@ usage: |-
   ---
   import { Dialog, Button } from "astro-ui";
   ---
-
+  
   <Button id="open">Open</Button>
   <Dialog id="prefs">
     <h2 slot="title">Preferences</h2>
@@ -82,6 +82,4 @@ faq:
     a: "Yes — recipe: dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); })."
 ---
 
-Dialog is the first JS-required component — and deliberately so: it's a thin styled wrapper over native &lt;dialog&gt;,
-so modality, backdrop, focus containment, Escape, and focus return all come from the platform. The component ships zero
-JS; your app calls showModal ().
+Dialog is the first JS-required component — and deliberately so: it's a thin styled wrapper over native &lt;dialog&gt;, so modality, backdrop, focus containment, Escape, and focus return all come from the platform. The component ships zero JS; your app calls showModal().

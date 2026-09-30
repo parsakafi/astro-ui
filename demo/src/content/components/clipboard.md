@@ -24,9 +24,9 @@ usage: |-
   ---
   import { Clipboard } from "astro-ui";
   ---
-
+  
   <Clipboard value="npm install astro-ui" auto />
-
+  
   <!-- or wire it yourself -->
   <Clipboard value="npx astro add" />
   <script>
@@ -87,6 +87,4 @@ faq:
     a: "Yes — it renders a real button whose aria-label defaults to Copy <value> (override with ariaLabel), and copy success is announced via the live region."
 ---
 
-Clipboard renders an icon-first trigger button carrying its value in data-aui-clipboard. On success the copy icon swaps
-to a green check and a polite live region confirms. Ships zero JS by default — wire it app-side, or set auto to opt into
-a ~10-line built-in handler using the async Clipboard API. onlyIcon renders a square icon-only trigger for code blocks.
+Clipboard renders an icon-first trigger button carrying its value in data-aui-clipboard. On success the copy icon swaps to a green check and a polite live region confirms. Ships zero JS by default — wire it app-side, or set auto to opt into a ~10-line built-in handler using the async Clipboard API. onlyIcon renders a square icon-only trigger for code blocks.

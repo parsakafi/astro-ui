@@ -25,7 +25,7 @@ usage: |-
   ---
   import { Bubble, BubbleContent, BubbleReactions } from "astro-ui";
   ---
-
+  
   <Bubble align="end" variant="primary">
     <BubbleContent>Looks great — ship it.</BubbleContent>
     <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">
@@ -62,6 +62,4 @@ faq:
     a: "When one sender sends several turns in a row: group them so spacing tightens and the run reads as a single message block. Give each group an ariaLabel naming the sender."
 ---
 
-Bubble composes a conversational message from three parts: Bubble sets alignment (start/end) and variant context,
-BubbleContent is the visible rounded box, and BubbleReactions anchors a reaction pill to an edge. BubbleGroup stacks
-consecutive same-sender turns with tight spacing. Ghost renders bare content for headings, lists, and code.
+Bubble composes a conversational message from three parts: Bubble sets alignment (start/end) and variant context, BubbleContent is the visible rounded box, and BubbleReactions anchors a reaction pill to an edge. BubbleGroup stacks consecutive same-sender turns with tight spacing. Ghost renders bare content for headings, lists, and code.

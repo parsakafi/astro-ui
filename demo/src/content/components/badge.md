@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Badge } from "astro-ui";
   ---
-
+  
   <Badge variant="success">Active</Badge>
   <Badge content="3" position="top-right" variant="destructive" ariaLabel="3 notifications" />
     Inbox
@@ -83,7 +83,4 @@ faq:
     a: "Anything in the icon slot is boxed at --aui-badge-icon (default 0.875em) and scales with the badge. Set the variable inline, e.g. style=\"--aui-badge-icon: 1rem\", for a 16px flag."
 ---
 
-Badge is a zero-JS status and count label. Inline it next to text, or use it as an overlay bubble pinned to another
-element's corner with content + position. Inline badges compose: an icon slot (or any image, e.g. a flag) sized via
---aui-badge-icon, a variant-tinted status dot, optically aligned avatars, and a labeled dismiss button. Counts stay real
-text so screen readers announce them.
+Badge is a zero-JS status and count label. Inline it next to text, or use it as an overlay bubble pinned to another element's corner with content + position. Inline badges compose: an icon slot (or any image, e.g. a flag) sized via --aui-badge-icon, a variant-tinted status dot, optically aligned avatars, and a labeled dismiss button. Counts stay real text so screen readers announce them.

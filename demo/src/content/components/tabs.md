@@ -25,7 +25,7 @@ usage: |-
   ---
   import { Tabs } from "astro-ui";
   ---
-
+  
   <Tabs id="settings" ariaLabel="Settings" defaultValue="billing"
     items={[
       { value: "account", label: "Account" },
@@ -82,6 +82,4 @@ faq:
     a: "Give each a unique id — generated tab/panel ids derive from it."
 ---
 
-Tabs implements the WAI-ARIA tabs pattern: SSR renders the list with the initial tab pre-selected, panels hide via the
-hidden attribute, and a small inline script wires click + arrow-key navigation with automatic activation. Without JS
-everything stays visible and meaningful.
+Tabs implements the WAI-ARIA tabs pattern: SSR renders the list with the initial tab pre-selected, panels hide via the hidden attribute, and a small inline script wires click + arrow-key navigation with automatic activation. Without JS everything stays visible and meaningful.

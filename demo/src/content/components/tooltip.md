@@ -22,7 +22,7 @@ usage: |-
   ---
   import { Tooltip, Button } from "astro-ui";
   ---
-
+  
   <Tooltip ariaLabel="Delete item">
     <Button size="icon" variant="destructive" ariaLabel="Delete">␡</Button>
     <span slot="content">Delete this item permanently</span>
@@ -63,5 +63,4 @@ faq:
     a: "CSS-only tooltips don't trigger on tap by design — never put essential info in one; show it inline instead."
 ---
 
-Tooltip wraps a trigger and reveals a bubble on :hover and :focus-visible — pure CSS, no script. The bubble is
-aria-hidden; name the trigger with aria-label. Tooltips never carry essential information.
+Tooltip wraps a trigger and reveals a bubble on :hover and :focus-visible — pure CSS, no script. The bubble is aria-hidden; name the trigger with aria-label. Tooltips never carry essential information.

@@ -27,7 +27,7 @@ usage: |-
   ---
   import { Autocomplete } from "astro-ui";
   ---
-
+  
   <Autocomplete
     name="framework"
     placeholder="Pick a framework…"
@@ -107,7 +107,4 @@ faq:
     a: "Yes — set filter={false} so the script doesn't filter client-side, then listen for input events and render your own options into the listbox panel (or re-render the whole component server-side per request)."
 ---
 
-Autocomplete pairs a text input with a filtered suggestion list using the WAI-ARIA combobox + listbox pattern. Type to
-filter (case-insensitive substring on label/value), move with ↑/↓, commit with Enter, dismiss with Escape, jump with
-Home/End. Options render server-side; a small scoped script handles filtering and focus. The committed value posts with
-the form under the field's `name` — a native input underneath, so forms and autofill behave.
+Autocomplete pairs a text input with a filtered suggestion list using the WAI-ARIA combobox + listbox pattern. Type to filter (case-insensitive substring on label/value), move with ↑/↓, commit with Enter, dismiss with Escape, jump with Home/End. Options render server-side; a small scoped script handles filtering and focus. The committed value posts with the form under the field's `name` — a native input underneath, so forms and autofill behave.

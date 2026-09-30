@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Table } from "astro-ui";
   ---
-
+  
   <Table caption="Team members">
     <tr slot="head"><th class="aui-table__head-cell">Name</th></tr>
     <tr><td class="aui-table__cell">Ada</td></tr>
@@ -79,5 +79,4 @@ faq:
     a: "The wrapper scopes styles; cells belong to your markup, so applying aui-table__cell / aui-table__head-cell opts them into the theme."
 ---
 
-Table styles a real &lt;table&gt; — head/body/footer compose through slots so you keep full control of rows and cells.
-Bordered, striped, aligned, and scrollable modes; caption prop for the accessible name.
+Table styles a real &lt;table&gt; — head/body/footer compose through slots so you keep full control of rows and cells. Bordered, striped, aligned, and scrollable modes; caption prop for the accessible name.

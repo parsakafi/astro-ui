@@ -22,7 +22,7 @@ usage: |-
   ---
   import { Skeleton } from "astro-ui";
   ---
-
+  
   <Skeleton style="width:100%;height:1rem" />
   <Skeleton variant="circle" style="width:3rem;height:3rem" />
 demoIds: ["basic", "card"]
@@ -48,5 +48,4 @@ faq:
     a: "Skeletons are aria-hidden decoration. Put aria-busy=true on the loading region and swap it out when content arrives."
 ---
 
-Skeleton reserves layout space with a pulsing neutral block while content loads — text lines, circles, rectangles — so
-the final content swaps in without reflow.
+Skeleton reserves layout space with a pulsing neutral block while content loads — text lines, circles, rectangles — so the final content swaps in without reflow.

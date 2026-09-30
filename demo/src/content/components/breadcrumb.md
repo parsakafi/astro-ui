@@ -26,7 +26,7 @@ usage: |-
   ---
   import { Breadcrumb } from "astro-ui";
   ---
-
+  
   <Breadcrumb
     ariaLabel="Breadcrumb"
     items={[
@@ -74,7 +74,4 @@ faq:
     a: "Set ellipsis: true on a middle item to render a presentational …, or compose a Popover trigger inside an item so users can open the hidden segments from the ellipsis."
 ---
 
-Breadcrumb renders a &lt;nav aria-label&gt; of links — a flat flex container, no list markup. The current page is a
-non-link span with aria-current="page"; separators are drawn in CSS pseudo-elements. Pass `items` for data-driven trails
-(with optional icon and ellipsis fields) or omit items and author composed &lt;span&gt; children for badges, avatars,
-dropdown triggers, and buttons.
+Breadcrumb renders a &lt;nav aria-label&gt; of links — a flat flex container, no list markup. The current page is a non-link span with aria-current="page"; separators are drawn in CSS pseudo-elements. Pass `items` for data-driven trails (with optional icon and ellipsis fields) or omit items and author composed &lt;span&gt; children for badges, avatars, dropdown triggers, and buttons.

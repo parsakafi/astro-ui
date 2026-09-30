@@ -24,7 +24,7 @@ usage: |-
   ---
   import { Input, Label } from "astro-ui";
   ---
-
+  
   <Label for="email" required>Email</Label>
   <Input id="email" name="email" type="email" placeholder="ada@example.com" />
 demoIds: ["types", "states", "sizes"]
@@ -74,5 +74,4 @@ faq:
     a: "Server/form-driven: set invalid and point ariaDescribedby at the message element. No client JS ships or runs."
 ---
 
-Input covers all 16 native types — text, email, password, date, color, range, file and friends — with token styling,
-size/variant control, and invalid state for server-driven validation. Numeric/date bounds forward via rest attributes.
+Input covers all 16 native types — text, email, password, date, color, range, file and friends — with token styling, size/variant control, and invalid state for server-driven validation. Numeric/date bounds forward via rest attributes.
