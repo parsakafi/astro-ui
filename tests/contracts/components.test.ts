@@ -63,6 +63,7 @@ describe("component contracts", () => {
         "Checkbox.astro",
         "Clipboard.astro",
         "Collapsible.astro",
+        "Combobox.astro",
         "Dialog.astro",
         "Empty.astro",
         "Field.astro",
@@ -162,6 +163,7 @@ describe("component contracts", () => {
   it("marks JS-required components and everything else zero-JS", () => {
     const jsRequired = new Set([
       "Autocomplete.astro",
+      "Combobox.astro",
       "AlertDialog.astro",
       "Collapsible.astro",
       "Dialog.astro",

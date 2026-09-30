@@ -25,6 +25,7 @@ export {default as BubbleContent} from "./src/components/data-display/BubbleCont
 export {default as BubbleGroup} from "./src/components/data-display/BubbleGroup.astro";
 export {default as BubbleReactions} from "./src/components/data-display/BubbleReactions.astro";
 export {default as Autocomplete} from "./src/components/forms/Autocomplete.astro";
+export {default as Combobox} from "./src/components/forms/Combobox.astro";
 export {default as Badge} from "./src/components/data-display/Badge.astro";
 export {default as Breadcrumb} from "./src/components/navigation/Breadcrumb.astro";
 export {default as Button} from "./src/components/general/Button.astro";

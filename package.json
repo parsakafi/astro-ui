@@ -19,6 +19,7 @@
     "./aspect-ratio": "./src/components/layout/AspectRatio.astro",
     "./attachment": "./src/components/data-display/Attachment.astro",
     "./autocomplete": "./src/components/forms/Autocomplete.astro",
+    "./combobox": "./src/components/forms/Combobox.astro",
     "./breadcrumb": "./src/components/navigation/Breadcrumb.astro",
     "./clipboard": "./src/components/general/Clipboard.astro",
     "./collapsible": "./src/components/layout/Collapsible.astro",

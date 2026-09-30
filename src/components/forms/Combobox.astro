@@ -1,0 +1,708 @@
+---
+/**
+  * Combobox — a select-style trigger that opens a searchable listbox.
+  *
+  * Unlike Autocomplete (a typable text input that suggests), Combobox
+  * reads like a select: the trigger shows the committed value, and a
+  * search field inside the panel filters the options. Implements the
+  * WAI-ARIA combobox + listbox pattern:
+  *
+  *   <Combobox name="framework" items={["Astro", "Next.js"]} />
+  *
+  * Pass plain strings, or `{ value, label, hint }` objects for a muted
+  * hint line per option. `groups` renders labelled sections instead.
+  * The trigger participates in forms via a hidden input (name +
+  * committed value). With JS disabled the trigger still renders the
+  * current value; the search/listbox needs the small scoped script.
+  *
+  * JavaScript required: Yes (popup, search filter, listbox navigation)
+  */
+import {cn} from "../../utils/cn";
+
+export interface ComboboxOption {
+  value: string;
+  label: string;
+  hint?: string;
+}
+
+export interface Props {
+  /** Options as strings or { value, label, hint } objects. */
+  items?: (string | ComboboxOption)[];
+  /** Labelled sections: `{ label, items }[]` (overrides items). */
+  groups?: { label: string; items: (string | ComboboxOption)[] }[];
+  /** Form field name; the committed option value posts with the form. */
+  name?: string;
+  /** Initial committed value (server-side preselect). */
+  value?: string;
+  placeholder?: string;
+  /** Text shown when the filter matches nothing. */
+  emptyMessage?: string;
+  /** Placeholder for the search field inside the popup. */
+  searchPlaceholder?: string;
+  /** Highlight the first match automatically on filter. */
+  autoHighlight?: boolean;
+  /** Show a clear (✕) button on the trigger when a value is committed. */
+  clearable?: boolean;
+  /** Renders the trigger matching a control size. */
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  /** Visual variant of the trigger. */
+  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  disabled?: boolean;
+  required?: boolean;
+  invalid?: boolean;
+  /** Floating panel placement relative to the trigger. */
+  placement?: "bottom" | "top";
+  /** Fixed panel width; defaults to the trigger width. */
+  panelWidth?: string;
+  class?: string;
+  id?: string;
+  ariaLabel?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  items = [],
+  groups,
+  name,
+  value,
+  placeholder = "Select…",
+  emptyMessage = "No results found.",
+  searchPlaceholder = "Search…",
+  autoHighlight = false,
+  clearable = false,
+  size = "md",
+  variant = "inherit",
+  disabled = false,
+  required = false,
+  invalid = false,
+  placement = "bottom",
+  panelWidth,
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props;
+
+const uid = id ?? `aui-cb-${Math.random().toString(36).slice(2, 8)}`;
+const listId = `${uid}-list`;
+const triggerId = `${uid}-trigger`;
+
+interface Norm {
+  value: string;
+  label: string;
+  hint?: string;
+}
+const norm = (o: string | ComboboxOption): Norm =>
+  typeof o === "string" ? {value: o, label: o} : o;
+
+const allOptions = (groups ?? [{label: "", items}]).flatMap((g) => g.items.map(norm));
+const initial = allOptions.find((o) => o.value === value);
+const initialLabel = initial?.label ?? value ?? "";
+
+/** Everything the scoped script needs, inlined as JSON. */
+const config = {
+  uid,
+  listId,
+  autoHighlight,
+  emptyMessage,
+  groups:
+    groups?.map((g) => ({
+      label: g.label,
+      items: g.items.map(norm),
+    })) ?? null,
+  items: items.map(norm),
+  initialValue: value ?? "",
+  placeholder,
+};
+
+const classes = cn(
+  "aui-combobox",
+  `aui-combobox--${size}`,
+  `aui-combobox--variant-${variant}`,
+  `aui-combobox--${placement}`,
+  invalid && "aui-combobox--invalid",
+  disabled && "aui-combobox--disabled",
+  className,
+);
+---
+
+<span class={classes} id={uid} data-disabled={disabled || undefined}>
+  <input class="aui-combobox__native" type="hidden" name={name} value={value} required={required || undefined} aria-hidden="true" tabindex="-1"/>
+  <slot name="label"/>
+  <button
+    type="button"
+    class="aui-combobox__trigger"
+    id={triggerId}
+    role="combobox"
+    aria-expanded="false"
+    aria-controls={listId}
+    aria-haspopup="listbox"
+    aria-invalid={invalid || undefined}
+    aria-label={ariaLabel}
+    disabled={disabled || undefined}
+    {...rest}
+  >
+    <span class="aui-combobox__value" data-placeholder={!initial ? "true" : undefined}>
+      {initial ? initial.label : placeholder}
+    </span>
+    <span class="aui-combobox__icons">
+      {
+        clearable && initial && (
+          /* A span, not a button — nested buttons are invalid HTML and
+             the parser splits them, hoisting the clear out of the
+             trigger and swallowing what follows it. */
+          <span role="button" tabindex="-1" class="aui-combobox__clear" aria-label="Clear">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+              <path d="M1 1l8 8M9 1l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+        )
+      }
+      <svg class="aui-combobox__chevron" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+  </button>
+  <script type="application/json" data-aui-combobox-config set:html={JSON.stringify(config)}/>
+  <div
+    class="aui-combobox__panel"
+    id={listId}
+    role="listbox"
+    aria-label={ariaLabel ?? placeholder}
+    hidden
+    style={panelWidth ? `inline-size:${panelWidth}` : undefined}
+  >
+    <span class="aui-combobox__search">
+      <svg class="aui-combobox__search-icon" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <input
+        class="aui-combobox__search-input"
+        type="text"
+        role="combobox"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder={searchPlaceholder}
+        aria-controls={listId}
+        aria-autocomplete="list"
+      />
+    </span>
+    <div class="aui-combobox__list">
+      {
+        groups ? (
+          groups.map((g) => (
+            <div class="aui-combobox__group" role="group" aria-label={g.label}>
+              <p class="aui-combobox__group-label">{g.label}</p>
+              {g.items.map(norm).map((o) => (
+                <div class="aui-combobox__option" role="option" aria-selected={o.value === value ? "true" : "false"} data-value={o.value} tabindex="-1">
+                  <span class="aui-combobox__option-label">{o.label}</span>
+                  {o.hint && <span class="aui-combobox__option-hint">{o.hint}</span>}
+                  <svg class="aui-combobox__option-check" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M3 8.5l3.5 3.5L13 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              ))}
+            </div>
+          ))
+        ) : (
+          items.map(norm).map((o) => (
+            <div class="aui-combobox__option" role="option" aria-selected={o.value === value ? "true" : "false"} data-value={o.value} tabindex="-1">
+              <span class="aui-combobox__option-label">{o.label}</span>
+              {o.hint && <span class="aui-combobox__option-hint">{o.hint}</span>}
+              <svg class="aui-combobox__option-check" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8.5l3.5 3.5L13 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          ))
+        )
+      }
+      <p class="aui-combobox__empty" hidden>{emptyMessage}</p>
+    </div>
+  </div>
+</span>
+
+<script>
+  // WAI-ARIA combobox wiring: trigger opens the panel, the in-panel
+  // search filters, ↑/↓ move, Enter commits, Escape dismisses.
+  // Each instance is self-contained (config inlined as JSON).
+  const setup = (root: HTMLElement) => {
+    const trigger = root.querySelector<HTMLButtonElement>(".aui-combobox__trigger");
+    const panel = root.querySelector<HTMLElement>(".aui-combobox__panel");
+    const list = root.querySelector<HTMLElement>(".aui-combobox__list");
+    const search = root.querySelector<HTMLInputElement>(".aui-combobox__search-input");
+    const valueEl = root.querySelector<HTMLElement>(".aui-combobox__value");
+    const native = root.querySelector<HTMLInputElement>(".aui-combobox__native");
+    const empty = root.querySelector<HTMLElement>(".aui-combobox__empty");
+    const cfgEl = root.querySelector<HTMLScriptElement>("script[data-aui-combobox-config]");
+    if (!trigger || !panel || !list || !search || !valueEl || !native || !empty || !cfgEl) return;
+
+    const cfg = JSON.parse(cfgEl.textContent ?? "{}") as {
+      uid: string;
+      autoHighlight: boolean;
+      initialValue: string;
+      placeholder: string;
+    };
+    const groups = [...root.querySelectorAll<HTMLElement>(".aui-combobox__group")];
+    const options = () =>
+      [...root.querySelectorAll<HTMLElement>(".aui-combobox__option:not([hidden])")];
+
+    let open = false;
+    let activeIndex = -1;
+    let committed = cfg.initialValue;
+
+    const setValue = (v: string, label: string) => {
+      committed = v;
+      native.value = v;
+      // Empty commit restores the placeholder text so the trigger
+      // keeps its shape instead of collapsing around the chevron.
+      valueEl.textContent = label || cfg.placeholder;
+      if (label) valueEl.removeAttribute("data-placeholder");
+      else valueEl.setAttribute("data-placeholder", "true");
+      for (const opt of root.querySelectorAll<HTMLElement>(".aui-combobox__option")) {
+        opt.setAttribute("aria-selected", opt.dataset.value === v ? "true" : "false");
+      }
+      const clear = root.querySelector<HTMLElement>(".aui-combobox__clear");
+      if (clear) clear.hidden = !v;
+    };
+
+    const setActive = (i: number) => {
+      activeIndex = i;
+      const current = options()[i];
+      for (const [idx, opt] of options().entries()) {
+        opt.setAttribute("data-active", idx === i ? "true" : "false");
+      }
+      if (current) {
+        search.setAttribute("aria-activedescendant", current.dataset.value ?? "");
+        current.scrollIntoView({block: "nearest"});
+      } else {
+        search.removeAttribute("aria-activedescendant");
+      }
+    };
+
+    const matches = (opt: HTMLElement) => {
+      const q = search.value.trim().toLowerCase();
+      if (!q) return true;
+      const text = (
+        (opt.querySelector(".aui-combobox__option-label")?.textContent ?? "") +
+        " " +
+        (opt.dataset.value ?? "")
+      ).toLowerCase();
+      return text.includes(q);
+    };
+
+    const applyFilter = () => {
+      for (const opt of root.querySelectorAll<HTMLElement>(".aui-combobox__option")) {
+        opt.hidden = !matches(opt);
+      }
+      for (const g of groups) {
+        const any = g.querySelector(".aui-combobox__option:not([hidden])") !== null;
+        g.hidden = !any;
+      }
+      const anyVisible = options().length > 0;
+      empty.hidden = anyVisible;
+    };
+
+    const openList = () => {
+      if (open) return;
+      open = true;
+      panel.hidden = false;
+      trigger.setAttribute("aria-expanded", "true");
+      root.setAttribute("data-open", "");
+      search.value = "";
+      applyFilter();
+      // Land on the committed option so Enter keeps the current value.
+      const current = committed
+        ? options().findIndex((o) => o.dataset.value === committed)
+        : -1;
+      setActive(current >= 0 ? current : cfg.autoHighlight && options().length ? 0 : -1);
+      search.focus();
+    };
+
+    const closeList = (refocus = true) => {
+      if (!open) return;
+      open = false;
+      panel.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+      root.removeAttribute("data-open");
+      setActive(-1);
+      if (refocus) trigger.focus();
+    };
+
+    const commit = (opt?: HTMLElement) => {
+      const target = opt ?? options()[activeIndex];
+      if (target) {
+        const label = target.querySelector(".aui-combobox__option-label")?.textContent ?? "";
+        setValue(target.dataset.value ?? "", label);
+        native.dispatchEvent(new Event("change", {bubbles: true}));
+        root.dispatchEvent(
+          new CustomEvent("combobox:change", {bubbles: true, detail: {value: target.dataset.value}}),
+        );
+      }
+      closeList();
+    };
+
+    trigger.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest(".aui-combobox__clear")) return;
+      open ? closeList() : openList();
+    });
+
+    trigger.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openList();
+      }
+    });
+
+    search.addEventListener("input", () => {
+      applyFilter();
+      setActive(cfg.autoHighlight && options().length ? 0 : -1);
+    });
+
+    search.addEventListener("keydown", (e) => {
+      const listOpts = options();
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setActive(Math.min(activeIndex + 1, listOpts.length - 1));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          if (activeIndex <= 0) setActive(-1);
+          else setActive(activeIndex - 1);
+          break;
+        case "Home":
+          if (listOpts.length) {
+            e.preventDefault();
+            setActive(0);
+          }
+          break;
+        case "End":
+          if (listOpts.length) {
+            e.preventDefault();
+            setActive(listOpts.length - 1);
+          }
+          break;
+        case "Enter":
+          e.preventDefault();
+          commit();
+          break;
+        case "Escape":
+          e.preventDefault();
+          closeList();
+          break;
+        case "Tab":
+          closeList(false);
+          break;
+      }
+    });
+
+    // ArrowUp from the search back onto the trigger closes upward —
+    // Shift+Tab semantics without leaving the pattern.
+    search.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" && activeIndex === -1) {
+        e.preventDefault();
+        closeList();
+      }
+    });
+
+    panel.addEventListener("mousedown", (e) => {
+      // Keep focus in the search field while clicking options.
+      if (!(e.target as HTMLElement).closest(".aui-combobox__option")) e.preventDefault();
+    });
+    panel.addEventListener("click", (e) => {
+      const opt = (e.target as HTMLElement).closest<HTMLElement>(".aui-combobox__option");
+      if (opt && !opt.hidden) commit(opt);
+    });
+
+    const clear = root.querySelector<HTMLElement>(".aui-combobox__clear");
+    clear?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setValue("", "");
+      native.dispatchEvent(new Event("change", {bubbles: true}));
+      root.dispatchEvent(new CustomEvent("combobox:change", {bubbles: true, detail: {value: null}}));
+      trigger.focus();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (e.target instanceof Element && !e.target.closest(`#${CSS.escape(cfg.uid)}`)) closeList(false);
+    });
+  };
+
+  document.querySelectorAll<HTMLElement>(".aui-combobox").forEach(setup);
+</script>
+
+<style>
+  .aui-combobox {
+    position: relative;
+    display: grid;
+    gap: var(--ui-space-1);
+    width: 100%;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-combobox__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+    inline-size: 100%;
+    font-family: inherit;
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    text-align: start;
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: border-color var(--ui-transition-fast),
+    box-shadow var(--ui-transition-fast);
+  }
+
+  .aui-combobox__trigger:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-combobox[data-open] .aui-combobox__trigger {
+    border-color: var(--ui-ring);
+  }
+
+  .aui-combobox__value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .aui-combobox__value[data-placeholder] {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-combobox__icons {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-combobox__chevron {
+    color: var(--ui-muted-foreground);
+    transition: transform var(--ui-transition-fast);
+  }
+
+  .aui-combobox[data-open] .aui-combobox__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* --- sizes (heights mirror Input) --- */
+
+  .aui-combobox--xs .aui-combobox__trigger {
+    block-size: 1.75rem;
+    padding: 0 var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-combobox--sm .aui-combobox__trigger {
+    block-size: 2rem;
+    padding: 0 var(--ui-space-3);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-combobox--md .aui-combobox__trigger {
+    block-size: 2.5rem;
+    padding: 0 var(--ui-space-3);
+  }
+
+  .aui-combobox--lg .aui-combobox__trigger {
+    block-size: 2.75rem;
+    padding: 0 var(--ui-space-4);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-combobox--xl .aui-combobox__trigger {
+    block-size: 3rem;
+    padding: 0 var(--ui-space-5);
+    font-size: var(--ui-text-lg);
+  }
+
+  /* --- variants mirror Input borders --- */
+
+  .aui-combobox--variant-inherit .aui-combobox__trigger {
+    border-color: inherit;
+  }
+
+  .aui-combobox--variant-primary .aui-combobox__trigger {
+    border-color: var(--ui-primary);
+  }
+
+  .aui-combobox--variant-secondary .aui-combobox__trigger {
+    border-color: var(--ui-secondary);
+  }
+
+  .aui-combobox--variant-muted .aui-combobox__trigger {
+    border-color: var(--ui-muted-foreground);
+  }
+
+  .aui-combobox--variant-destructive .aui-combobox__trigger,
+  .aui-combobox--invalid .aui-combobox__trigger {
+    border-color: var(--ui-error);
+  }
+
+  .aui-combobox--variant-success .aui-combobox__trigger {
+    border-color: var(--ui-success);
+  }
+
+  .aui-combobox--variant-warning .aui-combobox__trigger {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-combobox--variant-info .aui-combobox__trigger {
+    border-color: var(--ui-info);
+  }
+
+  .aui-combobox--disabled {
+    opacity: 0.6;
+  }
+
+  .aui-combobox--disabled .aui-combobox__trigger {
+    cursor: not-allowed;
+    background-color: var(--ui-muted);
+  }
+
+  /* --- clear button --- */
+
+  .aui-combobox__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    color: var(--ui-muted-foreground);
+    background: transparent;
+    border: 0;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+  }
+
+  .aui-combobox__clear[hidden] {
+    display: none;
+  }
+
+  .aui-combobox__clear:hover {
+    color: var(--ui-foreground);
+  }
+
+  /* --- panel --- */
+
+  .aui-combobox__panel {
+    position: absolute;
+    inset-inline: 0;
+    z-index: 20;
+    display: grid;
+    max-block-size: 18rem;
+    overflow: hidden;
+    background: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  .aui-combobox--bottom .aui-combobox__panel {
+    inset-block-start: calc(100% + 4px);
+  }
+
+  .aui-combobox--top .aui-combobox__panel {
+    inset-block-end: calc(100% + 4px);
+  }
+
+  .aui-combobox__search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: none;
+    border-block-end: 1px solid var(--ui-border);
+  }
+
+  .aui-combobox__search-icon {
+    position: absolute;
+    inset-inline-start: var(--ui-space-3);
+    color: var(--ui-muted-foreground);
+    pointer-events: none;
+  }
+
+  .aui-combobox__search-input {
+    flex: 1;
+    min-width: 0;
+    inline-size: 100%;
+    padding: var(--ui-space-2) var(--ui-space-3) var(--ui-space-2) calc(var(--ui-space-3) * 2 + 0.75rem);
+    font-family: inherit;
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    background: transparent;
+    border: 0;
+    outline: none;
+  }
+
+  .aui-combobox__search-input::placeholder {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-combobox__list {
+    overflow-block: auto;
+    padding: var(--ui-space-1);
+  }
+
+  .aui-combobox__group-label {
+    margin: 0;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .aui-combobox__option {
+    position: relative;
+    display: grid;
+    gap: 1px;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    padding-inline-end: 1.75rem;
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    border-radius: var(--ui-radius-sm);
+    cursor: pointer;
+  }
+
+  .aui-combobox__option[data-active="true"] {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-combobox__option-check {
+    position: absolute;
+    inset-inline-end: var(--ui-space-2);
+    inset-block-start: 50%;
+    translate: 0 -50%;
+    color: var(--ui-foreground);
+    opacity: 0;
+  }
+
+  .aui-combobox__option[aria-selected="true"] .aui-combobox__option-check {
+    opacity: 1;
+  }
+
+  .aui-combobox__option-hint {
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-combobox__empty {
+    margin: 0;
+    padding: var(--ui-space-2);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+  }
+</style>
