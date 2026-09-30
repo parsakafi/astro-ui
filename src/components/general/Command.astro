@@ -1,0 +1,423 @@
+---
+/**
+  * Command — an inline, searchable command palette.
+  *
+  * A framed box with a search input on top and a scrollable list of
+  * grouped, filterable actions. Type to filter (case-insensitive
+  * substring on item text/keywords), move with ↑/↓, run with Enter or
+  * click, dismiss the active row with Escape. Vim-style j/k and
+  * ctrl+n/ctrl+p bindings are opt-in.
+  *
+  *   <Command label="Commands">
+  *     <Fragment slot="items">
+  *       <Command.Item value="calendar" group="Suggestions" /> ...
+  *     </Fragment>
+  *   </Command>
+  *
+  * Declarative data model: pass `groups` — an ordered array of
+  * `{ label, items }` where each item is
+  * `{ value, label, hint?, shortcut?, disabled?, keywords? }`.
+  * Groups render as labeled sections in order; `shortcut` renders a
+  * right-aligned Kbd-style hint (⌘P style); `keywords` extend what the
+  * filter matches. Items are buttons (they run actions, they don't
+  * commit a form value) and emit a bubbling `command:select` event
+  * with `{value}` — listen and dispatch from there.
+  *
+  * JavaScript required: Yes (filter + listbox-style keyboard navigation)
+  */
+import {cn} from "../../utils/cn";
+
+export interface CommandItem {
+  /** Stable id emitted in the command:select event detail. */
+  value: string;
+  /** Primary text; also what the filter matches. */
+  label: string;
+  /** Muted secondary line under the label. */
+  hint?: string;
+  /** Right-aligned keyboard hint (e.g. "⌘P"). Rendered as Kbd. */
+  shortcut?: string;
+  /** Non-runnable rows are skipped by navigation and filtering keeps them hidden. */
+  disabled?: boolean;
+  /** Extra match terms beyond the label (e.g. ["preferences", "options"]). */
+  keywords?: string[];
+}
+
+export interface Props {
+  /** Ordered sections: `{ label, items }[]`. */
+  groups: { label: string; items: CommandItem[] }[];
+  /** Accessible name for the composite widget. */
+  label?: string;
+  /** Initial text in the search field. */
+  defaultSearch?: string;
+  /** Placeholder for the search field. */
+  placeholder?: string;
+  /** Text shown when nothing matches. */
+  emptyMessage?: string;
+  /** Disable client-side filtering (you filter externally). */
+  shouldFilter?: boolean;
+  /** Highlight wraps from last item back to the first (and up from the top). */
+  loop?: boolean;
+  /** Opt-in vim bindings: j/k move, ctrl+n/ctrl+p move. */
+  vimBindings?: boolean;
+  /** Auto-run the highlighted item on Enter even without explicit selection. */
+  autoHighlight?: boolean;
+  class?: string;
+  id?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  groups,
+  label = "Commands",
+  defaultSearch = "",
+  placeholder = "Type a command or search…",
+  emptyMessage = "No results found.",
+  shouldFilter = true,
+  loop = false,
+  vimBindings = false,
+  autoHighlight = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const uid = id ?? `aui-cmd-${Math.random().toString(36).slice(2, 8)}`;
+const inputId = `${uid}-input`;
+const listId = `${uid}-list`;
+
+const config = {
+  uid,
+  listId,
+  defaultSearch,
+  shouldFilter,
+  loop,
+  vimBindings,
+  autoHighlight,
+  emptyMessage,
+};
+
+const classes = cn("aui-command", className);
+---
+
+<div class={classes} id={uid} role="group" aria-label={label} {...rest}>
+  <script type="application/json" data-aui-command-config set:html={JSON.stringify(config)}/>
+  <div class="aui-command__search">
+    <svg class="aui-command__search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input
+      class="aui-command__input"
+      type="text"
+      role="combobox"
+      autocomplete="off"
+      spellcheck="false"
+      id={inputId}
+      placeholder={placeholder}
+      value={defaultSearch}
+      aria-controls={listId}
+      aria-autocomplete="list"
+      aria-label={label}
+    />
+  </div>
+  <div class="aui-command__list" id={listId} role="listbox" aria-label={label}>
+    {
+      groups.map((g) => (
+        <div class="aui-command__group" role="group" aria-label={g.label}>
+          <p class="aui-command__group-label">{g.label}</p>
+          {g.items.map((item) => (
+            <button
+              type="button"
+              class="aui-command__item"
+              role="option"
+              aria-selected="false"
+              aria-disabled={item.disabled || undefined}
+              data-value={item.value}
+              data-disabled={item.disabled || undefined}
+              data-keywords={item.keywords?.join(" ") ?? ""}
+              tabindex="-1"
+            >
+              <span class="aui-command__item-text">
+                <span class="aui-command__item-label">{item.label}</span>
+                {item.hint && <span class="aui-command__item-hint">{item.hint}</span>}
+              </span>
+              {item.shortcut && <kbd class="aui-command__shortcut">{item.shortcut}</kbd>}
+            </button>
+          ))}
+        </div>
+      ))
+    }
+    <p class="aui-command__empty" hidden>{emptyMessage}</p>
+  </div>
+</div>
+
+<script>
+  // Command palette wiring: filter, highlight, keyboard navigation.
+  // Each instance is self-contained (config inlined as JSON).
+  const setup = (root: HTMLElement) => {
+    const input = root.querySelector<HTMLInputElement>(".aui-command__input");
+    const list = root.querySelector<HTMLElement>(".aui-command__list");
+    const empty = root.querySelector<HTMLElement>(".aui-command__empty");
+    const cfgEl = root.querySelector<HTMLScriptElement>("script[data-aui-command-config]");
+    if (!input || !list || !empty || !cfgEl) return;
+
+    const cfg = JSON.parse(cfgEl.textContent ?? "{}") as {
+      shouldFilter: boolean;
+      loop: boolean;
+      vimBindings: boolean;
+      autoHighlight: boolean;
+      defaultSearch: string;
+    };
+
+    const groups = [...root.querySelectorAll<HTMLElement>(".aui-command__group")];
+    const items = () =>
+      [...root.querySelectorAll<HTMLElement>(".aui-command__item:not([data-filtered])")];
+
+    let activeIndex = -1;
+
+    const setActive = (i: number) => {
+      activeIndex = i;
+      const current = items()[i];
+      for (const [idx, item] of items().entries()) {
+        item.setAttribute("aria-selected", idx === i ? "true" : "false");
+      }
+      if (current) {
+        input.setAttribute("aria-activedescendant", current.dataset.value ?? "");
+        current.scrollIntoView({block: "nearest"});
+      } else {
+        input.removeAttribute("aria-activedescendant");
+      }
+    };
+
+    const matches = (item: HTMLElement) => {
+      if (!cfg.shouldFilter) return true;
+      const q = input.value.trim().toLowerCase();
+      if (!q) return true;
+      const text = (
+        (item.querySelector(".aui-command__item-label")?.textContent ?? "") +
+        " " +
+        (item.dataset.keywords ?? "")
+      ).toLowerCase();
+      return text.includes(q);
+    };
+
+    const applyFilter = () => {
+      let any = false;
+      for (const item of root.querySelectorAll<HTMLElement>(".aui-command__item")) {
+        const hit = matches(item) && !item.hasAttribute("data-disabled");
+        if (hit) any = true;
+        if (hit) item.removeAttribute("data-filtered");
+        else item.setAttribute("data-filtered", "");
+      }
+      for (const g of groups) {
+        const groupAny = g.querySelector(".aui-command__item:not([data-filtered])") !== null;
+        g.hidden = !groupAny;
+      }
+      empty.hidden = any;
+    };
+
+    const select = (item?: HTMLElement) => {
+      const target = item ?? items()[activeIndex];
+      if (!target) return;
+      if (target.hasAttribute("data-disabled")) return;
+      root.dispatchEvent(
+        new CustomEvent("command:select", {
+          bubbles: true,
+          detail: {value: target.dataset.value, label: target.querySelector(".aui-command__item-label")?.textContent},
+        }),
+      );
+      root.dispatchEvent(new Event("change", {bubbles: true}));
+    };
+
+    const move = (delta: number) => {
+      const list = items();
+      if (!list.length) return;
+      let next = activeIndex + delta;
+      if (next >= list.length) next = cfg.loop ? 0 : list.length - 1;
+      if (next < 0) next = cfg.loop ? list.length - 1 : 0;
+      setActive(next);
+    };
+
+    if (cfg.shouldFilter) {
+      input.addEventListener("input", () => {
+        applyFilter();
+        setActive(cfg.autoHighlight && items().length ? 0 : -1);
+        root.dispatchEvent(
+          new CustomEvent("command:search-change", {bubbles: true, detail: {search: input.value}}),
+        );
+      });
+      if (cfg.defaultSearch) {
+        applyFilter();
+        setActive(cfg.autoHighlight && items().length ? 0 : -1);
+      }
+    }
+
+    input.addEventListener("keydown", (e) => {
+      const key = e.key;
+      // Vim bindings: j/k move only when the caret sits on a single
+      // position (no text selection mid-word); ctrl+n/p always move.
+      const caretIdle = input.selectionStart === input.selectionEnd;
+      const vimDown = cfg.vimBindings && key === "j" && !e.ctrlKey && !e.metaKey && caretIdle;
+      const vimUp = cfg.vimBindings && key === "k" && !e.ctrlKey && !e.metaKey && caretIdle;
+      const ctrlDown = cfg.vimBindings && e.ctrlKey && key === "n";
+      const ctrlUp = cfg.vimBindings && e.ctrlKey && key === "p";
+
+      if (key === "ArrowDown" || vimDown || ctrlDown) {
+        e.preventDefault();
+        move(1);
+      } else if (key === "ArrowUp" || vimUp || ctrlUp) {
+        e.preventDefault();
+        move(-1);
+      } else if (key === "Home" && input.selectionStart === 0) {
+        e.preventDefault();
+        setActive(0);
+      } else if (key === "End" && input.selectionStart === input.value.length) {
+        e.preventDefault();
+        setActive(items().length - 1);
+      } else if (key === "Enter") {
+        e.preventDefault();
+        select();
+      }
+    });
+
+    list.addEventListener("mousedown", (e) => e.preventDefault());
+    list.addEventListener("click", (e) => {
+      const item = (e.target as HTMLElement).closest<HTMLElement>(".aui-command__item");
+      if (item && !item.hasAttribute("data-filtered")) select(item);
+    });
+
+    // Initial paint: highlight first item only when asked.
+    if (cfg.autoHighlight) setActive(0);
+  };
+
+  document.querySelectorAll<HTMLElement>(".aui-command").forEach(setup);
+</script>
+
+<style>
+  .aui-command {
+    display: grid;
+    overflow: hidden;
+    font-family: var(--ui-font-sans);
+    background: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  .aui-command__search {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    flex: none;
+    padding: var(--ui-space-3);
+    border-block-end: 1px solid var(--ui-border);
+  }
+
+  .aui-command__search-icon {
+    flex: none;
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-command__input {
+    flex: 1;
+    min-width: 0;
+    font-family: inherit;
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    background: transparent;
+    border: 0;
+    outline: none;
+  }
+
+  .aui-command__input::placeholder {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-command__input:focus-visible {
+    outline: none;
+  }
+
+  .aui-command__list {
+    display: block;
+    max-block-size: 18rem;
+    overflow-block: auto;
+    padding: var(--ui-space-1);
+  }
+
+  .aui-command__group[hidden] {
+    display: none;
+  }
+
+  .aui-command__group-label {
+    margin: 0;
+    padding: var(--ui-space-2) var(--ui-space-2) var(--ui-space-1);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .aui-command__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+    inline-size: 100%;
+    padding: var(--ui-space-2);
+    font-family: inherit;
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    text-align: start;
+    background: transparent;
+    border: 0;
+    border-radius: var(--ui-radius-sm);
+    cursor: pointer;
+  }
+
+  .aui-command__item[aria-selected="true"] {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-command__item[data-disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .aui-command__item-text {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .aui-command__item-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .aui-command__item-hint {
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-command__shortcut {
+    flex: none;
+    padding: 0 var(--ui-space-1);
+    font-family: var(--ui-font-mono);
+    font-size: var(--ui-text-2xs);
+    color: var(--ui-muted-foreground);
+    background: var(--ui-muted);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-sm);
+  }
+
+  .aui-command__empty {
+    margin: 0;
+    padding: var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+    text-align: center;
+  }
+</style>

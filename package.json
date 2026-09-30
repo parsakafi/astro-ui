@@ -22,6 +22,7 @@
     "./combobox": "./src/components/forms/Combobox.astro",
     "./breadcrumb": "./src/components/navigation/Breadcrumb.astro",
     "./clipboard": "./src/components/general/Clipboard.astro",
+    "./command": "./src/components/general/Command.astro",
     "./collapsible": "./src/components/layout/Collapsible.astro",
     "./empty": "./src/components/data-display/Empty.astro",
     "./field": "./src/components/forms/Field.astro",

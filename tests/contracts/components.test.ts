@@ -64,6 +64,7 @@ describe("component contracts", () => {
         "Clipboard.astro",
         "Collapsible.astro",
         "Combobox.astro",
+        "Command.astro",
         "Dialog.astro",
         "Empty.astro",
         "Field.astro",
@@ -164,6 +165,7 @@ describe("component contracts", () => {
     const jsRequired = new Set([
       "Autocomplete.astro",
       "Combobox.astro",
+      "Command.astro",
       "AlertDialog.astro",
       "Collapsible.astro",
       "Dialog.astro",

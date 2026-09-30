@@ -35,6 +35,7 @@ export {default as ButtonGroupSeparator} from "./src/components/general/ButtonGr
 export {default as Card} from "./src/components/layout/Card.astro";
 export {default as Checkbox} from "./src/components/forms/Checkbox.astro";
 export {default as Clipboard} from "./src/components/general/Clipboard.astro";
+export {default as Command} from "./src/components/general/Command.astro";
 export {default as Collapsible} from "./src/components/layout/Collapsible.astro";
 export {default as Dialog} from "./src/components/overlay/Dialog.astro";
 export {default as Empty} from "./src/components/data-display/Empty.astro";
