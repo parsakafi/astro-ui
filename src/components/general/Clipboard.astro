@@ -150,6 +150,13 @@ const buttonId = id ?? `aui-clipboard-${Math.abs(value.length * 31 + value.charC
     position: relative;
     display: inline-flex;
     align-items: center;
+    /* Shrink to the trigger: the feedback bubble anchors at
+       inset-inline-start: 100% of this root, so a stretched root (grid
+       or flex-grow parent) would throw the text to the parent's far
+       edge. justify-self pins it to the column start in grid parents. */
+    inline-size: fit-content;
+    justify-self: start;
+    align-self: start;
     font-family: var(--ui-font-sans);
   }
 
