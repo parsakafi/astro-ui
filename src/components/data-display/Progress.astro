@@ -2,8 +2,11 @@
 /** Progress — zero-JS progress indicator.
 
   * Determinate (bar or circle) or indeterminate bar. `value` sets
-  * the filled fraction 0–100. For indeterminate loading, use `Spinner`
-  * instead.
+  * the filled fraction 0–100. `stripes` overlays animated diagonal
+  * stripes on the bar fill (bars only). `stripedTrack` hatches the
+  * empty remainder, `segmented` renders the fill as discrete blocks,
+  * and `squared` separates fill and track with a gap. For
+  * indeterminate loading, use `Spinner` instead.
   *
   * JavaScript required: No
   */
@@ -22,6 +25,19 @@ export interface Props {
   label?: string;
   /** Optional current value text (e.g. "64%"). Shown when `label` is set. */
   showValue?: boolean;
+  /** Overlays diagonal stripes on the fill (bar variant). `"static"` keeps
+  them still; `true` animates a slow barber-pole sweep. */
+  stripes?: boolean | "static";
+  /** Hatches the empty remainder instead of muting it (bar variant).
+  The track is outlined and the fill stays solid — a classic
+  "downloading" bar. Combines with `color`. */
+  stripedTrack?: boolean;
+  /** Renders the fill as discrete rounded blocks instead of a continuous
+  bar (bar variant). `count` sets the block count (default 12). */
+  segmented?: boolean | number;
+  /** Separates fill and track with a visible gap; the fill keeps fully
+  rounded ends while the track becomes a thin outlined rail (bar variant). */
+  squared?: boolean;
   class?: string;
   id?: string;
   ariaLabel?: string;
@@ -34,6 +50,10 @@ const {
   color = "primary",
   label,
   showValue = false,
+  stripes = false,
+  stripedTrack = false,
+  segmented = false,
+  squared = false,
   class: className,
   id,
   ariaLabel,
@@ -54,6 +74,11 @@ const classes = cn(
   `aui-progress--color-${color}`,
   isDeterminate && "aui-progress--determinate",
   !isDeterminate && "aui-progress--indeterminate",
+  stripes && "aui-progress--striped",
+  stripes === true && "aui-progress--stripes-animated",
+  stripedTrack && "aui-progress--striped-track",
+  !!segmented && "aui-progress--segmented",
+  squared && "aui-progress--squared",
   className,
 );
 
@@ -74,6 +99,12 @@ const barSizeMap: Record<string, { height: string; width: string }> = {
   xl: {height: "16px", width: "20rem"},
   "2xl": {height: "20px", width: "24rem"},
 };
+
+const SEGMENT_COUNT = typeof segmented === "number" && segmented > 0
+  ? Math.floor(segmented)
+  : 12;
+const SEGMENT_GAP = 4;
+const SEGMENT_FILL = Math.min(SEGMENT_COUNT, Math.round((percent / 100) * SEGMENT_COUNT));
 
 const bar = barSizeMap[size] ?? barSizeMap.md;
 const circle = circleSizeMap[size] ?? circleSizeMap.md;
@@ -149,13 +180,24 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     )}
     <span class="aui-progress__track" aria-hidden="true"
           style={isDeterminate ? `--aui-progress-percent:${percent}` : undefined}>
-				<span
-          class="aui-progress__fill"
-          style={isDeterminate
-            ? `width:${percent}%;transition:width 0.3s ease-in-out`
-            : undefined}
-          aria-hidden="true"
-        />
+				{segmented ? (
+          Array.from({length: SEGMENT_COUNT}, (_, i) => (
+            <span
+              class="aui-progress__segment"
+              style={`width:calc((100% - ${(SEGMENT_COUNT - 1) * SEGMENT_GAP}px) / ${SEGMENT_COUNT})`}
+              data-on={i < SEGMENT_FILL ? "" : undefined}
+              aria-hidden="true"
+            />
+          ))
+        ) : (
+          <span
+            class="aui-progress__fill"
+            style={isDeterminate
+              ? `width:${percent}%;transition:width 0.3s ease-in-out`
+              : undefined}
+            aria-hidden="true"
+          />
+        )}
       {isDeterminate && showValue && (
         <span class="aui-progress__value" aria-hidden="true">
 						{percent}%
@@ -241,6 +283,140 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     width: 40%;
     opacity: 0.8;
     animation: aui-progress-indeterminate 1.4s ease-in-out infinite;
+  }
+
+  /* --- stripes (bar fill overlay) --- */
+
+  /* The stripe layer sits on the fill itself, so it clips to the fill's
+     rounded corners and tracks its width exactly. */
+  .aui-progress--striped.aui-progress--bar .aui-progress__fill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgb(255 255 255 / 0.35) 0 6px,
+      transparent 6px 12px
+    );
+    background-size: 17px 100%;
+  }
+
+  .aui-progress--stripes-animated.aui-progress--bar .aui-progress__fill::after {
+    animation: aui-progress-stripes 1s linear infinite;
+  }
+
+  @keyframes aui-progress-stripes {
+    from { background-position: 0 0; }
+    to { background-position: 17px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-progress--stripes-animated.aui-progress--bar .aui-progress__fill::after {
+      animation: none;
+    }
+  }
+
+  /* --- striped track (hatched remainder) --- */
+
+  /* The track becomes an outlined rail whose empty area is hatched with
+     diagonal lines in the fill color; the fill stays solid on top. */
+  .aui-progress--striped-track.aui-progress--bar .aui-progress__track {
+    background-color: var(--ui-background);
+    border: 1.5px solid var(--ui-primary);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar .aui-progress__track::before {
+    content: "";
+    position: absolute;
+    inset: 1.5px;
+    border-radius: inherit;
+    background-image: repeating-linear-gradient(
+      55deg,
+      transparent 0 4px,
+      var(--aui-progress-hatch, var(--ui-primary)) 4px 6px
+    );
+  }
+
+  /* Fill covers the hatch underneath it and carries its own color. */
+  .aui-progress--striped-track.aui-progress--bar .aui-progress__fill {
+    z-index: 1;
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-success .aui-progress__track {
+    border-color: var(--ui-success);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-success .aui-progress__track::before {
+    --aui-progress-hatch: var(--ui-success);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-warning .aui-progress__track {
+    border-color: var(--ui-warning);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-warning .aui-progress__track::before {
+    --aui-progress-hatch: var(--ui-warning);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-error .aui-progress__track {
+    border-color: var(--ui-error);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-error .aui-progress__track::before {
+    --aui-progress-hatch: var(--ui-error);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-info .aui-progress__track {
+    border-color: var(--ui-info);
+  }
+
+  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-info .aui-progress__track::before {
+    --aui-progress-hatch: var(--ui-info);
+  }
+
+  /* --- segmented (discrete blocks) --- */
+
+  .aui-progress--segmented.aui-progress--bar .aui-progress__track {
+    display: flex;
+    gap: 4px;
+    background-color: transparent;
+    overflow: visible;
+  }
+
+  .aui-progress--segmented.aui-progress--bar .aui-progress__segment {
+    display: block;
+    height: 100%;
+    border-radius: var(--ui-radius-sm);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-progress--segmented.aui-progress--bar .aui-progress__segment[data-on] {
+    background-color: var(--ui-primary);
+  }
+
+  .aui-progress--segmented.aui-progress--bar.aui-progress--color-success .aui-progress__segment[data-on] {
+    background-color: var(--ui-success);
+  }
+
+  .aui-progress--segmented.aui-progress--bar.aui-progress--color-warning .aui-progress__segment[data-on] {
+    background-color: var(--ui-warning);
+  }
+
+  .aui-progress--segmented.aui-progress--bar.aui-progress--color-error .aui-progress__segment[data-on] {
+    background-color: var(--ui-error);
+  }
+
+  .aui-progress--segmented.aui-progress--bar.aui-progress--color-info .aui-progress__segment[data-on] {
+    background-color: var(--ui-info);
+  }
+
+  /* --- squared (gap between fill and track) --- */
+
+  /* A background-colored ring around the fill cuts a gap out of the
+     muted track, so the fill reads as a separate detached bar. The
+     track's overflow:hidden clips the ring's vertical overflow. */
+  .aui-progress--squared.aui-progress--bar .aui-progress__fill {
+    box-shadow: 0 0 0 3px var(--ui-background);
   }
 
   .aui-progress--bar .aui-progress__label {
