@@ -122,6 +122,17 @@ export interface Props {
   gradientIntensity?: number;
   /** Tick count around the gauge arc (gauge only, clamped 8–80). */
   ticks?: number;
+  /** Bar column style: "rect" (default) or "pill" — thin fully-rounded
+   *  columns that sit on the baseline (equalizer look; forces single
+   *  series, disables stacking). */
+  barStyle?: "rect" | "pill";
+  /** Gauge presentation: "line" renders thin radial ticks, "block"
+   *  renders thick rounded block segments like a segmented meter. */
+  gaugeStyle?: "line" | "block";
+  /** Gauge color ramp for "block" style: an array of 2+ CSS colors
+   *  interpolated across the arc (start → end), so unfilled and filled
+   *  blocks show position rather than a single series color. */
+  gaugeRamp?: string[];
   /** Ring sweep for radial charts: a full circle or a half-circle
    *  "rainbow" over the top. */
   radialSweep?: "full" | "half";
@@ -167,6 +178,9 @@ const {
   nodes = [],
   links = [],
   ticks = 36,
+  gaugeStyle = "line",
+  gaugeRamp,
+  barStyle = "rect",
   format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
   height = 260,
   class: className,
@@ -228,7 +242,7 @@ const isSankey = type === "sankey";
    must not share defs. Derived from content, so builds stay
    deterministic; an author-supplied id wins when present.
    (Declared before the bar/area/pie consumers below.) */
-const showGradient = gradient && (type === "area" || type === "bar" || type === "combo" || circular);
+const showGradient = gradient && (type === "area" || type === "bar" || type === "combo" || type === "line" || circular);
 const uidSeed = `${title ?? ""}|${labels.join(",")}|${series.map((s) => `${s.name}:${s.data.join(",")}:${s.color ?? ""}`).join(";")}`;
 let uidHash = 0;
 for (let i = 0; i < uidSeed.length; i++) uidHash = (uidHash * 31 + uidSeed.charCodeAt(i)) >>> 0;
@@ -279,14 +293,18 @@ const pieData = circular
     const rr = Math.max(0, Math.min(sliceRadius, 40));
     let angle = -Math.PI / 2;
     return sliceDefs.map((def, i) => {
-      const v = def.value;
-      const cx = W / 2;
+      const v = def.value;      const cx = W / 2;
       const cy = height / 2;
-      /* Outside leader labels need headroom: shrink the pie so the
-       elbow (r+18) plus text stay inside the viewBox. */
+      /* Labels need headroom: outside leader labels shrink the pie so
+         the elbow (r+18) plus text fit; centroid value labels sit on
+         the ring at 0.62·r and can straddle the horizontal extremes
+         (mid ≈ 0°/180°), where a wide label like "412 · 46%" would
+         otherwise cross the viewBox edge — shrink for those too. */
       const r = sliceLabels === "label"
         ? Math.max(Math.min(W / 2 - 104, height / 2 - 40), 40)
-        : Math.min(W, height) / 2 - 8;
+        : sliceLabels === "value" || sliceLabels === "value-pct"
+          ? Math.max(Math.min(W / 2 - 56, height / 2 - 24), 40)
+          : Math.min(W, height) / 2 - 8;
       const ri = type === "donut" ? r * (innerRadius / 100) : 0;
       /* Rounded corners via the stroke trick: the path is a plain
          sharp sector on a shrunk annulus (r-ro / ri+ro), then a
@@ -541,6 +559,26 @@ const barRects: BarRect[][] =
       )
       : [];
 
+/* --- pill bars: thin fully-rounded columns on the baseline (equalizer
+   look). Rendered from the first series only; packing follows the label
+   slots with a fixed 4px gap, caps fully rounded via rect rx. --- */
+const isPillBar = type === "bar" && barStyle === "pill";
+const pillW = 6;
+const pillRects: BarRect[] = isPillBar
+  ? labels.map((label, i) => {
+      const v = Math.max(series[0]?.data[i] ?? 0, 0);
+      const h = Math.max((v / yMax) * plotH, v > 0 ? 4 : 0);
+      return {
+        x: PAD.left + i * barGroupW + barGroupW / 2 - pillW / 2,
+        y: PAD.top + plotH - h,
+        w: pillW,
+        h,
+        fill: colorAt(0, series[0]),
+        tip: `${label} — ${series[0]?.name ?? ""}: ${format(v)}`,
+      };
+    })
+  : [];
+
 /* --- gauge: a semicircular arc of radial ticks, filled up to the value.
    Reads the first value of the first series against maxY (default 100). */
 const gaugeCount = Math.max(8, Math.min(80, ticks));
@@ -558,6 +596,52 @@ const gaugeLines = Array.from({length: gaugeCount}, (_, i) => {
     filled: i < gaugeFilled,
   };
 });
+
+/* Block gauge: cleanly separated stadium blocks instead of thin ticks.
+   Each block is a short arc drawn with a thick round-cap stroke — the
+   caps produce perfect stadium shapes by construction, and a gap
+   between block centers keeps them visually separated. A color ramp
+   interpolates across the arc so blocks show position (start → end
+   colors), like a segmented meter. */
+const gaugeIsBlock = gaugeStyle === "block";
+/* Stroke width of a block. Elongated stadiums need the arc length to
+   clearly exceed the cap diameter — 20px stroke with a high fill
+   fraction gives roughly a 2:1 block. */
+const gaugeBandW = 20;
+const gaugeMidR = (gR1 + gR2) / 2;
+/* Fraction of each slot occupied by the block (rest = gap). */
+const gaugeBlockFill = 0.85;
+const gaugeBlocks = gaugeIsBlock
+  ? Array.from({length: gaugeCount}, (_, i) => {
+      /* Block centers span the full semicircle inclusive of both ends.
+         The arc runs clockwise from a0 (larger angle) to a1, and the
+         round caps extend the block by half the stroke on each end —
+         so the drawn arc is shortened to keep the total footprint at
+         the slot's fill fraction. */
+      const midA = Math.PI - (i / (gaugeCount - 1)) * Math.PI;
+      const slot = Math.PI / (gaugeCount - 1);
+      const capPad = gaugeBandW / 2 / gaugeMidR;
+      const halfArc = Math.max((slot * gaugeBlockFill) / 2 - capPad, capPad * 0.2);
+      const a0 = midA + halfArc;
+      const a1 = midA - halfArc;
+      const x0 = gcx + gaugeMidR * Math.cos(a0);
+      const y0 = gcy - gaugeMidR * Math.sin(a0);
+      const x1 = gcx + gaugeMidR * Math.cos(a1);
+      const y1 = gcy - gaugeMidR * Math.sin(a1);
+      // Interpolate the ramp color at this block's position.
+      const ramp = gaugeRamp && gaugeRamp.length >= 2 ? gaugeRamp : null;
+      const t = ramp ? i / (gaugeCount - 1) : 0;
+      const seg = ramp ? Math.min(Math.floor(t * (ramp.length - 1)), ramp.length - 2) : 0;
+      const local = ramp ? t * (ramp.length - 1) - seg : 0;
+      return {
+        d: `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${gaugeMidR} ${gaugeMidR} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`,
+        filled: i < gaugeFilled,
+        color: ramp
+          ? `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`
+          : null,
+      };
+    })
+  : [];
 
 /* --- radar: one spoke per label, polygon rings as the grid, one
    closed polygon per series with dots at each vertex. First axis
@@ -817,7 +901,14 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
             ))}
           </defs>
         )}
-        {(type === "bar" || combo) &&
+        {isPillBar &&
+          pillRects.map((r) => (
+            <rect class="aui-chart__bar aui-chart__bar--pill" x={r.x} y={r.y} width={r.w} height={r.h}
+                  rx={r.w / 2} fill={r.fill}>
+              <title>{r.tip}</title>
+            </rect>
+          ))}
+        {!isPillBar && (type === "bar" || combo) &&
           barRects.map((group) =>
             group.map((r) =>
               r.d ? (
@@ -869,13 +960,50 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
                     </pattern>
                   </defs>
                 )}
-                {showGradient && areaFillKind === "solid" && (
+                {/* Guarded to area only: on type="line" the line-fade defs
+                    below render with the same gradientId, and duplicate
+                    ids make url() resolve to the first — wrong — stop. */}
+                {type === "area" && showGradient && areaFillKind === "solid" && (
                   <defs>
                     <linearGradient id={gradientId(si)} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${gTop}`}/>
                       <stop offset="100%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${gBottom}`}/>
                     </linearGradient>
                   </defs>
+                )}
+                {/* Line + gradient: a soft wash under the line, plus a
+                    blurred "mirror" of the stroke shifted down so the
+                    glow hugs the curve like a stock-chart fade. The
+                    fill MUST be inline style — a fill attribute loses
+                    to the class rule (CSS beats presentation attrs)
+                    and the area paints solid instead of fading. */}
+                {type === "line" && showGradient && (
+                  <defs>
+                    <linearGradient id={gradientId(si)} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${gTop.toFixed(3)}`}/>
+                      <stop offset="55%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: ${(gTop * 0.25).toFixed(3)}`}/>
+                      <stop offset="100%" style={`stop-color: ${colorAt(si, s)}; stop-opacity: 0`}/>
+                    </linearGradient>
+                    <filter id={`${uid}-glow-${si}`} x="-30%" y="-30%" width="160%" height="160%">
+                      <feGaussianBlur stdDeviation="6"/>
+                    </filter>
+                  </defs>
+                )}
+                {type === "line" && showGradient && (
+                  <path
+                    class="aui-chart__area aui-chart__area--fade"
+                    d={areaPath(s.data)}
+                    style={`fill: url(#${gradientId(si)})`}
+                  />
+                )}
+                {type === "line" && showGradient && (
+                  <path
+                    class="aui-chart__glow"
+                    d={linePath(s.data)}
+                    transform="translate(0 8)"
+                    filter={`url(#${uid}-glow-${si})`}
+                    style={`stroke: ${colorAt(si, s)}`}
+                  />
                 )}
                 {type === "area" && areaFillKind !== "none" && (
                   <path
@@ -1138,13 +1266,21 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
         aria-label={`${tableCaption}: ${format(gaugeValue)} of ${format(gaugeMax)}`}
         preserveAspectRatio="xMidYMid meet"
       >
-        {gaugeLines.map((t) => (
-          <path
-            class={`aui-chart__gtick${t.filled ? "" : " aui-chart__gtick--rest"}`}
-            d={t.d}
-            style={t.filled ? `stroke: ${colorAt(0, series[0])}` : undefined}
-          />
-        ))}
+        {gaugeIsBlock
+          ? gaugeBlocks.map((b) => (
+              <path
+                class={`aui-chart__gblock${b.filled ? "" : " aui-chart__gblock--rest"}`}
+                d={b.d}
+                style={b.filled ? `stroke: ${b.color ?? colorAt(0, series[0])}` : undefined}
+              />
+            ))
+          : gaugeLines.map((t) => (
+              <path
+                class={`aui-chart__gtick${t.filled ? "" : " aui-chart__gtick--rest"}`}
+                d={t.d}
+                style={t.filled ? `stroke: ${colorAt(0, series[0])}` : undefined}
+              />
+            ))}
         <text class="aui-chart__gauge-value" x={gcx} y={gcy - gR1 * 0.55} text-anchor="middle">
           {format(gaugeValue)}
         </text>
@@ -1293,6 +1429,21 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     opacity: 0.14;
   }
 
+  /* Gradient-driven fade: opacity lives in the gradient stops, so the
+     flat-fill opacity must not dim it into invisibility. */
+  .aui-chart__area--fade {
+    opacity: 1;
+  }
+
+  /* Blurred mirror of the stroke for the line-fade glow. */
+  .aui-chart__glow {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.35;
+  }
+
   .aui-chart__dot {
     stroke: var(--ui-background);
     stroke-width: 1.5;
@@ -1315,15 +1466,27 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     opacity: 0.8;
   }
 
+  /* Sankey labels render next to the nodes but visually sit ON the
+     translucent ribbons, so muted colors wash out (same class of bug
+     as the slice labels). Foreground + a background halo keeps them
+     readable over any ribbon crossing. */
   .aui-chart__snode-name {
     fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 3px;
+    stroke-linejoin: round;
     font-size: 13px;
     font-weight: var(--ui-font-medium);
     font-family: var(--ui-font-sans);
   }
 
   .aui-chart__snode-value {
-    fill: var(--ui-muted-foreground);
+    fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
     font-size: 12px;
     font-family: var(--ui-font-sans);
     pointer-events: none;
@@ -1356,6 +1519,17 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     stroke: currentcolor;
     stroke-width: 2;
     stroke-linejoin: round;
+  }
+
+  /* --- gauge block style: each block is a short arc with a thick
+     round-cap stroke (= stadium shape by construction). Filled blocks
+     carry an inline stroke (series color or ramp position); unfilled
+     blocks get a neutral muted stroke so they read in both themes. --- */
+  .aui-chart__gblock {
+    fill: none;
+    stroke: var(--ui-muted);
+    stroke-width: 20;
+    stroke-linecap: round;
   }
 
   /* --- gauge ticks: filled ticks carry an inline stroke (the series
@@ -1394,8 +1568,17 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
      on saturated slice fills, where theme foreground would flip to
      unreadable in dark mode. */
   .aui-chart__slice-value {
-    fill: white;
-    font-size: 15px;
+    /* Labels sit ON the colored slices, so they need to hold up on
+       light slice colors too — white text vanishes on light themes.
+       A dark foreground reads on the muted slice colors in light mode;
+       a subtle dark shadow keeps it legible on darker slices in dark
+       mode without a hard contrast flip. */
+    fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+    font-size: 12px;
     font-weight: var(--ui-font-semibold);
     font-family: var(--ui-font-sans);
     pointer-events: none;
@@ -1409,7 +1592,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
 
   .aui-chart__slice-label text {
     fill: var(--ui-foreground);
-    font-size: 13px;
+    font-size: 12px;
     font-family: var(--ui-font-sans);
   }
 
