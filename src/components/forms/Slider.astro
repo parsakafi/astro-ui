@@ -1,39 +1,55 @@
 ---
 /**
-  * Slider — native <input type="range"> with token styling, zero JS.
+  * Slider — native <input type="range"> with token styling.
   *
   * The platform owns dragging, keyboard (arrows/Home/End), and form
-  * submission. `marks` renders tick labels under the track (visual
-  * only). Min/max/step pass through as native attributes via rest.
+  * submission. Three presentations share one API: horizontal (default),
+  * vertical (`orientation="vertical"`, min at bottom, via native
+  * writing-mode), and radial (`radial`, an SVG dial). `range` renders
+  * two thumbs bounding a filled span. The track always fills from the
+  * minimum to the thumb (or between thumbs in range mode) and mirrors
+  * in RTL via logical properties.
   *
-  * `tooltip` renders a value bubble above the thumb that appears on
-  * hover/drag/focus and follows the thumb while dragging — RTL-aware via
-  * logical properties. It needs a tiny opt-in script (~15 lines, bundled
-  * once per page); every other feature stays zero-JS. When enabled, the
-  * `showValue` readout also updates live while dragging.
+  * `marks` renders tick labels under/next to the track (visual only).
+  * `tooltip` renders a value bubble that follows the thumb — RTL-aware.
   *
-  * JavaScript required: No — only the optional `tooltip` bubble script.
+  * JavaScript required: No for rendering and keyboard interaction. A
+  * small script (bundled once per page, included automatically when the
+  * relevant mode is used) keeps the range fill + tooltips in sync while
+  * dragging and drives radial pointer dragging.
   */
 import {cn} from "../../utils/cn";
 
 export interface Props {
-  /** Field name for form submission. */
+  /** Field name for form submission. In range mode the end thumb submits as `nameEnd`. */
   name?: string;
-  /** Initial value. */
+  /** Initial value (single mode) or range start (range mode). */
   value?: number;
+  /** Range end (range mode). */
+  valueEnd?: number;
+  /** Field name for the range end thumb (defaults to `${name}-end`). */
+  nameEnd?: string;
   /** Minimum value. */
   min?: number;
   /** Maximum value. */
   max?: number;
   /** Step increment. */
   step?: number;
-  /** Tick labels rendered under the track (e.g. ["Low","Mid","High"]). */
+  /** Track direction. Vertical keeps min at the bottom. */
+  orientation?: "horizontal" | "vertical";
+  /** Renders two thumbs bounding a filled span. */
+  range?: boolean;
+  /** Renders an SVG dial instead of a straight track; supports range. */
+  radial?: boolean;
+  /** Track height in vertical orientation (any CSS length). */
+  height?: string;
+  /** Tick labels rendered under (or beside) the track. */
   marks?: string[];
   /** Shows the current value readout next to the label. */
   showValue?: boolean;
   /** Renders a value bubble above the thumb (appears on hover/drag/focus). */
   tooltip?: boolean;
-  /** Visual style. */
+  /** Visual color. */
   variant?: "primary" | "success" | "warning" | "error" | "info";
   /** Scale of the control. */
   size?: "sm" | "md" | "lg";
@@ -41,6 +57,10 @@ export interface Props {
   disabled?: boolean;
   /** Label text rendered above the track. */
   label?: string;
+  /** Accessible name for the range start thumb. */
+  ariaStartLabel?: string;
+  /** Accessible name for the range end thumb. */
+  ariaEndLabel?: string;
   /** Associates an external <label for> with this slider. */
   id?: string;
   class?: string;
@@ -49,9 +69,15 @@ export interface Props {
 const {
   name,
   value = 50,
+  valueEnd,
+  nameEnd,
   min = 0,
   max = 100,
   step = 1,
+  orientation = "horizontal",
+  range = false,
+  radial = false,
+  height = "10rem",
   marks,
   showValue = false,
   tooltip = false,
@@ -59,56 +85,175 @@ const {
   size = "md",
   disabled = false,
   label,
+  ariaStartLabel,
+  ariaEndLabel,
   id,
   class: className,
   ...rest
 } = Astro.props;
 
+const isVertical = orientation === "vertical" && !radial;
+const isRange = range === true;
+const span = max - min;
+
+const clampPct = (v: number) => Math.min(Math.max(((v - min) / span) * 100, 0), 100);
+const startValue = value;
+const endValue = valueEnd ?? Math.round(min + span * 0.75);
+const pctStart = clampPct(startValue);
+const pctEnd = clampPct(endValue);
+
+const startLabel = ariaStartLabel ?? (label ? `${label} — start` : "Minimum");
+const endLabel = ariaEndLabel ?? (label ? `${label} — end` : "Maximum");
+
+const endId = id ? `${id}-end` : undefined;
+const endName = nameEnd ?? (name ? `${name}-end` : undefined);
+
 const classes = cn(
   "aui-slider",
   `aui-slider--${variant}`,
   `aui-slider--${size}`,
+  `aui-slider--${orientation}`,
+  radial && "aui-slider--radial",
+  isRange && "aui-slider--range",
+  isVertical && "aui-slider--vertical",
   disabled && "aui-slider--disabled",
   tooltip && "aui-slider--tooltip",
   className,
 );
 
 /** Thumb position for the tooltip bubble, as a percentage of the track. */
-const pct = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
+const pct = pctStart;
+
+// Radial geometry: viewBox 0 0 100 100, r=42 → circumference ≈ 263.89
+const DIAL_R = 42;
+const DIAL_C = 2 * Math.PI * DIAL_R;
+const dialSizeMap: Record<string, string> = {sm: "88px", md: "120px", lg: "152px"};
+const dialSize = dialSizeMap[size] ?? dialSizeMap.md;
+// Fill arc covers [0, pct] (single) or [pctStart, pctEnd] (range), from 12 o'clock clockwise.
+const dialFracA = isRange ? pctStart / 100 : 0;
+const dialFracB = (isRange ? pctEnd : pct) / 100;
+const dialRotate = -90 + dialFracA * 360;
+const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
 ---
 
 <div class={classes}>
   {
-    (label || showValue) && (
+    (label || (showValue && !radial)) && (
       <div class="aui-slider__head">
         {label && <span class="aui-slider__label" id={id ? `${id}-label` : undefined}>{label}</span>}
-        {showValue && <span class="aui-slider__value">{value}</span>}
+        {showValue && !radial && (
+          <span class="aui-slider__value">{isRange ? `${startValue} – ${endValue}` : startValue}</span>
+        )}
       </div>
     )
   }
-  <div class="aui-slider__track-wrap">
-    <input
-      type="range"
-      id={id}
-      name={name}
-      value={value}
-      min={min}
-      max={max}
-      step={step}
-      disabled={disabled}
-      class="aui-slider__input"
-      aria-label={label}
-      aria-labelledby={id && label ? `${id}-label` : undefined}
-      {...rest}
-    />
-    {
-      tooltip && (
-        <output class="aui-slider__tooltip" for={id} style={`--aui-slider-pct: ${pct}%`}>
-          {value}
-        </output>
-      )
-    }
-  </div>
+
+  {
+    radial ? (
+      <span class="aui-slider__dial" style={`width:${dialSize};height:${dialSize}`}>
+        <svg class="aui-slider__dial-svg" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="aui-slider__dial-track" cx="50" cy="50" r={DIAL_R} fill="none" stroke-width="10"/>
+          <circle
+            class="aui-slider__dial-fill"
+            cx="50" cy="50" r={DIAL_R} fill="none" stroke-width="10"
+            stroke-dasharray={dialDash}
+            transform={`rotate(${dialRotate} 50 50)`}
+          />
+        </svg>
+        <input
+          type="range"
+          id={id}
+          name={name}
+          value={startValue}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          class="aui-slider__input"
+          aria-label={isRange ? startLabel : label}
+          aria-labelledby={!isRange && id && label ? `${id}-label` : undefined}
+          {...rest}
+        />
+        {isRange && (
+          <input
+            type="range"
+            id={endId}
+            name={endName}
+            value={endValue}
+            min={min}
+            max={max}
+            step={step}
+            disabled={disabled}
+            class="aui-slider__input"
+            aria-label={endLabel}
+            {...rest}
+          />
+        )}
+        {showValue && (
+          <span class="aui-slider__dial-value" aria-hidden="true">
+            {isRange ? `${startValue} – ${endValue}` : startValue}
+          </span>
+        )}
+      </span>
+    ) : (
+      <div
+        class="aui-slider__track-wrap"
+        style={isVertical ? `--aui-slider-vh:${height}` : undefined}
+      >
+        {isRange && (
+          <span
+            class="aui-slider__fill"
+            aria-hidden="true"
+            style={`--aui-slider-fill-start:${pctStart}%;--aui-slider-fill-size:${pctEnd - pctStart}%`}
+          />
+        )}
+        <input
+          type="range"
+          id={id}
+          name={name}
+          value={startValue}
+          min={min}
+          max={max}
+          step={step}
+          disabled={disabled}
+          class="aui-slider__input"
+          style={!isRange ? `--aui-slider-pct:${pct}%` : undefined}
+          aria-label={isRange ? startLabel : label}
+          aria-labelledby={!isRange && id && label ? `${id}-label` : undefined}
+          {...rest}
+        />
+        {isRange && (
+          <input
+            type="range"
+            id={endId}
+            name={endName}
+            value={endValue}
+            min={min}
+            max={max}
+            step={step}
+            disabled={disabled}
+            class="aui-slider__input"
+            aria-label={endLabel}
+          />
+        )}
+        {
+          tooltip && (
+            <output class="aui-slider__tooltip" for={id} style={`--aui-slider-pct: ${pct}%`}>
+              {startValue}
+            </output>
+          )
+        }
+        {
+          tooltip && isRange && (
+            <output class="aui-slider__tooltip" for={endId} style={`--aui-slider-pct: ${pctEnd}%`}>
+              {endValue}
+            </output>
+          )
+        }
+      </div>
+    )
+  }
+
   {
     marks && marks.length > 0 && (
       <div class="aui-slider__marks" aria-hidden="true">
@@ -121,35 +266,165 @@ const pct = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
 </div>
 
 {
-  tooltip && (
+  /* Every non-radial slider gets the sync script: the fill gradient,
+     tooltip, and range span all read --aui-slider-pct / fill vars
+     while dragging. Astro hoists and bundles it once per page. */
+  !radial && (
   <script>
-    // Opt-in value-bubble sync for every slider on the page. Astro
-    // hoists and bundles this once, however many sliders render.
-    document.querySelectorAll(".aui-slider--tooltip").forEach(function (root) {
-      const input = root.querySelector<HTMLInputElement>("input[type='range']");
-      const bubble = root.querySelector<HTMLElement>(".aui-slider__tooltip");
-      if (!(input instanceof HTMLInputElement) || !(bubble instanceof HTMLElement)) return;
+    // Range + tooltip sync for every slider on the page. Astro hoists and
+    // bundles this once, however many sliders render.
+    document.querySelectorAll(".aui-slider").forEach(function (root) {
+      const isRange = root.classList.contains("aui-slider--range");
+      const isRadial = root.classList.contains("aui-slider--radial");
+      if (isRadial) return;
+      const inputs = Array.from(root.querySelectorAll<HTMLInputElement>("input[type='range']"));
+      const bubbles = Array.from(root.querySelectorAll<HTMLElement>(".aui-slider__tooltip"));
       const readout = root.querySelector<HTMLElement>(".aui-slider__value");
-      const sync = () => {
+      const fill = root.querySelector<HTMLElement>(".aui-slider__fill");
+
+      const pctOf = (input: HTMLInputElement) => {
         const min = Number(input.min) || 0;
         const max = Number(input.max) || 100;
-        const val = Number(input.value);
-        const pct = Math.min(Math.max(((val - min) / (max - min)) * 100, 0), 100);
-        bubble.style.setProperty("--aui-slider-pct", pct + "%");
-        bubble.textContent = input.value;
-        if (readout) readout.textContent = input.value;
+        return Math.min(Math.max(((Number(input.value) - min) / (max - min)) * 100, 0), 100);
       };
-      input.addEventListener("input", sync);
-      sync();
+
+      // Single slider: keep the fill gradient, tooltip, and readout in
+      // sync with the thumb. The fill reads --aui-slider-pct from the
+      // input's own inline style, so it always tracks dragging — with or
+      // without a tooltip.
+      if (!isRange) {
+        const input = inputs[0];
+        const bubble = bubbles[0];
+        if (!input) return;
+        const sync = () => {
+          input.style.setProperty("--aui-slider-pct", pctOf(input) + "%");
+          if (bubble) {
+            bubble.style.setProperty("--aui-slider-pct", pctOf(input) + "%");
+            bubble.textContent = input.value;
+          }
+          if (readout) readout.textContent = input.value;
+        };
+        input.addEventListener("input", sync);
+        sync();
+        return;
+      }
+
+      // Range slider: clamp thumbs, move the fill + both bubbles.
+      if (isRange && inputs.length === 2) {
+        const [a, b] = inputs;
+        const render = () => {
+          const p1 = pctOf(a);
+          const p2 = pctOf(b);
+          if (fill) {
+            fill.style.setProperty("--aui-slider-fill-start", Math.min(p1, p2) + "%");
+            fill.style.setProperty("--aui-slider-fill-size", Math.abs(p2 - p1) + "%");
+          }
+          if (bubbles[0]) bubbles[0].style.setProperty("--aui-slider-pct", p1 + "%");
+          if (bubbles[1]) bubbles[1].style.setProperty("--aui-slider-pct", p2 + "%");
+          if (bubbles[0]) bubbles[0].textContent = a.value;
+          if (bubbles[1]) bubbles[1].textContent = b.value;
+          if (readout) readout.textContent = `${a.value} – ${b.value}`;
+        };
+        a.addEventListener("input", () => {
+          if (Number(a.value) > Number(b.value)) a.value = b.value;
+          render();
+        });
+        b.addEventListener("input", () => {
+          if (Number(b.value) < Number(a.value)) b.value = a.value;
+          render();
+        });
+        render();
+      }
     });
   </script>
     )
-  }
+}
+
+{
+  radial && (
+  <script>
+    // Radial dial: sync the arc on keyboard input and map pointer drags
+    // to values by angle (12 o'clock = min, clockwise = more).
+    document.querySelectorAll(".aui-slider--radial").forEach(function (root) {
+      const svg = root.querySelector<SVGElement>(".aui-slider__dial-svg");
+      const inputs = Array.from(root.querySelectorAll<HTMLInputElement>("input[type='range']"));
+      const fill = root.querySelector<SVGElement>(".aui-slider__dial-fill");
+      const center = root.querySelector<HTMLElement>(".aui-slider__dial-value");
+      const readout = root.querySelector<HTMLElement>(".aui-slider__value");
+      if (!svg || inputs.length === 0 || !(fill instanceof SVGCircleElement)) return;
+
+      const isRange = inputs.length > 1;
+      const min = Number(inputs[0].min) || 0;
+      const max = Number(inputs[0].max) || 100;
+      const C = 2 * Math.PI * 42;
+      const frac = (v: number) => Math.min(Math.max((v - min) / (max - min), 0), 1);
+
+      const render = () => {
+        const a = Number(inputs[0].value);
+        const b = isRange ? Number(inputs[1].value) : a;
+        const f0 = isRange ? frac(Math.min(a, b)) : 0;
+        const f1 = frac(Math.max(a, b));
+        fill.setAttribute("stroke-dasharray", `${(f1 - f0) * C} ${C}`);
+        fill.setAttribute("transform", `rotate(${-90 + f0 * 360} 50 50)`);
+        const text = isRange ? `${inputs[0].value} – ${inputs[1].value}` : inputs[0].value;
+        if (center) center.textContent = text;
+        if (readout && !isRange) readout.textContent = inputs[0].value;
+      };
+      inputs.forEach((input) => input.addEventListener("input", render));
+
+      const valueFromPointer = (e: PointerEvent) => {
+        const rect = svg!.getBoundingClientRect();
+        const dx = e.clientX - (rect.left + rect.width / 2);
+        const dy = e.clientY - (rect.top + rect.height / 2);
+        const deg = (Math.atan2(dy, dx) * 180) / Math.PI;
+        const clockwise = (deg + 90 + 360) % 360;
+        return min + (clockwise / 360) * (max - min);
+      };
+
+      let active: HTMLInputElement | null = null;
+      const drag = (e: PointerEvent) => {
+        if (inputs.some((i) => i.disabled)) return;
+        if (!active) {
+          const v = valueFromPointer(e);
+          if (isRange) {
+            active =
+              Math.abs(v - Number(inputs[0].value)) <= Math.abs(v - Number(inputs[1].value))
+                ? inputs[0]
+                : inputs[1];
+          } else {
+            active = inputs[0];
+          }
+        }
+        active.value = String(valueFromPointer(e));
+        active.dispatchEvent(new Event("input", {bubbles: true}));
+      };
+      svg!.addEventListener("pointerdown", (e) => {
+        svg!.setPointerCapture(e.pointerId);
+        active = null;
+        drag(e as PointerEvent);
+        const move = (ev: Event) => drag(ev as PointerEvent);
+        const up = () => {
+          svg!.removeEventListener("pointermove", move);
+          svg!.removeEventListener("pointerup", up);
+          active = null;
+        };
+        svg!.addEventListener("pointermove", move);
+        svg!.addEventListener("pointerup", up);
+      });
+      render();
+    });
+  </script>
+    )
+}
 
 <style>
   .aui-slider {
     display: grid;
     gap: var(--ui-space-2);
+    /* Full-width so the track and marks row span the container even when
+       the parent is a flex/centering context (the native input's default
+       width would otherwise cap the whole grid at ~130px). */
+    inline-size: 100%;
     font-family: var(--ui-font-sans);
   }
 
@@ -199,10 +474,24 @@ const pct = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
     appearance: none;
     width: 100%;
     height: var(--aui-slider-track-h, 0.5rem);
-    background: var(--aui-slider-track);
+    /* Fill from the minimum to the thumb; --aui-slider-pct is set inline. */
+    background: linear-gradient(
+      to right,
+      var(--aui-slider-fill) var(--aui-slider-pct, 50%),
+      var(--aui-slider-track) var(--aui-slider-pct, 50%)
+    );
     border-radius: var(--ui-radius-full);
     outline: none;
     cursor: pointer;
+  }
+
+  /* RTL: the native thumb mirrors, so the fill mirrors with it. */
+  [dir="rtl"] .aui-slider__input {
+    background: linear-gradient(
+      to left,
+      var(--aui-slider-fill) var(--aui-slider-pct, 50%),
+      var(--aui-slider-track) var(--aui-slider-pct, 50%)
+    );
   }
 
   .aui-slider--sm .aui-slider__input {
@@ -276,6 +565,104 @@ const pct = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
     cursor: not-allowed;
   }
 
+  /* --- range (two thumbs over one track) --- */
+
+  /* Inputs stack over the wrapper; only thumbs catch the pointer, so
+     either thumb stays draggable and the fill span sits underneath.
+     The wrapper needs an explicit height since both inputs are
+     absolutely positioned and would otherwise collapse it. */
+  .aui-slider--range .aui-slider__track-wrap {
+    block-size: var(--aui-slider-track-h, 0.5rem);
+  }
+
+  .aui-slider--range .aui-slider__input {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  [dir="rtl"] .aui-slider--range .aui-slider__input {
+    background: transparent;
+  }
+
+  .aui-slider--range .aui-slider__input::-webkit-slider-thumb {
+    pointer-events: auto;
+  }
+
+  .aui-slider--range .aui-slider__input::-moz-range-thumb {
+    pointer-events: auto;
+  }
+
+  .aui-slider__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--aui-slider-fill-start, 0%);
+    inline-size: var(--aui-slider-fill-size, 0%);
+    /* The --aui-slider-* vars live on the input; the fill is a sibling,
+       so it reads the themed color from the root scope. */
+    background: var(--ui-slider-color);
+    border-radius: var(--ui-radius-full);
+    pointer-events: none;
+  }
+
+  /* --- vertical --- */
+
+  /* Native vertical: writing-mode + direction put min at the BOTTOM,
+     max at the top (vertical-lr's inline axis runs top→bottom; rtl
+     reverses it). Fill, range fill, tooltip, and marks all anchor to
+     the block-end (bottom) edge to match. */
+  .aui-slider--vertical .aui-slider__track-wrap {
+    inline-size: var(--aui-slider-track-h, 0.5rem);
+    block-size: var(--aui-slider-vh, 10rem);
+    justify-self: center;
+  }
+
+  .aui-slider--vertical .aui-slider__input {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    width: var(--aui-slider-track-h, 0.5rem);
+    height: var(--aui-slider-vh, 10rem);
+    background: linear-gradient(
+      to top,
+      var(--aui-slider-fill) var(--aui-slider-pct, 50%),
+      var(--aui-slider-track) var(--aui-slider-pct, 50%)
+    );
+  }
+
+  .aui-slider--vertical.aui-slider--range .aui-slider__input {
+    background: transparent;
+  }
+
+  /* Vertical range fill grows upward from the lower thumb. */
+  .aui-slider--vertical .aui-slider__fill {
+    inset-inline: 0;
+    inset-block: auto;
+    inset-block-end: var(--aui-slider-fill-start, 0%);
+    inline-size: auto;
+    block-size: var(--aui-slider-fill-size, 0%);
+  }
+
+  /* Vertical marks stack beside the track; first label at the bottom
+     to match min-at-bottom. */
+  .aui-slider--vertical .aui-slider__marks {
+    flex-direction: column-reverse;
+    align-items: center;
+    justify-content: space-between;
+    block-size: var(--aui-slider-vh, 10rem);
+    justify-self: center;
+  }
+
+  /* Vertical tooltip sits beside the thumb; the thumb's height above
+     the track bottom equals --aui-slider-pct (min at the bottom), so
+     the bubble anchors from the block-end edge. */
+  .aui-slider--vertical .aui-slider__tooltip {
+    inset-block-start: auto;
+    inset-block-end: var(--aui-slider-pct, 50%);
+    inset-inline-start: calc(100% + var(--ui-space-2));
+    transform: translateY(50%);
+  }
+
   /* --- value tooltip --- */
 
   .aui-slider__tooltip {
@@ -298,8 +685,12 @@ const pct = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
   }
 
   /* physical translate flips in RTL so the bubble tracks the thumb */
-  [dir='rtl'] .aui-slider__tooltip {
+  [dir="rtl"] .aui-slider__tooltip {
     transform: translateX(50%);
+  }
+
+  [dir="rtl"] .aui-slider--vertical .aui-slider__tooltip {
+    transform: translateY(50%);
   }
 
   .aui-slider__track-wrap:hover .aui-slider__tooltip,
@@ -310,6 +701,73 @@ const pct = Math.min(Math.max(((value - min) / (max - min)) * 100, 0), 100);
 
   .aui-slider--disabled .aui-slider__tooltip {
     display: none;
+  }
+
+  /* --- radial dial --- */
+
+  .aui-slider__dial {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-slider__dial:focus-within {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-slider__dial-svg {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: pointer;
+  }
+
+  .aui-slider__dial-track {
+    stroke: var(--ui-muted);
+  }
+
+  .aui-slider__dial-fill {
+    stroke: var(--ui-slider-color);
+    stroke-linecap: round;
+  }
+
+  /* Hidden native inputs keep keyboard + form semantics; the dial
+     surface handles pointer dragging. */
+  .aui-slider__dial .aui-slider__input {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  .aui-slider__dial-value {
+    grid-area: 1 / 1;
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-semibold);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+
+  .aui-slider--sm .aui-slider__dial-value {
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-slider--md .aui-slider__dial-value {
+    font-size: var(--ui-text-lg);
+  }
+
+  .aui-slider--lg .aui-slider__dial-value {
+    font-size: var(--ui-text-xl);
+  }
+
+  .aui-slider--disabled .aui-slider__dial-svg {
+    cursor: not-allowed;
   }
 
   /* --- marks --- */
