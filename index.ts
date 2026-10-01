@@ -52,6 +52,7 @@ export {default as Pagination} from "./src/components/navigation/Pagination.astr
 export {default as Popover} from "./src/components/overlay/Popover.astro";
 export {default as Progress} from "./src/components/data-display/Progress.astro";
 export {default as Radio} from "./src/components/forms/Radio.astro";
+export {default as RadioGroup} from "./src/components/forms/RadioGroup.astro";
 export {default as Rating} from "./src/components/forms/Rating.astro";
 export {default as ScrollArea} from "./src/components/layout/ScrollArea.astro";
 export {default as Select} from "./src/components/forms/Select.astro";

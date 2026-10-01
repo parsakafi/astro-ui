@@ -1,0 +1,170 @@
+---
+/**
+  * RadioGroup — zero-JS declarative single-choice group.
+  *
+  * Renders a labeled <fieldset> of Radio components from a plain items
+  * array — native radios underneath, so the browser provides the
+  * single-choice semantics and arrow-key navigation for free. The group
+  * centralizes what handwritten fieldsets repeat: `defaultValue` (only
+  * one option carries `checked`), `orientation`, per-option hints and
+  * disabled state, and group-level invalid styling + description wiring.
+  *
+  *   <RadioGroup
+  *     name="plan"
+  *     label="Plan"
+  *     defaultValue="pro"
+  *     items={[
+  *       {value: "free", label: "Free", hint: "For hobbies"},
+  *       {value: "pro", label: "Pro", hint: "For teams"},
+  *     ]}
+  *   />
+  *
+  * Options accept a string (value + label) or {value, label, hint?,
+  * disabled?}. For full custom markup per option, hand-write the
+  * fieldset with Radio components instead.
+  *
+  * JavaScript required: No
+  */
+import Radio from "./Radio.astro";
+import {cn} from "../../utils/cn";
+
+export interface RadioGroupOption {
+  value: string;
+  label: string;
+  /** Muted second line under the label. */
+  hint?: string;
+  disabled?: boolean;
+}
+
+export interface Props {
+  /** Shared radio group name — the key the chosen value posts under. */
+  name: string;
+  /** Group heading rendered in the fieldset legend. */
+  label?: string;
+  /** Which option starts checked (server-rendered). */
+  defaultValue?: string;
+  /** Option list; strings become both value and label. */
+  items: (string | RadioGroupOption)[];
+  /** Layout of the option rows. */
+  orientation?: "vertical" | "horizontal";
+  /** Group-level validation styling + error/description hookup. */
+  invalid?: boolean;
+  /** id of the element describing this group (hint/error text). */
+  ariaDescribedby?: string;
+  /** Disable every option in the group. */
+  disabled?: boolean;
+  /** Radio size forwarded to every option (mirrors Radio). */
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  /** Radio color variant forwarded to every option (mirrors Radio). */
+  variant?:
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "inherit";
+  class?: string;
+  id?: string;
+}
+
+const {
+  name,
+  label,
+  defaultValue,
+  items,
+  orientation = "vertical",
+  invalid = false,
+  ariaDescribedby,
+  disabled = false,
+  size = "md",
+  variant = "primary",
+  class: className,
+  id,
+} = Astro.props;
+
+const options: RadioGroupOption[] = items.map((item) =>
+  typeof item === "string" ? {value: item, label: item} : item,
+);
+
+const classes = cn(
+  "aui-radio-group",
+  `aui-radio-group--${orientation}`,
+  invalid && "aui-radio-group--invalid",
+  className,
+);
+---
+
+<fieldset class={classes} aria-describedby={ariaDescribedby} id={id}>
+  {label && <legend class="aui-radio-group__legend">{label}{invalid && <span aria-hidden="true"> *</span>}</legend>}
+  <div class="aui-radio-group__options">
+    {options.map((opt) => (
+      <div class="aui-radio-group__item">
+        <Radio
+          name={name}
+          value={opt.value}
+          checked={opt.value === defaultValue}
+          disabled={disabled || opt.disabled}
+          invalid={invalid}
+          size={size}
+          variant={variant}
+        >
+          {opt.label}
+        </Radio>
+        {opt.hint && <p class="aui-radio-group__hint" id={`${id ?? name}-${opt.value}-hint`}>{opt.hint}</p>}
+      </div>
+    ))}
+  </div>
+</fieldset>
+
+<style>
+  .aui-radio-group {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-radio-group__legend {
+    padding: 0;
+    margin-block-end: var(--ui-space-2);
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-foreground);
+  }
+
+  .aui-radio-group--invalid .aui-radio-group__legend {
+    color: var(--ui-error);
+  }
+
+  .aui-radio-group__options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-2);
+  }
+
+  .aui-radio-group--horizontal .aui-radio-group__options {
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: var(--ui-space-4);
+  }
+
+  .aui-radio-group__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-0_5, 0.125rem);
+  }
+
+  .aui-radio-group--horizontal .aui-radio-group__item {
+    align-items: flex-start;
+  }
+
+  .aui-radio-group__hint {
+    margin: 0;
+    padding-inline-start: calc(1rem + var(--ui-space-2));
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+</style>

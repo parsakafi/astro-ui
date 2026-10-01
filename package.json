@@ -63,6 +63,7 @@
     "./checkbox": "./src/components/forms/Checkbox.astro",
     "./dialog": "./src/components/overlay/Dialog.astro",
     "./radio": "./src/components/forms/Radio.astro",
+    "./radio-group": "./src/components/forms/RadioGroup.astro",
     "./switch": "./src/components/forms/Switch.astro",
     "./textarea": "./src/components/forms/Textarea.astro",
     "./table": "./src/components/data-display/Table.astro",

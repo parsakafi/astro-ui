@@ -80,6 +80,7 @@ describe("component contracts", () => {
         "Popover.astro",
         "Progress.astro",
         "Radio.astro",
+        "RadioGroup.astro",
         "Rating.astro",
         "ScrollArea.astro",
         "Select.astro",
