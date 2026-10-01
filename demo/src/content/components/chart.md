@@ -32,10 +32,10 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "terrain"]
 props:
   - name: "type"
-    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\"'"
+    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\"'"
     def: "'\"bar\"'"
     description: "Chart type."
   - name: "labels"
@@ -162,6 +162,26 @@ props:
     type: "boolean"
     def: "false"
     description: "Print the formatted value inside each heatmap cell."
+  - name: "cohortSizes"
+    type: "number[]"
+    def: "—"
+    description: "Cohort sizes; renders a users sublabel under each row name."
+  - name: "cohortValues"
+    type: "\"percent\" | \"value\""
+    def: "\"percent\""
+    description: "Cohort cell text: share of cohort, or headcount via cohortSizes."
+  - name: "cohortMax"
+    type: "number"
+    def: "data max"
+    description: "Ceiling for the cohort color ramp (fractions vs percents disambiguated automatically)."
+  - name: "cohortRamp"
+    type: "string[]"
+    def: "muted → primary"
+    description: "2+ CSS colors the cohort cells interpolate across."
+  - name: "terrainMode"
+    type: "\"wire\" | \"dots\" | \"both\""
+    def: "\"both\""
+    description: "Terrain rendering: mesh, bare point field, or both."
   - name: "format"
     type: "(value: number) => string"
     def: "—"

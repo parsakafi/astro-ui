@@ -12,6 +12,7 @@ import DemoTabs from "./DemoTabs.astro";
 import {codeToHtml} from "shiki";
 import {bySlug} from "../../lib/components";
 import {
+  terrainRows,
   barRevenue,
   groupedDesktop,
   groupedMobile,
@@ -5026,6 +5027,54 @@ for (const id of demoIds) {
               </Fragment>
               <Fragment slot="code">
                 <pre><code set:html={codeCache.get("heatmap")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "cohort" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Cohort retention</h3>
+            <DemoTabs id="dm-chart-cohort">
+              <Fragment slot="preview">
+                <Chart
+                  type="cohort"
+                  title="Weekly signup retention"
+                  description="Rows are signup cohorts, columns are weeks since signup — the empty tail hasn't been observed yet"
+                  height={230}
+                  labels={["Week 0", "Week 1", "Week 2", "Week 3", "Week 4"]}
+                  series={[
+                    {name: "Sep 1", data: [1, 0.41, 0.33, 0.29, 0.27]},
+                    {name: "Sep 8", data: [1, 0.39, 0.31, 0.28, 0.26]},
+                    {name: "Sep 15", data: [1, 0.44, 0.36, 0.33]},
+                    {name: "Sep 22", data: [1, 0.47, 0.4]},
+                  ]}
+                  cohortSizes={[480, 510, 465, 530]}
+                  cohortRamp={["var(--ui-muted)", "var(--ui-chart-2, var(--ui-info))", "var(--ui-primary)"]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("cohort")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "terrain" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Terrain</h3>
+            <DemoTabs id="dm-chart-terrain">
+              <Fragment slot="preview">
+                <Chart
+                  type="terrain"
+                  title="Signal terrain"
+                  description="Peaks and valleys across a sampled field"
+                  height={340}
+                  labels={["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5"]}
+                  series={terrainRows.map((data, i) => ({name: `d${i}`, color: "var(--ui-error)", data}))}
+                  format={(v) => `${v}m`}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("terrain")}/></pre>
               </Fragment>
             </DemoTabs>
           </div>

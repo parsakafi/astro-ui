@@ -2,6 +2,7 @@
  * Component registry — the single source of truth for the docs site.
  */
 import {series} from "./demo-data";
+import {terrainRows} from "./chart-demo-data";
 
 export interface PropRow {
     /** Prop name in kebab/camel as authored. */
@@ -3506,9 +3507,19 @@ for (const msg of ["First", "Second", "Third"]) {
                 title: "Heatmap",
                 code: `<Chart\n  type="heatmap"\n  title="Commit activity"\n  description="Rows are days, columns are week offsets — darker means more commits"\n  height={220}\n  labels={["-5w", "-4w", "-3w", "-2w", "-1w", "This week"]}\n  series={[\n    { name: "Mon", data: [4, 9, 6, 12, 8, 11] },\n    { name: "Wed", data: [7, 5, 10, 8, 13, 9] },\n    { name: "Fri", data: [12, 14, 9, 15, 11, 16] },\n    { name: "Sat", data: [2, 1, 3, 0, 2, 5] },\n  ]}\n  heatmapRamp={["var(--ui-muted)", "var(--ui-chart-2, var(--ui-info))", "var(--ui-primary)"]}\n  heatmapLabels\n/>\n<!-- rows come from series names, columns from labels; heatmapRamp\n     interpolates from data min to max; heatmapLabels prints values -->`,
             },
+            {
+                id: "cohort",
+                title: "Cohort retention",
+                code: `<Chart\n  type="cohort"\n  title="Weekly signup retention"\n  description="Rows are signup cohorts, columns are weeks since signup — the empty tail hasn't been observed yet"\n  height={230}\n  labels={["Week 0", "Week 1", "Week 2", "Week 3", "Week 4"]}\n  series={[\n    { name: "Sep 1", data: [1, 0.41, 0.33, 0.29, 0.27] },\n    { name: "Sep 8", data: [1, 0.39, 0.31, 0.28, 0.26] },\n    { name: "Sep 15", data: [1, 0.44, 0.36, 0.33] },\n    { name: "Sep 22", data: [1, 0.47, 0.4] },\n  ]}\n  cohortSizes={[480, 510, 465, 530]}\n  cohortRamp={["var(--ui-muted)", "var(--ui-chart-2, var(--ui-info))", "var(--ui-primary)"]}\n/>\n<!-- cohortSizes gives each row its size sublabel; missing tail values\n     render empty (not-yet-observed); values ≤ 1 are fractions -->`,
+            },
+            {
+                id: "terrain",
+                title: "Terrain",
+                code: `<Chart\n  type="terrain"\n  title="Signal terrain"\n  description="Peaks and valleys across a sampled field"\n  height={340}\n  labels={["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5"]}\n  series={[\n    { name: "d0", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[0])} },\n    { name: "d1", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[1])} },\n    { name: "d2", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[2])} },\n    { name: "d3", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[3])} },\n    { name: "d4", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[4])} },\n    { name: "d5", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[5])} },\n  ]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- rows are depth (front to back), columns are position, values are\n     elevation; terrainMode="wire" | "dots" | "both" (default); the\n     highest/lowest points get rings, callouts and a range bracket -->`,
+            },
         ],
         props: [
-            t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "waterfall" | "heatmap"'`, `'"bar"'`, "Chart type."),
+            t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain"'`, `'"bar"'`, "Chart type."),
             t("labels", "string[]", "required", "Category labels (x axis; slice names for pie/donut)."),
             t("series", "ChartSeries[]", "required", "Data series: { name, data, color? }."),
             t("title", "string", "—", "Accessible title, rendered as figcaption."),
@@ -3540,6 +3551,11 @@ for (const msg of ["First", "Second", "Third"]) {
             t("waterfallColors", "[string, string, string]", "success / error / primary", "Waterfall colors for [increase, decrease, total] bars."),
             t("heatmapRamp", "string[]", "muted → primary", "2+ CSS colors the heatmap cells interpolate across (data min → max)."),
             t("heatmapLabels", "boolean", "false", "Print the formatted value inside each heatmap cell."),
+            t("cohortSizes", "number[]", "—", "Cohort sizes; renders a users sublabel under each row name."),
+            t("cohortValues", '"percent" | "value"', '"percent"', "Cohort cell text: share of cohort, or headcount via cohortSizes."),
+            t("cohortMax", "number", "data max", "Ceiling for the cohort color ramp (fractions vs percents disambiguated automatically)."),
+            t("cohortRamp", "string[]", "muted → primary", "2+ CSS colors the cohort cells interpolate across."),
+            t("terrainMode", '"wire" | "dots" | "both"', '"both"', "Terrain rendering: mesh, bare point field, or both."),
             t("format", "(value: number) => string", "—", "Value formatting for ticks and the data table."),
             t("height", "number", "260", "Plot height in px."),
             ...common(false),

@@ -41,3 +41,26 @@ export const pageViews = series({seed: "chart:hbar:views", n: 4, min: 900, max: 
 
 /** Minimal — ping times, tight band. */
 export const ping = series({seed: "chart:minimal:ping", n: 4, min: 18, max: 70, smooth: 0.8});
+
+/** Terrain — a seeded elevation field: rows = depth bands (front →
+ *  back), cols = positions. A Gaussian ridge plus seeded noise gives
+ *  peaks-and-valleys terrain with one obvious summit. */
+export function terrainGrid(seed: string, rows: number, cols: number) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const rand = () => {
+    h = (h * 1664525 + 1013904223) >>> 0;
+    return h / 4294967296;
+  };
+  return Array.from({length: rows}, (_, r) => {
+    const depth = r / Math.max(rows - 1, 1);
+    const band = Math.exp(-((depth - 0.45) ** 2) / 0.08);
+    return Array.from({length: cols}, (_, c) => {
+      const pos = c / Math.max(cols - 1, 1);
+      const ridge = Math.exp(-((pos - 0.45) ** 2) / 0.06) * 46;
+      const swell = Math.exp(-((pos - 0.85) ** 2) / 0.05) * 18 * (1 - depth);
+      return Math.round((4 + band * ridge + swell + rand() * 9) * 10) / 10;
+    });
+  });
+}
+export const terrainRows = terrainGrid("chart:terrain:signal", 6, 11);
