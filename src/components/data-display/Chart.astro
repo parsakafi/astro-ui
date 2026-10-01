@@ -4,8 +4,9 @@
   *
   * Renders pure SVG at build time: grouped/stacked bars, a combo
   * chart (bars + overlay line on a secondary axis), line/area chart,
-  * pie/donut, scatter plot, or horizontal progress bars
-  * depending on `type`. Everything reads design tokens, so charts
+  * pie/donut, scatter plot, horizontal progress bars, or a waterfall
+  * (floating signed deltas on a running total) depending on `type`.
+  * Everything reads design tokens, so charts
   * follow the theme (including dark mode) with no re-render — colors
   * resolve from --ui-chart-1..6, overridable per-series via the
   * `colors` prop.
@@ -69,7 +70,19 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall";
+  /** Waterfall only: which categories render as full total bars from
+   *  zero instead of floating deltas — indices into `labels` (e.g.
+   *  [0] for a leading start column, or [0, 5] for start + final
+   *  total). Remaining columns are signed deltas stacked on the
+   *  running total, increases/decreases colored via
+   *  waterfallColors. A total whose data value is 0 renders the
+   *  running sum automatically (the trailing End/Net column).
+   *  Dashed connectors link each bar to the next. */
+  waterfallTotals?: number[];
+  /** Waterfall only: CSS colors for [increase, decrease, total] bars.
+   *  Defaults to success / error / primary tokens. */
+  waterfallColors?: [string, string, string];
   /** Accessible title (rendered as figcaption, visually hidden is not used — show it). */
   title?: string;
   /** Supporting line under the title. */
@@ -181,6 +194,8 @@ const {
   gaugeStyle = "line",
   gaugeRamp,
   barStyle = "rect",
+  waterfallTotals,
+  waterfallColors: wfColors = ["var(--ui-success)", "var(--ui-error)", "var(--ui-primary)"],
   format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
   height = 260,
   class: className,
@@ -229,8 +244,9 @@ const x = (i: number, n: number) => PAD.left + (n <= 1 ? plotW / 2 : (i / (n - 1
 const y = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yMax) * plotH;
 const yR = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yRMax) * plotH;
 
+const isWaterfall = type === "waterfall";
 const cartesian =
-  type === "bar" || type === "line" || type === "area" || type === "scatter" || type === "combo";
+  type === "bar" || type === "line" || type === "area" || type === "scatter" || type === "combo" || isWaterfall;
 const circular = type === "pie" || type === "donut";
 const isHbar = type === "hbar";
 const isGauge = type === "gauge";
@@ -832,6 +848,91 @@ const hbarSegments = hbarStacked
   })
   : [];
 
+/* --- waterfall: floating bars on a running total. Each non-total
+   label contributes a signed delta stacked on the cumulative sum;
+   total columns (waterfallTotals) anchor to zero and RESET the
+   running sum to their value. Colors: increase / decrease / total.
+   Dashed connectors join each bar's end level to the next column. */
+const waterfallColors = [
+  wfColors[0],
+  wfColors[1],
+  wfColors[2],
+];
+const waterfallCols = isWaterfall
+  ? (() => {
+    const data = series[0]?.data ?? [];
+    const totalSet = new Set((waterfallTotals ?? []).filter((i) => i >= 0 && i < labels.length));
+    let run = 0;
+    const levelAt: number[] = [];
+    const cols = labels.map((label, i) => {
+      const v = data[i] ?? 0;
+      const isTotal = totalSet.has(i);
+      let lo: number;
+      let hi: number;
+      if (isTotal) {
+        /* A total of 0 means "auto": render the running sum — the
+           classic trailing End/Net column without hand-computing it. */
+        const tv = v !== 0 ? v : run;
+        lo = 0;
+        hi = tv;
+        run = tv;
+      } else {
+        lo = Math.min(run, run + v);
+        hi = Math.max(run, run + v);
+        run += v;
+      }
+      levelAt[i] = run;
+      return {
+        label,
+        lo,
+        hi,
+        kind: (isTotal ? "total" : v >= 0 ? "inc" : "dec") as "inc" | "dec" | "total",
+        value: isTotal ? hi : v,
+      };
+    });
+    const wMax = maxY ?? Math.max(...cols.map((c) => c.hi), 1);
+    const wMin = Math.min(...cols.map((c) => c.lo), 0);
+    return {cols, levelAt, max: Math.max(wMax, 1), min: wMin, totalSet};
+  })()
+  : null;
+/* Waterfall bars may hang below zero (negative running level), so the
+   shared y() helper is insufficient — the scale spans [min, max]. */
+const wy = (v: number) => {
+  const span = Math.max(waterfallCols!.max - waterfallCols!.min, 1);
+  return PAD.top + plotH - ((v - waterfallCols!.min) / span) * plotH;
+};
+const waterfallRects = waterfallCols
+  ? waterfallCols.cols.map((c, i) => {
+    const w = Math.max(4, Math.min(40, barGroupW * 0.6));
+    return {
+      x: PAD.left + i * barGroupW + barGroupW / 2 - w / 2,
+      y: wy(c.hi),
+      h: Math.max(Math.abs(wy(c.lo) - wy(c.hi)), c.value !== 0 || c.kind === "total" ? 2 : 0),
+      w,
+      kind: c.kind,
+      fill: c.kind === "inc" ? waterfallColors[0] : c.kind === "dec" ? waterfallColors[1] : waterfallColors[2],
+      tip: `${c.label}: ${c.kind === "total" ? `total ${format(c.value)}` : `${c.value >= 0 ? "+" : "−"}${format(Math.abs(c.value))} → ${format(c.hi)}`}`,
+    };
+  })
+  : [];
+/* Connectors: from the end level of column i to the start level of
+   column i+1 — a dashed bridge between adjacent bar edges. */
+const waterfallLinks = waterfallCols
+  ? waterfallCols.cols.slice(0, -1).map((c, i) => {
+    /* The bridge rides the running level AFTER column i — for a
+       decrease that's the bar's bottom edge, not its top. */
+    const lvl = wy(waterfallCols.levelAt[i]);
+    const x0 = PAD.left + i * barGroupW + barGroupW / 2 + waterfallRects[i].w / 2;
+    const x1 = PAD.left + (i + 1) * barGroupW + barGroupW / 2 - waterfallRects[i + 1].w / 2;
+    return {x0, x1, y: lvl};
+  })
+  : [];
+
+/* Waterfall grid spans the shifted [min, max] scale. */
+const wfTicks = isWaterfall
+  ? [0, 1, 2, 3].map((i) => waterfallCols!.min + (i * (waterfallCols!.max - waterfallCols!.min)) / 3)
+  : [];
+
 const classes = cn(
   "aui-chart",
   `aui-chart--${type}`,
@@ -863,14 +964,14 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
       >
         {grid && (
           <g class="aui-chart__grid" aria-hidden="true">
-            {yTicks.map((t) => (
-              <line x1={PAD.left} x2={W - PAD.right} y1={y(t)} y2={y(t)}/>
+            {(isWaterfall ? wfTicks : yTicks).map((t) => (
+              <line x1={PAD.left} x2={W - PAD.right} y1={isWaterfall ? wy(t) : y(t)} y2={isWaterfall ? wy(t) : y(t)}/>
             ))}
           </g>
         )}
         {grid &&
-          yTicks.map((t) => (
-            <text class="aui-chart__tick" x={PAD.left - 6} y={y(t) + 3} text-anchor="end">
+          (isWaterfall ? wfTicks : yTicks).map((t) => (
+            <text class="aui-chart__tick" x={PAD.left - 6} y={(isWaterfall ? wy(t) : y(t)) + 3} text-anchor="end">
               {format(Math.round(t * 10) / 10)}
             </text>
           ))}
@@ -883,7 +984,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
         {labels.map((label, i) => (
           <text
             class="aui-chart__tick"
-            x={type === "bar" || type === "combo" ? PAD.left + i * barGroupW + barGroupW / 2 : x(i, labels.length)}
+            x={type === "bar" || type === "combo" || isWaterfall ? PAD.left + i * barGroupW + barGroupW / 2 : x(i, labels.length)}
             y={height - 8}
             text-anchor="middle"
           >
@@ -905,6 +1006,16 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
           pillRects.map((r) => (
             <rect class="aui-chart__bar aui-chart__bar--pill" x={r.x} y={r.y} width={r.w} height={r.h}
                   rx={r.w / 2} fill={r.fill}>
+              <title>{r.tip}</title>
+            </rect>
+          ))}
+        {isWaterfall && waterfallLinks.map((l) => (
+          <line class="aui-chart__wf-link" x1={l.x0} y1={l.y} x2={l.x1} y2={l.y}/>
+        ))}
+        {isWaterfall &&
+          waterfallRects.map((r) => (
+            <rect class={`aui-chart__bar aui-chart__wf--${r.kind}`}
+                  x={r.x} y={r.y} width={r.w} height={r.h} rx={2} fill={r.fill}>
               <title>{r.tip}</title>
             </rect>
           ))}
@@ -1293,11 +1404,18 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     )
   }
 
-  {
+    {
     legend && !isGauge && !isSankey && (
       <ul class="aui-chart__legend" aria-hidden="true">
-        {circular || isRadial
-          ? (circular
+        {isWaterfall ? (
+          ["Increase", "Decrease", "Total"].map((name, i) => (
+            <li>
+              <span class="aui-chart__swatch" style={`background: ${waterfallColors[i]}`}/>
+              {name}
+            </li>
+          ))
+        ) : circular || isRadial ? (
+          (circular
             ? pieData.map((d) => (
               <li>
                 <span class="aui-chart__swatch" style={`background: ${d.color}`}/>
@@ -1310,12 +1428,14 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
                 {r.label}
               </li>
             )))
-          : series.map((s, i) => (
+        ) : (
+          series.map((s, i) => (
             <li>
               <span class="aui-chart__swatch" style={`background: ${colorAt(i, s)}`}/>
               {s.name}
             </li>
-          ))}
+          ))
+        )}
       </ul>
     )
   }
@@ -1391,6 +1511,13 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
 
   .aui-chart__bar {
     transition: opacity var(--ui-transition-fast);
+  }
+
+  /* --- waterfall: dashed running-level connectors. --- */
+  .aui-chart__wf-link {
+    stroke: var(--ui-muted-foreground);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
   }
 
   .aui-chart__bar:hover {
