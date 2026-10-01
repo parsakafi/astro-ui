@@ -86,6 +86,10 @@ export interface Props {
    *  the corner titles, rail stubs, and leader drops. The black
    *  extreme rings stay; the sample lattice is drawn regardless. */
   terrainCallouts?: boolean;
+  /** Terrain only: corner-title texts for the callouts —
+   *  [highest, lowest]; defaults to ["Highest point", "Lowest point"].
+   *  Only rendered when terrainCallouts is on. */
+  terrainCalloutLabels?: [string, string];
   /** Waterfall only: which categories render as full total bars from
    *  zero instead of floating deltas — indices into `labels` (e.g.
    *  [0] for a leading start column, or [0, 5] for start + final
@@ -246,6 +250,7 @@ const {
   terrainMode = "both",
   terrainAxes,
   terrainCallouts = true,
+  terrainCalloutLabels = ["Highest point", "Lowest point"],
   format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
   height = 260,
   class: className,
@@ -1667,13 +1672,13 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
           <path d={`M ${terrain.hiP.x.toFixed(1)} ${terrain.railY} V ${(terrain.hiP.y - 8).toFixed(1)}`} fill="none"/>
           <path d={`M ${terrain.loP.x.toFixed(1)} ${terrain.railY} V ${(terrain.loP.y - 8).toFixed(1)}`} fill="none"/>
           <text class="aui-chart__terrain-callout-title" x={PAD.left} y={(terrain.railY - 22).toFixed(1)}>
-            Highest point
+            {terrainCalloutLabels[0]}
           </text>
           <text x={PAD.left} y={(terrain.railY - 8).toFixed(1)}>
             {format(terrain.hiP.v)}
           </text>
           <text class="aui-chart__terrain-callout-title" x={(W - 24).toFixed(1)} y={(terrain.railY - 22).toFixed(1)} text-anchor="end">
-            Lowest point
+            {terrainCalloutLabels[1]}
           </text>
           <text x={(W - 24).toFixed(1)} y={(terrain.railY - 8).toFixed(1)} text-anchor="end">
             {format(terrain.loP.v)}
