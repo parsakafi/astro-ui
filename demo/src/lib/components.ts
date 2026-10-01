@@ -3515,7 +3515,7 @@ for (const msg of ["First", "Second", "Third"]) {
             {
                 id: "terrain",
                 title: "Terrain",
-                code: `<Chart\n  type="terrain"\n  title="Signal terrain"\n  description="Peaks and valleys across a sampled field"\n  height={400}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainAxes={["X: Position", "Y: Elevation", "Z: Depth"]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- rows are depth (front to back), columns are position, values are\n     elevation; terrainMode="wire" | "dots" | "both" (default); the\n     highest/lowest points get black rings + callouts, a fixed sample\n     lattice gets accent rings, back rows fade and dash -->`,
+                code: `<Chart\n  type="terrain"\n  title="Signal terrain"\n  description="Peaks and valleys across a sampled field"\n  height={400}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainAxes={["X: Position", "Y: Elevation", "Z: Depth"]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- rows are depth (front to back), columns are position, values are\n     elevation; terrainMode="wire" | "dots" | "both" (default); the\n     highest/lowest points get black rings + callouts (rename them via\n     terrainCalloutLabels, hide via terrainCallouts={false}), a fixed\n     sample lattice gets accent rings, back rows fade and dash -->`,
             },
             {
                 id: "terrain-bare",
@@ -3563,6 +3563,7 @@ for (const msg of ["First", "Second", "Third"]) {
             t("terrainMode", '"wire" | "dots" | "both"', '"both"', "Terrain rendering: mesh, bare point field, or both."),
             t("terrainAxes", "[string, string, string]", "—", "Terrain axis captions along the bottom (x, y, z)."),
             t("terrainCallouts", "boolean", "true", "Highest/lowest corner titles, rail and drops; false hides them."),
+            t("terrainCalloutLabels", "[string, string]", "Highest / Lowest point", "Custom corner-title texts for the extreme-point callouts."),
             t("format", "(value: number) => string", "—", "Value formatting for ticks and the data table."),
             t("height", "number", "260", "Plot height in px."),
             ...common(false),
