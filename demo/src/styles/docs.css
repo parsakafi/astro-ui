@@ -2846,3 +2846,26 @@
 .docs-block-tabs .docs-demo-preview > * {
   inline-size: 100%;
 }
+
+/* --- Carousel demo cards --- */
+.aui-carousel-demo-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 10rem;
+  font-size: var(--ui-text-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--ui-muted-foreground);
+  background: var(--ui-muted);
+  border-radius: var(--ui-radius-lg);
+}
+
+.docs-demo-note {
+  margin: var(--ui-space-2) 0 0;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+
+.car-v-h {
+  block-size: 14rem;
+}
