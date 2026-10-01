@@ -90,6 +90,11 @@ export interface Props {
    *  [highest, lowest]; defaults to ["Highest point", "Lowest point"].
    *  Only rendered when terrainCallouts is on. */
   terrainCalloutLabels?: [string, string];
+  /** Terrain only: replaces the default two-tone dots with a 3-band
+   *  elevation coloring — [low, middle, high] CSS colors, banded at
+   *  thirds of the value range. Great for low/mid/high semantics
+   *  like primary → warning → error. */
+  terrainDotColors?: [string, string, string];
   /** Waterfall only: which categories render as full total bars from
    *  zero instead of floating deltas — indices into `labels` (e.g.
    *  [0] for a leading start column, or [0, 5] for start + final
@@ -251,6 +256,7 @@ const {
   terrainAxes,
   terrainCallouts = true,
   terrainCalloutLabels = ["Highest point", "Lowest point"],
+  terrainDotColors,
   format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
   height = 260,
   class: className,
@@ -1174,7 +1180,7 @@ const terrain = isTerrain
     /* Soft wash under the crest. */
     const wash = {cx: (padL + W - 30) / 2, cy: baseY - dz * 0.45, rx: (W - padL - 30) * 0.42, ry: dz * 0.5};
     return {rows, cols, rowPaths, colPaths, dots, rings, hi, lo, hiP, loP, railY, wash,
-      vMin, vMax, hotAt: vMin + span * 0.7};
+      vMin, vMax, hotAt: vMin + span * 0.7, bandLo: vMin + span / 3, bandHi: vMin + span * (2 / 3)};
   })()
   : null;
 
@@ -1640,7 +1646,9 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
           <g class="aui-chart__terrain-dots">
             {terrain.dots.map((p) => (
               <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={terrainMode === "dots" ? 1.7 : 1.4}
-                      fill={p.v >= terrain.hotAt ? colorAt(0, series[0]) : "var(--ui-muted-foreground)"}
+                      fill={terrainDotColors
+                        ? p.v <= terrain.bandLo ? terrainDotColors[0] : p.v >= terrain.bandHi ? terrainDotColors[2] : terrainDotColors[1]
+                        : p.v >= terrain.hotAt ? colorAt(0, series[0]) : "var(--ui-muted-foreground)"}
                       style={`opacity: ${(0.3 + (p.zi / (terrain.rows.length - 1)) * 0.5).toFixed(2)}`}>
                 <title>{`${terrain.rows[p.zi]} — ${terrain.cols[p.xi]}: ${format(p.v)}`}</title>
               </circle>
