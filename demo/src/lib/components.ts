@@ -772,7 +772,7 @@ import { Alert } from "astro-ui";
             {
                 id: "basic",
                 title: "Basic",
-                code: `<Alert variant="info" title="Heads up">Scheduled maintenance Sunday 02:00–04:00 UTC.</Alert>\n<Alert variant="success" title="Saved">Your changes are live.</Alert>`,
+                code: `<Alert variant="info">\n  <Fragment slot="title">Heads up</Fragment>\n  Scheduled maintenance Sunday 02:00–04:00 UTC.\n</Alert>\n<Alert variant="success">\n  <Fragment slot="title">Saved</Fragment>\n  Your changes are live.\n</Alert>`,
             },
             {
                 id: "variants",
@@ -782,20 +782,21 @@ import { Alert } from "astro-ui";
             {
                 id: "closable",
                 title: "Dismissible",
-                code: `<Alert variant="warning" title="Storage almost full" closable>Upgrade your plan.</Alert>`,
+                code: `<Alert variant="warning" closable>\n  <Fragment slot="title">Storage almost full</Fragment>\n  Upgrade your plan.\n</Alert>`,
             },
         ],
         props: [
-            t("variant", "\"info\" | \"success\" | \"warning\" | \"destructive\" | …", "\"info\"", "Visual + semantic variant."),
+            t("variant", "\"primary\" | \"destructive\" | \"success\" | \"warning\" | \"info\" | …", "\"primary\"", "Visual + semantic variant."),
             t("size", "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\"", "\"md\"", "Surface scale."),
-            t("title", "string", "—", "Bold heading line."),
             t("closable", "boolean", "false", "Renders the dismiss button."),
             t("closeLabel", "string", "\"Dismiss\"", "Accessible name for the dismiss button."),
+            t("role", "\"alert\" | \"status\" | \"none\"", "—", "Overrides the variant-driven live-region role."),
             t("class", "string", "—", "Merged via cn(); Tailwind classes welcome."),
             t("id", "string", "—", "Element id."),
         ],
         slots: [
             {name: "default", description: "Message body text."},
+            {name: "title", description: "Bold heading line."},
             {name: "icon", description: "Custom leading glyph (overrides the built-in one)."},
         ],
         faq: [
@@ -838,20 +839,21 @@ import { Spinner } from "astro-ui";
         ],
         demos: [
             {
-                id: "basic",
-                title: "Basic",
-                code: `<Spinner />\n<Spinner variant="dots" />\n<Spinner variant="bars" />\n<Spinner variant="pulse" />`,
+                id: "styles",
+                title: "Styles",
+                code: `<Spinner label="Ring" />\n<Spinner icon="dots" label="Dots" />\n<Spinner icon="pulse" label="Pulse" />\n<Spinner icon="spin" label="Spin" />`,
             },
             {
-                id: "sizes",
-                title: "Sizes",
-                code: `<Spinner size="xs" />\n<Spinner size="sm" />\n<Spinner size="md" />\n<Spinner size="lg" />`,
+                id: "sizes-colors",
+                title: "Sizes & colors",
+                code: `<Spinner size="xs" label="xs" />\n<Spinner size="sm" label="sm" />\n<Spinner size="lg" label="lg" />\n<Spinner variant="success" label="Success" />\n<Spinner variant="warning" label="Warning" />`,
             },
         ],
         props: [
-            t("variant", "\"ring\" | \"dots\" | \"bars\" | \"pulse\"", "\"ring\"", "Animation style."),
+            t("icon", "\"ring\" | \"dots\" | \"pulse\" | \"spin\"", "\"ring\"", "Visual style of the spinner."),
+            t("variant", "\"inherit\" | \"primary\" | … | \"accent\"", "\"inherit\"", "Glyph color."),
             t("size", "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\"", "\"md\"", "Glyph size."),
-            t("ariaLabel", "string", "\"Loading\"", "Accessible status label."),
+            t("label", "string", "—", "Accessible status label."),
             t("class", "string", "—", "Merged via cn(); Tailwind classes welcome."),
             t("id", "string", "—", "Element id."),
         ],
@@ -897,16 +899,23 @@ import { Skeleton } from "astro-ui";
             {
                 id: "basic",
                 title: "Basic",
-                code: `<Skeleton variant="text" style="width:60%" />\n<Skeleton variant="text" style="width:90%" />\n<Skeleton variant="circle" style="width:3rem;height:3rem" />`,
+                code: `<Skeleton variant="text" width="60%" />\n<Skeleton variant="text" width="90%" />\n<Skeleton variant="circle" width="3rem" height="3rem" />`,
             },
             {
                 id: "card",
                 title: "Card layout",
-                code: `<div style="display:grid;gap:0.75rem">\n  <Skeleton style="height:8rem" />\n  <Skeleton variant="text" style="width:80%" />\n</div>`,
+                code: `<div style="display:grid;gap:0.75rem">\n  <Skeleton height="8rem" />\n  <Skeleton variant="text" width="80%" />\n</div>`,
+            },
+            {
+                id: "compose",
+                title: "Compose a layout",
+                code: `<div style="display:flex;gap:1rem;align-items:flex-start">\n  <Skeleton variant="circle" />\n  <div style="flex:1;display:grid;gap:0.5rem">\n    <Skeleton variant="text" width="40%" />\n    <Skeleton variant="text" />\n    <Skeleton variant="rect" height="4rem" />\n  </div>\n</div>`,
             },
         ],
         props: [
-            t("variant", "\"text\" | \"circle\" | \"rectangle\"", "\"rectangle\"", "Placeholder shape."),
+            t("variant", "\"text\" | \"rect\" | \"circle\"", "\"rect\"", "Placeholder shape."),
+            t("width / height", "string", "—", "Explicit box dimensions (any CSS length)."),
+            t("size", "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\"", "\"md\"", "Preset scale."),
             t("animated", "boolean", "true", "Pulse animation; false for a static block."),
             t("class", "string", "—", "Merged via cn(); Tailwind classes welcome."),
             t("id", "string", "—", "Element id."),
@@ -1020,22 +1029,20 @@ import { ScrollArea } from "astro-ui";
         ],
         demos: [
             {
-                id: "basic",
-                title: "Basic",
-                code: `<ScrollArea height="10rem">\n  <ul>{items.map((i) => <li>{i}</li>)}</ul>\n</ScrollArea>`,
+                id: "vertical",
+                title: "Vertical",
+                code: `<ScrollArea class="h-40 w-full">\n  <div style="display:grid;gap:0.5rem">\n    <p>Row one</p>\n    <p>Row two</p>\n    <p>Row three</p>\n  </div>\n</ScrollArea>`,
             },
             {
                 id: "horizontal",
                 title: "Horizontal",
-                code: `<ScrollArea height="auto" style="white-space:nowrap">\n  …wide row…\n</ScrollArea>`,
+                code: `<ScrollArea orientation="horizontal" class="w-full">\n  <div style="width:max-content;display:flex;gap:0.5rem">\n    <Tag>Jan</Tag>\n    <Tag>Feb</Tag>\n    <Tag>Mar</Tag>\n  </div>\n</ScrollArea>`,
             },
         ],
         props: [
-            t("height", "string", "—", "Region height (CSS length)."),
-            t("maxHeight", "string", "—", "Grows until this cap."),
-            t("class", "string", "—", "Merged via cn(); Tailwind classes welcome."),
+            t("orientation", "\"vertical\" | \"horizontal\" | \"both\"", "\"vertical\"", "Which axes may scroll."),
+            t("class", "string", "—", "Size the region here (e.g. h-40 w-full); merged via cn()."),
             t("id", "string", "—", "Element id."),
-            t("ariaLabel", "string", "—", "Accessible name."),
         ],
         slots: [
             {name: "default", description: "Scrollable content."},

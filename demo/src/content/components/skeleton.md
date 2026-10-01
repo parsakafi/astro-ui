@@ -25,12 +25,20 @@ usage: |-
   
   <Skeleton style="width:100%;height:1rem" />
   <Skeleton variant="circle" style="width:3rem;height:3rem" />
-demoIds: ["basic", "card"]
+demoIds: ["basic", "card", "compose"]
 props:
   - name: "variant"
-    type: "\"text\" | \"circle\" | \"rectangle\""
-    def: "\"rectangle\""
+    type: "\"text\" | \"rect\" | \"circle\""
+    def: "\"rect\""
     description: "Placeholder shape."
+  - name: "width / height"
+    type: "string"
+    def: "—"
+    description: "Explicit box dimensions (any CSS length)."
+  - name: "size"
+    type: "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\""
+    def: "\"md\""
+    description: "Preset scale."
   - name: "animated"
     type: "boolean"
     def: "true"

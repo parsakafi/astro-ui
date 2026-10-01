@@ -1162,6 +1162,26 @@ for (const id of demoIds) {
   <div>
     {demoIds.map((id) => (
       <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-alert-basic">
+              <Fragment slot="preview">
+                <Alert variant="info">
+                  <Fragment slot="title">Heads up</Fragment>
+                  Scheduled maintenance Sunday 02:00–04:00 UTC.
+                </Alert>
+                <Alert variant="success">
+                  <Fragment slot="title">Saved</Fragment>
+                  Your changes are live.
+                </Alert>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "variants" && (
           <div class="docs-demo-block">
             <h3 class="docs-demo-title">Variants</h3>
@@ -1261,6 +1281,39 @@ for (const id of demoIds) {
   <div>
     {demoIds.map((id) => (
       <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-skeleton-basic" previewClass="docs-demo-preview-light">
+              <Fragment slot="preview">
+                <div style="display:grid;gap:.5rem;width:100%">
+                  <Skeleton variant="text" width="60%"/>
+                  <Skeleton variant="text" width="90%"/>
+                  <Skeleton variant="circle" width="3rem" height="3rem"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "card" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Card layout</h3>
+            <DemoTabs id="dm-skeleton-card" previewClass="docs-demo-preview-light">
+              <Fragment slot="preview">
+                <div style="display:grid;gap:.75rem;width:100%">
+                  <Skeleton height="8rem"/>
+                  <Skeleton variant="text" width="80%"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("card")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "compose" && (
           <div class="docs-demo-block">
             <h3 class="docs-demo-title">Compose a layout</h3>

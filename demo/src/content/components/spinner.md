@@ -26,19 +26,23 @@ usage: |-
   
   <Spinner />
   <Spinner variant="dots" size="lg" />
-demoIds: ["basic", "sizes"]
+demoIds: ["styles", "sizes-colors"]
 props:
-  - name: "variant"
-    type: "\"ring\" | \"dots\" | \"bars\" | \"pulse\""
+  - name: "icon"
+    type: "\"ring\" | \"dots\" | \"pulse\" | \"spin\""
     def: "\"ring\""
-    description: "Animation style."
+    description: "Visual style of the spinner."
+  - name: "variant"
+    type: "\"inherit\" | \"primary\" | … | \"accent\""
+    def: "\"inherit\""
+    description: "Glyph color."
   - name: "size"
     type: "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\" | \"2xl\""
     def: "\"md\""
     description: "Glyph size."
-  - name: "ariaLabel"
+  - name: "label"
     type: "string"
-    def: "\"Loading\""
+    def: "—"
     description: "Accessible status label."
   - name: "class"
     type: "string"

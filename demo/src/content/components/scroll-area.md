@@ -26,28 +26,20 @@ usage: |-
   <ScrollArea height="12rem">
     {longList.map((item) => <p>{item}</p>)}
   </ScrollArea>
-demoIds: ["basic", "horizontal"]
+demoIds: ["vertical", "horizontal"]
 props:
-  - name: "height"
-    type: "string"
-    def: "—"
-    description: "Region height (CSS length)."
-  - name: "maxHeight"
-    type: "string"
-    def: "—"
-    description: "Grows until this cap."
+  - name: "orientation"
+    type: "\"vertical\" | \"horizontal\" | \"both\""
+    def: "\"vertical\""
+    description: "Which axes may scroll."
   - name: "class"
     type: "string"
     def: "—"
-    description: "Merged via cn(); Tailwind classes welcome."
+    description: "Size the region here (e.g. h-40 w-full); merged via cn()."
   - name: "id"
     type: "string"
     def: "—"
     description: "Element id."
-  - name: "ariaLabel"
-    type: "string"
-    def: "—"
-    description: "Accessible name."
 slots:
   - name: "default"
     description: "Scrollable content."
