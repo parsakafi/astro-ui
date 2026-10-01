@@ -176,7 +176,7 @@ const classes = cn("aui-command", className);
 
     let activeIndex = -1;
 
-    const setActive = (i: number) => {
+    const setActive = (i: number, doScroll = true) => {
       activeIndex = i;
       const current = items()[i];
       for (const [idx, item] of items().entries()) {
@@ -184,7 +184,9 @@ const classes = cn("aui-command", className);
       }
       if (current) {
         input.setAttribute("aria-activedescendant", current.dataset.value ?? "");
-        current.scrollIntoView({block: "nearest"});
+        // Only scroll on user-driven moves — initial paint must not yank
+        // the page down to an off-screen instance.
+        if (doScroll) current.scrollIntoView({block: "nearest"});
       } else {
         input.removeAttribute("aria-activedescendant");
       }
@@ -249,7 +251,7 @@ const classes = cn("aui-command", className);
       });
       if (cfg.defaultSearch) {
         applyFilter();
-        setActive(cfg.autoHighlight && items().length ? 0 : -1);
+        setActive(cfg.autoHighlight && items().length ? 0 : -1, false);
       }
     }
 
@@ -287,8 +289,9 @@ const classes = cn("aui-command", className);
       if (item && !item.hasAttribute("data-filtered")) select(item);
     });
 
-    // Initial paint: highlight first item only when asked.
-    if (cfg.autoHighlight) setActive(0);
+    // Initial paint: highlight first item only when asked (never scroll —
+    // the instance may be below the fold and scrollIntoView would move the page).
+    if (cfg.autoHighlight) setActive(0, false);
   };
 
   document.querySelectorAll<HTMLElement>(".aui-command").forEach(setup);
