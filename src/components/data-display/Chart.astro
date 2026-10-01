@@ -4,9 +4,10 @@
   *
   * Renders pure SVG at build time: grouped/stacked bars, a combo
   * chart (bars + overlay line on a secondary axis), line/area chart,
-  * pie/donut, scatter plot, horizontal progress bars, or a waterfall
-  * (floating signed deltas on a running total) depending on `type`.
-  * Everything reads design tokens, so charts
+  * pie/donut, scatter plot, horizontal progress bars, a waterfall
+  * (floating signed deltas on a running total), or a heatmap
+  * (color-ramped matrix cells) depending on `type`. Everything reads
+  * design tokens, so charts
   * follow the theme (including dark mode) with no re-render — colors
   * resolve from --ui-chart-1..6, overridable per-series via the
   * `colors` prop.
@@ -70,7 +71,7 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap";
   /** Waterfall only: which categories render as full total bars from
    *  zero instead of floating deltas — indices into `labels` (e.g.
    *  [0] for a leading start column, or [0, 5] for start + final
@@ -83,6 +84,13 @@ export interface Props {
   /** Waterfall only: CSS colors for [increase, decrease, total] bars.
    *  Defaults to success / error / primary tokens. */
   waterfallColors?: [string, string, string];
+  /** Heatmap only: color ramp the cells interpolate across, from the
+   *  data minimum to the maximum — 2+ CSS colors, like gaugeRamp.
+   *  Defaults to muted → primary. */
+  heatmapRamp?: string[];
+  /** Heatmap only: print the formatted value inside each cell
+   *  (background-haloed so it reads on any cell color). */
+  heatmapLabels?: boolean;
   /** Accessible title (rendered as figcaption, visually hidden is not used — show it). */
   title?: string;
   /** Supporting line under the title. */
@@ -196,6 +204,8 @@ const {
   barStyle = "rect",
   waterfallTotals,
   waterfallColors: wfColors = ["var(--ui-success)", "var(--ui-error)", "var(--ui-primary)"],
+  heatmapRamp,
+  heatmapLabels = false,
   format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
   height = 260,
   class: className,
@@ -933,6 +943,53 @@ const wfTicks = isWaterfall
   ? [0, 1, 2, 3].map((i) => waterfallCols!.min + (i * (waterfallCols!.max - waterfallCols!.min)) / 3)
   : [];
 
+/* --- heatmap: labels = columns (x), series = rows (y), one cell per
+   series×label pair. Cells interpolate across heatmapRamp from the
+   data minimum to the maximum (row-independent — one global scale,
+   like the reference). --- */
+const isHeatmap = type === "heatmap";
+const heatmap = isHeatmap
+  ? (() => {
+    const rows = series.map((s) => s.name);
+    const cols = labels.length ? labels : (series[0]?.data ?? []).map((_, i) => String(i));
+    const values = series.flatMap((s) => s.data.map((v) => v));
+    if (values.length === 0) return null;
+    const vMin = Math.min(...values);
+    const vMax = Math.max(...values);
+    const span = Math.max(vMax - vMin, 1);
+    const ramp = heatmapRamp && heatmapRamp.length >= 2 ? heatmapRamp : ["var(--ui-muted)", "var(--ui-primary)"];
+    const mix = (t: number) => {
+      const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
+      const seg = Math.min(Math.floor(c), ramp.length - 2);
+      const local = c - seg;
+      return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
+    };
+    /* Cell geometry: square-ish cells that fill the viewBox, with gaps. */
+    const GAP = 3;
+    const padL = 76;
+    const padT = 8;
+    const cw = (W - padL - 12 - GAP * Math.max(cols.length - 1, 0)) / Math.max(cols.length, 1);
+    const ch = (height - padT - 28 - GAP * Math.max(rows.length - 1, 0)) / Math.max(rows.length, 1);
+    const cells = series.flatMap((s, ri) =>
+      cols.map((col, ci) => {
+        const v = s.data[ci] ?? 0;
+        const t = (v - vMin) / span;
+        return {
+          x: padL + ci * (cw + GAP),
+          y: padT + ri * (ch + GAP),
+          w: cw,
+          h: ch,
+          color: mix(t),
+          row: s.name,
+          col,
+          v,
+        };
+      }),
+    );
+    return {rows, cols, cells, vMin, vMax};
+  })()
+  : null;
+
 const classes = cn(
   "aui-chart",
   `aui-chart--${type}`,
@@ -1287,6 +1344,42 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
   {
+    isHeatmap && heatmap && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${heatmap.rows.length} rows × ${heatmap.cols.length} columns, values ${format(heatmap.vMin)} to ${format(heatmap.vMax)}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {heatmap.cells.map((c) => (
+          <rect class="aui-chart__hm-cell" x={c.x.toFixed(1)} y={c.y.toFixed(1)} width={c.w.toFixed(1)} height={c.h.toFixed(1)}
+                rx={3} fill={c.color}>
+            <title>{`${c.row} — ${c.col}: ${format(c.v)}`}</title>
+          </rect>
+        ))}
+        {heatmapLabels &&
+          heatmap.cells.map((c) => (
+            <text class="aui-chart__hm-value" x={(c.x + c.w / 2).toFixed(1)} y={(c.y + c.h / 2 + 4).toFixed(1)} text-anchor="middle">
+              {format(c.v)}
+            </text>
+          ))}
+        {heatmap.cols.map((col, ci) => (
+          <text class="aui-chart__tick" x={(76 + ci * (heatmap.cells[0].w + 3) + heatmap.cells[0].w / 2).toFixed(1)}
+                y={height - 8} text-anchor="middle">
+            {col}
+          </text>
+        ))}
+        {heatmap.rows.map((row, ri) => (
+          <text class="aui-chart__tick" x={70} y={(8 + ri * (heatmap.cells[0].h + 3) + heatmap.cells[0].h / 2 + 4).toFixed(1)} text-anchor="end">
+            {row}
+          </text>
+        ))}
+      </svg>
+    )
+  }
+
+  {
     isSankey && sankey && (
       <svg
         class="aui-chart__svg"
@@ -1405,7 +1498,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
     {
-    legend && !isGauge && !isSankey && (
+    legend && !isGauge && !isSankey && !isHeatmap && (
       <ul class="aui-chart__legend" aria-hidden="true">
         {isWaterfall ? (
           ["Increase", "Decrease", "Total"].map((name, i) => (
@@ -1518,6 +1611,29 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     stroke: var(--ui-muted-foreground);
     stroke-width: 1;
     stroke-dasharray: 4 3;
+  }
+
+  /* --- heatmap: rounded cells + haloed in-cell values (cells range
+     from pale to saturated, so foreground + background halo keeps the
+     numbers readable on either end of the ramp). --- */
+  .aui-chart__hm-cell {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__hm-cell:hover {
+    opacity: 0.85;
+  }
+
+  .aui-chart__hm-value {
+    fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+    font-size: 11px;
+    font-weight: var(--ui-font-medium);
+    font-family: var(--ui-font-sans);
+    pointer-events: none;
   }
 
   .aui-chart__bar:hover {
