@@ -69,6 +69,7 @@ import {
   Popover,
   Progress,
   Radio,
+  RadioGroup,
   Rating,
   ScrollArea,
   Select,
@@ -5253,6 +5254,126 @@ for (const id of demoIds) {
               </Fragment>
               <Fragment slot="code">
                 <pre><code set:html={codeCache.get("compact")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+
+{
+  component.slug === "radio-group" && (
+  <div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-radio-group-basic">
+              <Fragment slot="preview">
+                <RadioGroup
+                  id="dm-rg-plan"
+                  name="dm-rg-plan"
+                  label="Plan"
+                  defaultValue="Free"
+                  items={["Free", "Pro", "Enterprise"]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hints" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Hints + disabled options</h3>
+            <DemoTabs id="dm-radio-group-hints">
+              <Fragment slot="preview">
+                <RadioGroup
+                  id="dm-rg-plan2"
+                  name="dm-rg-plan2"
+                  label="Choose a plan"
+                  defaultValue="pro"
+                  items={[
+                    {value: "free", label: "Free", hint: "For hobbies"},
+                    {value: "pro", label: "Pro", hint: "For teams"},
+                    {value: "enterprise", label: "Enterprise", hint: "Contact sales", disabled: true},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("hints")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "orientation" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal</h3>
+            <DemoTabs id="dm-radio-group-orientation">
+              <Fragment slot="preview">
+                <RadioGroup
+                  id="dm-rg-size"
+                  name="dm-rg-size"
+                  label="Size"
+                  defaultValue="m"
+                  orientation="horizontal"
+                  items={["S", "M", "L", "XL"]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("orientation")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Invalid & disabled</h3>
+            <DemoTabs id="dm-radio-group-states">
+              <Fragment slot="preview">
+                <div class="demo-field" style="display:grid;gap:var(--ui-space-4)">
+                  <RadioGroup
+                    id="dm-rg-ship"
+                    name="dm-rg-ship"
+                    label="Shipping"
+                    invalid
+                    ariaDescribedby="dm-rg-ship-err"
+                    items={["Standard", "Express"]}
+                  />
+                  <p id="dm-rg-ship-err" style="margin:0;font-size:var(--ui-text-sm);color:var(--ui-error)">Choose a shipping method.</p>
+                  <RadioGroup
+                    id="dm-rg-seat"
+                    name="dm-rg-seat"
+                    label="Seat (closed)"
+                    disabled
+                    items={["Window", "Aisle"]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-radio-group-sizes">
+              <Fragment slot="preview">
+                <div class="demo-field" style="display:grid;gap:var(--ui-space-4)">
+                  <RadioGroup id="dm-rg-s1" name="dm-rg-s1" label="sm" size="sm" items={["One", "Two"]} />
+                  <RadioGroup id="dm-rg-s2" name="dm-rg-s2" label="md" size="md" items={["One", "Two"]} />
+                  <RadioGroup id="dm-rg-s3" name="dm-rg-s3" label="lg" size="lg" items={["One", "Two"]} />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("sizes")}/></pre>
               </Fragment>
             </DemoTabs>
           </div>
