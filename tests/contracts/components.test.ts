@@ -59,6 +59,8 @@ describe("component contracts", () => {
         "ButtonGroupSeparator.astro",
         "ButtonGroupText.astro",
         "Card.astro",
+        "Carousel.astro",
+        "CarouselSlide.astro",
         "Chart.astro",
         "Checkbox.astro",
         "Clipboard.astro",
@@ -164,6 +166,7 @@ describe("component contracts", () => {
   it("marks JS-required components and everything else zero-JS", () => {
     const jsRequired = new Set([
       "Autocomplete.astro",
+      "Carousel.astro",
       "Combobox.astro",
       "Command.astro",
       "AlertDialog.astro",

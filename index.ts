@@ -29,6 +29,8 @@ export {default as Combobox} from "./src/components/forms/Combobox.astro";
 export {default as Badge} from "./src/components/data-display/Badge.astro";
 export {default as Breadcrumb} from "./src/components/navigation/Breadcrumb.astro";
 export {default as Button} from "./src/components/general/Button.astro";
+export {default as Carousel} from "./src/components/general/Carousel.astro";
+export {default as CarouselSlide} from "./src/components/general/CarouselSlide.astro";
 export {default as ButtonGroup} from "./src/components/general/ButtonGroup.astro";
 export {default as ButtonGroupText} from "./src/components/general/ButtonGroupText.astro";
 export {default as ButtonGroupSeparator} from "./src/components/general/ButtonGroupSeparator.astro";

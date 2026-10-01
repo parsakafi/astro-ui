@@ -1,0 +1,108 @@
+---
+/**
+  * CarouselSlide — one slide of a Carousel.
+  *
+  * A scroll-snap target with slide semantics: it announces itself as
+  * a slide via aria-roledescription and gets its "x of y" aria-label
+  * from the parent Carousel's scoped script (which knows the count).
+  * Put any content inside — cards, images, text.
+  *
+  * Captions: pass `caption` and `captionDescription` (or fill the
+  * `caption` slot for custom markup) to render an overlay bar across
+  * the slide's lower edge — the classic image-carousel caption.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  class?: string;
+  id?: string;
+  /** Short caption title, rendered over the slide's lower edge. */
+  caption?: string;
+  /** Muted description line under the caption title. */
+  captionDescription?: string;
+  /** Full custom caption markup (overrides caption/captionDescription). */
+  slot?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  class: className,
+  id,
+  caption,
+  captionDescription,
+  ...rest
+} = Astro.props;
+
+const classes = cn("aui-carousel-slide", className);
+---
+
+<div
+  class={classes}
+  id={id}
+  role="group"
+  aria-roledescription="slide"
+  data-state="inactive"
+  {...rest}
+>
+  <slot/>
+  {
+    (caption || captionDescription) && (
+      <div class="aui-carousel-slide__caption">
+        {caption && <p class="aui-carousel-slide__caption-title">{caption}</p>}
+        {captionDescription && (
+          <p class="aui-carousel-slide__caption-description">{captionDescription}</p>
+        )}
+      </div>
+    )
+  }
+  <slot name="caption"/>
+</div>
+
+<style>
+  .aui-carousel-slide {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  :global(.aui-carousel--multiple) .aui-carousel-slide {
+    flex: 0 0 var(--aui-carousel-basis, var(--ui-carousel-basis, 50%));
+  }
+
+  /* Vertical carousels stretch slides to the container height set
+     via contentClass; the slide content decides its own fill. */
+  :global(.aui-carousel--vertical) .aui-carousel-slide {
+    flex: 0 0 100%;
+  }
+
+  .aui-carousel-slide__caption {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: grid;
+    gap: 2px;
+    padding: var(--ui-space-3) var(--ui-space-4);
+    background: color-mix(in srgb, var(--ui-background) 72%, transparent);
+    backdrop-filter: blur(6px);
+    border-block-start: 1px solid var(--ui-border);
+    border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
+  }
+
+  .aui-carousel-slide__caption-title {
+    margin: 0;
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-semibold, 600);
+    color: var(--ui-foreground);
+  }
+
+  .aui-carousel-slide__caption-description {
+    margin: 0;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+</style>

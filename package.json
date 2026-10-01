@@ -38,6 +38,8 @@
     "./tag": "./src/components/data-display/Tag.astro",
     "./tooltip": "./src/components/overlay/Tooltip.astro",
     "./button": "./src/components/general/Button.astro",
+    "./carousel": "./src/components/general/Carousel.astro",
+    "./carousel-slide": "./src/components/general/CarouselSlide.astro",
     "./button-group": "./src/components/general/ButtonGroup.astro",
     "./button-group-text": "./src/components/general/ButtonGroupText.astro",
     "./button-group-separator": "./src/components/general/ButtonGroupSeparator.astro",

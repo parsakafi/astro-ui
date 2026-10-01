@@ -1,0 +1,796 @@
+---
+/**
+  * Carousel — accessible, scroll-snap slide deck with zero dependencies.
+  *
+  * A region (role=region, aria-roledescription="carousel") whose slides
+  * are native scroll containers with CSS scroll-snap — scrolling IS
+  * the interaction, so touch, trackpad, and drag all work with no
+  * positioning math. Prev/next buttons and an optional "1 / 5"
+  * counter ride the header row (or overlay the slides with
+  * controlsPlacement="overlay"); indicators render a dot per slide
+  * that jumps on click. The small scoped script syncs the active
+  * slide on scroll, wires the buttons, ArrowLeft/ArrowRight (↑/↓
+  * vertical) when focus is inside, wraps with loop, and can autoplay
+  * on an interval — pausing on hover/focus (and when the user prefers
+  * reduced motion).
+  *
+  *   <Carousel label="Featured cards">
+  *     <CarouselSlide><div class="card">1</div></CarouselSlide>
+  *     ...
+  *   </Carousel>
+  *
+  * Slide content is whatever you put inside CarouselSlide — captions,
+  * cards, images. Each slide carries aria-roledescription="slide" and
+  * an aria-label "x of y". A bubbling `carousel:change` event with
+  * `{index}` fires on move; dispatch `carousel:set` ({index} or
+  * {action: "next"|"prev"}) on the root to navigate programmatically.
+  *
+  * JavaScript required: Yes (button + keyboard navigation, counter sync)
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Accessible name — required for a sensible carousel region. */
+  label?: string;
+  /** Scroll axis. */
+  orientation?: "horizontal" | "vertical";
+  /** "single" shows one slide per snap; "multiple" shows a peek layout (slides sized via --aui-carousel-basis). */
+  variant?: "single" | "multiple";
+  /** Wrap navigation from the last slide to the first and back. */
+  loop?: boolean;
+  /** Zero-based slide shown initially. */
+  defaultIndex?: number;
+  /** Show the prev/next buttons. */
+  controls?: boolean;
+  /** "header" (default) puts the buttons in the header row; "overlay" floats them over the slide edges. */
+  controlsPlacement?: "header" | "overlay";
+  /** Show the "1 / 5" counter. */
+  showCounter?: boolean;
+  /** Word for the counter's item, e.g. "Card" → "Card 1 of 5". */
+  counterLabel?: string;
+  /** Render one dot per slide under the deck; click jumps to it, the active dot tracks the scroll. */
+  indicators?: boolean;
+  /** Accessible label for the prev button. */
+  previousLabel?: string;
+  /** Accessible label for the next button. */
+  nextLabel?: string;
+  /** Scroll-snap strictness. */
+  snapType?: "mandatory" | "proximity";
+  /** Additional classes for the scroll container (e.g. fixed heights for vertical). */
+  contentClass?: string;
+  /** Slide size for variant="multiple", any CSS flex-basis value. */
+  slideBasis?: string;
+  /** Gap between slides, any CSS gap value. */
+  gap?: string;
+  /** Auto-advance to the next slide on an interval (implies loop; pauses on hover/focus and under reduced motion). */
+  autoplay?: boolean;
+  /** Autoplay delay in milliseconds (default 4000; Baymard suggests 5–7s for light slides). */
+  interval?: number;
+  /** Render an explicit pause/play button (WCAG 2.2.2): true = plain button next to the controls; "corner" = circular button with a progress ring pinned to the slides' top-right corner (works with or without controls). */
+  autoplayToggle?: boolean | "corner";
+  /** Stop autoplay permanently once the user navigates manually (arrows, dots, keyboard) — Baymard UX requirement. */
+  autoplayStopsOnInteraction?: boolean;
+  class?: string;
+  id?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  label = "Carousel",
+  orientation = "horizontal",
+  variant = "single",
+  loop = false,
+  defaultIndex = 0,
+  controls = true,
+  controlsPlacement = "header",
+  showCounter = orientation === "horizontal" && variant === "single",
+  counterLabel = "Slide",
+  indicators = false,
+  previousLabel = "Previous slide",
+  nextLabel = "Next slide",
+  snapType = "mandatory",
+  contentClass,
+  slideBasis,
+  gap,
+  autoplay = false,
+  interval = 4000,
+  autoplayToggle = false,
+  autoplayStopsOnInteraction = true,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const uid = id ?? `aui-car-${Math.random().toString(36).slice(2, 8)}`;
+
+/* Corner-toggle progress ring geometry. The ring is an SVG circle
+   whose stroke-dashoffset the script animates from empty to full over
+   the autoplay interval — a clock for the next slide that freezes
+   while autoplay is suspended. Markup is inlined at the render sites
+   (Astro frontmatter can't hold JSX helpers). */
+const ringR = 15;
+const ringC = (2 * Math.PI * ringR).toFixed(2);
+
+const config = {
+  uid,
+  loop: loop || autoplay,
+  defaultIndex,
+  counterLabel,
+  autoplay,
+  interval,
+  autoplayStopsOnInteraction,
+};
+
+const classes = cn(
+  "aui-carousel",
+  `aui-carousel--${orientation}`,
+  `aui-carousel--${variant}`,
+  controlsPlacement === "overlay" && controls && "aui-carousel--overlay-controls",
+  className,
+);
+
+const contentClasses = cn(
+  "aui-carousel__content",
+  `aui-carousel__content--${snapType}`,
+  contentClass,
+);
+---
+
+<div
+  class={classes}
+  id={uid}
+  role="region"
+  aria-roledescription="carousel"
+  aria-label={label}
+  data-orientation={orientation}
+  data-variant={variant}
+  data-loop={(loop || autoplay) ? "true" : "false"}
+  data-index={defaultIndex}
+  data-autoplay={autoplay ? "true" : undefined}
+  {...rest}
+>
+  {(controlsPlacement === "header" && (controls || showCounter)) && (
+    <div class="aui-carousel__header">
+      {showCounter && (
+        <p class="aui-carousel__counter">
+          <span class="aui-carousel__counter-current">{defaultIndex + 1}</span>
+          {" / "}
+          <span class="aui-carousel__counter-total"><slot name="count"/></span>
+        </p>
+      )}
+      {controls && (
+        <div class="aui-carousel__buttons">
+          <button type="button" class="aui-carousel__button" data-action="prev" aria-label={previousLabel}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d={orientation === "horizontal" ? "M10 3L5 8l5 5" : "M3 10l5-5 5 5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <button type="button" class="aui-carousel__button" data-action="next" aria-label={nextLabel}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d={orientation === "horizontal" ? "M6 3l5 5-5 5" : "M13 6l-5 5-5-5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          {autoplay && autoplayToggle === true && (
+            <button type="button" class="aui-carousel__button" data-action="toggle" aria-label="Pause autoplay" aria-pressed="false">
+              <svg class="aui-carousel__icon-pause" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M5 3v10M11 3v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <svg class="aui-carousel__icon-play" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M5 3.5v9l7-4.5z" fill="currentColor"/>
+              </svg>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )}
+  <div class="aui-carousel__stage">
+    <div
+      class={contentClasses}
+      tabindex="0"
+      style={[
+        slideBasis && `--aui-carousel-basis:${slideBasis}`,
+        gap && `--aui-carousel-gap:${gap}`,
+      ].filter(Boolean).join(";") || undefined}
+    >
+      <slot/>
+    </div>
+    {(controlsPlacement === "overlay" && controls) && (
+      <div class="aui-carousel__overlay-buttons">
+        <button type="button" class="aui-carousel__button aui-carousel__button--overlay" data-action="prev" aria-label={previousLabel}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d={orientation === "horizontal" ? "M10 3L5 8l5 5" : "M3 10l5-5 5 5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button type="button" class="aui-carousel__button aui-carousel__button--overlay" data-action="next" aria-label={nextLabel}>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d={orientation === "horizontal" ? "M6 3l5 5-5 5" : "M13 6l-5 5-5-5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        {autoplay && autoplayToggle === "corner" && (
+          <button type="button" class="aui-carousel__button aui-carousel__button--overlay aui-carousel__toggle-corner" data-action="toggle" aria-label="Pause autoplay" aria-pressed="false">
+            <svg class="aui-carousel__toggle-ring" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+              <circle class="aui-carousel__toggle-ring-track" cx="17" cy="17" r={ringR} fill="none"/>
+              <circle class="aui-carousel__toggle-ring-progress" cx="17" cy="17" r={ringR} fill="none" stroke-dasharray={ringC} stroke-dashoffset={ringC} transform="rotate(-90 17 17)"/>
+            </svg>
+            <svg class="aui-carousel__icon-pause" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M5 3v10M11 3v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <svg class="aui-carousel__icon-play" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M5 3.5v9l7-4.5z" fill="currentColor"/>
+            </svg>
+          </button>
+        )}
+      </div>
+    )}
+    {autoplay && autoplayToggle === "corner" && !(controlsPlacement === "overlay" && controls) && (
+      <button type="button" class="aui-carousel__toggle-corner" data-action="toggle" aria-label="Pause autoplay" aria-pressed="false">
+        <svg class="aui-carousel__toggle-ring" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+          <circle class="aui-carousel__toggle-ring-track" cx="17" cy="17" r={ringR} fill="none"/>
+          <circle class="aui-carousel__toggle-ring-progress" cx="17" cy="17" r={ringR} fill="none" stroke-dasharray={ringC} stroke-dashoffset={ringC} transform="rotate(-90 17 17)"/>
+        </svg>
+        <svg class="aui-carousel__icon-pause" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M5 3v10M11 3v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <svg class="aui-carousel__icon-play" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M5 3.5v9l7-4.5z" fill="currentColor"/>
+        </svg>
+      </button>
+    )}
+  </div>
+  {indicators && <div class="aui-carousel__indicators" role="tablist" aria-label={label}/>}
+  {autoplay && (
+    <p class="aui-carousel__sr-status" aria-live="off">
+      <span class="aui-carousel__sr-text">
+        Carousel autoplays; it pauses on hover and focus.
+      </span>
+    </p>
+  )}
+  <script type="application/json" data-aui-carousel-config set:html={JSON.stringify(config)}/>
+</div>
+
+<script>
+  // Scroll-snap sync: scrolling is the source of truth; the script
+  // wires buttons/keyboard/counter/indicators/autoplay and the
+  // programmatic event API.
+  const setup = (root: HTMLElement) => {
+    const content = root.querySelector<HTMLElement>(".aui-carousel__content");
+    const cfgEl = root.querySelector<HTMLScriptElement>(":scope > script[data-aui-carousel-config], script[data-aui-carousel-config]");
+    if (!content) return;
+
+    const cfg = cfgEl
+      ? JSON.parse(cfgEl.textContent ?? "{}")
+      : {loop: false, defaultIndex: 0, counterLabel: "Slide", autoplay: false, interval: 4000};
+
+    const slides = () => [...content.querySelectorAll<HTMLElement>(".aui-carousel-slide")];
+    const counter = root.querySelector<HTMLElement>(".aui-carousel__counter-current");
+    const counterTotal = root.querySelector<HTMLElement>(".aui-carousel__counter-total");
+    const indicatorsWrap = root.querySelector<HTMLElement>(".aui-carousel__indicators");
+    let programmatic = false;
+
+    const scrollToSlide = (i: number) => {
+      const list = slides();
+      if (!list.length) return;
+      const clamped = Math.max(0, Math.min(i, list.length - 1));
+      programmatic = true;
+      // Scroll the snap container directly — scrollIntoView would also
+      // scroll every ancestor (the page itself), yanking the viewport
+      // down to an off-screen autoplaying carousel.
+      const horizontal = root.dataset.orientation !== "vertical";
+      const target = list[clamped];
+      content.scrollTo({
+        left: horizontal ? target.offsetLeft : 0,
+        top: horizontal ? 0 : target.offsetTop,
+        behavior: "smooth",
+      });
+      // scrollIntoView on a snap container fires scroll async; the
+      // scroll handler picks the index up, but set it eagerly so the
+      // counter feels instant.
+      setActive(clamped);
+      setTimeout(() => { programmatic = false; }, 400);
+    };
+
+    const setActive = (i: number) => {
+      root.dataset.index = String(i);
+      if (counter) counter.textContent = String(i + 1);
+      const list = slides();
+      list.forEach((s, idx) => {
+        s.setAttribute("aria-hidden", idx === i ? "false" : "true");
+        s.toggleAttribute("data-active", idx === i);
+        s.setAttribute("data-state", idx === i ? "active" : "inactive");
+        s.setAttribute("aria-label", `${idx + 1} of ${list.length}`);
+      });
+      if (indicatorsWrap) {
+        for (const [idx, dot] of [...indicatorsWrap.children].entries()) {
+          dot.setAttribute("aria-selected", idx === i ? "true" : "false");
+          dot.setAttribute("data-active", idx === i ? "true" : "false");
+        }
+      }
+      root.dispatchEvent(
+        new CustomEvent("carousel:change", {bubbles: true, detail: {index: i}}),
+      );
+    };
+
+    const activeFromScroll = () => {
+      const list = slides();
+      if (!list.length) return 0;
+      const horizontal = root.dataset.orientation !== "vertical";
+      let best = 0;
+      let bestDist = Infinity;
+      const origin = content.getBoundingClientRect();
+      for (const [i, s] of list.entries()) {
+        const r = s.getBoundingClientRect();
+        const dist = horizontal
+          ? Math.abs(r.left - origin.left)
+          : Math.abs(r.top - origin.top);
+        if (dist < bestDist) { bestDist = dist; best = i; }
+      }
+      return best;
+    };
+
+    const step = (dir: 1 | -1) => {
+      const list = slides();
+      if (!list.length) return;
+      const current = Number(root.dataset.index ?? 0);
+      let next = current + dir;
+      if (next >= list.length) next = cfg.loop ? 0 : list.length - 1;
+      if (next < 0) next = cfg.loop ? list.length - 1 : 0;
+      scrollToSlide(next);
+    };
+
+    // --- autoplay machinery (hoisted so control clicks can stop it) ---
+    let autoplayStop: (() => void) | null = null;
+    let userPaused = false;
+    let userInteracted = false;
+    // True once autoplay is gone for good (interaction stop, toggle
+    // off, reduced motion) — parks the progress ring at zero.
+    let autoplayHalted = false;
+    // True while autoplay merely suspends (hover/focus/hidden) — the
+    // ring freezes but resumes in place.
+    let autoplaySuspended = false;
+
+    // Reflect hover/focus suspension onto the ring clock.
+    root.addEventListener("mouseenter", () => { autoplaySuspended = true; });
+    root.addEventListener("mouseleave", () => { autoplaySuspended = false; });
+    root.addEventListener("focusin", () => { autoplaySuspended = true; });
+    root.addEventListener("focusout", () => { autoplaySuspended = false; });
+
+    const markInteraction = () => {
+      if (autoplayStop && cfg.autoplayStopsOnInteraction !== false) {
+        autoplayStop();
+        autoplayStop = null;
+        userInteracted = true;
+        autoplayHalted = true;
+      }
+    };
+
+    root.addEventListener("click", (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>("[data-action]");
+      if (btn) {
+        e.preventDefault();
+        if (btn.dataset.action === "toggle") {
+          if (userPaused) {
+            userPaused = false;
+            autoplayHalted = false;
+            autoplayStop = startAutoplay();
+            root.removeAttribute("data-paused");
+            btn.setAttribute("aria-label", "Pause autoplay");
+            btn.setAttribute("aria-pressed", "false");
+          } else {
+            userPaused = true;
+            autoplayStop?.();
+            autoplayStop = null;
+            autoplayHalted = true;
+            root.setAttribute("data-paused", "");
+            btn.setAttribute("aria-label", "Resume autoplay");
+            btn.setAttribute("aria-pressed", "true");
+          }
+          return;
+        }
+        markInteraction();
+        step(btn.dataset.action === "next" ? 1 : -1);
+        return;
+      }
+      const dot = (e.target as HTMLElement).closest<HTMLElement>("[data-slide-index]");
+      if (dot) {
+        markInteraction();
+        scrollToSlide(Number(dot.dataset.slideIndex));
+      }
+    });
+
+    content.addEventListener("scroll", () => {
+      if (programmatic) return;
+      const i = activeFromScroll();
+      if (String(i) !== root.dataset.index) setActive(i);
+    }, {passive: true});
+
+    content.addEventListener("keydown", (e) => {
+      const vertical = root.dataset.orientation === "vertical";
+      const prevKey = vertical ? "ArrowUp" : "ArrowLeft";
+      const nextKey = vertical ? "ArrowDown" : "ArrowRight";
+      if (e.key === nextKey) {
+        e.preventDefault();
+        markInteraction();
+        step(1);
+      } else if (e.key === prevKey) {
+        e.preventDefault();
+        markInteraction();
+        step(-1);
+      }
+    });
+
+    root.addEventListener("carousel:set", (e) => {
+      const detail = (e as CustomEvent).detail ?? {};
+      // External programmatic navigation counts as user intent too.
+      if (detail.action) markInteraction();
+      if (typeof detail.index === "number") scrollToSlide(detail.index);
+      else if (detail.action === "next") step(1);
+      else if (detail.action === "prev") step(-1);
+    });
+
+    // Indicators: one dot per slide, built here so the count is right
+    // even when slides come from a slot the frontmatter can't see.
+    if (indicatorsWrap) {
+      const list = slides();
+      for (const [i] of list.entries()) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "aui-carousel__indicator";
+        dot.dataset.slideIndex = String(i);
+        dot.setAttribute("role", "tab");
+        dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+        dot.setAttribute("aria-selected", i === (cfg.defaultIndex ?? 0) ? "true" : "false");
+        indicatorsWrap.appendChild(dot);
+      }
+    }
+
+    // Counter total: filled from the real slide count unless the
+    // consumer supplied it via the `count` slot.
+    if (counterTotal && !counterTotal.textContent?.trim()) {
+      counterTotal.textContent = String(slides().length);
+    }
+
+    // Autoplay: advance on an interval; pause while hovered, focused,
+    // or when the user prefers reduced motion. Hidden (display:none)
+    // carousels don't burn the timer either. Returns its own stop fn
+    // so control clicks (Baymard: stop after user interaction) and the
+    // pause/play toggle can kill it permanently.
+    // Corner-toggle progress ring: a visible clock for the next slide.
+    // An elapsed-time accumulator runs under rAF; hover/focus/hidden
+    // freeze the accumulator (pause time doesn't count), each advance
+    // resets it to zero, and a permanent halt parks the ring at zero.
+    const ring = root.querySelector<SVGCircleElement>(".aui-carousel__toggle-ring-progress");
+    let ringRaf: number | null = null;
+    let ringElapsed = 0;
+    let ringLast = 0;
+    const ringPeriod = () => Math.max(1000, cfg.interval ?? 4000);
+    const ringDraw = (frac: number) => {
+      if (!ring) return;
+      const c = 2 * Math.PI * ring.r.baseVal.value;
+      ring.style.strokeDashoffset = String(c * (1 - frac));
+    };
+    const ringTick = (now: number) => {
+      if (autoplayHalted) { stopRing(); return; }
+      if (!autoplaySuspended && !document.hidden && root.offsetParent !== null) {
+        ringElapsed += now - ringLast;
+        if (ringElapsed >= ringPeriod()) ringElapsed = 0;
+      }
+      ringLast = now;
+      ringDraw(ringElapsed / ringPeriod());
+      ringRaf = requestAnimationFrame(ringTick);
+    };
+    const startRing = () => {
+      if (!ring || ringRaf !== null) return;
+      ringElapsed = 0;
+      ringLast = performance.now();
+      ringRaf = requestAnimationFrame(ringTick);
+    };
+    const stopRing = () => {
+      if (ringRaf !== null) { cancelAnimationFrame(ringRaf); ringRaf = null; }
+      ringDraw(0);
+    };
+
+    const startAutoplay = () => {
+      if (!cfg.autoplay || slides().length < 2) return null;
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+      if (prefersReduced.matches) return null;
+      let timer: ReturnType<typeof setInterval> | undefined = undefined;
+      let hovered = false;
+      let focused = false;
+
+      const tick = () => {
+        if (hovered || focused || prefersReduced.matches || document.hidden) return;
+        if (root.offsetParent === null) return;
+        step(1);
+        ringElapsed = 0;
+      };
+      timer = setInterval(tick, ringPeriod());
+
+
+      root.addEventListener("mouseenter", () => { hovered = true; });
+      root.addEventListener("mouseleave", () => { hovered = false; });
+      root.addEventListener("focusin", () => { focused = true; });
+      root.addEventListener("focusout", () => { focused = false; });
+      if (prefersReduced.addEventListener) {
+        prefersReduced.addEventListener("change", () => {
+          if (prefersReduced.matches) { clearInterval(timer); timer = undefined; }
+        });
+      }
+      if (ring) startRing();
+      return () => {
+        if (timer !== undefined) { clearInterval(timer); timer = undefined; }
+        stopRing();
+      };
+    };
+
+    autoplayStop = startAutoplay();
+
+    // Initial state: land on defaultIndex without smooth scrolling.
+    const initial = slides();
+    const start = Math.max(0, Math.min(cfg.defaultIndex ?? 0, initial.length - 1));
+    if (start > 0 && initial[start]) {
+      const horizontal = root.dataset.orientation !== "vertical";
+      const target = initial[start];
+      if (horizontal) content.scrollLeft = target.offsetLeft;
+      else content.scrollTop = target.offsetTop;
+    }
+    setActive(start);
+  };
+
+  document.querySelectorAll<HTMLElement>(".aui-carousel").forEach(setup);
+</script>
+
+<style>
+  .aui-carousel {
+    display: grid;
+    gap: var(--ui-space-3);
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-carousel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+  }
+
+  .aui-carousel__counter {
+    margin: 0;
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aui-carousel__buttons {
+    display: flex;
+    gap: var(--ui-space-2);
+  }
+
+  .aui-carousel__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    color: var(--ui-foreground);
+    background: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: border-color var(--ui-transition-fast),
+    background-color var(--ui-transition-fast);
+  }
+
+  .aui-carousel__button:hover {
+    background: var(--ui-muted);
+  }
+
+  .aui-carousel__button:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  /* Pause/play toggle: show the action, hide the other icon. When the
+     carousel is paused (user toggle or interaction stop), show play. */
+  .aui-carousel__icon-play {
+    display: none;
+  }
+
+  .aui-carousel[data-paused] .aui-carousel__icon-pause {
+    display: none;
+  }
+
+  .aui-carousel[data-paused] .aui-carousel__icon-play {
+    display: block;
+  }
+
+  .aui-carousel[data-paused] .aui-carousel__button[data-action="toggle"] {
+    border-color: var(--ui-ring);
+  }
+
+  /* --- corner toggle: circular pause/play with a progress ring,
+     pinned to the slides' top-right corner --- */
+
+  .aui-carousel .aui-carousel__toggle-corner {
+    position: absolute;
+    inset-block-start: var(--ui-space-2);
+    inset-inline-end: var(--ui-space-2);
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 34px;
+    block-size: 34px;
+    color: var(--ui-foreground);
+    background: color-mix(in srgb, var(--ui-background) 82%, transparent);
+    backdrop-filter: blur(4px);
+    border: 0;
+    border-radius: var(--ui-radius-full);
+    box-shadow: var(--ui-shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08));
+    cursor: pointer;
+  }
+
+  /* Inside the overlay strip (controls + corner toggle together), the
+     absolute pin loses meaning — fall back to a static circle. */
+  .aui-carousel__overlay-buttons .aui-carousel__toggle-corner {
+    position: static;
+  }
+
+  .aui-carousel__toggle-corner:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-carousel__toggle-ring {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .aui-carousel__toggle-ring-track {
+    stroke: var(--ui-border);
+    stroke-width: 2;
+  }
+
+  .aui-carousel__toggle-ring-progress {
+    stroke: var(--ui-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.1s linear;
+  }
+
+  .aui-carousel__toggle-corner .aui-carousel__icon-pause,
+  .aui-carousel__toggle-corner .aui-carousel__icon-play {
+    position: relative;
+  }
+
+  .aui-carousel__toggle-corner .aui-carousel__icon-play {
+    display: none;
+  }
+
+  .aui-carousel[data-paused] .aui-carousel__toggle-corner .aui-carousel__icon-pause {
+    display: none;
+  }
+
+  .aui-carousel[data-paused] .aui-carousel__toggle-corner .aui-carousel__icon-play {
+    display: block;
+  }
+
+  /* --- overlay controls --- */
+
+  .aui-carousel__stage {
+    position: relative;
+    display: grid;
+  }
+
+  .aui-carousel__overlay-buttons {
+    position: absolute;
+    inset-inline: 0;
+    inset-block: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--ui-space-2);
+    pointer-events: none;
+  }
+
+  .aui-carousel__button--overlay {
+    pointer-events: auto;
+    background: color-mix(in srgb, var(--ui-background) 82%, transparent);
+    backdrop-filter: blur(4px);
+    box-shadow: var(--ui-shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08));
+  }
+
+  /* --- indicators --- */
+
+  .aui-carousel__indicators {
+    display: flex;
+    justify-content: center;
+    gap: var(--ui-space-2);
+  }
+
+  /* Dots are created by the script at runtime, so they never carry
+     Astro's scope attribute — style them :global under the wrapper. */
+  .aui-carousel__indicators :global(.aui-carousel__indicator) {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    padding: 0;
+    background: var(--ui-input);
+    border: 0;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast),
+    transform var(--ui-transition-fast);
+  }
+
+  .aui-carousel__indicators :global(.aui-carousel__indicator:hover) {
+    background: var(--ui-muted-foreground);
+  }
+
+  .aui-carousel__indicators :global(.aui-carousel__indicator[data-active="true"]) {
+    background: var(--ui-primary);
+    transform: scale(1.25);
+  }
+
+  .aui-carousel__indicators :global(.aui-carousel__indicator:focus-visible) {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-carousel__sr-status,
+  .aui-carousel__sr-text {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .aui-carousel__content {
+    display: flex;
+    gap: var(--aui-carousel-gap, var(--ui-space-4));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline-start: 0;
+    border-radius: var(--ui-radius-md);
+    scrollbar-width: none;
+  }
+
+  .aui-carousel__content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .aui-carousel__content:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-carousel__content--mandatory {
+    scroll-snap-type: x mandatory;
+  }
+
+  .aui-carousel__content--proximity {
+    scroll-snap-type: x proximity;
+  }
+
+  /* Vertical flips the axis. */
+  .aui-carousel--vertical .aui-carousel__content {
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+  }
+
+  .aui-carousel--vertical .aui-carousel__content--mandatory {
+    scroll-snap-type: y mandatory;
+  }
+
+  .aui-carousel--vertical .aui-carousel__content--proximity {
+    scroll-snap-type: y proximity;
+  }
+</style>
