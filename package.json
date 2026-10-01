@@ -58,6 +58,7 @@
     "./separator": "./src/components/layout/Separator.astro",
     "./select": "./src/components/forms/Select.astro",
     "./input": "./src/components/forms/Input.astro",
+    "./input-group": "./src/components/forms/InputGroup.astro",
     "./label": "./src/components/forms/Label.astro",
     "./checkbox": "./src/components/forms/Checkbox.astro",
     "./dialog": "./src/components/overlay/Dialog.astro",

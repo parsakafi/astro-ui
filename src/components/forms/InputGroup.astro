@@ -1,0 +1,247 @@
+---
+/**
+  * InputGroup — input with attached addons (icon, text prefix, button).
+  *
+  * A zero-JS compositional wrapper: the wrapper owns the border, focus
+  * ring and height; the control inside is rendered "bare" and the addons
+  * sit flush against it on either side. Works with any control placed in
+  * the default slot (typically Input or Textarea) plus two named slots:
+  *
+  *   <InputGroup>
+  *     <svg slot="start" .../>          (icon or prefix markup)
+  *     <Input name="search" placeholder="Search…" />
+  *     <Fragment slot="end"><Button size="xs">Check</Button></Fragment>
+  *   </InputGroup>
+  *
+  * Addons are plain markup — an icon SVG, a text span, or any component
+  * (Button, Kbd, Tag…). No JavaScript required: focus styling is CSS
+  * :focus-within on the wrapper.
+  *
+  * JavaScript required: No
+  */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Control height + paddings (mirrors Input sizes). */
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  /** Server-driven invalid styling hook (mirrors Input). */
+  invalid?: boolean;
+  /** Dim + mute the whole group (matches a disabled inner control). */
+  disabled?: boolean;
+  /** Auto height for a Textarea control (addons stretch full height). */
+  multiline?: boolean;
+  class?: string;
+  id?: string;
+  /** Addon for the inline-start edge (icon / prefix text). */
+  start?: string;
+  /** Addon for the inline-end edge (icon / suffix text / button). */
+  end?: string;
+}
+
+const {
+  size = "md",
+  invalid = false,
+  disabled = false,
+  multiline = false,
+  class: className,
+  id,
+} = Astro.props;
+
+const classes = cn(
+  "aui-input-group",
+  `aui-input-group--${size}`,
+  multiline && "aui-input-group--multiline",
+  invalid && "aui-input-group--invalid",
+  disabled && "aui-input-group--disabled",
+  className,
+);
+
+const hasStart = !!Astro.slots.has("start");
+const hasEnd = !!Astro.slots.has("end");
+const hasBottom = !!Astro.slots.has("bottom");
+---
+
+<span class={classes} id={id}>
+  {hasStart && (
+    <span class="aui-input-group__addon aui-input-group__addon--start">
+      <slot name="start"/>
+    </span>
+  )}
+  <span class="aui-input-group__control">
+    <slot/>
+  </span>
+  {hasEnd && (
+    <span class="aui-input-group__addon aui-input-group__addon--end">
+      <slot name="end"/>
+    </span>
+  )}
+  {hasBottom && (
+    <span class="aui-input-group__bottom">
+      <slot name="bottom"/>
+    </span>
+  )}
+</span>
+
+<style>
+  .aui-input-group {
+    display: flex;
+    align-items: stretch;
+    inline-size: 100%;
+    font-family: var(--ui-font-sans);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    transition: border-color var(--ui-transition-fast),
+    box-shadow var(--ui-transition-fast);
+  }
+
+  /* --- size (heights mirror Input) --- */
+
+  .aui-input-group--xs {
+    min-block-size: 1.75rem;
+  }
+
+  .aui-input-group--sm {
+    min-block-size: 2rem;
+  }
+
+  .aui-input-group--md {
+    min-block-size: 2.5rem;
+  }
+
+  .aui-input-group--lg {
+    min-block-size: 2.75rem;
+  }
+
+  .aui-input-group--xl {
+    min-block-size: 3rem;
+  }
+
+  .aui-input-group--multiline {
+    min-block-size: 0;
+  }
+
+  /* --- control: strip its own chrome, the wrapper carries it --- */
+
+  .aui-input-group__control {
+    display: flex;
+    flex: 1;
+    min-inline-size: 0;
+    align-items: center;
+  }
+
+  .aui-input-group :global(.aui-input-group__control > .aui-input),
+  .aui-input-group :global(.aui-input-group__control > .aui-textarea) {
+    flex: 1;
+    min-inline-size: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .aui-input-group :global(.aui-input-group__control > .aui-input:focus),
+  .aui-input-group :global(.aui-input-group__control > .aui-textarea:focus) {
+    box-shadow: none;
+  }
+
+  /* --- addons --- */
+
+  .aui-input-group__addon {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--ui-space-1);
+    padding-inline: var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-input-group--xs .aui-input-group__addon {
+    padding-inline: var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+  }
+
+  .aui-input-group--sm .aui-input-group__addon {
+    padding-inline: var(--ui-space-2);
+    font-size: var(--ui-text-xs);
+  }
+
+  .aui-input-group--lg .aui-input-group__addon {
+    padding-inline: var(--ui-space-4);
+  }
+
+  .aui-input-group--xl .aui-input-group__addon {
+    padding-inline: var(--ui-space-5);
+    font-size: var(--ui-text-base);
+  }
+
+  .aui-input-group__addon--start {
+    border-inline-end: 1px solid var(--ui-input);
+  }
+
+  .aui-input-group__addon--end {
+    border-inline-start: 1px solid var(--ui-input);
+  }
+
+  /* --- block-end toolbar row --- */
+
+  .aui-input-group:has(.aui-input-group__bottom),
+  .aui-input-group--multiline {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .aui-input-group:has(.aui-input-group__bottom) .aui-input-group__control {
+    display: flex;
+  }
+
+  .aui-input-group__bottom {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--ui-space-3);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border-block-start: 1px solid var(--ui-input);
+  }
+
+  .aui-input-group__bottom > :global(*) {
+    flex: none;
+  }
+
+  .aui-input-group__bottom > :global(.aui-input-group__spacer) {
+    flex: 1;
+  }
+
+  .aui-input-group__addon :global(svg) {
+    flex: none;
+    inline-size: 1em;
+    block-size: 1em;
+    font-size: var(--ui-text-base);
+  }
+
+  /* --- states --- */
+
+  .aui-input-group:focus-within {
+    border-color: var(--ui-ring);
+    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
+    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+  }
+
+  .aui-input-group--invalid,
+  .aui-input-group--invalid:focus-within {
+    border-color: var(--ui-error);
+  }
+
+  .aui-input-group--disabled {
+    opacity: var(--ui-disabled-opacity);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-input-group--disabled :global(.aui-input),
+  .aui-input-group--disabled :global(.aui-textarea) {
+    background: transparent;
+  }
+</style>

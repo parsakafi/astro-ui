@@ -72,6 +72,7 @@ describe("component contracts", () => {
         "Field.astro",
         "HoverCard.astro",
         "Input.astro",
+        "InputGroup.astro",
         "Kbd.astro",
         "Label.astro",
         "Link.astro",

@@ -44,6 +44,7 @@ export {default as Empty} from "./src/components/data-display/Empty.astro";
 export {default as Field} from "./src/components/forms/Field.astro";
 export {default as HoverCard} from "./src/components/overlay/HoverCard.astro";
 export {default as Input} from "./src/components/forms/Input.astro";
+export {default as InputGroup} from "./src/components/forms/InputGroup.astro";
 export {default as Kbd} from "./src/components/general/Kbd.astro";
 export {default as Label} from "./src/components/forms/Label.astro";
 export {default as Link} from "./src/components/general/Link.astro";
