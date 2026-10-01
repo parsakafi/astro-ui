@@ -5,9 +5,10 @@
   * Renders pure SVG at build time: grouped/stacked bars, a combo
   * chart (bars + overlay line on a secondary axis), line/area chart,
   * pie/donut, scatter plot, horizontal progress bars, a waterfall
-  * (floating signed deltas on a running total), or a heatmap
-  * (color-ramped matrix cells) depending on `type`. Everything reads
-  * design tokens, so charts
+  * (floating signed deltas on a running total), a heatmap
+  * (color-ramped matrix cells), a cohort retention triangle, or an
+  * oblique 3D terrain wireframe depending on `type`. Everything
+  * reads design tokens, so charts
   * follow the theme (including dark mode) with no re-render — colors
   * resolve from --ui-chart-1..6, overridable per-series via the
   * `colors` prop.
@@ -71,7 +72,12 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain";
+  /** Terrain only: rendering style — "both" (default) draws the
+   *  wireframe mesh plus vertex dots, "wire" the mesh alone, "dots"
+   *  a bare point field. Extremes always get ring highlights and
+   *  highest/lowest callouts. */
+  terrainMode?: "wire" | "dots" | "both";
   /** Waterfall only: which categories render as full total bars from
    *  zero instead of floating deltas — indices into `labels` (e.g.
    *  [0] for a leading start column, or [0, 5] for start + final
@@ -91,6 +97,25 @@ export interface Props {
   /** Heatmap only: print the formatted value inside each cell
    *  (background-haloed so it reads on any cell color). */
   heatmapLabels?: boolean;
+  /** Cohort only: cohort sizes (row labels read series names, period
+   *  columns read labels). Values are fractions of the cohort — pass
+   *  0–1 (0.41 = 41%) or percentages (41). Anything ≤ 1 is treated as
+   *  a fraction; use cohortMax to pin the scale either way. Column 0
+   *  renders as the cohort size (period 0); missing tail values are
+   *  the not-yet-observed triangle and stay empty. */
+  cohortSizes?: number[];
+  /** Cohort only: cell value mode — "percent" (default) shows the
+   *  share of the cohort, "value" shows the raw headcount implied by
+   *  cohortSizes × the fraction. */
+  cohortValues?: "percent" | "value";
+  /** Cohort only: ceiling the color ramp against (percent or value
+   *  scale, matching cohortValues). Defaults to the data maximum so
+   *  period 0 doesn't force every later column into the pale end. */
+  cohortMax?: number;
+  /** Cohort/heatmap only: CSS color ramp cells interpolate across.
+   *  Cohort defaults to a low-contrast → high-contrast blend; pass
+   *  heatmapRamp to share a custom ramp with heatmap cells. */
+  cohortRamp?: string[];
   /** Accessible title (rendered as figcaption, visually hidden is not used — show it). */
   title?: string;
   /** Supporting line under the title. */
@@ -206,6 +231,11 @@ const {
   waterfallColors: wfColors = ["var(--ui-success)", "var(--ui-error)", "var(--ui-primary)"],
   heatmapRamp,
   heatmapLabels = false,
+  cohortSizes,
+  cohortValues = "percent",
+  cohortMax,
+  cohortRamp,
+  terrainMode = "both",
   format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
   height = 260,
   class: className,
@@ -990,6 +1020,119 @@ const heatmap = isHeatmap
   })()
   : null;
 
+/* --- cohort: retention triangle. Rows = series names (signup cohorts,
+   with cohortSizes as the size column), columns = labels (periods).
+   Cells hold retention fractions; the not-yet-observed tail (missing
+   or null entries) renders empty, producing the triangle. --- */
+const isCohort = type === "cohort";
+const cohort = isCohort
+  ? (() => {
+    const rows = series.map((s) => s.name);
+    const cols = labels.length ? labels : (series[0]?.data ?? []).map((_, i) => String(i));
+    /* Fractions: null/undefined = unobserved. Normalize 0–1 style
+       values by 100 only when cohortMax is absent (an explicit max
+       means the caller owns the scale). */
+    const raw = series.map((s) => s.data.map((v) => (v == null || Number.isNaN(v) ? null : v)));
+    const flat = raw.flat().filter((v): v is number => v != null);
+    if (flat.length === 0) return null;
+    const scale = cohortMax ?? (flat.every((v) => v <= 1) ? 1 : 100);
+    const pctOf = (v: number) => (v / scale) * 100;
+    const ramp = cohortRamp ?? heatmapRamp ?? ["var(--ui-muted)", "var(--ui-primary)"];
+    const mix = (t: number) => {
+      const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
+      const seg = Math.min(Math.floor(c), ramp.length - 2);
+      const local = c - seg;
+      return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
+    };
+    /* Geometry mirrors heatmap but reserves a wider left band: the
+       cohort name plus its size column sit left of the grid. */
+    const GAP = 3;
+    const padL = 150;
+    const padT = 8;
+    const cw = (W - padL - 16 - GAP * Math.max(cols.length - 1, 0)) / Math.max(cols.length, 1);
+    const ch = (height - padT - 28 - GAP * Math.max(rows.length - 1, 0)) / Math.max(rows.length, 1);
+    const cells = series.flatMap((s, ri) =>
+      cols.map((col, ci) => {
+        const v = raw[ri][ci];
+        if (v == null) return null;
+        return {
+          x: padL + ci * (cw + GAP),
+          y: padT + ri * (ch + GAP),
+          w: cw,
+          h: ch,
+          color: mix(pctOf(v) / 100),
+          row: s.name,
+          col,
+          v,
+          pct: pctOf(v),
+          text: cohortValues === "value" && cohortSizes?.[ri] != null
+            ? format(Math.round(cohortSizes[ri] * v))
+            : `${Math.round(pctOf(v))}%`,
+        };
+      }).filter((c): c is NonNullable<typeof c> => c != null),
+    );
+    return {rows, cols, cells, sizes: cohortSizes ?? [], cw, ch, padL, GAP};
+  })()
+  : null;
+
+/* --- terrain: oblique 3D wireframe over a value grid. Rows = series
+   (depth, front → back), columns = labels (position), values =
+   elevation. An oblique projection offsets each successive depth row
+   up and to the right; mesh lines ride the projected grid, the
+   highest/lowest points get ring highlights with callouts, and the
+   vertical bracket from the top point down to the lowest encodes the
+   field's range like the reference. --- */
+const isTerrain = type === "terrain";
+const terrain = isTerrain
+  ? (() => {
+    const rows = series.map((s) => s.name);
+    const cols = labels.length ? labels : (series[0]?.data ?? []).map((_, i) => String(i));
+    if (rows.length < 2 || cols.length < 2) return null;
+    const values = series.map((s) => s.data);
+    const flat = values.flat();
+    const vMax = Math.max(...flat);
+    const vMin = Math.min(...flat);
+    const span = Math.max(vMax - vMin, 1);
+    /* Projection: x = left + xi·dx + (rows-1-zi)·skx, y = base −
+       (v − vMin)/span·dz − (rows-1-zi)·sky. Front row (zi 0) sits
+       bottom-left; each row behind steps up-right. */
+    const padL = 46;
+    const baseY = height - 44;
+    const dx = (W - padL - 30 - (rows.length - 1) * 26) / (cols.length - 1);
+    const skx = 26;
+    const sky = Math.min(26, (baseY - 60) / Math.max(rows.length, 1));
+    const dz = Math.min(baseY - 60 - sky * (rows.length - 1), (baseY - 60) * 0.6);
+    const P = (xi: number, zi: number, v: number) => ({
+      x: padL + xi * dx + (rows.length - 1 - zi) * skx,
+      y: baseY - ((v - vMin) / span) * dz - (rows.length - 1 - zi) * sky,
+    });
+    const allPts = values.map((row, zi) => row.map((v, xi) => ({...P(xi, zi, v), v})));
+    /* Painter's algorithm: draw back rows first so front lines win. */
+    const rowPaths = [...rows.keys()].reverse().map((zi) => ({
+      d: allPts[zi].map((p, xi) => `${xi === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" "),
+    }));
+    const colPaths = [...cols.keys()].reverse().map((xi) => ({
+      d: rows.map((_, zi) => {
+        const p = allPts[zi][xi];
+        return `${zi === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+      }).join(" "),
+    }));
+    let hi = {zi: 0, xi: 0, v: -Infinity};
+    let lo = {zi: 0, xi: 0, v: Infinity};
+    allPts.forEach((row, zi) => row.forEach((p, xi) => {
+      if (p.v > hi.v) hi = {zi, xi, v: p.v};
+      if (p.v < lo.v) lo = {zi, xi, v: p.v};
+    }));
+    const hiP = allPts[hi.zi][hi.xi];
+    const loP = allPts[lo.zi][lo.xi];
+    /* Range bracket: horizontal rail at the top, drops to both points. */
+    const railY = Math.min(hiP.y, loP.y) - 30;
+    const dots = allPts.flatMap((row, zi) => row.map((p, xi) => ({...p, zi, xi})));
+    return {rows, cols, rowPaths, colPaths, dots, hi, lo, hiP, loP, railY,
+      corner: {x: Math.min(hiP.x, loP.x), railY}, vMin, vMax};
+  })()
+  : null;
+
 const classes = cn(
   "aui-chart",
   `aui-chart--${type}`,
@@ -1380,6 +1523,117 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
   {
+    isCohort && cohort && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${cohort.rows.length} cohorts × ${cohort.cols.length} periods`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {cohort.cells.map((c) => (
+          <rect class="aui-chart__hm-cell" x={c.x.toFixed(1)} y={c.y.toFixed(1)} width={c.w.toFixed(1)} height={c.h.toFixed(1)}
+                rx={3} fill={c.color}>
+            <title>{`${c.row} — ${c.col}: ${c.text} of cohort`}</title>
+          </rect>
+        ))}
+        {cohort.cells.map((c) => (
+          <text class="aui-chart__hm-value" x={(c.x + c.w / 2).toFixed(1)} y={(c.y + c.h / 2 + 4).toFixed(1)} text-anchor="middle">
+            {c.text}
+          </text>
+        ))}
+        {cohort.cols.map((col, ci) => (
+          <text class="aui-chart__tick" x={(cohort.padL + ci * (cohort.cw + cohort.GAP) + cohort.cw / 2).toFixed(1)}
+                y={height - 8} text-anchor="middle">
+            {col}
+          </text>
+        ))}
+        {cohort.rows.map((row, ri) => (
+          <g>
+            <text class="aui-chart__tick" x={cohort.padL - 10} y={(8 + ri * (cohort.ch + cohort.GAP) + cohort.ch / 2 + 4).toFixed(1)} text-anchor="end">
+              {row}
+            </text>
+            {cohort.sizes[ri] != null && (
+              <text class="aui-chart__cohort-size" x={cohort.padL - 10} y={(8 + ri * (cohort.ch + cohort.GAP) + cohort.ch / 2 + 18).toFixed(1)} text-anchor="end">
+                {format(cohort.sizes[ri])} users
+              </text>
+            )}
+          </g>
+        ))}
+      </svg>
+    )
+  }
+
+  {
+    isTerrain && terrain && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${terrain.rows.length} rows × ${terrain.cols.length} columns, elevations ${format(terrain.vMin)} to ${format(terrain.vMax)}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {(terrainMode === "wire" || terrainMode === "both") && (
+          <g class="aui-chart__terrain-mesh" style={`color: ${colorAt(0, series[0])}`}>
+            {terrain.rowPaths.map((p) => (
+              <path d={p.d}/>
+            ))}
+            {terrain.colPaths.map((p) => (
+              <path d={p.d}/>
+            ))}
+          </g>
+        )}
+        {(terrainMode === "dots" || terrainMode === "both") && (
+          <g class="aui-chart__terrain-dots" style={`color: ${colorAt(0, series[0])}`}>
+            {terrain.dots.map((p) => (
+              <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={terrainMode === "dots" ? 1.6 : 1.4}>
+                <title>{`${terrain.rows[p.zi]} — ${terrain.cols[p.xi]}: ${format(p.v)}`}</title>
+              </circle>
+            ))}
+          </g>
+        )}
+        {/* Ring highlights on the extreme points + range bracket:
+            a horizontal rail above both points, vertical drops to
+            each ring, value labels riding the rail ends. */}
+        <circle class="aui-chart__terrain-ring" cx={terrain.hiP.x} cy={terrain.hiP.y} r={5}/>
+        <circle class="aui-chart__terrain-ring" cx={terrain.loP.x} cy={terrain.loP.y} r={5}/>
+        <g class="aui-chart__terrain-callout">
+          <path d={`M ${terrain.hiP.x.toFixed(1)} ${terrain.railY} H ${terrain.loP.x.toFixed(1)}`} fill="none"/>
+          <path d={`M ${terrain.hiP.x.toFixed(1)} ${terrain.railY} V ${(terrain.hiP.y - 7).toFixed(1)}`} fill="none"/>
+          <path d={`M ${terrain.loP.x.toFixed(1)} ${terrain.railY} V ${(terrain.loP.y - 7).toFixed(1)}`} fill="none"/>
+          <text class="aui-chart__terrain-callout-title" x={(terrain.hiP.x + 10).toFixed(1)} y={(terrain.railY - 16).toFixed(1)} text-anchor="start">
+            Highest point
+          </text>
+          <text x={(terrain.hiP.x + 10).toFixed(1)} y={(terrain.railY - 3).toFixed(1)} text-anchor="start">
+            {format(terrain.hiP.v)}
+          </text>
+          {/* If the lowest point hugs the left edge, its end-anchored
+              label would run off-canvas — flip it to the right. */}
+          {terrain.loP.x < 150 ? (
+            <Fragment>
+              <text class="aui-chart__terrain-callout-title" x={(terrain.loP.x + 10).toFixed(1)} y={(terrain.railY - 16).toFixed(1)} text-anchor="start">
+                Lowest point
+              </text>
+              <text x={(terrain.loP.x + 10).toFixed(1)} y={(terrain.railY - 3).toFixed(1)} text-anchor="start">
+                {format(terrain.loP.v)}
+              </text>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <text class="aui-chart__terrain-callout-title" x={(terrain.loP.x - 10).toFixed(1)} y={(terrain.railY - 16).toFixed(1)} text-anchor="end">
+                Lowest point
+              </text>
+              <text x={(terrain.loP.x - 10).toFixed(1)} y={(terrain.railY - 3).toFixed(1)} text-anchor="end">
+                {format(terrain.loP.v)}
+              </text>
+            </Fragment>
+          )}
+        </g>
+      </svg>
+    )
+  }
+
+  {
     isSankey && sankey && (
       <svg
         class="aui-chart__svg"
@@ -1498,7 +1752,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
     {
-    legend && !isGauge && !isSankey && !isHeatmap && (
+    legend && !isGauge && !isSankey && !isHeatmap && !isCohort && !isTerrain && (
       <ul class="aui-chart__legend" aria-hidden="true">
         {isWaterfall ? (
           ["Increase", "Decrease", "Total"].map((name, i) => (
@@ -1622,6 +1876,55 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
 
   .aui-chart__hm-cell:hover {
     opacity: 0.85;
+  }
+
+  /* --- terrain: wireframe mesh + point field. The mesh stroke dims
+     toward the back rows implicitly via painter's order; dots stay
+     faint so the mesh reads on top in "both" mode. --- */
+  .aui-chart__terrain-mesh path {
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.1;
+    opacity: 0.55;
+  }
+
+  .aui-chart__terrain-dots circle {
+    fill: currentcolor;
+    opacity: 0.5;
+  }
+
+  .aui-chart__terrain-ring {
+    fill: var(--ui-background);
+    stroke: currentcolor;
+    stroke-width: 1.5;
+  }
+
+  .aui-chart__terrain-callout path {
+    stroke: var(--ui-muted-foreground);
+    stroke-width: 1;
+  }
+
+  .aui-chart__terrain-callout text {
+    fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+    font-size: 11px;
+    font-weight: var(--ui-font-semibold);
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-chart__terrain-callout-title {
+    letter-spacing: 0.08em;
+    font-size: 10px !important;
+    fill: var(--ui-muted-foreground) !important;
+  }
+
+  .aui-chart__cohort-size {
+    fill: var(--ui-muted-foreground);
+    font-size: 10px;
+    font-family: var(--ui-font-sans);
   }
 
   .aui-chart__hm-value {
