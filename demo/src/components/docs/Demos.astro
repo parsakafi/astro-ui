@@ -5003,6 +5003,33 @@ for (const id of demoIds) {
             </DemoTabs>
           </div>
         )}
+        {id === "heatmap" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Heatmap</h3>
+            <DemoTabs id="dm-chart-heatmap">
+              <Fragment slot="preview">
+                <Chart
+                  type="heatmap"
+                  title="Commit activity"
+                  description="Rows are days, columns are week offsets — darker means more commits"
+                  height={220}
+                  labels={["-5w", "-4w", "-3w", "-2w", "-1w", "This week"]}
+                  series={[
+                    {name: "Mon", data: [4, 9, 6, 12, 8, 11]},
+                    {name: "Wed", data: [7, 5, 10, 8, 13, 9]},
+                    {name: "Fri", data: [12, 14, 9, 15, 11, 16]},
+                    {name: "Sat", data: [2, 1, 3, 0, 2, 5]},
+                  ]}
+                  heatmapRamp={["var(--ui-muted)", "var(--ui-chart-2, var(--ui-info))", "var(--ui-primary)"]}
+                  heatmapLabels
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("heatmap")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "no-grid" && (
           <div class="docs-demo-block">
             <h3 class="docs-demo-title">Minimal</h3>
