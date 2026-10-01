@@ -75,9 +75,17 @@ export interface Props {
   type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain";
   /** Terrain only: rendering style — "both" (default) draws the
    *  wireframe mesh plus vertex dots, "wire" the mesh alone, "dots"
-   *  a bare point field. Extremes always get ring highlights and
-   *  highest/lowest callouts. */
+   *  a bare point field. Extremes get black ring highlights with
+   *  Highest/Lowest callouts; sampled grid points get accent rings.
+   *  */
   terrainMode?: "wire" | "dots" | "both";
+  /** Terrain only: axis captions rendered along the bottom edge —
+   *  [x, y, z], e.g. ["X: Position", "Y: Elevation", "Z: Depth"]. */
+  terrainAxes?: [string, string, string];
+  /** Terrain only: set false to hide the extreme-point callouts —
+   *  the corner titles, rail stubs, and leader drops. The black
+   *  extreme rings stay; the sample lattice is drawn regardless. */
+  terrainCallouts?: boolean;
   /** Waterfall only: which categories render as full total bars from
    *  zero instead of floating deltas — indices into `labels` (e.g.
    *  [0] for a leading start column, or [0, 5] for start + final
@@ -236,6 +244,8 @@ const {
   cohortMax,
   cohortRamp,
   terrainMode = "both",
+  terrainAxes,
+  terrainCallouts = true,
   format = (v: number) => (Number.isInteger(v) ? String(v) : v.toFixed(1)),
   height = 260,
   class: className,
@@ -1093,29 +1103,54 @@ const terrain = isTerrain
     const vMax = Math.max(...flat);
     const vMin = Math.min(...flat);
     const span = Math.max(vMax - vMin, 1);
-    /* Projection: x = left + xi·dx + (rows-1-zi)·skx, y = base −
-       (v − vMin)/span·dz − (rows-1-zi)·sky. Front row (zi 0) sits
-       bottom-left; each row behind steps up-right. */
+    /* Projection: x = left + xi·dx + depth·skx, y = base − elevation
+       ·dz − depth·sky, where depth = (rows-1-zi)/(rows-1) runs 1
+       (front row, bottom-left) → 0 (back row, top-right). */
     const padL = 46;
-    const baseY = height - 44;
-    const dx = (W - padL - 30 - (rows.length - 1) * 26) / (cols.length - 1);
-    const skx = 26;
-    const sky = Math.min(26, (baseY - 60) / Math.max(rows.length, 1));
-    const dz = Math.min(baseY - 60 - sky * (rows.length - 1), (baseY - 60) * 0.6);
-    const P = (xi: number, zi: number, v: number) => ({
-      x: padL + xi * dx + (rows.length - 1 - zi) * skx,
-      y: baseY - ((v - vMin) / span) * dz - (rows.length - 1 - zi) * sky,
-    });
-    const allPts = values.map((row, zi) => row.map((v, xi) => ({...P(xi, zi, v), v})));
-    /* Painter's algorithm: draw back rows first so front lines win. */
-    const rowPaths = [...rows.keys()].reverse().map((zi) => ({
-      d: allPts[zi].map((p, xi) => `${xi === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" "),
+    const baseY = height - (terrainAxes ? 40 : 44);
+    const depthOf = (zi: number) => (rows.length - 1 - zi) / (rows.length - 1);
+    /* Depth skew: back rows shift right by a fixed total band, not
+       per-row × rows — the reserve must match the actual offset. */
+    const skewX = Math.min(100, (W - padL - 30) * 0.18);
+    const dx = (W - padL - 30 - skewX) / (cols.length - 1);
+    const skyDrop = Math.min(36, (baseY - 60) * 0.15);
+    const dz = Math.min(baseY - 56 - skyDrop, (baseY - 56) * 0.68);
+    const xFor = (xi: number, zi: number) => padL + xi * dx + depthOf(zi) * skewX;
+    const yFor = (zi: number, v: number) => baseY - ((v - vMin) / span) * dz - depthOf(zi) * skyDrop;
+    const allPts = values.map((row, zi) => row.map((v, xi) => ({x: xFor(xi, zi), y: yFor(zi, v), v})));
+    /* Monotone cubic through screen-space points (Fritsch–Carlson,
+       same family as the 2D curvePath) — rows and columns bow like
+       the reference instead of zig-zagging between samples. */
+    const smooth = (pts: {x: number; y: number}[]) => {
+      const n = pts.length;
+      if (n < 3) return pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+      const slope: number[] = [];
+      for (let i = 0; i < n - 1; i++) slope[i] = (pts[i + 1].y - pts[i].y) / ((pts[i + 1].x - pts[i].x) || 1);
+      const m: number[] = [slope[0]];
+      for (let i = 1; i < n - 1; i++) {
+        if (slope[i - 1] * slope[i] <= 0) m[i] = 0;
+        else {
+          const lim = 3 * Math.min(Math.abs(slope[i - 1]), Math.abs(slope[i]));
+          m[i] = Math.max(-lim, Math.min(lim, (slope[i - 1] + slope[i]) / 2));
+        }
+      }
+      m[n - 1] = slope[n - 2];
+      let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+      for (let i = 0; i < n - 1; i++) {
+        const dxs = (pts[i + 1].x - pts[i].x) / 3;
+        d += ` C ${(pts[i].x + dxs).toFixed(1)} ${(pts[i].y + m[i] * dxs).toFixed(1)} ${(pts[i + 1].x - dxs).toFixed(1)} ${(pts[i + 1].y - m[i + 1] * dxs).toFixed(1)} ${pts[i + 1].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
+      }
+      return d;
+    };
+    /* Painter's order: back rows (zi 0) first so front rows win.
+       Depth fade — front rows full accent, back rows faint and dashed
+       (the reference's hidden-line suggestion without full HLR). */
+    const rowPaths = rows.map((_, zi) => ({
+      d: smooth(allPts[zi]),
+      front: zi / (rows.length - 1),
     }));
-    const colPaths = [...cols.keys()].reverse().map((xi) => ({
-      d: rows.map((_, zi) => {
-        const p = allPts[zi][xi];
-        return `${zi === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
-      }).join(" "),
+    const colPaths = cols.map((_, xi) => ({
+      d: smooth(allPts.map((row) => row[xi])),
     }));
     let hi = {zi: 0, xi: 0, v: -Infinity};
     let lo = {zi: 0, xi: 0, v: Infinity};
@@ -1125,11 +1160,16 @@ const terrain = isTerrain
     }));
     const hiP = allPts[hi.zi][hi.xi];
     const loP = allPts[lo.zi][lo.xi];
-    /* Range bracket: horizontal rail at the top, drops to both points. */
-    const railY = Math.min(hiP.y, loP.y) - 30;
     const dots = allPts.flatMap((row, zi) => row.map((p, xi) => ({...p, zi, xi})));
-    return {rows, cols, rowPaths, colPaths, dots, hi, lo, hiP, loP, railY,
-      corner: {x: Math.min(hiP.x, loP.x), railY}, vMin, vMax};
+    /* Sample rings: a fixed lattice over the interior, so the field
+       carries the reference's scattered ring highlights. */
+    const rings = dots.filter((p) => p.zi > 0 && p.zi < rows.length - 1 && p.xi > 0 && p.xi < cols.length - 1
+      && p.zi % 3 === 1 && p.xi % 4 === 2);
+    const railY = Math.max(Math.min(hiP.y, loP.y) - 30, 58);
+    /* Soft wash under the crest. */
+    const wash = {cx: (padL + W - 30) / 2, cy: baseY - dz * 0.45, rx: (W - padL - 30) * 0.42, ry: dz * 0.5};
+    return {rows, cols, rowPaths, colPaths, dots, rings, hi, lo, hiP, loP, railY, wash,
+      vMin, vMax, hotAt: vMin + span * 0.7};
   })()
   : null;
 
@@ -1573,62 +1613,80 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
         aria-label={`${tableCaption}: ${terrain.rows.length} rows × ${terrain.cols.length} columns, elevations ${format(terrain.vMin)} to ${format(terrain.vMax)}`}
         preserveAspectRatio="xMidYMid meet"
       >
+        <defs>
+          <radialGradient id={`${uid}-twash`} cx="50%" cy="50%" r="50%">
+            <stop offset="0%" style={`stop-color: ${colorAt(0, series[0])}; stop-opacity: 0.1`}/>
+            <stop offset="100%" style={`stop-color: ${colorAt(0, series[0])}; stop-opacity: 0`}/>
+          </radialGradient>
+        </defs>
+        <ellipse class="aui-chart__terrain-wash" cx={terrain.wash.cx} cy={terrain.wash.cy}
+                 rx={terrain.wash.rx} ry={terrain.wash.ry} fill={`url(#${uid}-twash)`}/>
         {(terrainMode === "wire" || terrainMode === "both") && (
           <g class="aui-chart__terrain-mesh" style={`color: ${colorAt(0, series[0])}`}>
-            {terrain.rowPaths.map((p) => (
-              <path d={p.d}/>
-            ))}
             {terrain.colPaths.map((p) => (
-              <path d={p.d}/>
+              <path d={p.d} style="opacity: 0.35"/>
+            ))}
+            {terrain.rowPaths.map((p) => (
+              <path d={p.d} style={`opacity: ${(0.5 + p.front * 0.4).toFixed(2)}${p.front < 0.25 ? "; stroke-dasharray: 4 4" : ""}`}/>
             ))}
           </g>
         )}
         {(terrainMode === "dots" || terrainMode === "both") && (
-          <g class="aui-chart__terrain-dots" style={`color: ${colorAt(0, series[0])}`}>
+          <g class="aui-chart__terrain-dots">
             {terrain.dots.map((p) => (
-              <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={terrainMode === "dots" ? 1.6 : 1.4}>
+              <circle cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={terrainMode === "dots" ? 1.7 : 1.4}
+                      fill={p.v >= terrain.hotAt ? colorAt(0, series[0]) : "var(--ui-muted-foreground)"}
+                      style={`opacity: ${(0.3 + (p.zi / (terrain.rows.length - 1)) * 0.5).toFixed(2)}`}>
                 <title>{`${terrain.rows[p.zi]} — ${terrain.cols[p.xi]}: ${format(p.v)}`}</title>
               </circle>
             ))}
           </g>
         )}
-        {/* Ring highlights on the extreme points + range bracket:
-            a horizontal rail above both points, vertical drops to
-            each ring, value labels riding the rail ends. */}
-        <circle class="aui-chart__terrain-ring" cx={terrain.hiP.x} cy={terrain.hiP.y} r={5}/>
-        <circle class="aui-chart__terrain-ring" cx={terrain.loP.x} cy={terrain.loP.y} r={5}/>
+        {/* Sample rings across the field + black rings on the extremes,
+            joined by the range bracket with corner callouts. */}
+        <g style={`color: ${colorAt(0, series[0])}`}>
+          {terrain.rings.map((p) => (
+            <circle class="aui-chart__terrain-ring" cx={p.x.toFixed(1)} cy={p.y.toFixed(1)} r={5}>
+              <title>{`${terrain.rows[p.zi]} — ${terrain.cols[p.xi]}: ${format(p.v)}`}</title>
+            </circle>
+          ))}
+        </g>
+        {terrainCallouts && (
+          <Fragment>
+            <circle class="aui-chart__terrain-ring aui-chart__terrain-ring--extreme" cx={terrain.hiP.x} cy={terrain.hiP.y} r={6}/>
+            <circle class="aui-chart__terrain-ring aui-chart__terrain-ring--extreme" cx={terrain.loP.x} cy={terrain.loP.y} r={6}/>
+          </Fragment>
+        )}
+        {terrainCallouts && (
         <g class="aui-chart__terrain-callout">
-          <path d={`M ${terrain.hiP.x.toFixed(1)} ${terrain.railY} H ${terrain.loP.x.toFixed(1)}`} fill="none"/>
-          <path d={`M ${terrain.hiP.x.toFixed(1)} ${terrain.railY} V ${(terrain.hiP.y - 7).toFixed(1)}`} fill="none"/>
-          <path d={`M ${terrain.loP.x.toFixed(1)} ${terrain.railY} V ${(terrain.loP.y - 7).toFixed(1)}`} fill="none"/>
-          <text class="aui-chart__terrain-callout-title" x={(terrain.hiP.x + 10).toFixed(1)} y={(terrain.railY - 16).toFixed(1)} text-anchor="start">
+          {/* Reference-style bracket: two rail stubs, each from its
+              corner title to the drop above its extreme — no line
+              runs between the two drops. */}
+          <path d={`M ${PAD.left} ${terrain.railY} H ${terrain.hiP.x.toFixed(1)}`} fill="none"/>
+          <path d={`M ${terrain.loP.x.toFixed(1)} ${terrain.railY} H ${W - 24}`} fill="none"/>
+          <path d={`M ${terrain.hiP.x.toFixed(1)} ${terrain.railY} V ${(terrain.hiP.y - 8).toFixed(1)}`} fill="none"/>
+          <path d={`M ${terrain.loP.x.toFixed(1)} ${terrain.railY} V ${(terrain.loP.y - 8).toFixed(1)}`} fill="none"/>
+          <text class="aui-chart__terrain-callout-title" x={PAD.left} y={(terrain.railY - 22).toFixed(1)}>
             Highest point
           </text>
-          <text x={(terrain.hiP.x + 10).toFixed(1)} y={(terrain.railY - 3).toFixed(1)} text-anchor="start">
+          <text x={PAD.left} y={(terrain.railY - 8).toFixed(1)}>
             {format(terrain.hiP.v)}
           </text>
-          {/* If the lowest point hugs the left edge, its end-anchored
-              label would run off-canvas — flip it to the right. */}
-          {terrain.loP.x < 150 ? (
-            <Fragment>
-              <text class="aui-chart__terrain-callout-title" x={(terrain.loP.x + 10).toFixed(1)} y={(terrain.railY - 16).toFixed(1)} text-anchor="start">
-                Lowest point
-              </text>
-              <text x={(terrain.loP.x + 10).toFixed(1)} y={(terrain.railY - 3).toFixed(1)} text-anchor="start">
-                {format(terrain.loP.v)}
-              </text>
-            </Fragment>
-          ) : (
-            <Fragment>
-              <text class="aui-chart__terrain-callout-title" x={(terrain.loP.x - 10).toFixed(1)} y={(terrain.railY - 16).toFixed(1)} text-anchor="end">
-                Lowest point
-              </text>
-              <text x={(terrain.loP.x - 10).toFixed(1)} y={(terrain.railY - 3).toFixed(1)} text-anchor="end">
-                {format(terrain.loP.v)}
-              </text>
-            </Fragment>
-          )}
+          <text class="aui-chart__terrain-callout-title" x={(W - 24).toFixed(1)} y={(terrain.railY - 22).toFixed(1)} text-anchor="end">
+            Lowest point
+          </text>
+          <text x={(W - 24).toFixed(1)} y={(terrain.railY - 8).toFixed(1)} text-anchor="end">
+            {format(terrain.loP.v)}
+          </text>
         </g>
+        )}
+        {terrainAxes && (
+          <g class="aui-chart__terrain-axis">
+            <text x={PAD.left - 20} y={height - 8}>{terrainAxes[0]}</text>
+            <text x={W / 2} y={height - 8} text-anchor="middle">{terrainAxes[1]}</text>
+            <text x={W - 12} y={height - 8} text-anchor="end">{terrainAxes[2]}</text>
+          </g>
+        )}
       </svg>
     )
   }
@@ -1878,25 +1936,38 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     opacity: 0.85;
   }
 
-  /* --- terrain: wireframe mesh + point field. The mesh stroke dims
-     toward the back rows implicitly via painter's order; dots stay
-     faint so the mesh reads on top in "both" mode. --- */
+  /* --- terrain: wireframe mesh + point field. Row opacity/dash and
+     dot opacity ride inline styles (depth fade); the class supplies
+     geometry and default colors only. --- */
+  .aui-chart__terrain-wash {
+    pointer-events: none;
+  }
+
   .aui-chart__terrain-mesh path {
     fill: none;
     stroke: currentcolor;
     stroke-width: 1.1;
-    opacity: 0.55;
   }
 
   .aui-chart__terrain-dots circle {
-    fill: currentcolor;
-    opacity: 0.5;
+    stroke: none;
   }
 
   .aui-chart__terrain-ring {
     fill: var(--ui-background);
     stroke: currentcolor;
     stroke-width: 1.5;
+  }
+
+  .aui-chart__terrain-ring--extreme {
+    stroke: var(--ui-foreground);
+    stroke-width: 1.8;
+  }
+
+  .aui-chart__terrain-axis text {
+    fill: var(--ui-muted-foreground);
+    font-size: 12px;
+    font-family: var(--ui-font-sans);
   }
 
   .aui-chart__terrain-callout path {
