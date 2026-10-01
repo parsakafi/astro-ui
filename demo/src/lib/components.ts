@@ -3520,7 +3520,7 @@ for (const msg of ["First", "Second", "Third"]) {
             {
                 id: "terrain-bare",
                 title: "Terrain (bare)",
-                code: `<Chart\n  type="terrain"\n  title="Signal terrain, bare"\n  description="Same field — callouts, rings and mesh off"\n  height={320}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainMode="dots"\n  terrainCallouts={false}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- terrainCallouts={false} hides the highest/lowest titles, rail and\n     drops; terrainMode="dots" drops the mesh for a point-field look -->`,
+                code: `<Chart\n  type="terrain"\n  title="Signal terrain, bare"\n  description="Dots banded by elevation \u2014 primary low, warning mid, error high"\n  height={320}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainMode="dots"\n  terrainCallouts={false}\n  terrainDotColors={["var(--ui-primary)", "var(--ui-warning)", "var(--ui-error)"]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- terrainCallouts={false} hides the highest/lowest titles, rail and\n     drops; terrainMode="dots" drops the mesh for a point-field look;\n     terrainDotColors bands the dots low/mid/high by elevation -->`,
             },
         ],
         props: [
@@ -3564,6 +3564,7 @@ for (const msg of ["First", "Second", "Third"]) {
             t("terrainAxes", "[string, string, string]", "—", "Terrain axis captions along the bottom (x, y, z)."),
             t("terrainCallouts", "boolean", "true", "Highest/lowest corner titles, rail and drops; false hides them."),
             t("terrainCalloutLabels", "[string, string]", "Highest / Lowest point", "Custom corner-title texts for the extreme-point callouts."),
+            t("terrainDotColors", "[string, string, string]", "muted two-tone", "Dot colors for [low, middle, high] elevation bands (thirds of the range)."),
             t("format", "(value: number) => string", "—", "Value formatting for ticks and the data table."),
             t("height", "number", "260", "Plot height in px."),
             ...common(false),

@@ -5088,12 +5088,13 @@ for (const id of demoIds) {
                 <Chart
                   type="terrain"
                   title="Signal terrain, bare"
-                  description="Same field — callouts, rings and mesh off"
+                  description="Dots banded by elevation — primary low, warning mid, error high"
                   height={320}
                   labels={Array.from({length: 24}, (_, i) => String(i - 12))}
                   series={terrainRows.map((data, i) => ({name: `d${i}`, color: "var(--ui-error)", data}))}
                   terrainMode="dots"
                   terrainCallouts={false}
+                  terrainDotColors={["var(--ui-primary)", "var(--ui-warning)", "var(--ui-error)"]}
                   format={(v) => `${v}m`}
                 />
               </Fragment>
