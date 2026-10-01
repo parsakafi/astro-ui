@@ -3515,7 +3515,12 @@ for (const msg of ["First", "Second", "Third"]) {
             {
                 id: "terrain",
                 title: "Terrain",
-                code: `<Chart\n  type="terrain"\n  title="Signal terrain"\n  description="Peaks and valleys across a sampled field"\n  height={340}\n  labels={["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5"]}\n  series={[\n    { name: "d0", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[0])} },\n    { name: "d1", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[1])} },\n    { name: "d2", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[2])} },\n    { name: "d3", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[3])} },\n    { name: "d4", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[4])} },\n    { name: "d5", color: "var(--ui-error)", data: ${JSON.stringify(terrainRows[5])} },\n  ]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- rows are depth (front to back), columns are position, values are\n     elevation; terrainMode="wire" | "dots" | "both" (default); the\n     highest/lowest points get rings, callouts and a range bracket -->`,
+                code: `<Chart\n  type="terrain"\n  title="Signal terrain"\n  description="Peaks and valleys across a sampled field"\n  height={400}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainAxes={["X: Position", "Y: Elevation", "Z: Depth"]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- rows are depth (front to back), columns are position, values are\n     elevation; terrainMode="wire" | "dots" | "both" (default); the\n     highest/lowest points get black rings + callouts, a fixed sample\n     lattice gets accent rings, back rows fade and dash -->`,
+            },
+            {
+                id: "terrain-bare",
+                title: "Terrain (bare)",
+                code: `<Chart\n  type="terrain"\n  title="Signal terrain, bare"\n  description="Same field — callouts, rings and mesh off"\n  height={320}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainMode="dots"\n  terrainCallouts={false}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- terrainCallouts={false} hides the highest/lowest titles, rail and\n     drops; terrainMode="dots" drops the mesh for a point-field look -->`,
             },
         ],
         props: [
@@ -3556,6 +3561,8 @@ for (const msg of ["First", "Second", "Third"]) {
             t("cohortMax", "number", "data max", "Ceiling for the cohort color ramp (fractions vs percents disambiguated automatically)."),
             t("cohortRamp", "string[]", "muted → primary", "2+ CSS colors the cohort cells interpolate across."),
             t("terrainMode", '"wire" | "dots" | "both"', '"both"', "Terrain rendering: mesh, bare point field, or both."),
+            t("terrainAxes", "[string, string, string]", "—", "Terrain axis captions along the bottom (x, y, z)."),
+            t("terrainCallouts", "boolean", "true", "Highest/lowest corner titles, rail and drops; false hides them."),
             t("format", "(value: number) => string", "—", "Value formatting for ticks and the data table."),
             t("height", "number", "260", "Plot height in px."),
             ...common(false),

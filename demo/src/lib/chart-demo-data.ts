@@ -57,10 +57,10 @@ export function terrainGrid(seed: string, rows: number, cols: number) {
     const band = Math.exp(-((depth - 0.45) ** 2) / 0.08);
     return Array.from({length: cols}, (_, c) => {
       const pos = c / Math.max(cols - 1, 1);
-      const ridge = Math.exp(-((pos - 0.45) ** 2) / 0.06) * 46;
-      const swell = Math.exp(-((pos - 0.85) ** 2) / 0.05) * 18 * (1 - depth);
-      return Math.round((4 + band * ridge + swell + rand() * 9) * 10) / 10;
+      const ridge = Math.exp(-((pos - 0.45) ** 2) / 0.09) * 46;
+      const swell = Math.exp(-((pos - 0.85) ** 2) / 0.06) * 16 * (1 - depth);
+      return Math.round(4 + band * ridge + swell + rand() * 3);
     });
   });
 }
-export const terrainRows = terrainGrid("chart:terrain:signal", 6, 11);
+export const terrainRows = terrainGrid("chart:terrain:signal", 12, 24);

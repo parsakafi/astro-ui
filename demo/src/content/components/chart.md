@@ -32,7 +32,7 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "terrain"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "terrain", "terrain-bare"]
 props:
   - name: "type"
     type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\"'"
@@ -182,6 +182,14 @@ props:
     type: "\"wire\" | \"dots\" | \"both\""
     def: "\"both\""
     description: "Terrain rendering: mesh, bare point field, or both."
+  - name: "terrainAxes"
+    type: "[string, string, string]"
+    def: "—"
+    description: "Terrain axis captions along the bottom (x, y, z)."
+  - name: "terrainCallouts"
+    type: "boolean"
+    def: "true"
+    description: "Highest/lowest corner titles, rail and drops; false hides them."
   - name: "format"
     type: "(value: number) => string"
     def: "—"

@@ -5067,14 +5067,38 @@ for (const id of demoIds) {
                   type="terrain"
                   title="Signal terrain"
                   description="Peaks and valleys across a sampled field"
-                  height={340}
-                  labels={["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5"]}
+                  height={400}
+                  labels={Array.from({length: 24}, (_, i) => String(i - 12))}
                   series={terrainRows.map((data, i) => ({name: `d${i}`, color: "var(--ui-error)", data}))}
+                  terrainAxes={["X: Position", "Y: Elevation", "Z: Depth"]}
                   format={(v) => `${v}m`}
                 />
               </Fragment>
               <Fragment slot="code">
                 <pre><code set:html={codeCache.get("terrain")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "terrain-bare" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Terrain (bare)</h3>
+            <DemoTabs id="dm-chart-terrain-bare">
+              <Fragment slot="preview">
+                <Chart
+                  type="terrain"
+                  title="Signal terrain, bare"
+                  description="Same field — callouts, rings and mesh off"
+                  height={320}
+                  labels={Array.from({length: 24}, (_, i) => String(i - 12))}
+                  series={terrainRows.map((data, i) => ({name: `d${i}`, color: "var(--ui-error)", data}))}
+                  terrainMode="dots"
+                  terrainCallouts={false}
+                  format={(v) => `${v}m`}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("terrain-bare")}/></pre>
               </Fragment>
             </DemoTabs>
           </div>
