@@ -32,10 +32,10 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall"]
 props:
   - name: "type"
-    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\"'"
+    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\"'"
     def: "'\"bar\"'"
     description: "Chart type."
   - name: "labels"
@@ -146,6 +146,14 @@ props:
     type: "boolean | \"percent\""
     def: "false"
     description: "Stack bar series (cumulative totals) or normalize each column to 100% with \"percent\"."
+  - name: "waterfallTotals"
+    type: "number[]"
+    def: "—"
+    description: "Waterfall: label indices that render as full total bars and reset the running sum."
+  - name: "waterfallColors"
+    type: "[string, string, string]"
+    def: "success / error / primary"
+    description: "Waterfall colors for [increase, decrease, total] bars."
   - name: "format"
     type: "(value: number) => string"
     def: "—"

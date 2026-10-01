@@ -4982,6 +4982,27 @@ for (const id of demoIds) {
             </DemoTabs>
           </div>
         )}
+        {id === "waterfall" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Waterfall</h3>
+            <DemoTabs id="dm-chart-waterfall">
+              <Fragment slot="preview">
+                <Chart
+                  type="waterfall"
+                  title="Cash flow, 2026"
+                  description="Signed deltas stack on a running total; totals anchor to zero"
+                  labels={["Start", "Q1", "Q2", "Q3", "Q4", "End"]}
+                  series={[{name: "Cash", data: [120, 45, -25, 65, -20, 0]}]}
+                  waterfallTotals={[0, 5]}
+                  format={(v) => `$${v}k`}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeCache.get("waterfall")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "no-grid" && (
           <div class="docs-demo-block">
             <h3 class="docs-demo-title">Minimal</h3>
