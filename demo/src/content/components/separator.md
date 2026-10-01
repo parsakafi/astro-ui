@@ -27,24 +27,20 @@ usage: |-
   <Separator />
   <Separator orientation="vertical" style="height:2rem" />
   <Separator label="or" />
-demoIds: ["basic", "styles", "label"]
+demoIds: ["both", "variants", "vertical-variants", "labeled"]
 props:
   - name: "orientation"
     type: "\"horizontal\" | \"vertical\""
     def: "\"horizontal\""
     description: "Rule direction."
-  - name: "style"
-    type: "\"solid\" | \"dashed\" | \"dotted\""
+  - name: "variant"
+    type: "\"solid\" | \"dashed\" | \"dotted\" | \"double\" | \"gradient\" | \"faded\" | \"labeled\""
     def: "\"solid\""
-    description: "Line treatment."
+    description: "Line treatment; labeled centers slot content between two lines (horizontal only)."
   - name: "label"
     type: "string"
     def: "—"
-    description: "Centered text inside the rule."
-  - name: "decorative"
-    type: "boolean"
-    def: "false"
-    description: "Renders aria-hidden span instead of hr."
+    description: "Accessible name when the separator delimits labelled regions."
   - name: "class"
     type: "string"
     def: "—"
