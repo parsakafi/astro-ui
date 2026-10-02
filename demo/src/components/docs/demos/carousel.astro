@@ -1,0 +1,240 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Carousel,
+  CarouselSlide,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "horizontal" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal single</h3>
+            <DemoTabs id="dm-carousel-horizontal">
+              <Fragment slot="preview">
+                <Carousel id="car-h" label="Horizontal single cards" style="inline-size:min(100%,28rem)">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <CarouselSlide>
+                      <div class="aui-carousel-demo-card">{n}</div>
+                    </CarouselSlide>
+                  ))}
+                </Carousel>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("horizontal")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "multiple" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal multiple (peek)</h3>
+            <DemoTabs id="dm-carousel-multiple">
+              <Fragment slot="preview">
+                <Carousel
+                  id="car-m"
+                  label="Horizontal multiple cards"
+                  variant="multiple"
+                  slideBasis="50%"
+                  showCounter={false}
+                  style="inline-size:min(100%,34rem)"
+                >
+                  {[1, 2, 3, 4].map((n) => (
+                    <CarouselSlide>
+                      <div class="aui-carousel-demo-card">{n}</div>
+                    </CarouselSlide>
+                  ))}
+                </Carousel>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("multiple")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical single</h3>
+            <DemoTabs id="dm-carousel-vertical">
+              <Fragment slot="preview">
+                <Carousel
+                  id="car-v"
+                  label="Vertical cards"
+                  orientation="vertical"
+                  showCounter={false}
+                  contentClass="car-v-h"
+                  style="inline-size:min(100%,24rem)"
+                >
+                  {[1, 2, 3].map((n) => (
+                    <CarouselSlide>
+                      <div class="aui-carousel-demo-card" style="block-size:100%">{n}</div>
+                    </CarouselSlide>
+                  ))}
+                </Carousel>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "overlay-arrows" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Overlay arrows</h3>
+            <DemoTabs id="dm-carousel-overlay-arrows">
+              <Fragment slot="preview">
+                <Carousel
+                  id="car-oa"
+                  label="Overlay arrow cards"
+                  controlsPlacement="overlay"
+                  showCounter={false}
+                  loop
+                  style="inline-size:min(100%,28rem)"
+                >
+                  {[1, 2, 3].map((n) => (
+                    <CarouselSlide>
+                      <div class="aui-carousel-demo-card">{n}</div>
+                    </CarouselSlide>
+                  ))}
+                </Carousel>
+                <p class="docs-demo-note">
+                  controlsPlacement="overlay" floats the prev/next arrows on
+                  the left and right edges of the slides.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("overlay-arrows")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "indicators" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With indicators</h3>
+            <DemoTabs id="dm-carousel-indicators">
+              <Fragment slot="preview">
+                <Carousel
+                  id="car-ind"
+                  label="Indicator cards"
+                  indicators
+                  showCounter={false}
+                  loop
+                  style="inline-size:min(100%,28rem)"
+                >
+                  {[1, 2, 3].map((n) => (
+                    <CarouselSlide>
+                      <div class="aui-carousel-demo-card">{n}</div>
+                    </CarouselSlide>
+                  ))}
+                </Carousel>
+                <p class="docs-demo-note">
+                  One dot per slide — click to jump; the active dot tracks
+                  scrolling in both directions.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("indicators")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "captions" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With captions</h3>
+            <DemoTabs id="dm-carousel-captions">
+              <Fragment slot="preview">
+                <Carousel
+                  id="car-cap"
+                  label="Captioned slides"
+                  controlsPlacement="overlay"
+                  indicators
+                  showCounter={false}
+                  loop
+                  style="inline-size:min(100%,28rem)"
+                >
+                  <CarouselSlide caption="First slide" captionDescription="A short description over the slide.">
+                    <div class="aui-carousel-demo-card">1</div>
+                  </CarouselSlide>
+                  <CarouselSlide caption="Second slide" captionDescription="Captions can carry a muted description too.">
+                    <div class="aui-carousel-demo-card">2</div>
+                  </CarouselSlide>
+                  <CarouselSlide caption="Third slide">
+                    <div class="aui-carousel-demo-card">3</div>
+                  </CarouselSlide>
+                </Carousel>
+                <p class="docs-demo-note">
+                  caption + captionDescription render a translucent overlay
+                  bar across the slide's lower edge.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("captions")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "autoplay" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Autoplay</h3>
+            <DemoTabs id="dm-carousel-autoplay">
+              <Fragment slot="preview">
+                <Carousel
+                  id="car-auto"
+                  label="Autoplaying cards"
+                  autoplay
+                  interval={5000}
+                  autoplayToggle="corner"
+                  controls={false}
+                  showCounter={false}
+                  style="inline-size:min(100%,28rem)"
+                >
+                  {[1, 2, 3, 4].map((n) => (
+                    <CarouselSlide>
+                      <div class="aui-carousel-demo-card">{n}</div>
+                    </CarouselSlide>
+                  ))}
+                </Carousel>
+                <p class="docs-demo-note">
+                  No buttons, no dots — just the circular pause/play toggle
+                  pinned to the top-right corner. Its progress ring fills
+                  over the 5s interval (freezes on hover, resets per slide).
+                  Still respects reduced-motion and stops permanently if you
+                  swipe the deck manually.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("autoplay")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "loop" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Looping</h3>
+            <DemoTabs id="dm-carousel-loop">
+              <Fragment slot="preview">
+                <Carousel id="car-l" label="Looping cards" loop style="inline-size:min(100%,28rem)">
+                  {[1, 2, 3].map((n) => (
+                    <CarouselSlide>
+                      <div class="aui-carousel-demo-card">{n}</div>
+                    </CarouselSlide>
+                  ))}
+                </Carousel>
+                <p class="docs-demo-note">
+                  Next past the last slide wraps to the first; the counter and
+                  carousel:change event stay in sync.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("loop")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

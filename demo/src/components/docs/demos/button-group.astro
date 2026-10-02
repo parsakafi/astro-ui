@@ -1,0 +1,122 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  ButtonGroup,
+  ButtonGroupSeparator,
+  ButtonGroupText,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-button-group-basic">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button variant="outline">Previous</Button>
+                  <Button variant="outline">Next</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-button-group-vertical">
+              <Fragment slot="preview">
+                <ButtonGroup orientation="vertical">
+                  <Button variant="outline">Copy</Button>
+                  <Button variant="outline">Paste</Button>
+                  <Button variant="outline">Delete</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-button-group-variants">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button>Primary</Button>
+                  <Button variant="secondary">Secondary</Button>
+                </ButtonGroup>
+                <ButtonGroup>
+                  <Button variant="outline">Edit</Button>
+                  <Button variant="outline">Delete</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "icons" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icons</h3>
+            <DemoTabs id="dm-button-group-icons">
+              <Fragment slot="preview">
+                <ButtonGroup ariaLabel="Text alignment">
+                  <Button variant="outline" size="icon" ariaLabel="Left">⇤</Button>
+                  <Button variant="outline" size="icon" ariaLabel="Center">↔</Button>
+                  <Button variant="outline" size="icon" ariaLabel="Right">⇥</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("icons")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "with-separator" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With separator</h3>
+            <DemoTabs id="dm-button-group-separator">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button variant="outline">Filter</Button>
+                  <Button variant="outline">Sort</Button>
+                  <ButtonGroupSeparator/>
+                  <Button variant="outline">More</Button>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("with-separator")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "with-text" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With text</h3>
+            <DemoTabs id="dm-button-group-text">
+              <Fragment slot="preview">
+                <ButtonGroup>
+                  <Button variant="outline">Star</Button>
+                  <ButtonGroupText>2.4k</ButtonGroupText>
+                </ButtonGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("with-text")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

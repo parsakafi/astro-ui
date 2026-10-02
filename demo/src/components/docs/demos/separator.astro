@@ -1,0 +1,84 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Separator,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "both" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal &amp; vertical</h3>
+            <DemoTabs id="dm-separator-both">
+              <Fragment slot="preview">
+                <p class="demo-hint">Above the rule.</p>
+                <Separator/>
+                <p class="demo-hint">Below the rule.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("both")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Line variants</h3>
+            <DemoTabs id="dm-separator-variants">
+              <Fragment slot="preview">
+                <div style="width: 100%">
+                  <Separator/>
+                  <Separator variant="dashed"/>
+                  <Separator variant="dotted"/>
+                  <Separator variant="double"/>
+                  <Separator variant="gradient"/>
+                  <Separator variant="faded"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical-variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical variants</h3>
+            <DemoTabs id="dm-separator-vertical-variants">
+              <Fragment slot="preview">
+                <div class="demo-row" style="height: 4rem;">
+                  <span class="demo-hint">Before</span>
+                  <Separator orientation="vertical" variant="dashed"/>
+                  <span class="demo-hint">After</span>
+                  <Separator orientation="vertical" variant="double"/>
+                  <span class="demo-hint">End</span>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical-variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "labeled" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Labeled divider</h3>
+            <DemoTabs id="dm-separator-labeled">
+              <Fragment slot="preview">
+                <p class="demo-hint">Some content above.</p>
+                <Separator variant="labeled">or continue with</Separator>
+                <p class="demo-hint">Some content below.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("labeled")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

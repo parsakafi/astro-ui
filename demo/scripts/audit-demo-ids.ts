@@ -1,37 +1,29 @@
-import {components} from "../src/lib/components";
-import {readFileSync} from "node:fs";
+// Cross-check registry demo ids against the per-component demo files.
+// Each demos/<slug>.astro gates preview blocks with {id === "..." && ...
+// Run: cd demo && npx tsx scripts/audit-demo-ids.ts
+import {readFileSync, readdirSync, existsSync} from "node:fs";
 
-const astro = readFileSync("src/components/docs/Demos.astro", "utf8");
-const branches: Record<string, string[]> = {};
-const re = /component\.slug === "([\w-]+)" &&/g;
-let m: RegExpExecArray | null;
-const positions: {slug: string; idx: number}[] = [];
-while ((m = re.exec(astro))) positions.push({slug: m[1], idx: m.index});
-positions.push({slug: "__END__", idx: astro.length});
-for (let i = 0; i < positions.length - 1; i++) {
-  const seg = astro.slice(positions[i].idx, positions[i + 1].idx);
-  const ids = [...seg.matchAll(/id === "([\w-]+)"/g)].map((x) => x[1]);
-  branches[positions[i].slug] = ids;
-}
+const registry = readFileSync("src/lib/registry/entries.ts", "utf8");
+const slugs = [...registry.matchAll(/from "\.\/([a-z0-9-]+)";/g)].map((m) => m[1]);
 
-let bad = 0;
-for (const c of components) {
-  const regIds = c.demos.map((d) => d.id);
-  const astroIds = branches[c.slug];
-  if (!astroIds) {
-    console.log(`NO BRANCH: ${c.slug} registry ids: ${regIds.join(",")}`);
-    bad++;
+let problems = 0;
+for (const slug of slugs) {
+  const file = `src/components/docs/demos/${slug}.astro`;
+  if (!existsSync(file)) {
+    console.log(`NO DEMO FILE: ${slug}`);
+    problems++;
     continue;
   }
-  const missing = regIds.filter((id) => !astroIds.includes(id));
-  const extra = astroIds.filter((id) => !regIds.includes(id));
+  const demo = readFileSync(file, "utf8");
+  const branchIds = [...demo.matchAll(/\{id === "([a-z0-9-]+)" && \(/g)].map((m) => m[1]);
+  const regSrc = readFileSync(`src/lib/registry/${slug}.ts`, "utf8");
+  const regIds = [...regSrc.matchAll(/\n\s+id: "([a-z0-9-]+)",/g)].map((m) => m[1]);
+  const missing = regIds.filter((id) => !branchIds.includes(id));
+  const extra = branchIds.filter((id) => !regIds.includes(id));
   if (missing.length || extra.length) {
-    console.log(
-      `MISMATCH ${c.slug}: registry=[${regIds.join(",")}] branch=[${astroIds.join(",")}]` +
-        (missing.length ? ` missing=${missing.join(",")}` : "") +
-        (extra.length ? ` extra=${extra.join(",")}` : ""),
-    );
-    bad++;
+    problems++;
+    if (missing.length) console.log(`NO BRANCH: ${slug} registry ids: ${missing.join(",")}`);
+    if (extra.length) console.log(`EXTRA BRANCH: ${slug} ids: ${extra.join(",")}`);
   }
 }
-console.log(`total components: ${components.length}, problems: ${bad}`);
+console.log(`total components: ${slugs.length}, problems: ${problems}`);

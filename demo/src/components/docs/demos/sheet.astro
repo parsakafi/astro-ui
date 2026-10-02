@@ -1,0 +1,127 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Sheet,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Slide-in panel</h3>
+            <DemoTabs id="dm-sheet-basic">
+              <Fragment slot="preview">
+                <Button id="dm-sheet-open">Open sheet</Button>
+                <Sheet id="dm-sheet">
+                  <h2 slot="title">Sheet title</h2>
+                  <p>
+                    Modality, backdrop, Escape-to-close, and focus containment come
+                    from native &lt;dialog&gt;. The × button closes with zero JS.
+                  </p>
+                  <form method="dialog">
+                    <Button variant="outline" value="done">Done</Button>
+                  </form>
+                </Sheet>
+                <script is:inline>
+                  document.getElementById("dm-sheet-open")?.addEventListener("click", () => {
+                    const dlg = document.getElementById("dm-sheet");
+                    if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sides" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">From any edge</h3>
+            <DemoTabs id="dm-sheet-sides">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-sheet-left-open" variant="outline">Left</Button>
+                  <Button id="dm-sheet-right-open" variant="outline">Right</Button>
+                  <Button id="dm-sheet-top-open" variant="outline">Top</Button>
+                  <Button id="dm-sheet-bottom-open" variant="outline">Bottom</Button>
+                </div>
+                <Sheet id="dm-sheet-left" side="left">
+                  <h2 slot="title">Left</h2>
+                  <p>Slides in from the start edge.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-right" side="right">
+                  <h2 slot="title">Right</h2>
+                  <p>Slides in from the end edge.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-top" side="top">
+                  <h2 slot="title">Top</h2>
+                  <p>Drops in from the top — capped at 85vh.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-bottom" side="bottom">
+                  <h2 slot="title">Bottom</h2>
+                  <p>Rises from the bottom — capped at 85vh.</p>
+                </Sheet>
+                <script is:inline>
+                  for (const [btnId, dlgId] of [
+                    ["dm-sheet-left-open", "dm-sheet-left"],
+                    ["dm-sheet-right-open", "dm-sheet-right"],
+                    ["dm-sheet-top-open", "dm-sheet-top"],
+                    ["dm-sheet-bottom-open", "dm-sheet-bottom"],
+                  ]) {
+                    document.getElementById(btnId)?.addEventListener("click", () => {
+                      const dlg = document.getElementById(dlgId);
+                      if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                    });
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sides")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "backdrop" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Backdrop dismiss</h3>
+            <DemoTabs id="dm-sheet-backdrop">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-sheet-bd-open" variant="outline">Dismissable backdrop</Button>
+                  <Button id="dm-sheet-nbd-open" variant="outline">Locked backdrop</Button>
+                </div>
+                <Sheet id="dm-sheet-bd">
+                  <h2 slot="title">Default</h2>
+                  <p>Click the dark layer to close — Escape works too.</p>
+                </Sheet>
+                <Sheet id="dm-sheet-nbd" closeOnBackdrop={false}>
+                  <h2 slot="title">Locked</h2>
+                  <p>Stays open when clicking the dark layer — close with × or Escape.</p>
+                </Sheet>
+                <script>
+                  for (const [btnId, dlgId] of [
+                    ["dm-sheet-bd-open", "dm-sheet-bd"],
+                    ["dm-sheet-nbd-open", "dm-sheet-nbd"],
+                  ]) {
+                    document.getElementById(btnId)?.addEventListener("click", () => {
+                      const dlg = document.getElementById(dlgId);
+                      if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                    });
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("backdrop")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

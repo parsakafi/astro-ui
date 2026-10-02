@@ -1,0 +1,24 @@
+---
+import {
+  Avatar,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<div class="docs-block-social-proof">
+    <div class="docs-block-social-proof__row">
+      <Avatar name="Ada Lovelace" size="xs" status="online"/>
+      <Avatar name="Grace Hopper" size="xs"/>
+      <Avatar name="Alan Turing" size="xs"/>
+      <Avatar name="Edsger Dijkstra" size="xs" variant="primary"/>
+      <Avatar name="Barbara Liskov" size="xs"/>
+    </div>
+    <p class="docs-block-social-proof__label">Trusted by engineers at</p>
+    <p class="docs-block-social-proof__name">Ada Lovelace, Grace Hopper, Alan Turing, and 247 more</p>
+  </div>

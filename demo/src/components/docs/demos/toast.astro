@@ -1,0 +1,128 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Toaster,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic variants</h3>
+            <DemoTabs id="dm-toast-basic">
+              <Fragment slot="preview">
+                <Button id="dm-toast-default">Default</Button>
+                <Button id="dm-toast-success" variant="outline">Success</Button>
+                <Button id="dm-toast-error" variant="destructive">Error</Button>
+                <Toaster/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "modes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">All modes</h3>
+            <DemoTabs id="dm-toast-modes">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-toast-m-default" size="sm">Default</Button>
+                  <Button id="dm-toast-m-success" size="sm" variant="outline">Success</Button>
+                  <Button id="dm-toast-m-error" size="sm" variant="destructive">Error</Button>
+                  <Button id="dm-toast-m-warning" size="sm" variant="outline">Warning</Button>
+                  <Button id="dm-toast-m-info" size="sm" variant="outline">Info</Button>
+                  <Button id="dm-toast-m-loading" size="sm" variant="outline">Loading</Button>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("modes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "description" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Description &amp; styling</h3>
+            <DemoTabs id="dm-toast-desc">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-toast-d-rich" size="sm" variant="outline">Rich colors + description</Button>
+                  <Button id="dm-toast-d-plain" size="sm" variant="outline">Info + description</Button>
+                  <Button id="dm-toast-d-close" size="sm" variant="outline">Close button</Button>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("description")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "action" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">With action</h3>
+            <DemoTabs id="dm-toast-action">
+              <Fragment slot="preview">
+                <Button id="dm-toast-act" variant="outline">With action</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("action")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "position" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom position</h3>
+            <DemoTabs id="dm-toast-pos">
+              <Fragment slot="preview">
+                <Button id="dm-toast-pos-btn" variant="outline">Top-left toast</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("position")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "promise" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Loading flow</h3>
+            <DemoTabs id="dm-toast-load">
+              <Fragment slot="preview">
+                <Button id="dm-toast-load-btn" variant="outline">Loading flow</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("promise")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "expand" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Expand control</h3>
+            <DemoTabs id="dm-toast-expand">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-toast-x-collapse" size="sm" variant="outline">Fire 3 (collapses)</Button>
+                  <Button id="dm-toast-x-expand" size="sm" variant="outline">Fire 3 (expand: true)</Button>
+                </div>
+                <p class="docs-demo-hint">
+                  First fires a collapsed stack — hover it to expand. Second stays open: every toast pins its stack with
+                  expand: true.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("expand")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

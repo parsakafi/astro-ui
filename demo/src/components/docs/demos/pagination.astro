@@ -1,0 +1,41 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Pagination,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-pagination-basic">
+              <Fragment slot="preview">
+                <Pagination page={4} total={12} pageHref={(p: any) => `?page=${p}`}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "compact" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Compact</h3>
+            <DemoTabs id="dm-pagination-compact">
+              <Fragment slot="preview">
+                <Pagination compact page={2} total={5} pageHref={(p: any) => `?p=${p}`}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("compact")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

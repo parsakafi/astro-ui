@@ -1,0 +1,100 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Progress,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bar</h3>
+            <DemoTabs id="dm-progress-bar">
+              <Fragment slot="preview">
+                <Progress value={25} label="25%" showValue/>
+                <Progress value={64} label="64%" showValue/>
+                <Progress/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "circle" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Circle</h3>
+            <DemoTabs id="dm-progress-circle">
+              <Fragment slot="preview">
+                <Progress variant="circle" value={60} size="md" showValue/>
+                <Progress variant="circle" value={80} size="lg" showValue/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("circle")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "stripes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Stripes</h3>
+            <DemoTabs id="dm-progress-stripes">
+              <Fragment slot="preview">
+                <Progress value={82} stripes/>
+                <Progress value={82} stripes="static" color="success"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("stripes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "striped-track" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Striped track</h3>
+            <DemoTabs id="dm-progress-striped-track">
+              <Fragment slot="preview">
+                <Progress value={38} stripedTrack/>
+                <Progress value={72} stripedTrack color="success"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("striped-track")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "segmented" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Segmented</h3>
+            <DemoTabs id="dm-progress-segmented">
+              <Fragment slot="preview">
+                <Progress value={60} segmented/>
+                <Progress value={45} segmented={8} color="success"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("segmented")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "squared" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Squared</h3>
+            <DemoTabs id="dm-progress-squared">
+              <Fragment slot="preview">
+                <Progress value={40} squared/>
+                <Progress value={90} squared color="success"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("squared")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

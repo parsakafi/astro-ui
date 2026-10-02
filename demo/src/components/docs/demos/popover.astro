@@ -1,0 +1,49 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Popover,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-popover-basic">
+              <Fragment slot="preview">
+                <Popover id="dm-popover">
+                  <span slot="trigger">Share</span>
+                  <span slot="content">
+								Share via <a href="/components/popover/">this link</a>.
+							</span>
+                </Popover>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "top" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Top placement</h3>
+            <DemoTabs id="dm-popover-top">
+              <Fragment slot="preview">
+                <Popover id="dm-popover-top" placement="top">
+                  <span slot="trigger">Embed</span>
+                  <span slot="content">Copy the embed code from here.</span>
+                </Popover>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("top")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

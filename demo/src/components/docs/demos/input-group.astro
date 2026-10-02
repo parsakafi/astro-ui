@@ -1,0 +1,122 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Input,
+  InputGroup,
+  Textarea,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icon + result count</h3>
+            <DemoTabs id="dm-input-group-basic">
+              <Fragment slot="preview">
+                <div class="demo-field" style="inline-size:min(100%,22rem)">
+                  <InputGroup>
+                    <svg slot="start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                    <Input name="dm-ig-search" placeholder="Search…" />
+                    <Fragment slot="end">12 results</Fragment>
+                  </InputGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "prefix" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Text prefix + button</h3>
+            <DemoTabs id="dm-input-group-prefix">
+              <Fragment slot="preview">
+                <div class="demo-field" style="inline-size:min(100%,22rem)">
+                  <InputGroup>
+                    <Fragment slot="start">https://</Fragment>
+                    <Input name="dm-ig-site" placeholder="example.com" />
+                    <Fragment slot="end"><Button size="xs" variant="solid" color="carbon">Check</Button></Fragment>
+                  </InputGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("prefix")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "multiline" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Textarea + actions</h3>
+            <DemoTabs id="dm-input-group-multiline">
+              <Fragment slot="preview">
+                <div class="demo-field" style="inline-size:min(100%,30rem)">
+                  <InputGroup multiline>
+                    <Textarea id="dm-ig-prompt" name="dm-ig-prompt" placeholder="Ask, Search or Chat..." rows={3} maxlength={280} />
+                    <Fragment slot="bottom">
+                      <Button size="icon" variant="ghost" ariaLabel="Add attachment">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="16" height="16" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                      </Button>
+                      <Button size="xs" variant="ghost">Auto</Button>
+                      <span class="aui-input-group__spacer" />
+                      <span id="dm-ig-count" style="font-size:var(--ui-text-sm);color:var(--ui-muted-foreground);font-variant-numeric:tabular-nums">0 / 280</span>
+                      <span aria-hidden="true" style="inline-size:1px;block-size:1rem;background:var(--ui-input)" />
+                      <Button size="icon" variant="solid" color="primary" style="border-radius:9999px" ariaLabel="Send">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                      </Button>
+                    </Fragment>
+                  </InputGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("multiline")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-input-group-sizes">
+              <Fragment slot="preview">
+                <div class="demo-field" style="inline-size:min(100%,22rem);display:grid;gap:var(--ui-space-2)">
+                  <InputGroup size="sm"><Input size="sm" placeholder="sm" /></InputGroup>
+                  <InputGroup size="md"><Input placeholder="md" /></InputGroup>
+                  <InputGroup size="lg"><Input size="lg" placeholder="lg" /></InputGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Invalid & disabled</h3>
+            <DemoTabs id="dm-input-group-states">
+              <Fragment slot="preview">
+                <div class="demo-field" style="inline-size:min(100%,22rem);display:grid;gap:var(--ui-space-2)">
+                  <InputGroup invalid>
+                    <Input name="dm-ig-url" invalid placeholder="Required field…" />
+                  </InputGroup>
+                  <InputGroup disabled>
+                    <Input disabled value="Cannot edit" />
+                  </InputGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

@@ -1,0 +1,56 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Label,
+  Select,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-select-basic">
+              <Fragment slot="preview">
+                <div class="demo-field">
+                  <Label for="dm-fruit">Fruit</Label>
+                  <Select id="dm-fruit" placeholder="Choose a fruit">
+                    <option value="apple">Apple</option>
+                    <option value="pear">Pear</option>
+                  </Select>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">States &amp; sizes</h3>
+            <DemoTabs id="dm-select-states">
+              <Fragment slot="preview">
+                <Select invalid placeholder="Invalid">
+                  <option>Option</option>
+                </Select>
+                <Select disabled placeholder="Disabled">
+                  <option>Option</option>
+                </Select>
+                <Select size="lg" placeholder="Large">
+                  <option>Option</option>
+                </Select>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

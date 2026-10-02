@@ -1,0 +1,68 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Skeleton,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-skeleton-basic" previewClass="docs-demo-preview-light">
+              <Fragment slot="preview">
+                <div style="display:grid;gap:.5rem;width:100%">
+                  <Skeleton variant="text" width="60%"/>
+                  <Skeleton variant="text" width="90%"/>
+                  <Skeleton variant="circle" width="3rem" height="3rem"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "card" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Card layout</h3>
+            <DemoTabs id="dm-skeleton-card" previewClass="docs-demo-preview-light">
+              <Fragment slot="preview">
+                <div style="display:grid;gap:.75rem;width:100%">
+                  <Skeleton height="8rem"/>
+                  <Skeleton variant="text" width="80%"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("card")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "compose" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Compose a layout</h3>
+            <DemoTabs id="dm-skeleton-compose" previewClass="docs-demo-preview-light">
+              <Fragment slot="preview">
+                <div style="display:flex;gap:1rem;align-items:flex-start;width:100%">
+                  <Skeleton variant="circle"/>
+                  <div style="flex:1;display:grid;gap:.5rem">
+                    <Skeleton variant="text" width="40%"/>
+                    <Skeleton variant="text"/>
+                    <Skeleton variant="rect" height="4rem"/>
+                  </div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("compose")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

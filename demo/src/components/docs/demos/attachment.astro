@@ -1,0 +1,106 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Attachment,
+  Button,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-attachment-basic">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:26rem">
+                  <Attachment title="quarterly-report.pdf" description="PDF · 2.4 MB">
+                    <Button variant="ghost" size="icon" slot="actions" aria-label="Remove file">✕</Button>
+                  </Attachment>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">States</h3>
+            <DemoTabs id="dm-attachment-states">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:26rem">
+                  <Attachment state="idle" title="Drop files here" description="or browse"/>
+                  <Attachment state="uploading" title="upload.csv" description="64% · 1.2 MB of 1.9 MB" progress={64}/>
+                  <Attachment state="processing" title="scan.zip" description="Scanning for viruses…"/>
+                  <Attachment state="error" title="installer.exe" description="File type not allowed"/>
+                  <Attachment state="done" title="logo.svg" description="SVG · 12 KB"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-attachment-sizes">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:26rem">
+                  <Attachment size="xs" title="notes.txt" description="1 KB"/>
+                  <Attachment size="sm" title="notes.txt" description="1 KB"/>
+                  <Attachment size="md" title="notes.txt" description="1 KB"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical with image</h3>
+            <DemoTabs id="dm-attachment-vertical">
+              <Fragment slot="preview">
+                <div class="demo-grid" style="max-inline-size:26rem">
+                  <Attachment orientation="vertical" media="image" title="cover-art.png" description="PNG · 480 KB">
+                    <img slot="media" src="https://placehold.co/640x360/1f2937/9ca3af?text=attach%20cover" alt=""/>
+                    <Button variant="ghost" size="icon" slot="actions" aria-label="Remove image"
+                            style="font-size:0.625rem">✕
+                    </Button>
+                  </Attachment>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Group</h3>
+            <DemoTabs id="dm-attachment-group">
+              <Fragment slot="preview">
+                <div class="demo-grid" role="list" aria-label="Attached files">
+                  <Attachment role="listitem" title="brief.pdf" description="PDF · 2.4 MB"/>
+                  <Attachment role="listitem" title="photo.png" description="PNG · 800 KB"/>
+                  <Attachment role="listitem" state="error" title="video.mov" description="Exceeds 10 MB limit"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

@@ -1,0 +1,55 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Field,
+  Input,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Label &amp; hint</h3>
+            <DemoTabs id="dm-field-basic">
+              <Fragment slot="preview">
+                <Field id="dm-field-email">
+                  <span slot="label">Email</span>
+                  <Input id="dm-field-email-control" type="email" placeholder="ada@example.com"/>
+                  <span slot="hint">We never share it.</span>
+                </Field>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "error" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Required &amp; error</h3>
+            <DemoTabs id="dm-field-error">
+              <Fragment slot="preview">
+                <Field id="dm-field-user" required>
+                  <span slot="label">Username</span>
+                  <Input
+                    id="dm-field-user-control"
+                    invalid
+                    value="ada"
+                    ariaDescribedby="dm-field-user-error"
+                  />
+                  <span slot="error">Username is taken.</span>
+                </Field>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("error")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

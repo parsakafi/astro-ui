@@ -1,0 +1,40 @@
+---
+import {
+  Badge,
+  Card,
+  Kbd,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<Card>
+    <h3 slot="header">
+      v1.1.0
+      <Badge variant="success" size="sm">Latest</Badge>
+    </h3>
+    <p class="docs-block-hint">Released Sep 24, 2026</p>
+    <ul class="docs-block-features">
+      <li>
+        <Badge variant="success" size="sm">Added</Badge>
+        Rating scale modes and predefined icons
+      </li>
+      <li>
+        <Badge variant="info" size="sm">Changed</Badge>
+        Slider tooltip follows logical properties in RTL
+      </li>
+      <li>
+        <Badge variant="warning" size="sm">Fixed</Badge>
+        Badge overlay anchoring in RTL layouts
+      </li>
+    </ul>
+    <div class="docs-block-form-row">
+      <span class="docs-block-plan-label">Full notes</span>
+      <span><Kbd>Ctrl</Kbd> <Kbd>K</Kbd> to search the changelog</span>
+    </div>
+  </Card>

@@ -1,0 +1,48 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Spinner,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "styles" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Styles</h3>
+            <DemoTabs id="dm-spinner-styles">
+              <Fragment slot="preview">
+                <Spinner label="Ring"/>
+                <Spinner icon="dots" label="Dots"/>
+                <Spinner icon="pulse" label="Pulse"/>
+                <Spinner icon="spin" label="Spin"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("styles")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes-colors" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes &amp; colors</h3>
+            <DemoTabs id="dm-spinner-sizes">
+              <Fragment slot="preview">
+                <Spinner size="xs" label="xs"/>
+                <Spinner size="sm" label="sm"/>
+                <Spinner size="lg" label="lg"/>
+                <Spinner variant="success" label="Success"/>
+                <Spinner variant="warning" label="Warning"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes-colors")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

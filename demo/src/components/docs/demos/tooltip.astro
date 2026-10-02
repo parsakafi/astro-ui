@@ -1,0 +1,36 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Tooltip,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-tooltip-basic">
+              <Fragment slot="preview">
+                <Tooltip ariaLabel="Save document">
+                  <Button variant="outline">Save</Button>
+                  <span slot="content">Saves to your workspace</span>
+                </Tooltip>
+                <Tooltip placement="bottom" variant="light" ariaLabel="Help">
+                  <Button variant="ghost">Help</Button>
+                  <span slot="content">Light bubble, bottom placement</span>
+                </Tooltip>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

@@ -1,0 +1,45 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Dialog,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic modal</h3>
+            <DemoTabs id="dm-dialog-basic">
+              <Fragment slot="preview">
+                <Button id="dm-dialog-open">Open preferences</Button>
+                <Dialog id="dm-dialog-prefs">
+                  <h2 slot="title">Preferences</h2>
+                  <p slot="description">These settings apply to this device only.</p>
+                  <p>Modal, backdrop, focus containment, and Esc come from the platform.</p>
+                  <div slot="footer">
+                    <form method="dialog">
+                      <Button value="cancel" variant="ghost">Close</Button>
+                    </form>
+                  </div>
+                </Dialog>
+                <script is:inline>
+                  document.getElementById("dm-dialog-open")?.addEventListener("click", () => {
+                    const dlg = document.getElementById("dm-dialog-prefs");
+                    if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

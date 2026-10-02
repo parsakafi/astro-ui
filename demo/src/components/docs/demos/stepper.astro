@@ -1,0 +1,54 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Stepper,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-stepper-basic">
+              <Fragment slot="preview">
+                <Stepper
+                  items={[
+                    {label: "Cart", complete: true},
+                    {label: "Shipping", current: true, description: "Address & delivery"},
+                    {label: "Payment"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-stepper-vertical">
+              <Fragment slot="preview">
+                <Stepper
+                  orientation="vertical"
+                  items={[
+                    {label: "Account", complete: true},
+                    {label: "Profile", current: true},
+                    {label: "Done"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

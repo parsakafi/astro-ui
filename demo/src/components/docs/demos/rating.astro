@@ -1,0 +1,132 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Rating,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Interactive &amp; readonly</h3>
+            <DemoTabs id="dm-rating-basic">
+              <Fragment slot="preview">
+                <Rating name="dm-score" value={4}/>
+                <Rating value={3.5} readonly/>
+                <Rating value={2} readonly size="lg" variant="primary"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes &amp; variants</h3>
+            <DemoTabs id="dm-rating-sizes">
+              <Fragment slot="preview">
+                <Rating name="dm-s-sm" value={3} size="sm"/>
+                <Rating name="dm-s-md" value={3} size="md"/>
+                <Rating name="dm-s-lg" value={3} size="lg"/>
+                <Rating name="dm-s-primary" value={3} variant="primary" size="lg"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "icons" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Icon presets &amp; custom</h3>
+            <DemoTabs id="dm-rating-icons">
+              <Fragment slot="preview">
+                <Rating name="dm-heart" value={4} icon="heart"/>
+                <Rating name="dm-thumb" value={4} icon="thumb"/>
+                <Rating name="dm-circle" value={3} icon="circle"/>
+                <Rating name="dm-square" value={3} icon="square"/>
+                <Rating name="dm-bar" value={2} icon="bar"/>
+                <Rating
+                  name="dm-custom"
+                  value={3}
+                  iconPath="M8 1l2.1 4.3 4.7.7-3.4 3.3.8 4.7L8 11.8 3.8 14l.8-4.7L1.2 6l4.7-.7z"
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("icons")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "emoji" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Emoji sentiment</h3>
+            <DemoTabs id="dm-rating-emoji">
+              <Fragment slot="preview">
+                <Rating name="dm-mood" value={4} icon="emoji" ariaLabel="How do you feel?"/>
+                <Rating value={2} icon="emoji" readonly/>
+                <Rating value={5} icon="emoji" readonly size="lg"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("emoji")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "scale" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Satisfaction scale</h3>
+            <DemoTabs id="dm-rating-scale">
+              <Fragment slot="preview">
+                <Rating
+                  name="dm-satisfaction"
+                  value={2}
+                  colorScale
+                  showLabels
+                  labels={["Very dissatisfied", "Dissatisfied", "Neutral", "Satisfied", "Very satisfied"]}
+                  ariaLabel="Overall satisfaction"
+                />
+                <Rating
+                  value={4}
+                  readonly
+                  colorScale
+                  showLabels
+                  labels={["Very bad", "Bad", "OK", "Good", "Excellent"]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("scale")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "nps" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Single highlight (NPS-style)</h3>
+            <DemoTabs id="dm-rating-nps">
+              <Fragment slot="preview">
+                <Rating
+                  name="dm-nps"
+                  value={9}
+                  max={10}
+                  single
+                  variant="primary"
+                  showLabels
+                  labels={["Not likely", "Extremely likely"]}
+                  ariaLabel="How likely will you recommend us?"
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("nps")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

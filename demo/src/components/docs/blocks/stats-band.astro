@@ -1,0 +1,33 @@
+---
+import {
+  Badge,
+  Card,
+  Progress,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<div class="docs-block-canvas-grid">
+    {[
+      {label: "Downloads / month", value: "48.2k", progress: 72, badge: {text: "+12%", variant: "success" as const}},
+      {label: "GitHub stars", value: "3,214", progress: 58, badge: {text: "+3.1%", variant: "success" as const}},
+      {label: "Open issues", value: "27", progress: 18, badge: {text: "stable", variant: "info" as const}},
+    ].map((stat) => (
+      <Card>
+        <div class="docs-block-stat">
+          <div class="docs-block-stat-head">
+            <span class="docs-block-stat-label">{stat.label}</span>
+            <Badge variant={stat.badge.variant} size="sm">{stat.badge.text}</Badge>
+          </div>
+          <span class="docs-block-stat-value">{stat.value}</span>
+          <Progress value={stat.progress}/>
+        </div>
+      </Card>
+    ))}
+  </div>

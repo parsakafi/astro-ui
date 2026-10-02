@@ -1,0 +1,45 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Switch,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-switch-basic">
+              <Fragment slot="preview">
+                <Switch name="dm-wifi" checked>Wi-Fi</Switch>
+                <Switch name="dm-bt">Bluetooth</Switch>
+                <Switch name="dm-air" disabled>Airplane (disabled)</Switch>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "shapes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Shapes &amp; sizes</h3>
+            <DemoTabs id="dm-switch-shapes">
+              <Fragment slot="preview">
+                <Switch name="dm-rd" checked label="Rounded"/>
+                <Switch name="dm-sq" shape="square" checked label="Square"/>
+                <Switch name="dm-sm" size="sm" checked label="Small"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("shapes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

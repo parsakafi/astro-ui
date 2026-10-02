@@ -1,0 +1,29 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Kbd,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-kbd-basic">
+              <Fragment slot="preview">
+                <p>Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to search.</p>
+                <p><Kbd variant="outline" raised>Enter</Kbd> to submit.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

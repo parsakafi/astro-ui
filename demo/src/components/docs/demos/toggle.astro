@@ -1,0 +1,49 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Toggle,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-toggle-variants">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Toggle variant="default" ariaLabel="Bold">B</Toggle>
+                  <Toggle variant="outline" ariaLabel="Italic">I</Toggle>
+                  <Toggle variant="outline" pressed ariaLabel="Underline">U</Toggle>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-toggle-sizes">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Toggle size="sm">Sm</Toggle>
+                  <Toggle size="md">Md</Toggle>
+                  <Toggle size="lg">Lg</Toggle>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

@@ -1,0 +1,27 @@
+---
+import {
+  Button,
+  Avatar,
+  Empty,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<Empty size="lg" ariaLabel="No team members yet">
+			<span slot="media" class="docs-block-empty-avatar" aria-hidden="true">
+				<Avatar name="Your team" size="xl" variant="primary" ring="primary"/>
+			</span>
+    <span slot="title">No team members yet</span>
+    <span
+      slot="description">Invite your first teammate to start collaborating on projects, deploys, and analytics.</span>
+    <Fragment slot="footer">
+      <Button size="sm">Invite member</Button>
+      <Button size="sm" variant="ghost" href="/docs/get-started/">Read the guide</Button>
+    </Fragment>
+  </Empty>

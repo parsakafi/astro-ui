@@ -1,0 +1,53 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Toggle,
+  ToggleGroup,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "horizontal" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal</h3>
+            <DemoTabs id="dm-toggle-group-horizontal">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <ToggleGroup ariaLabel="Text align">
+                    <Toggle ariaLabel="Left align">Left</Toggle>
+                    <Toggle ariaLabel="Center align" pressed>Center</Toggle>
+                    <Toggle ariaLabel="Right align">Right</Toggle>
+                  </ToggleGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("horizontal")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-toggle-group-vertical">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <ToggleGroup orientation="vertical" ariaLabel="View">
+                    <Toggle ariaLabel="List view">List</Toggle>
+                    <Toggle ariaLabel="Grid view" pressed>Grid</Toggle>
+                  </ToggleGroup>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

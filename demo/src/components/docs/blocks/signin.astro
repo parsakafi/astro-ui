@@ -1,0 +1,37 @@
+---
+import {
+  Button,
+  Card,
+  Input,
+  Checkbox,
+  Separator,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+
+const fid = (name: string) => `${idPrefix}-${name}`;
+---
+
+<Card class="docs-block-auth">
+    <h3 slot="header">Sign in to your account</h3>
+    <div class="docs-block-form">
+      <div class="docs-block-field"><label for={fid("email")}>Email</label><Input type="email" name={fid("email")}
+                                                                                  id={fid("email")}
+                                                                                  placeholder="you@example.com"/></div>
+      <div class="docs-block-field"><label for={fid("pass")}>Password</label><Input type="password" name={fid("pass")}
+                                                                                    id={fid("pass")}
+                                                                                    placeholder="••••••••"/></div>
+      <div class="docs-block-form-row">
+        <Checkbox name={fid("remember")} label="Remember me"/>
+        <a href="#" class="docs-block-link">Forgot password?</a>
+      </div>
+      <Button class="docs-block-btn-full">Sign in</Button>
+      <Separator label="or"/>
+      <Button variant="outline" class="docs-block-btn-full">Continue with GitHub</Button>
+    </div>
+  </Card>

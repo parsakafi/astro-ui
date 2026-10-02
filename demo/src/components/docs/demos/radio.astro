@@ -1,0 +1,30 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Radio,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "group" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Group</h3>
+            <DemoTabs id="dm-radio-group">
+              <Fragment slot="preview">
+                <Radio name="dm-plan" value="free" checked>Free</Radio>
+                <Radio name="dm-plan" value="pro">Pro</Radio>
+                <Radio name="dm-plan" value="ent" disabled>Enterprise (unavailable)</Radio>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

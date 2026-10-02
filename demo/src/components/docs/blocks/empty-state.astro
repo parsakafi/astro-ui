@@ -1,0 +1,21 @@
+---
+import {
+  Button,
+  Empty,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<Empty class="docs-block-empty">
+    <span slot="media" class="docs-block-empty-icon" aria-hidden="true">◈</span>
+    <span slot="title">No projects yet</span>
+    <span slot="description">Create your first project to see analytics, deploys, and team activity here.</span>
+    <Button size="sm">New project</Button>
+    <Button size="sm" variant="ghost" href="/docs/get-started/">Read the guide</Button>
+  </Empty>

@@ -1,0 +1,72 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Input,
+  Label,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "types" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Common types</h3>
+            <DemoTabs id="dm-input-types">
+              <Fragment slot="preview">
+                <div class="demo-grid">
+                  <div class="demo-field"><Label for="dm-i-text">Text</Label><Input id="dm-i-text"
+                                                                                    placeholder="Plain text"/></div>
+                  <div class="demo-field"><Label for="dm-i-email">Email</Label><Input id="dm-i-email" type="email"
+                                                                                      placeholder="ada@example.com"/>
+                  </div>
+                  <div class="demo-field"><Label for="dm-i-pass">Password</Label><Input id="dm-i-pass" type="password"
+                                                                                        value="s3cret"/></div>
+                  <div class="demo-field"><Label for="dm-i-date">Date</Label><Input id="dm-i-date" type="date"/></div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("types")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">States</h3>
+            <DemoTabs id="dm-input-states">
+              <Fragment slot="preview">
+                <div class="demo-grid">
+                  <div class="demo-field"><Label for="dm-i-inv">Invalid</Label><Input id="dm-i-inv" invalid value="ada"
+                                                                                      ariaDescribedby="dm-i-inv-err"/>
+                    <p id="dm-i-inv-err">Username is taken.</p></div>
+                  <div class="demo-field"><Label for="dm-i-dis">Disabled</Label><Input id="dm-i-dis" disabled
+                                                                                       value="Cannot edit"/></div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-input-sizes">
+              <Fragment slot="preview">
+                <Input size="sm" placeholder="sm"/>
+                <Input size="md" placeholder="md"/>
+                <Input size="lg" placeholder="lg"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

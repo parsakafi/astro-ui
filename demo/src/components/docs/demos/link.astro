@@ -1,0 +1,75 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Link,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-link-basic">
+              <Fragment slot="preview">
+                <Link href="#">Default link</Link>
+                <Link href="#" underline={false}>No underline</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "external" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">External & icons</h3>
+            <DemoTabs id="dm-link-external">
+              <Fragment slot="preview">
+                <Link href="https://astro.build" external icon="external">Astro docs</Link>
+                <Link href="#" icon="arrow">Next step</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("external")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "colors" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Colors & sizes</h3>
+            <DemoTabs id="dm-link-colors">
+              <Fragment slot="preview">
+                <Link href="#" color="muted">Muted</Link>
+                <Link href="#" color="destructive">Delete account</Link>
+                <Link href="#" size="lg">Large</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("colors")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "disabled" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Disabled / loading</h3>
+            <DemoTabs id="dm-link-disabled">
+              <Fragment slot="preview">
+                <Link disabled>Unavailable</Link>
+                <Link loading loadingText="Opening…">Docs</Link>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("disabled")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>
+    )
+  }
+}

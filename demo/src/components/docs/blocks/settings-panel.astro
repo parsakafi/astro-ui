@@ -1,0 +1,42 @@
+---
+import {
+  Button,
+  Card,
+  Input,
+  Switch,
+  Tag,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+
+const fid = (name: string) => `${idPrefix}-${name}`;
+---
+
+<div class="docs-block-canvas-grid">
+    <Card>
+      <h3 slot="header">Notifications</h3>
+      <div class="docs-block-settings">
+        <Switch name={fid("n1")} checked label="Product updates"/>
+        <Switch name={fid("n2")} label="Weekly digest"/>
+        <Switch name={fid("n3")} checked label="Security alerts"/>
+      </div>
+    </Card>
+    <Card>
+      <h3 slot="header">Workspace</h3>
+      <div class="docs-block-form">
+        <div class="docs-block-field"><label for={fid("ws")}>Workspace name</label><Input name={fid("ws")}
+                                                                                          id={fid("ws")}
+                                                                                          value="Acme Inc"/></div>
+        <div class="docs-block-form-row">
+          <span class="docs-block-plan-label">Plan</span>
+          <Tag variant="primary">Pro</Tag>
+        </div>
+        <Button variant="outline">Save changes</Button>
+      </div>
+    </Card>
+  </div>

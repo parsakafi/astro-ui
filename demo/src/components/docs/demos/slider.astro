@@ -1,0 +1,94 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Slider,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-slider-basic">
+              <Fragment slot="preview">
+                <Slider name="dm-volume" label="Volume" value={70} showValue/>
+                <Slider name="dm-temp" label="Temperature" value={22} min={16} max={30}
+                        marks={["Cold", "Warm", "Hot"]}/>
+                <Slider name="dm-dis" label="Disabled" value={40} disabled/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "tooltip" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Thumb tooltip</h3>
+            <DemoTabs id="dm-slider-tooltip">
+              <Fragment slot="preview">
+                <Slider name="dm-bright" label="Brightness" value={65} tooltip/>
+                <Slider name="dm-temp2" label="Temperature" value={22} min={16} max={30} tooltip showValue/>
+                <Slider name="dm-zoom" label="Zoom" value={110} min={50} max={200} step={10} tooltip
+                        marks={["50%", "125%", "200%"]}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("tooltip")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "range" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Range</h3>
+            <DemoTabs id="dm-slider-range">
+              <Fragment slot="preview">
+                <Slider name="dm-price" label="Price range" range value={25} valueEnd={75} showValue tooltip/>
+                <Slider name="dm-budget" range value={20} valueEnd={60}
+                        marks={["0", "50", "100"]}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("range")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-slider-vertical">
+              <Fragment slot="preview">
+                <div class="docs-slider-row" style="display:flex;gap:2rem;align-items:end;">
+                  <Slider name="dm-level" label="Level" orientation="vertical" value={70} showValue/>
+                  <Slider name="dm-band" orientation="vertical" range value={30} valueEnd={70}/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radial" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radial</h3>
+            <DemoTabs id="dm-slider-radial">
+              <Fragment slot="preview">
+                <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;">
+                  <Slider name="dm-opacity" label="Opacity" radial value={33} showValue/>
+                  <Slider name="dm-window" radial range value={10} valueEnd={70} showValue/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("radial")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

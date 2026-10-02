@@ -1,0 +1,37 @@
+---
+import {
+  Avatar,
+  Breadcrumb,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<Breadcrumb separator="chevron" ariaLabel="Team breadcrumb">
+    {[
+      {name: "Acme Design", initial: "A"},
+      {name: "Ada Lovelace", initial: "AL"},
+      {name: "Grace Hopper", initial: "GH"},
+    ].map((person, i) =>
+      i < 2 ? (
+        <span class="aui-breadcrumb__item">
+          <a class="aui-breadcrumb__link" href="#">
+            <Avatar name={person.name} size="xs"/>
+            {person.name}
+          </a>
+        </span>
+      ) : (
+        <span class="aui-breadcrumb__item">
+          <span class="aui-breadcrumb__current" aria-current="page">
+            <Avatar name={person.name} size="xs" status="online"/>
+            {person.name}
+          </span>
+        </span>
+      )
+    )}
+  </Breadcrumb>

@@ -1,0 +1,64 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  ScrollArea,
+  Tag,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "vertical" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-scroll-area-vertical">
+              <Fragment slot="preview">
+                <ScrollArea class="h-40 w-full">
+                  <div class="demo-field">
+                    <p>Row one — the scrollbar is themed from design tokens.</p>
+                    <p>Row two</p>
+                    <p>Row three</p>
+                    <p>Row four</p>
+                    <p>Row five</p>
+                    <p>Row six</p>
+                    <p>Row seven</p>
+                    <p>Row eight</p>
+                  </div>
+                </ScrollArea>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "horizontal" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal</h3>
+            <DemoTabs id="dm-scroll-area-horizontal">
+              <Fragment slot="preview">
+                <ScrollArea orientation="horizontal" class="w-full">
+                  <div class="demo-row" style="width:max-content">
+                    <Tag>Jan</Tag>
+                    <Tag>Feb</Tag>
+                    <Tag>Mar</Tag>
+                    <Tag>Apr</Tag>
+                    <Tag>May</Tag>
+                    <Tag>Jun</Tag>
+                    <Tag>Jul</Tag>
+                    <Tag>Aug</Tag>
+                  </div>
+                </ScrollArea>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("horizontal")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

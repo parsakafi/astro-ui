@@ -1,0 +1,207 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Avatar,
+  Badge,
+  Button,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "variants" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-badge-variants">
+              <Fragment slot="preview">
+                <Badge>Primary</Badge>
+                <Badge variant="secondary">Secondary</Badge>
+                <Badge variant="outline">Outline</Badge>
+                <Badge variant="success">Active</Badge>
+                <Badge variant="warning">Pending</Badge>
+                <Badge variant="error">Failed</Badge>
+                <Badge variant="info">New</Badge>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-badge-sizes">
+              <Fragment slot="preview">
+                <Badge size="sm">sm</Badge>
+                <Badge size="md">md</Badge>
+                <Badge size="lg">lg</Badge>
+                <Badge size="xl">xl</Badge>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "icon" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with icon</h3>
+            <DemoTabs id="dm-badge-icon">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="lg">
+                    <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                    Verified
+                  </Badge>
+                  <Badge variant="soft" size="lg">
+                    <svg slot="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    Action required
+                  </Badge>
+                </div>
+                <p class="docs-demo-hint">
+                  Anything in the <code>icon</code> slot is boxed at
+                  <code>--aui-badge-icon</code> (default <code>0.875em</code>) and scales with the badge size.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("icon")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dot" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with status dot</h3>
+            <DemoTabs id="dm-badge-dot">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="success" dot>Operational</Badge>
+                  <Badge variant="warning" dot>Degraded</Badge>
+                  <Badge variant="error" dot>Outage</Badge>
+                </div>
+                <p class="docs-demo-hint">The dot inherits the variant's text color — set it and forget it.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("dot")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with avatar</h3>
+            <DemoTabs id="dm-badge-avatar">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="xl">
+                    <Avatar name="Ada Lovelace" size="xs"/>
+                    Ada
+                  </Badge>
+                  <Badge variant="muted" size="xl">
+                    <Avatar name="Grace Hopper" size="xs" status="online"/>
+                    Grace
+                  </Badge>
+                </div>
+                <p class="docs-demo-hint">Drop an <code>Avatar</code> in the default slot — optical alignment against
+                  the pill padding is built in.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("avatar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "flag" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with flag image</h3>
+            <DemoTabs id="dm-badge-flag">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="lg" style="--aui-badge-icon: 1rem">
+                    <img slot="icon" src="/flags/us.svg" alt="" width="16" height="16" style="border-radius: 2px"/>
+                    United States
+                  </Badge>
+                  <Badge variant="outline" size="lg" style="--aui-badge-icon: 1rem">
+                    <img slot="icon" src="/flags/de.svg" alt="" width="16" height="16" style="border-radius: 2px"/>
+                    Germany
+                  </Badge>
+                </div>
+                <p class="docs-demo-hint">Pass a flag through the <code>icon</code> slot and size it via <code>--aui-badge-icon</code>.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("flag")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dismiss" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Badge with dismiss button</h3>
+            <DemoTabs id="dm-badge-dismiss">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Badge variant="outline" size="lg" closable>Design</Badge>
+                  <Badge variant="outline" size="lg" closable closeLabel="Remove Research filter">Research</Badge>
+                  <Badge variant="soft" size="lg" closable>Docs</Badge>
+                </div>
+                <p class="docs-demo-hint">
+                  <code>closable</code> renders a labeled, focusable × button — Badge stays zero-JS, so wire the removal
+                  app-side.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("dismiss")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "overlay" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Overlay bubble</h3>
+            <DemoTabs id="dm-badge-overlay">
+              <Fragment slot="preview">
+                <div class="demo-row">
+							<span class="docs-badge-anchor">
+								<Button variant="outline">Inbox</Button>
+								<Badge position="top-right" content="3" variant="destructive" ariaLabel="3 unread messages"/>
+							</span>
+                  <span class="docs-badge-anchor">
+								<Button variant="outline">Feed</Button>
+								<Badge position="bottom-left" content="New" variant="success" ariaLabel="New items"/>
+							</span>
+                  <span class="docs-badge-anchor">
+								<Button variant="outline">Cart</Button>
+								<Badge position="top-left" content="8" variant="info" ariaLabel="8 items in cart"/>
+							</span>
+                  <span class="docs-badge-anchor">
+								<Button variant="outline">Chat</Button>
+								<Badge position="bottom-right" variant="destructive" ariaLabel="Unread messages"/>
+							</span>
+                </div>
+                <p class="docs-demo-hint">
+                  The bubble anchors to the marked parent (<code>position: relative</code>) —
+                  place the Badge inside any positioned element. A dot bubble renders when no
+                  content is passed.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("overlay")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

@@ -1,0 +1,135 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-button-basic">
+              <Fragment slot="preview">
+                <Button>Primary</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variant" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Variant</h3>
+            <DemoTabs id="dm-button-variant">
+              <Fragment slot="preview">
+                <Button>Primary</Button>
+                <Button variant="secondary">Secondary</Button>
+                <Button variant="outline">Outline</Button>
+                <Button variant="ghost">Ghost</Button>
+                <Button variant="destructive">Destructive</Button>
+                <Button variant="link">Link</Button>
+                <Button variant="solid">Solid</Button>
+                <Button variant="dashed">Dashed</Button>
+                <Button variant="soft">Soft</Button>
+                <Button variant="plain">Plain</Button>
+                <Button variant="pure">Pure</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variant")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "color" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Color</h3>
+            <DemoTabs id="dm-button-color">
+              <Fragment slot="preview">
+                <Button color="success">Success</Button>
+                <Button color="warning">Warning</Button>
+                <Button color="info">Info</Button>
+                <Button color="accent">Accent</Button>
+                <Button variant="outline" color="destructive">Outline danger</Button>
+                <Button variant="soft" color="info">Soft info</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("color")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "size" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Size</h3>
+            <DemoTabs id="dm-button-size">
+              <Fragment slot="preview">
+                <Button size="xs">Extra small</Button>
+                <Button size="sm">Small</Button>
+                <Button size="md">Medium</Button>
+                <Button size="lg">Large</Button>
+                <Button size="xl">Extra large</Button>
+                <Button size="2xl">2XL</Button>
+                <Button size="icon" ariaLabel="Search">⌕</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("size")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "loading" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Loading</h3>
+            <DemoTabs id="dm-button-loading">
+              <Fragment slot="preview">
+                <Button loading>Submitting</Button>
+                <Button loading loadingPosition="center" loadingText="Saving…">Save</Button>
+                <Button loading loadingIcon="dots">Dots</Button>
+                <Button loading loadingIcon="pulse">Pulse</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("loading")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "invalid" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Invalid</h3>
+            <DemoTabs id="dm-button-invalid">
+              <Fragment slot="preview">
+                <Button invalid>Invalid state</Button>
+                <Button variant="outline" invalid>Invalid outline</Button>
+                <Button variant="ghost" invalid>Invalid ghost</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("invalid")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "shape-shadow" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Shape &amp; shadow</h3>
+            <DemoTabs id="dm-button-shape">
+              <Fragment slot="preview">
+                <Button variant="outline" shape="rounded">Round</Button>
+                <Button variant="outline" ariaLabel="Go">→</Button>
+                <Button variant="outline" shadow="md">Shadow md</Button>
+                <Button disabled>Disabled</Button>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("shape-shadow")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

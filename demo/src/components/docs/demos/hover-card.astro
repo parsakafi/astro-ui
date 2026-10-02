@@ -1,0 +1,57 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  HoverCard,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-hover-card-basic">
+              <Fragment slot="preview">
+                <HoverCard ariaLabel="Profile preview">
+                  <a href="/components/hover-card/">@ada</a>
+                  <div slot="content">
+                    <div class="demo-field">
+                      <p><strong>Ada Lovelace</strong></p>
+                      <p>Notes on the Analytical Engine.</p>
+                    </div>
+                  </div>
+                </HoverCard>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "top" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Top placement</h3>
+            <DemoTabs id="dm-hover-card-top">
+              <Fragment slot="preview">
+                <HoverCard placement="top" ariaLabel="Profile preview">
+                  <a href="/components/hover-card/">@grace</a>
+                  <div slot="content">
+                    <div class="demo-field">
+                      <p><strong>Grace Hopper</strong></p>
+                      <p>Compiler pioneer, US Navy.</p>
+                    </div>
+                  </div>
+                </HoverCard>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("top")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

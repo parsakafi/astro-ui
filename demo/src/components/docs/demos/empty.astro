@@ -1,0 +1,34 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Empty,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-empty-basic">
+              <Fragment slot="preview">
+                <Empty>
+                  <span slot="media" aria-hidden="true">⌀</span>
+                  <span slot="title">No results</span>
+                  <span slot="description">Try adjusting your filters.</span>
+                  <Button slot="footer" size="sm" variant="outline">Clear filters</Button>
+                </Empty>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

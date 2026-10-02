@@ -1,0 +1,1036 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Chart,
+} from "astro-ui";
+import {
+  terrainRows,
+  barRevenue,
+  groupedDesktop,
+  groupedMobile,
+  lineThisWeek,
+  lineLastWeek,
+  forecast,
+  strokeActual,
+  strokeTarget,
+  strokeStretch,
+  visitors,
+  signups,
+  scatterA,
+  scatterB,
+  pageViews,
+  ping,
+} from "../../../lib/chart-demo-data";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bar</h3>
+            <DemoTabs id="dm-chart-bar">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  title="Revenue growth"
+                  description="Monthly revenue, 2026"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Revenue", data: barRevenue}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "grouped-bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Grouped bars</h3>
+            <DemoTabs id="dm-chart-grouped">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  title="Desktop vs mobile"
+                  labels={["Jan", "Feb", "Mar", "Apr"]}
+                  series={[
+                    {name: "Desktop", data: groupedDesktop},
+                    {name: "Mobile", data: groupedMobile},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("grouped-bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "stacked-bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Stacked bars</h3>
+            <DemoTabs id="dm-chart-stacked">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  stack
+                  title="Sessions by source"
+                  description="Stacked per day — axis spans daily totals"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[
+                    {name: "Direct", data: [320, 360, 310, 420, 480, 260, 210]},
+                    {name: "Search", data: [280, 300, 340, 380, 410, 220, 180]},
+                    {name: "Social", data: [120, 140, 110, 160, 190, 240, 200]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("stacked-bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "percent-stack" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">100% stacked bars</h3>
+            <DemoTabs id="dm-chart-percent-stack">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  stack="percent"
+                  title="Traffic mix"
+                  description="Each column normalized to 100% of its daily total"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri"]}
+                  series={[
+                    {name: "Direct", data: [320, 360, 310, 420, 480]},
+                    {name: "Search", data: [280, 300, 340, 380, 410]},
+                    {name: "Social", data: [120, 140, 110, 160, 190]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("percent-stack")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "combo" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Combo (bars + line)</h3>
+            <DemoTabs id="dm-chart-combo">
+              <Fragment slot="preview">
+                <Chart
+                  type="combo"
+                  title="Orders vs revenue"
+                  description="Bars ride the left axis, the line a secondary right axis"
+                  labels={["Oct 1", "Oct 2", "Oct 3", "Oct 4", "Oct 5", "Oct 6", "Oct 7", "Oct 8", "Oct 9"]}
+                  series={[
+                    {name: "Revenue", data: [4200, 4600, 5100, 4900, 5600, 6100, 6900, 5800, 5400]},
+                    {
+                      name: "Orders",
+                      data: [148, 158, 172, 165, 184, 196, 210, 186, 178],
+                      kind: "line",
+                      color: "var(--ui-success)"
+                    },
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("combo")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Line</h3>
+            <DemoTabs id="dm-chart-line">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  title="Active users"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[
+                    {name: "This week", data: lineThisWeek},
+                    {name: "Last week", data: lineLastWeek},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "step-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Step line</h3>
+            <DemoTabs id="dm-chart-step">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  curve="step"
+                  title="Desktop vs mobile"
+                  description="Plateaus hold until the midpoint between values, then step"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]}
+                  series={[
+                    {name: "Desktop", data: [420, 615, 545, 760, 480, 825, 570, 690, 515, 735, 610, 455]},
+                    {name: "Mobile", data: [265, 430, 350, 505, 390, 545, 415, 585, 445, 615, 520, 380]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("step-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dashed-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Dashed & dotted</h3>
+            <DemoTabs id="dm-chart-stroke">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  stroke="dashed"
+                  title="Forecast"
+                  description="Whole series dashed — chart-level stroke, per-series override"
+                  labels={["Apr 1", "Apr 5", "Apr 10", "Apr 15", "Apr 18"]}
+                  series={[{name: "Sessions", data: forecast}]}
+                />
+                <Chart
+                  type="line"
+                  title="Solid vs dashed vs dotted"
+                  labels={["Jan", "Feb", "Mar", "Apr"]}
+                  series={[
+                    {name: "Actual", data: strokeActual},
+                    {name: "Target", data: strokeTarget, stroke: "dashed"},
+                    {name: "Stretch", data: strokeStretch, stroke: "dotted"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("dashed-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pattern-fill" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Pattern fills (dots & hatch)</h3>
+            <DemoTabs id="dm-chart-pattern">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve="step"
+                  fill="dots"
+                  title="Portfolio swing"
+                  description="Texture fills tinted with each series color"
+                  labels={["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]}
+                  series={[
+                    {name: "Fund A", data: [312, 388, 340, 296, 274, 246, 231, 224]},
+                    {name: "Fund B", data: [268, 231, 205, 214, 248, 289, 331, 352], fill: "hatch"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("pattern-fill")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pattern-mix" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Actual vs target (hatch + bare line)</h3>
+            <DemoTabs id="dm-chart-pattern-mix">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve="step"
+                  title="Weekly signups"
+                  description="275 this week — +12.2% vs target"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[
+                    {name: "Actual", data: [240, 178, 262, 335, 212, 275], fill: "hatch"},
+                    {name: "Target", data: [122, 202, 128, 390, 305, 172], fill: "none", stroke: "dashed"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("pattern-mix")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "bump-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Bump curve</h3>
+            <DemoTabs id="dm-chart-bump">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  curve="bump"
+                  title="Rank changes"
+                  description="Flat out of each point, S-curve into the next"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[
+                    {name: "Desktop", data: [320, 180, 420, 260, 510, 380]},
+                    {name: "Mobile", data: [180, 320, 240, 450, 290, 460]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("bump-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "curved-line" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Curved line</h3>
+            <DemoTabs id="dm-chart-curved">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  curve
+                  title="Visitor flow"
+                  description="Monotone cubic smoothing — the curve never overshoots the data"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Visitor-line", data: visitors}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("curved-line")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "area" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Area</h3>
+            <DemoTabs id="dm-chart-area">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  title="Signups"
+                  labels={["Q1", "Q2", "Q3", "Q4"]}
+                  series={[{name: "Signups", data: signups}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("area")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "curved-area" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Curved area</h3>
+            <DemoTabs id="dm-chart-curved-area">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  title="Campaign traffic"
+                  description="Smoothed area — the fill follows the monotone curve"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Sessions", data: [820, 1210, 940, 580, 1120, 990]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("curved-area")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-area" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient area</h3>
+            <DemoTabs id="dm-chart-gradient">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  gradient
+                  title="API requests"
+                  description="Series color fades toward the baseline"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[{name: "Requests", data: [4200, 5100, 4800, 6300, 7100, 3900, 3400]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gradient-area")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-custom" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient area, custom color</h3>
+            <DemoTabs id="dm-chart-gradient-custom">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  gradient
+                  title="Revenue"
+                  description="The series color drives the line, the fill, and the gradient"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Revenue", data: [12, 18, 15, 22, 19, 26], color: "var(--ui-success)"}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gradient-custom")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient bars</h3>
+            <DemoTabs id="dm-chart-gradient-bar">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  gradient
+                  title="Deploys per week"
+                  description="Each bar fades toward the baseline"
+                  labels={["W1", "W2", "W3", "W4", "W5", "W6"]}
+                  series={[{name: "Deploys", data: [14, 22, 18, 27, 31, 24]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gradient-bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-donut" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient donut</h3>
+            <DemoTabs id="dm-chart-gradient-donut">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  gradient
+                  gradientIntensity={3}
+                  title="Storage by type"
+                  description="Radial fade — strong at the rim, clear toward the center"
+                  labels={["Images", "Video", "Docs", "Other"]}
+                  series={[{name: "GB", data: [42, 66, 21, 11]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gradient-donut")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "donut-rounded" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Rounded donut (padded slices)</h3>
+            <DemoTabs id="dm-chart-donut-rounded">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  padAngle={4}
+                  sliceRadius={22}
+                  title="Browser share"
+                  description="padAngle gaps the slices, sliceRadius rounds their corners"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Share", data: [38, 24, 16, 12, 10]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("donut-rounded")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pie" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Pie</h3>
+            <DemoTabs id="dm-chart-pie">
+              <Fragment slot="preview">
+                <Chart
+                  type="pie"
+                  title="Traffic sources"
+                  labels={["Direct", "Search", "Social", "Referral"]}
+                  series={[{name: "Share", data: [435, 286, 151, 96]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("pie")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "donut" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Donut</h3>
+            <DemoTabs id="dm-chart-donut">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  title="Storage by type"
+                  labels={["Images", "Video", "Docs", "Other"]}
+                  series={[{name: "GB", data: [42, 66, 21, 11]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("donut")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "slice-labels" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Slice labels (value & leader lines)</h3>
+            <DemoTabs id="dm-chart-slice-labels">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  padAngle={4}
+                  sliceRadius={18}
+                  sliceLabels="value"
+                  title="Browser share"
+                  description="Formatted values printed at each slice centroid"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  legend={false}
+                />
+                <Chart
+                  type="pie"
+                  sliceLabels="label"
+                  title="Browser share"
+                  description="Category names outside, connected by elbow leader lines"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("slice-labels")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "slice-labels-combined" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Slice labels, value + percent</h3>
+            <DemoTabs id="dm-chart-slice-labels-combined">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  padAngle={3}
+                  sliceRadius={14}
+                  sliceLabels="value-pct"
+                  title="Plan distribution"
+                  description="Value and share together at each slice centroid"
+                  labels={["Free", "Pro", "Team", "Enterprise"]}
+                  series={[{name: "Accounts", data: [412, 268, 143, 77]}]}
+                  legend={false}
+                />
+                <Chart
+                  type="donut"
+                  sliceLabels="value-pct"
+                  sliceLabelFormat={(v: number, pct: number) => pct + "% of " + v.toLocaleString()}
+                  title="Storage by type"
+                  description="sliceLabelFormat takes (value, pct) and returns any string"
+                  labels={["Images", "Video", "Docs", "Other"]}
+                  series={[{name: "GB", data: [42, 66, 21, 11]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("slice-labels-combined")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "slice-collapse" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Auto-collapsed slices</h3>
+            <DemoTabs id="dm-chart-slice-collapse">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  collapseBelow={8}
+                  sliceLabels="value-pct"
+                  title="Entry pages"
+                  description="Slices under 8% merge into the trailing Other slice"
+                  labels={["/", "/pricing", "/blog", "/docs", "/changelog", "/about", "/careers"]}
+                  series={[{name: "Sessions", data: [4820, 2130, 1640, 1180, 310, 240, 180]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("slice-collapse")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "scatter" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Scatter</h3>
+            <DemoTabs id="dm-chart-scatter">
+              <Fragment slot="preview">
+                <Chart
+                  type="scatter"
+                  title="Deploys per day"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri"]}
+                  series={[
+                    {name: "Team A", data: scatterA},
+                    {name: "Team B", data: scatterB},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("scatter")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hbar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Horizontal bars</h3>
+            <DemoTabs id="dm-chart-hbar">
+              <Fragment slot="preview">
+                <Chart
+                  type="hbar"
+                  title="Top pages"
+                  labels={["/docs/get-started", "/components", "/blocks", "/docs/rtl"]}
+                  series={[{name: "Views", data: pageViews}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("hbar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hbar-stacked" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Stacked hbar (part-to-whole)</h3>
+            <DemoTabs id="dm-chart-hbar-stacked">
+              <Fragment slot="preview">
+                <Chart
+                  type="hbar"
+                  stack
+                  legend={false}
+                  title="Capital inflows"
+                  labels={["Funds"]}
+                  series={[
+                    {name: "WaveMark Capital", data: [22], color: "var(--ui-success)"},
+                    {name: "Envato Finances", data: [10], color: "var(--ui-warning)"},
+                    {name: "QBridge Tech", data: [15], color: "var(--ui-error)"},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("hbar-stacked")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "custom-colors" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Custom colors</h3>
+            <DemoTabs id="dm-chart-colors">
+              <Fragment slot="preview">
+                <Chart
+                  type="donut"
+                  title="Plan distribution"
+                  labels={["Free", "Pro", "Team"]}
+                  series={[{name: "Plans", data: [640, 310, 90]}]}
+                />
+                <p class="docs-demo-hint">Slices fall back to <code>--ui-chart-1..6</code> tokens — override them
+                  globally or pass <code>color</code> per series.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("custom-colors")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "line-gradient" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Line with bottom fade</h3>
+            <DemoTabs id="dm-chart-line-gradient">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  gradient
+                  title="Portfolio value"
+                  description="gradient on a line renders a whisper-soft fade under the stroke"
+                  labels={["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]}
+                  series={[{name: "NAV", data: [42,45,44,48,52,50,55,58,57,62,66,71], color: "var(--ui-success)"}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("line-gradient")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gauge" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radial gauge</h3>
+            <DemoTabs id="dm-chart-gauge">
+              <Fragment slot="preview">
+                <Chart
+                  type="gauge"
+                  title="Storage used"
+                  description="Tick marks fill clockwise with the value"
+                  labels={["Used"]}
+                  series={[{name: "of 8 TB", data: [64]}]}
+                  maxY={100}
+                  ticks={40}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gauge")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gauge-half" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gauge at half</h3>
+            <DemoTabs id="dm-chart-gauge-half">
+              <Fragment slot="preview">
+                <Chart
+                  type="gauge"
+                  title="Monthly goal"
+                  labels={["Reached"]}
+                  series={[{name: "of 200 deals", data: [102]}]}
+                  maxY={200}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gauge-half")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pill-bar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Pill bars</h3>
+            <DemoTabs id="dm-chart-pill-bar">
+              <Fragment slot="preview">
+                <Chart
+                  type="bar"
+                  barStyle="pill"
+                  title="Pulse"
+                  description="Thin rounded columns — an equalizer look"
+                  labels={["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"]}
+                  series={[{name: "Load", data: [8,14,22,30,38,44,40,32,20,10,16,28,40,46,42,30,18,10,26,44]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("pill-bar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gauge-block" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Block gauge</h3>
+            <DemoTabs id="dm-chart-gauge-block">
+              <Fragment slot="preview">
+                <Chart
+                  type="gauge"
+                  gaugeStyle="block"
+                  gaugeRamp={["var(--ui-success)", "var(--ui-info)", "var(--ui-primary)"]}
+                  title="Total expenses"
+                  labels={["Spent"]}
+                  series={[{name: "of $80k budget", data: [44220]}]}
+                  maxY={80000}
+                  format={(v: number) => `$${v.toLocaleString("en-US")}`}
+                  ticks={16}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gauge-block")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "gradient-intensity" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Gradient intensity</h3>
+            <DemoTabs id="dm-chart-gradient-intensity">
+              <Fragment slot="preview">
+                <Chart
+                  type="area"
+                  curve
+                  gradient
+                  gradientIntensity={2}
+                  title="Strong fade"
+                  description="gradientIntensity scales every fade — 1 is the default, 2 is saturated"
+                  labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+                  series={[{name: "Requests", data: [4200, 5100, 4800, 6300, 7100, 3900, 3400]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gradient-intensity")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radar" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radar</h3>
+            <DemoTabs id="dm-chart-radar">
+              <Fragment slot="preview">
+                <Chart
+                  type="radar"
+                  title="Skill coverage"
+                  description="One axis per label, filled polygons per series"
+                  labels={["JavaScript", "Python", "CSS", "Node.js", "React", "TypeScript"]}
+                  series={[
+                    {name: "Desktop", data: [78, 85, 90, 62, 74, 96]},
+                    {name: "Mobile", data: [52, 58, 66, 54, 41, 60]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("radar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radial" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radial rings</h3>
+            <DemoTabs id="dm-chart-radial">
+              <Fragment slot="preview">
+                <Chart
+                  type="radial"
+                  title="Browser share"
+                  description="One concentric ring per category — outer ring first"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  maxY={275}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("radial")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radial-half" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Radial half (rainbow)</h3>
+            <DemoTabs id="dm-chart-radial-half">
+              <Fragment slot="preview">
+                <Chart
+                  type="radial"
+                  radialSweep="half"
+                  title="Browser share"
+                  description="Half-circle rings over the top — outer ring first"
+                  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}
+                  series={[{name: "Users", data: [275, 200, 187, 173, 90]}]}
+                  maxY={275}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("radial-half")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sankey" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Sankey flow</h3>
+            <DemoTabs id="dm-chart-sankey">
+              <Fragment slot="preview">
+                <Chart
+                  type="sankey"
+                  title="Traffic funnel"
+                  description="Flow value scales each ribbon and node"
+                  nodes={[
+                    {name: "Organic Search", color: "var(--ui-success)"},
+                    {name: "Paid Ads", color: "var(--ui-error)"},
+                    {name: "Social Media", color: "var(--ui-chart-5, var(--ui-warning))"},
+                    {name: "Landing Page", color: "var(--ui-info)"},
+                    {name: "Product Page", color: "var(--ui-chart-2, var(--ui-info))"},
+                    {name: "Cart", color: "var(--ui-warning)"},
+                    {name: "Bounced", color: "var(--ui-error)"},
+                    {name: "Purchase", color: "var(--ui-success)"},
+                  ]}
+                  links={[
+                    {source: "Organic Search", target: "Landing Page", value: 42000},
+                    {source: "Paid Ads", target: "Landing Page", value: 28000},
+                    {source: "Social Media", target: "Landing Page", value: 18000},
+                    {source: "Landing Page", target: "Product Page", value: 52000},
+                    {source: "Landing Page", target: "Bounced", value: 36000},
+                    {source: "Product Page", target: "Cart", value: 31000},
+                    {source: "Product Page", target: "Bounced", value: 21000},
+                    {source: "Cart", target: "Purchase", value: 24000},
+                    {source: "Cart", target: "Bounced", value: 7000},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sankey")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "waterfall" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Waterfall</h3>
+            <DemoTabs id="dm-chart-waterfall">
+              <Fragment slot="preview">
+                <Chart
+                  type="waterfall"
+                  title="Cash flow, 2026"
+                  description="Signed deltas stack on a running total; totals anchor to zero"
+                  labels={["Start", "Q1", "Q2", "Q3", "Q4", "End"]}
+                  series={[{name: "Cash", data: [120, 45, -25, 65, -20, 0]}]}
+                  waterfallTotals={[0, 5]}
+                  format={(v) => `$${v}k`}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("waterfall")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "heatmap" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Heatmap</h3>
+            <DemoTabs id="dm-chart-heatmap">
+              <Fragment slot="preview">
+                <Chart
+                  type="heatmap"
+                  title="Commit activity"
+                  description="Rows are days, columns are week offsets — darker means more commits"
+                  height={220}
+                  labels={["-5w", "-4w", "-3w", "-2w", "-1w", "This week"]}
+                  series={[
+                    {name: "Mon", data: [4, 9, 6, 12, 8, 11]},
+                    {name: "Wed", data: [7, 5, 10, 8, 13, 9]},
+                    {name: "Fri", data: [12, 14, 9, 15, 11, 16]},
+                    {name: "Sat", data: [2, 1, 3, 0, 2, 5]},
+                  ]}
+                  heatmapRamp={["var(--ui-muted)", "var(--ui-chart-2, var(--ui-info))", "var(--ui-primary)"]}
+                  heatmapLabels
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("heatmap")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "cohort" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Cohort retention</h3>
+            <DemoTabs id="dm-chart-cohort">
+              <Fragment slot="preview">
+                <Chart
+                  type="cohort"
+                  title="Weekly signup retention"
+                  description="Rows are signup cohorts, columns are weeks since signup — the empty tail hasn't been observed yet"
+                  height={230}
+                  labels={["Week 0", "Week 1", "Week 2", "Week 3", "Week 4"]}
+                  series={[
+                    {name: "Sep 1", data: [1, 0.41, 0.33, 0.29, 0.27]},
+                    {name: "Sep 8", data: [1, 0.39, 0.31, 0.28, 0.26]},
+                    {name: "Sep 15", data: [1, 0.44, 0.36, 0.33]},
+                    {name: "Sep 22", data: [1, 0.47, 0.4]},
+                  ]}
+                  cohortSizes={[480, 510, 465, 530]}
+                  cohortRamp={["var(--ui-muted)", "var(--ui-chart-2, var(--ui-info))", "var(--ui-primary)"]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("cohort")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "terrain" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Terrain</h3>
+            <DemoTabs id="dm-chart-terrain">
+              <Fragment slot="preview">
+                <Chart
+                  type="terrain"
+                  title="Signal terrain"
+                  description="Peaks and valleys across a sampled field"
+                  height={400}
+                  labels={Array.from({length: 24}, (_, i) => String(i - 12))}
+                  series={terrainRows.map((data, i) => ({name: `d${i}`, color: "var(--ui-error)", data}))}
+                  terrainAxes={["X: Position", "Y: Elevation", "Z: Depth"]}
+                  format={(v) => `${v}m`}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("terrain")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "terrain-bare" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Terrain (bare)</h3>
+            <DemoTabs id="dm-chart-terrain-bare">
+              <Fragment slot="preview">
+                <Chart
+                  type="terrain"
+                  title="Signal terrain, bare"
+                  description="Dots banded by elevation — primary low, warning mid, error high"
+                  height={320}
+                  labels={Array.from({length: 24}, (_, i) => String(i - 12))}
+                  series={terrainRows.map((data, i) => ({name: `d${i}`, color: "var(--ui-error)", data}))}
+                  terrainMode="dots"
+                  terrainCallouts={false}
+                  terrainDotColors={["var(--ui-primary)", "var(--ui-warning)", "var(--ui-error)"]}
+                  format={(v) => `${v}m`}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("terrain-bare")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "no-grid" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Minimal</h3>
+            <DemoTabs id="dm-chart-minimal">
+              <Fragment slot="preview">
+                <Chart
+                  type="line"
+                  grid={false}
+                  legend={false}
+                  title="Ping"
+                  labels={["12am", "6am", "12pm", "6pm"]}
+                  series={[{name: "ms", data: ping}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("no-grid")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

@@ -10,7 +10,9 @@
     "build": "npm run css && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "audit:render": "npx tsx scripts/audit-render.ts"
+    "audit:render": "npx tsx scripts/audit-render.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -23,6 +25,7 @@
     "@types/node": "^26.6.2",
     "sass": "^1.105.0",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.0.13"
+    "vite": "^8.0.13",
+    "vitest": "^5.0.3"
   }
 }
