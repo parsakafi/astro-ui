@@ -1003,7 +1003,7 @@ const gaugeBlocks = gaugeIsBlock
 const radarAxes = Math.max(isRadar ? labels.length : 0, 3);
 const radarCx = W / 2;
 const radarCy = height / 2;
-const radarR = Math.max(Math.min(W / 2 - 64, height / 2 - 28), 40);
+const radarR = Math.max(Math.min(W / 2 - 64, height / 2 - 34), 40);
 const radarPeak = Math.max(maxY ?? Math.max(...series.flatMap((s) => s.data), 1), 1);
 const radarAngle = (i: number) => -Math.PI / 2 + (i / radarAxes) * Math.PI * 2;
 const radarPt = (i: number, f: number) => ({
