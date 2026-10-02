@@ -33,6 +33,11 @@ export const toggle: ComponentMeta = {
             title: "Sizes",
             code: `<Toggle size="sm">Sm</Toggle>\n<Toggle size="md">Md</Toggle>\n<Toggle size="lg">Lg</Toggle>`,
         },
+        {
+            id: "bookmark",
+            title: "Bookmark",
+            code: `<Toggle id="bookmark-btn" ariaLabel="Bookmark">\n  <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">\n    <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>\n  </svg>\n</Toggle>\n\n<script>\n  const btn = document.getElementById("bookmark-btn");\n  const icon = btn?.querySelector("svg");\n  btn?.addEventListener("click", () => {\n    const on = btn.getAttribute("aria-pressed") === "true";\n    btn.setAttribute("aria-pressed", String(!on));\n    btn.classList.toggle("aui-toggle--pressed", !on);\n    btn.setAttribute("aria-label", !on ? "Bookmarked" : "Bookmark");\n    icon?.setAttribute("fill", !on ? "currentColor" : "none");\n  });\n</script>\n<!-- click to bookmark: flips aria-pressed, the pressed style, and the icon fill -->`,
+        },
     ],
     props: [
         t("pressed", "boolean", "false", "SSR state — maps to aria-pressed and the pressed styling."),

@@ -34,7 +34,7 @@ usage: |-
       });
     });
   </script>
-demoIds: ["variants", "sizes"]
+demoIds: ["variants", "sizes", "bookmark"]
 props:
   - name: "pressed"
     type: "boolean"

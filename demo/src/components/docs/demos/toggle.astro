@@ -44,6 +44,36 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             </DemoTabs>
           </div>
         )}
+        {id === "bookmark" && (
+          <div class="docs-demo-block" id={`demo-toggle-${id}`}>
+            <h3 class="docs-demo-title">Bookmark</h3>
+            <DemoTabs id="dm-toggle-bookmark">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Toggle id="dm-toggle-bookmark-live" ariaLabel="Bookmark">
+                    <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </Toggle>
+                </div>
+                <script>
+                  const btn = document.getElementById("dm-toggle-bookmark-live");
+                  const icon = btn?.querySelector("svg");
+                  btn?.addEventListener("click", () => {
+                    const on = btn.getAttribute("aria-pressed") === "true";
+                    btn.setAttribute("aria-pressed", String(!on));
+                    btn.classList.toggle("aui-toggle--pressed", !on);
+                    btn.setAttribute("aria-label", !on ? "Bookmarked" : "Bookmark");
+                    icon?.setAttribute("fill", !on ? "currentColor" : "none");
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("bookmark")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
       </Fragment>
     ))}
   </div>
