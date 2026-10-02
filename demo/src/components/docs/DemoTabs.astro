@@ -31,5 +31,35 @@ const {id, previewClass} = Astro.props;
   </div>
   <div data-tab="code" class="docs-demo-code">
     <slot name="code"/>
+    <button type="button" class="docs-copy-btn" data-copy-code aria-label="Copy code">
+      Copy
+    </button>
   </div>
 </Tabs>
+
+<script>
+  // One delegated handler for every demo code tab on the page: copies
+  // the panel's rendered <code> text (Shiki spans reconstruct the raw
+  // snippet, so no per-demo payload is needed). Singleton-guarded —
+  // this component renders once per demo.
+  const w = window as unknown as Record<string, unknown>;
+  if (!w.__auiDemoCodeCopy) {
+    w.__auiDemoCodeCopy = true;
+    document.addEventListener("click", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const btn = target.closest<HTMLButtonElement>("[data-copy-code]");
+      if (!btn) return;
+      const code = btn.closest(".docs-demo-code")?.querySelector("code")?.textContent ?? "";
+      if (!code) return;
+      navigator.clipboard?.writeText(code).then(() => {
+        btn.textContent = "Copied!";
+        window.setTimeout(() => {
+          btn.textContent = "Copy";
+        }, 1500);
+      }).catch(() => {
+        // Non-secure context — the button stays a no-op like CodeBlock's.
+      });
+    });
+  }
+</script>

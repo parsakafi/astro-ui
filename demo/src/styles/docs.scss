@@ -2232,6 +2232,7 @@ $docs-anchor-offset: 7.5rem;
 }
 
 .docs-demo-code {
+  position: relative;
   margin: 0;
   padding: var(--ui-space-4);
   background-color: var(--ui-muted);
