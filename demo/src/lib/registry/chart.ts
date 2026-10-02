@@ -219,6 +219,11 @@ export const chart: ComponentMeta = {
             code: `<Chart\n  type="donut"\n  padAngle={4}\n  sliceRadius={22}\n  title="Browser share"\n  description="padAngle gaps the slices, sliceRadius rounds their corners"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Share", data: [38, 24, 16, 12, 10] }]}\n  legend={false}\n/>\n<!-- tune padAngle (degrees) and sliceRadius (px) independently -->`,
         },
         {
+            id: "pie-petal",
+            title: "Petal pie (rim-rounded slices)",
+            code: `<Chart\n  type="pie"\n  padAngle={2}\n  sliceRadius={18}\n  sliceCorners="outer"\n  title="Vote share"\n  description="Only the rim corners round \u2014 the center tip stays sharp"\n  labels={["A", "B", "C", "D", "E", "F"]}\n  series={[{ name: "Votes", data: [28, 22, 18, 14, 10, 8] }]}\n  legend={false}\n/>\n<!-- sliceCorners: "all" (default, every corner) | "outer" (rim only) -->`,
+        },
+        {
             id: "slice-labels",
             title: "Slice labels (value & leader lines)",
             code: `<Chart\n  type="donut"\n  padAngle={4}\n  sliceRadius={18}\n  sliceLabels="value"\n  title="Browser share"\n  description="Formatted values printed at each slice centroid"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Users", data: [275, 200, 187, 173, 90] }]}\n  legend={false}\n/>\n\n<Chart\n  type="pie"\n  sliceLabels="label"\n  title="Browser share"\n  description="Category names outside, connected by elbow leader lines"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Users", data: [275, 200, 187, 173, 90] }]}\n  legend={false}\n/>\n<!-- sliceLabels: "none" | "value" | "label" -->`,
@@ -392,6 +397,7 @@ export const chart: ComponentMeta = {
         t("innerRadius", "number", "58", "Donut hole percentage."),
         t("padAngle", "number", "0", "Gap between pie/donut slices, in degrees."),
         t("sliceRadius", "number", "0", "Corner rounding of pie/donut slices, in px."),
+        t("sliceCorners", '"all" | "outer"', '"all"', "Which slice corners sliceRadius rounds — every corner, or rim corners only with a sharp center tip (petal slices)."),
         t("sliceLabels", '"none" | "value" | "value-pct" | "label"', '"none"', "Slice callouts: values, value·pct at centroids, or names outside with leader lines."),
         t("sliceLabelFormat", "(value: number, pct: number) => string", "—", "Custom text for value-style slice callouts."),
         t("collapseBelow", "number", "0", "Merge pie/donut slices below this percent share into a trailing muted Other slice (hover lists the contents)."),

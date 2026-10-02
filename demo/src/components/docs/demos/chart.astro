@@ -452,6 +452,29 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             </DemoTabs>
           </div>
         )}
+        {id === "pie-petal" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Petal pie (rim-rounded slices)</h3>
+            <DemoTabs id="dm-chart-pie-petal">
+              <Fragment slot="preview">
+                <Chart
+                  type="pie"
+                  padAngle={2}
+                  sliceRadius={18}
+                  sliceCorners="outer"
+                  title="Vote share"
+                  description="Only the rim corners round — the center tip stays sharp"
+                  labels={["A", "B", "C", "D", "E", "F"]}
+                  series={[{name: "Votes", data: [28, 22, 18, 14, 10, 8]}]}
+                  legend={false}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("pie-petal")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "pie" && (
           <div class="docs-demo-block">
             <h3 class="docs-demo-title">Pie</h3>

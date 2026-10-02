@@ -32,7 +32,7 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare", "boxplot", "boxplot-raw"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "pie-petal", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare", "boxplot", "boxplot-raw"]
 props:
   - name: "type"
     type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\" | \"boxplot\"'"
@@ -74,6 +74,10 @@ props:
     type: "number"
     def: "0"
     description: "Corner rounding of pie/donut slices, in px."
+  - name: "sliceCorners"
+    type: "\"all\" | \"outer\""
+    def: "\"all\""
+    description: "Which slice corners sliceRadius rounds — every corner, or rim corners only with a sharp center tip (petal slices)."
   - name: "sliceLabels"
     type: "\"none\" | \"value\" | \"value-pct\" | \"label\""
     def: "\"none\""
