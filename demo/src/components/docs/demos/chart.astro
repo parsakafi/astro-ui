@@ -496,6 +496,26 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             </DemoTabs>
           </div>
         )}
+        {id === "treemap" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Treemap</h3>
+            <DemoTabs id="dm-chart-treemap">
+              <Fragment slot="preview">
+                <Chart
+                  type="treemap"
+                  title="Top products"
+                  description="Tile area scales with the value — squarified at build time"
+                  height={300}
+                  labels={["Other", "Nova Chat", "Assistly", "Signal OS", "Atlas AI", "Draft Lab"]}
+                  series={[{name: "Users", data: [22, 16, 14, 21, 15, 12]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("treemap")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "pie" && (
           <div class="docs-demo-block">
             <h3 class="docs-demo-title">Pie</h3>
