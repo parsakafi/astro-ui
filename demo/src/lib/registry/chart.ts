@@ -15,7 +15,7 @@ export const chart: ComponentMeta = {
     usage:
         `---\nimport { Chart } from "astro-ui";\n---\n\n<Chart\n  type="bar"\n  title="Revenue by month"\n  labels={["Jan", "Feb", "Mar"]}\n  series={[{ name: "Revenue", data: [12, 30, 24] }]}\n/>`,
     features: [
-        "12 types: bar, line, area, pie, donut, scatter, hbar, combo, gauge, radar, radial, sankey",
+        "18 types: bar, line, area, pie, donut, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot",
         "Pure build-time SVG — zero JS, zero chart library",
         "Token-driven colors (--ui-chart-1..6) — themable, dark-mode aware",
         "Grouped or stacked series (stack prop, bars and hbar part-to-whole), curved lines, gradient fills (area/bar/pie/donut), custom per-series colors, nice y-axis ticks",
@@ -370,9 +370,19 @@ export const chart: ComponentMeta = {
             title: "Terrain (bare)",
             code: `<Chart\n  type="terrain"\n  title="Signal terrain, bare"\n  description="Dots banded by elevation \u2014 primary low, warning mid, error high"\n  height={320}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainMode="dots"\n  terrainCallouts={false}\n  terrainDotColors={["var(--ui-primary)", "var(--ui-warning)", "var(--ui-error)"]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- terrainCallouts={false} hides the highest/lowest titles, rail and\n     drops; terrainMode="dots" drops the mesh for a point-field look;\n     terrainDotColors bands the dots low/mid/high by elevation -->`,
         },
+        {
+            id: "boxplot",
+            title: "Box plot",
+            code: `<Chart\n  type="boxplot"\n  title="Response time by plan"\n  description="Whiskers span the adjacent values \u2014 dots past them are outliers"\n  labels={["Starter", "Growth", "Scale"]}\n  boxplots={[{ name: "Latency", boxes: [\n    { min: 42, q1: 68, median: 84, q3: 102, max: 128 },\n    { min: 58, q1: 92, median: 118, q3: 148, max: 178, outliers: [210, 226] },\n    { min: 96, q1: 148, median: 182, q3: 218, max: 262 },\n  ] }]}\n/>\n<!-- each box is { min, q1, median, q3, max, outliers? } aligned with\n     labels; a lone group colors one box per label, like pie slices -->`,
+        },
+        {
+            id: "boxplot-raw",
+            title: "Box plot from raw samples",
+            code: `<Chart\n  type="boxplot"\n  title="Build minutes by runner"\n  description="Raw samples reduce to Tukey quartiles with 1.5\u00d7IQR fences at build time"\n  labels={["Linux", "macOS"]}\n  boxplots={[\n    { name: "Node 20", boxes: [[3.1, 3.4, 3.2, 3.8, 3.5, 3.3, 3.6, 4.1, 3.4, 5.9], [4.2, 4.5, 4.1, 4.8, 4.4]] },\n    { name: "Node 22", boxes: [[2.8, 3.0, 2.9, 3.2, 3.1, 2.7, 3.3, 3.0], [3.9, 4.0, 3.7, 4.2, 4.4, 4.1]] },\n  ]}\n/>\n<!-- pass raw observations instead of a summary; several groups render\n     side-by-side per label and color per group, like bars -->`,
+        },
     ],
     props: [
-        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map"'`, `'"bar"'`, "Chart type."),
+        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot"'`, `'"bar"'`, "Chart type."),
         t("labels", "string[]", "required", "Category labels (x axis; slice names for pie/donut)."),
         t("series", "ChartSeries[]", "required", "Data series: { name, data, color? }."),
         t("title", "string", "—", "Accessible title, rendered as figcaption."),
@@ -417,6 +427,9 @@ export const chart: ComponentMeta = {
         t("mapRamp", "string[]", "muted → primary", "2+ CSS colors the map region fills interpolate across (data min → max)."),
         t("mapLabels", "boolean", "false", "Print the formatted value inside each map region."),
         t("mapColumns", "number", "rect extent", "Grid column count the tile cells divide — reserve columns for freeform polygon regions so rect tiles don't stretch."),
+        t("boxplots", "BoxplotGroup[]", "—", "Boxplot groups: { name, color?, boxes } — one box per label, either a { min, q1, median, q3, max, outliers?, color? } summary or raw observations reduced to Tukey quartiles (1.5×IQR fences) at build time."),
+        t("boxRadius", "number", "8", "Corner rounding of each boxplot box, in px."),
+        t("boxplotOutliers", "boolean", "true", "Render outlier dots past the boxplot whiskers (still listed in tooltips and the data table when hidden)."),
         t("zoomable", "boolean", "false", "Map: zoom buttons (+/−/Reset), wheel-to-zoom toward the cursor and drag-to-pan. The only chart feature that ships JS."),
         t("format", "(value: number) => string", "—", "Value formatting for ticks and the data table."),
         t("height", "number", "260", "Plot height in px."),

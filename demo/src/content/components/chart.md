@@ -11,7 +11,7 @@ since: "1.1.0"
 isNew: false
 related: ["progress", "table", "card"]
 features:
-  - "12 types: bar, line, area, pie, donut, scatter, hbar, combo, gauge, radar, radial, sankey"
+  - "18 types: bar, line, area, pie, donut, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot"
   - "Pure build-time SVG — zero JS, zero chart library"
   - "Token-driven colors (--ui-chart-1..6) — themable, dark-mode aware"
   - "Grouped or stacked series (stack prop, bars and hbar part-to-whole), curved lines, gradient fills (area/bar/pie/donut), custom per-series colors, nice y-axis ticks"
@@ -32,10 +32,10 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare", "boxplot", "boxplot-raw"]
 props:
   - name: "type"
-    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\"'"
+    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\" | \"boxplot\"'"
     def: "'\"bar\"'"
     description: "Chart type."
   - name: "labels"
@@ -214,6 +214,18 @@ props:
     type: "number"
     def: "rect extent"
     description: "Grid column count the tile cells divide — reserve columns for freeform polygon regions so rect tiles don't stretch."
+  - name: "boxplots"
+    type: "BoxplotGroup[]"
+    def: "—"
+    description: "Boxplot groups: { name, color?, boxes } — one box per label, either a { min, q1, median, q3, max, outliers?, color? } summary or raw observations reduced to Tukey quartiles (1.5×IQR fences) at build time."
+  - name: "boxRadius"
+    type: "number"
+    def: "8"
+    description: "Corner rounding of each boxplot box, in px."
+  - name: "boxplotOutliers"
+    type: "boolean"
+    def: "true"
+    description: "Render outlier dots past the boxplot whiskers (still listed in tooltips and the data table when hidden)."
   - name: "zoomable"
     type: "boolean"
     def: "false"
