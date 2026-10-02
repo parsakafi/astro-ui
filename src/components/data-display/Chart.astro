@@ -4,7 +4,9 @@
   *
    * Renders pure SVG at build time: grouped/stacked bars, a combo
    * chart (bars + overlay line on a secondary axis), line/area chart,
-   * pie/donut, a 3D (extruded) pie, a squarified treemap, scatter plot, horizontal progress
+   * pie/donut, a 3D (extruded) pie, a squarified treemap, a funnel,
+   *  a Nightingale rose, an auto-binned histogram, a waffle unit
+   *  grid, Few-style bullet rows, Cleveland dumbbells, scatter plot, horizontal progress
    * bars, a box plot
    * (five-number summaries or raw samples with Tukey whiskers),
    * a waterfall (floating signed deltas on a running total), a heatmap
@@ -99,6 +101,22 @@ export interface BoxplotGroup {
   boxes: (BoxplotSummary | number[])[];
 }
 
+export interface BulletRow {
+  /** Row name — y-axis label, legend-free (rows are self-labeled). */
+  label: string;
+  /** Qualitative range ceilings, ascending (e.g. [poor, satisfactory,
+   *  good] maxima, 2–5 entries) — rendered as progressively darker
+   *  background bands in Stephen Few's bullet-graph manner. */
+  ranges: number[];
+  /** Featured measure — the thick bar. */
+  measure: number;
+  /** Comparative marker (target, prior period…) — the thin tick. */
+  target?: number;
+  /** Optional CSS color for the measure bar; falls back to
+   *  --ui-chart-{index}. */
+  color?: string;
+}
+
 export interface MapRegion {
   /** Region name — tooltip + mapLabels text; also the fallback-table row. */
   name: string;
@@ -125,7 +143,7 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "treemap" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "treemap" | "funnel" | "rose" | "histogram" | "waffle" | "bullet" | "dumbbell" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
   /** Map only: region shapes laid out in a loose tile grid, like a
    *  stylized country map. Each region is a rect cell (default) or a
    *  freeform polygon: points are viewBox coordinates, so the same
@@ -262,6 +280,23 @@ export interface Props {
   /** Treemap only: corner rounding of each tile in px (default 10),
    *  clamped to half the tile's smallest side. */
   tileRadius?: number;
+  /** Rose only: how wedge length encodes the value — "area" (default,
+   *  Nightingale's polar-area manner: area ∝ value, radius ∝ √value)
+   *  or "radius" (radius ∝ value, like ECharts' radius rose). */
+  roseMode?: "area" | "radius";
+  /** Histogram only: bin count override. Defaults to Sturges'
+   *  formula ceil(log2(n) + 1) over the sample count (clamped 1–40);
+   *  bins are equal-width, consecutive intervals. */
+  bins?: number;
+  /** Histogram only: gutter between bars in px (default 2) — the
+   *  separated-bar look. 0 restores touching bars (the Wikipedia
+   *  manner, showing the variable is continuous). Never consumes
+   *  more than half a bar's width. */
+  barGap?: number;
+  /** Bullet only: performance rows — { label, ranges, measure,
+   *  target?, color? } per row (see BulletRow). Labels may be omitted
+   *  when rows are self-evident. */
+  bullets?: BulletRow[];
   /** Highest y value; defaults to the data max (bar/line/area/scatter).
    *  With stack, defaults to the largest per-label total. */
   maxY?: number;
@@ -334,6 +369,10 @@ const {
   collapseBelow = 0,
   depth = 36,
   tileRadius = 10,
+  roseMode = "area",
+  bins,
+  barGap = 2,
+  bullets = [],
   maxY,
   rightMaxY,
   stack = false,
@@ -430,6 +469,12 @@ const isSankey = type === "sankey";
 const isBoxplot = type === "boxplot";
 const isPie3d = type === "pie3d";
 const isTreemap = type === "treemap";
+const isFunnel = type === "funnel";
+const isRose = type === "rose";
+const isHistogram = type === "histogram";
+const isWaffle = type === "waffle";
+const isBullet = type === "bullet";
+const isDumbbell = type === "dumbbell";
 
 /* Gradient fills need per-instance ids; multiple charts on one page
    must not share defs. Derived from content, so builds stay
@@ -1723,6 +1768,303 @@ const treemap = isTreemap
   })()
   : null;
 
+/* --- funnel: process stages as centered trapezoids, widths ∝ value
+   (Wikipedia's funnel chart: head at the intake stage, neck at the
+   outcome). Stages render in INPUT order — funnels are sequences, so
+   no sorting. Each wall slopes from its own width to the next
+   stage's; the last stage closes as a rectangle. --- */
+const funnel = isFunnel
+  ? (() => {
+    const data = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
+    if (data.length === 0) return null;
+    const total = data.reduce((a, b) => a + b, 0) || 1;
+    const maxV = Math.max(...data, 1e-9);
+    const GAP = 6;
+    const maxW = W - 160;
+    const sh = (plotH - GAP * (data.length - 1)) / Math.max(data.length, 1);
+    const cx = W / 2;
+    const stages = data.map((v, i) => {
+      const wTop = Math.max((v / maxV) * maxW, 2);
+      const wBot = i + 1 < data.length ? Math.max((data[i + 1] / maxV) * maxW, 2) : wTop;
+      const yTop = PAD.top + i * (sh + GAP);
+      const pct = Math.round((v / total) * 100);
+      const label = labels[i] ?? String(i);
+      const midW = (wTop + wBot) / 2;
+      const name = label;
+      const valueText = `${format(v)} (${pct}%)`;
+      /* Centered two-line label only when the widest line fits. */
+      const showText = sh >= 34 && Math.max(name.length * 7.5, valueText.length * 6.2) + 28 < midW;
+      return {
+        label,
+        value: v,
+        pct,
+        color: colorAt(i, series[0]),
+        tip: `${label}: ${format(v)} (${pct}% of total)`,
+        d: `M ${(cx - wTop / 2).toFixed(1)} ${yTop.toFixed(1)}` +
+          ` L ${(cx + wTop / 2).toFixed(1)} ${yTop.toFixed(1)}` +
+          ` L ${(cx + wBot / 2).toFixed(1)} ${(yTop + sh).toFixed(1)}` +
+          ` L ${(cx - wBot / 2).toFixed(1)} ${(yTop + sh).toFixed(1)} Z`,
+        tx: cx,
+        ty: yTop + sh / 2,
+        showText,
+        name,
+        valueText,
+      };
+    });
+    return {stages};
+  })()
+  : null;
+
+/* --- rose: Nightingale's polar-area diagram (Wikipedia's Polar area
+   diagram) — equal-angle wedges, length encodes value. "area" mode
+   keeps wedge AREA ∝ value (radius ∝ √value, the original manner);
+   "radius" mode makes radius ∝ value. Shares pie bucketing (collapse,
+   colors, order) but never the center — wedges always meet at it. --- */
+const rose = isRose
+  ? (() => {
+    const {total, sliceDefs} = pieSliceDefs();
+    if (sliceDefs.length === 0) return null;
+    const TAU = Math.PI * 2;
+    const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
+    const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
+    const gap = padFits ? pad : 0;
+    const maxV = Math.max(...sliceDefs.map((d) => d.value), 1e-9);
+    const outside = sliceLabels === "label";
+    const R = Math.max(Math.min(W / 2 - (outside ? 104 : 24), height / 2 - (outside ? 40 : 16)), 40);
+    const cx = W / 2;
+    const cy = height / 2;
+    const p = (radius: number, a: number) => `${(cx + radius * Math.cos(a)).toFixed(2)} ${(cy + radius * Math.sin(a)).toFixed(2)}`;
+    let angle = -Math.PI / 2;
+    const slices = sliceDefs.map((def, i) => {
+      const span = Math.max((TAU / sliceDefs.length) - gap, 0.02);
+      const s0 = angle + gap / 2;
+      const s1 = s0 + span;
+      angle += TAU / sliceDefs.length;
+      const f = roseMode === "radius" ? def.value / maxV : Math.sqrt(def.value / maxV);
+      const rr = Math.max(R * f, def.value > 0 ? 3 : 0);
+      const large = span > Math.PI ? 1 : 0;
+      const color = def.merged ? "var(--ui-muted-foreground)" : colorAt(i, series[0]);
+      const pct = Math.round((def.value / total) * 100);
+      const mid = (s0 + s1) / 2;
+      const dir = Math.cos(mid) >= 0 ? 1 : -1;
+      const ax = cx + (rr + 4) * Math.cos(mid);
+      const ay = cy + (rr + 4) * Math.sin(mid);
+      const bx = cx + (rr + 18) * Math.cos(mid);
+      const by = cy + (rr + 18) * Math.sin(mid);
+      const tx = bx + dir * 16;
+      return {
+        label: def.label,
+        value: def.value,
+        pct,
+        color,
+        tip: def.merged
+          ? `Other (${def.merged.length}): ${def.merged.join(", ")}`
+          : `${def.label}: ${format(def.value)} (${pct}%)`,
+        d: span >= TAU - 0.03
+          ? `M ${(cx + rr).toFixed(2)} ${cy.toFixed(2)} A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 1 1 ${(cx - rr).toFixed(2)} ${cy.toFixed(2)}` +
+            ` A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 1 1 ${(cx + rr).toFixed(2)} ${cy.toFixed(2)} Z`
+          : `M ${cx.toFixed(2)} ${cy.toFixed(2)} L ${p(rr, s0)} A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 ${large} 1 ${p(rr, s1)} Z`,
+        lx: cx + rr * 0.62 * Math.cos(mid),
+        ly: cy + rr * 0.62 * Math.sin(mid),
+        leader: `M ${ax.toFixed(2)} ${ay.toFixed(2)} L ${bx.toFixed(2)} ${by.toFixed(2)} L ${(tx - dir * 2).toFixed(2)} ${by.toFixed(2)}`,
+        tx,
+        by,
+        dir,
+      };
+    });
+    return {slices};
+  })()
+  : null;
+
+/* --- histogram: raw samples binned into equal-width consecutive
+   intervals (Wikipedia's Histogram). Bars render with a small
+   gutter by default (barGap); 0 restores touching bars. --- */
+const histogram = isHistogram
+  ? (() => {
+    const samples = (series[0]?.data ?? []).filter((v) => Number.isFinite(v));
+    if (samples.length === 0) return null;
+    const k = Math.max(1, Math.min(40, bins ?? Math.ceil(Math.log2(samples.length) + 1)));
+    const lo = Math.min(...samples);
+    const hi = Math.max(...samples);
+    const span = hi - lo;
+    const edges = Array.from({length: k + 1}, (_, i) => (span === 0 ? lo - 0.5 + i : lo + (i * span) / k));
+    const counts = Array.from({length: k}, () => 0);
+    for (const v of samples) {
+      const idx = span === 0 ? 0 : Math.min(Math.floor(((v - lo) / span) * k), k - 1);
+      counts[idx]++;
+    }
+    const peak = Math.max(...counts, 1);
+    const bw = plotW / k;
+    /* Gutters ride inside each bin slot and never eat more than half
+       the bar, so dense bin counts degrade to hairlines, not gaps. */
+    const hg = Math.min(Math.max(barGap, 0), bw / 2);
+    const yAt = (c: number) => PAD.top + plotH - (c / peak) * plotH;
+    const ticks = [0, 1, 2, 3].map((i) => (i * peak) / 3);
+    /* X ticks: every bin edge when few, strided when many. */
+    const stride = Math.max(1, Math.ceil((k + 1) / 8));
+    const xticks = edges
+      .map((e, i) => ({e, i}))
+      .filter(({i}) => i % stride === 0 || i === k)
+      .map(({e, i}) => ({e, x: PAD.left + (i / k) * plotW}));
+    const bars = counts.map((c, i) => ({
+      x: PAD.left + i * bw + hg / 2,
+      w: Math.max(bw - hg, 1),
+      h: Math.max((c / peak) * plotH, c > 0 ? 2 : 0),
+      y: yAt(c),
+      tip: `${format(edges[i])}–${format(edges[i + 1])}: ${c} sample${c === 1 ? "" : "s"}`,
+    }));
+    return {bars, ticks, xticks, yAt, counts, edges, k, n: samples.length, lo, hi};
+  })()
+  : null;
+
+/* --- waffle: square pie (Wikipedia's Pie chart § Square chart) —
+   a 10×10 grid where each cell is 1% of the total, filled
+   column-by-column bottom-to-top. Largest-remainder rounding keeps
+   the cell budget exact; sub-1% shares render no cell but stay in
+   the legend and table. --- */
+const waffle = isWaffle
+  ? (() => {
+    const data = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
+    const total = data.reduce((a, b) => a + b, 0) || 1;
+    if (data.length === 0) return null;
+    const exact = data.map((v) => (v / total) * 100);
+    const base = exact.map((e) => Math.floor(e));
+    let rest = 100 - base.reduce((a, b) => a + b, 0);
+    const frac = exact.map((e, i) => ({i, f: e - Math.floor(e)}))
+      .sort((a, b) => b.f - a.f || a.i - b.i);
+    for (const {i} of frac) {
+      if (rest <= 0) break;
+      base[i]++;
+      rest--;
+    }
+    const N = 10;
+    const GAP = 3;
+    const cell = Math.min((W - 16) / N, (height - 16) / N);
+    const gw = cell * N;
+    const gx = (W - gw) / 2;
+    const gy = (height - gw) / 2;
+    const groups = data.map((v, i) => ({
+      label: labels[i] ?? String(i),
+      value: v,
+      pct: Math.round((v / total) * 100),
+      color: colorAt(i, series[0]),
+      tip: `${labels[i] ?? String(i)}: ${format(v)} (${Math.round((v / total) * 100)}%)`,
+    }));
+    const cells: { x: number; y: number; s: number; gi: number }[] = [];
+    let ci = 0;
+    base.forEach((count, gi) => {
+      for (let c = 0; c < count; c++, ci++) {
+        const col = Math.floor(ci / N);
+        const row = ci % N;
+        cells.push({x: gx + col * cell, y: gy + (N - 1 - row) * cell, s: cell, gi});
+      }
+    });
+    return {cells, groups, cell, gap: GAP};
+  })()
+  : null;
+
+/* --- bullet: Stephen Few's bullet graph (Wikipedia's Bullet graph)
+   — one compact row per performance readout: qualitative range
+   bands (poor → good, darkening), a thick measure bar, and a thin
+   target tick. Rows are self-labeled, so no legend. --- */
+const bullet = isBullet
+  ? (() => {
+    const rows = bullets
+      .filter((b) => b && Number.isFinite(b.measure))
+      .map((b) => ({
+        label: b.label,
+        ranges: [...b.ranges].filter((r) => Number.isFinite(r) && r > 0).sort((a, x) => a - x).slice(0, 5),
+        measure: Math.max(b.measure, 0),
+        target: b.target != null && Number.isFinite(b.target) ? Math.max(b.target, 0) : null,
+        color: b.color,
+      }))
+      .filter((b) => b.ranges.length > 0);
+    if (rows.length === 0) return null;
+    const maxV = Math.max(
+      1,
+      ...rows.flatMap((b) => [...b.ranges, b.measure, b.target ?? 0]),
+    );
+    /* Vertical budget: axis rail on top, then rows; rows compress
+       gracefully when there are many. */
+    const axisH = 22;
+    const avail = height - 8 - axisH - 8;
+    const rowH = Math.max(22, Math.min(34, (avail - 12 * (rows.length - 1)) / Math.max(rows.length, 1)));
+    const step = rowH + 12;
+    const labelW = 104;
+    const x0 = labelW + 8;
+    const trackW = W - x0 - 44;
+    const xAt = (v: number) => x0 + (Math.min(v, maxV) / maxV) * trackW;
+    const ticks = [0, 1, 2, 3].map((i) => (i * maxV) / 3);
+    const lanes = rows.map((b, i) => {
+      const y = 8 + axisH + i * step;
+      const bands = b.ranges.map((r, bi) => {
+        const prev = bi === 0 ? 0 : b.ranges[bi - 1];
+        /* Darken toward good (the last band): poor reads pale. */
+        const o = b.ranges.length === 1 ? 0.16 : 0.08 + (0.16 * bi) / (b.ranges.length - 1);
+        return {x: xAt(prev), w: Math.max(xAt(r) - xAt(prev), 0), o};
+      });
+      return {
+        ...b,
+        y,
+        h: rowH,
+        color: b.color ?? colors[i % colors.length],
+        bands,
+        barY: y + rowH / 2 - 5,
+        valText: format(b.measure),
+        tip: `${b.label}: ${format(b.measure)}` +
+          (b.target != null ? ` (target ${format(b.target)})` : "") +
+          ` — ranges ${b.ranges.map(format).join(" / ")}`,
+      };
+    });
+    return {lanes, ticks, xAt, trackEnd: x0 + trackW, top: 8 + axisH};
+  })()
+  : null;
+
+/* --- dumbbell: Cleveland dot plots (Wikipedia's Dot plot) — dots
+   per category on a shared scale (bar-chart alternative that need
+   not start at zero). Two series connect into dumbbells whose
+   connector emphasizes the delta; one series is a plain dot plot. --- */
+const dumbbell = isDumbbell
+  ? (() => {
+    const s0 = series[0];
+    const s1 = series[1];
+    if (!s0 || labels.length === 0) return null;
+    const vals: number[] = [];
+    labels.forEach((_, i) => {
+      if (Number.isFinite(s0.data[i])) vals.push(s0.data[i]);
+      if (s1 && Number.isFinite(s1.data[i])) vals.push(s1.data[i]);
+    });
+    if (vals.length === 0) return null;
+    const dMin = Math.min(...vals);
+    const dMax = Math.max(...vals);
+    const pad = Math.max(dMax - dMin, 1) * 0.08;
+    const lo = dMin - pad;
+    const hi = dMax + pad;
+    const labelW = 100;
+    const x0 = labelW + 8;
+    const trackW = W - x0 - 12;
+    const xAt = (v: number) => x0 + ((v - lo) / Math.max(hi - lo, 1e-9)) * trackW;
+    const n = labels.length;
+    const rowH = plotH / Math.max(n, 1);
+    const cy = (i: number) => PAD.top + i * rowH + rowH / 2;
+    const ticks = [0, 1, 2, 3].map((i) => lo + (i * (hi - lo)) / 3);
+    const rows = labels.map((label, i) => {
+      const a = Number.isFinite(s0.data[i]) ? s0.data[i] : null;
+      const b = s1 && Number.isFinite(s1.data[i]) ? s1.data[i] : null;
+      return {
+        label,
+        y: cy(i),
+        a: a != null ? {v: a, x: xAt(a), tip: `${label} — ${s0.name}: ${format(a)}`} : null,
+        b: b != null
+          ? {v: b, x: xAt(b), tip: `${label} — ${s1!.name}: ${format(b)}`}
+          : null,
+        delta: a != null && b != null ? Math.abs(b - a) : null,
+      };
+    });
+    return {rows, ticks, xAt, labelW};
+  })()
+  : null;
+
 const classes = cn(
   "aui-chart",
   `aui-chart--${type}`,
@@ -2420,6 +2762,237 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
   {
+    isFunnel && funnel && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${funnel.stages.map((s) => `${s.label} ${s.pct}%`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {funnel.stages.map((s) => (
+          <g>
+            <path class="aui-chart__funnel-seg" d={s.d} fill={s.color}>
+              <title>{s.tip}</title>
+            </path>
+            {s.showText && (
+              <g class="aui-chart__funnel-text">
+                <text x={s.tx} y={s.ty - 2} text-anchor="middle">{s.name}</text>
+                <text class="aui-chart__funnel-value" x={s.tx} y={s.ty + 16} text-anchor="middle">
+                  {s.valueText}
+                </text>
+              </g>
+            )}
+          </g>
+        ))}
+      </svg>
+    )
+  }
+
+  {
+    isRose && rose && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${rose.slices.map((d) => `${d.label} ${d.pct}%`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {rose.slices.map((d) => (
+          <path class="aui-chart__slice" d={d.d} fill={d.color}>
+            <title>{d.tip}</title>
+          </path>
+        ))}
+        {(sliceLabels === "value" || sliceLabels === "value-pct") &&
+          rose.slices.map((d) => (
+            <text class="aui-chart__slice-value" x={d.lx} y={d.ly + 5} text-anchor="middle">
+              {sliceLabelFormat
+                ? sliceLabelFormat(d.value, d.pct)
+                : sliceLabels === "value-pct"
+                  ? `${format(d.value)} · ${d.pct}%`
+                  : format(d.value)}
+            </text>
+          ))}
+        {sliceLabels === "label" &&
+          rose.slices.map((d) => (
+            <g class="aui-chart__slice-label">
+              <path d={d.leader}/>
+              <text x={d.tx + d.dir * 2} y={d.by + 4} text-anchor={d.dir > 0 ? "start" : "end"}>
+                {d.label}
+              </text>
+            </g>
+          ))}
+      </svg>
+    )
+  }
+
+  {
+    isHistogram && histogram && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${histogram.n} samples in ${histogram.k} bins, ${format(histogram.lo)} to ${format(histogram.hi)}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {grid && (
+          <g class="aui-chart__grid" aria-hidden="true">
+            {histogram.ticks.map((t) => (
+              <line x1={PAD.left} x2={W - PAD.right} y1={histogram.yAt(t)} y2={histogram.yAt(t)}/>
+            ))}
+          </g>
+        )}
+        {grid &&
+          histogram.ticks.map((t) => (
+            <text class="aui-chart__tick" x={PAD.left - 6} y={histogram.yAt(t) + 3} text-anchor="end">
+              {Math.round(t * 10) / 10}
+            </text>
+          ))}
+        {histogram.bars.map((b) => (
+          <rect class="aui-chart__bar" x={b.x} y={b.y} width={b.w} height={b.h}
+                fill={colorAt(0, series[0])}>
+            <title>{b.tip}</title>
+          </rect>
+        ))}
+        {histogram.xticks.map((t, ti, arr) => (
+          <text
+            class="aui-chart__tick"
+            x={t.x}
+            y={height - 8}
+            text-anchor={ti === 0 ? "start" : ti === arr.length - 1 ? "end" : "middle"}
+          >
+            {format(Math.round(t.e * 10) / 10)}
+          </text>
+        ))}
+      </svg>
+    )
+  }
+
+  {
+    isWaffle && waffle && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${waffle.groups.map((g) => `${g.label} ${g.pct}%`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {waffle.cells.map((c) => {
+          const g = waffle.groups[c.gi];
+          return (
+            <rect class="aui-chart__waffle-cell"
+                  x={(c.x + waffle.gap / 2).toFixed(1)} y={(c.y + waffle.gap / 2).toFixed(1)}
+                  width={(waffle.cell - waffle.gap).toFixed(1)} height={(waffle.cell - waffle.gap).toFixed(1)}
+                  rx={3} fill={g.color}>
+              <title>{g.tip}</title>
+            </rect>
+          );
+        })}
+      </svg>
+    )
+  }
+
+  {
+    isBullet && bullet && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${bullet.lanes.map((l) => `${l.label} ${format(l.measure)}${l.target != null ? ` (target ${format(l.target)})` : ""}`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {grid && (
+          <g class="aui-chart__grid" aria-hidden="true">
+            {bullet.ticks.map((t) => (
+              <line x1={bullet.xAt(t)} x2={bullet.xAt(t)} y1={bullet.top} y2={height - 8}/>
+            ))}
+          </g>
+        )}
+        {grid &&
+          bullet.ticks.map((t) => (
+            <text class="aui-chart__tick" x={bullet.xAt(t)} y={bullet.top - 6} text-anchor="middle">
+              {format(Math.round(t * 10) / 10)}
+            </text>
+          ))}
+        {bullet.lanes.map((l) => (
+          <g>
+            {l.bands.map((b) => (
+              <rect x={b.x} y={l.y} width={b.w} height={l.h} fill="var(--ui-muted-foreground)" fill-opacity={b.o}/>
+            ))}
+            <rect class="aui-chart__bullet-bar" x={bullet.xAt(0)} y={l.barY}
+                  width={Math.max(bullet.xAt(l.measure) - bullet.xAt(0), 2)} height={10} rx={2} fill={l.color}>
+              <title>{l.tip}</title>
+            </rect>
+            {l.target != null && (
+              <rect class="aui-chart__bullet-target" x={bullet.xAt(l.target) - 1.5} y={l.y + 2} width={3} height={l.h - 4}>
+                <title>{`${l.label}: target ${format(l.target)}`}</title>
+              </rect>
+            )}
+            <text class="aui-chart__bullet-label" x={96} y={l.y + l.h / 2 + 4} text-anchor="end">
+              {l.label}
+            </text>
+            {l.valText.length * 6.5 < 36 && (
+              <text class="aui-chart__tick" x={bullet.trackEnd + 6} y={l.y + l.h / 2 + 4} text-anchor="start">
+                {l.valText}
+              </text>
+            )}
+          </g>
+        ))}
+      </svg>
+    )
+  }
+
+  {
+    isDumbbell && dumbbell && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${series.map((s) => s.name).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {grid && (
+          <g class="aui-chart__grid" aria-hidden="true">
+            {dumbbell.ticks.map((t) => (
+              <line x1={dumbbell.xAt(t)} x2={dumbbell.xAt(t)} y1={PAD.top} y2={PAD.top + plotH}/>
+            ))}
+          </g>
+        )}
+        {grid &&
+          dumbbell.ticks.map((t) => (
+            <text class="aui-chart__tick" x={dumbbell.xAt(t)} y={height - 8} text-anchor="middle">
+              {format(Math.round(t * 10) / 10)}
+            </text>
+          ))}
+        {dumbbell.rows.map((r) => (
+          <g>
+            {r.a && r.b && (
+              <line class="aui-chart__db-link" x1={r.a.x} x2={r.b.x} y1={r.y} y2={r.y}>
+                <title>{`${r.label}: Δ ${format(r.delta ?? 0)}`}</title>
+              </line>
+            )}
+            {r.a && (
+              <circle class="aui-chart__dot" cx={r.a.x} cy={r.y} r={4.5} fill={colorAt(0, series[0])}>
+                <title>{r.a.tip}</title>
+              </circle>
+            )}
+            {r.b && series[1] && (
+              <circle class="aui-chart__dot" cx={r.b.x} cy={r.y} r={4.5} fill={colorAt(1, series[1])}>
+                <title>{r.b.tip}</title>
+              </circle>
+            )}
+          </g>
+        ))}
+        {dumbbell.rows.map((r) => (
+          <text class="aui-chart__tick" x={dumbbell.labelW - 8} y={r.y + 4} text-anchor="end">
+            {r.label}
+          </text>
+        ))}
+      </svg>
+    )
+  }
+
+  {
     zoomable && isMap && map && (
       <div class="aui-chart__zoombar">
         <button type="button" class="aui-chart__zoombtn" data-aui-zoom="in" aria-label="Zoom in">+</button>
@@ -2548,7 +3121,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
     {
-    legend && !isGauge && !isSankey && !isHeatmap && !isCohort && !isTerrain && !isMap && (
+    legend && !isGauge && !isSankey && !isHeatmap && !isCohort && !isTerrain && !isMap && !isBullet && (
       <ul class="aui-chart__legend" aria-hidden="true">
         {isWaterfall ? (
           ["Increase", "Decrease", "Total"].map((name, i) => (
@@ -2590,6 +3163,13 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
             <li>
               <span class="aui-chart__swatch" style={`background: ${t.color}`}/>
               {t.label}
+            </li>
+          ))
+        ) : isFunnel || isRose || isWaffle ? (
+          ((isFunnel ? funnel?.stages : isRose ? rose?.slices : waffle?.groups) ?? []).map((d) => (
+            <li>
+              <span class="aui-chart__swatch" style={`background: ${d.color}`}/>
+              {d.label}
             </li>
           ))
         ) : (
@@ -2693,6 +3273,44 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     ))}
     </tbody>
   </table>
+  ) : isHistogram && histogram ? (
+  <table class="aui-chart__table">
+    <thead>
+    <tr>
+      <th scope="col">Bin</th>
+      <th scope="col">Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    {histogram.counts.map((c, i) => (
+      <tr>
+        <th scope="row">{format(histogram.edges[i])}–{format(histogram.edges[i + 1])}</th>
+        <td>{c}</td>
+      </tr>
+    ))}
+    </tbody>
+  </table>
+  ) : isBullet && bullet ? (
+  <table class="aui-chart__table">
+    <thead>
+    <tr>
+      <th scope="col">Measure</th>
+      <th scope="col">Ranges</th>
+      <th scope="col">Actual</th>
+      <th scope="col">Target</th>
+    </tr>
+    </thead>
+    <tbody>
+    {bullet.lanes.map((l) => (
+      <tr>
+        <th scope="row">{l.label}</th>
+        <td>{l.ranges.map(format).join(" / ")}</td>
+        <td>{format(l.measure)}</td>
+        <td>{l.target != null ? format(l.target) : "—"}</td>
+      </tr>
+    ))}
+    </tbody>
+  </table>
   ) : (
   <table class="aui-chart__table">
     <thead>
@@ -2785,6 +3403,74 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
 
   .aui-chart__hm-cell:hover {
     opacity: 0.85;
+  }
+
+  /* --- funnel: centered stage trapezoids with haloed in-stage
+     labels (stages span the palette, so foreground plus a
+     background halo keeps the name/value readable on any stage). --- */
+  .aui-chart__funnel-seg {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__funnel-seg:hover {
+    opacity: 0.85;
+  }
+
+  .aui-chart__funnel-text text {
+    fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+    font-size: 13px;
+    font-weight: var(--ui-font-semibold);
+    font-family: var(--ui-font-sans);
+    text-anchor: middle;
+    pointer-events: none;
+  }
+
+  .aui-chart__funnel-value {
+    font-size: 12px !important;
+    font-weight: var(--ui-font-medium) !important;
+  }
+
+  /* --- waffle: unit cells with a hover fade. --- */
+  .aui-chart__waffle-cell {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__waffle-cell:hover {
+    opacity: 0.85;
+  }
+
+  /* --- bullet: thick measure bar over muted range bands, a
+     foreground target tick, and plain row labels (rows sit on the
+     background, so no halo is needed). --- */
+  .aui-chart__bullet-bar {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__bullet-bar:hover {
+    opacity: 0.85;
+  }
+
+  .aui-chart__bullet-target {
+    fill: var(--ui-foreground);
+  }
+
+  .aui-chart__bullet-label {
+    fill: var(--ui-foreground);
+    font-size: 13px;
+    font-family: var(--ui-font-sans);
+  }
+
+  /* --- dumbbell: muted delta connectors between Cleveland dots
+     (dots reuse .aui-chart__dot for fill + background ring). --- */
+  .aui-chart__db-link {
+    stroke: var(--ui-muted-foreground);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.6;
   }
 
   /* --- treemap: area-proportioned tiles with haloed top-left labels
