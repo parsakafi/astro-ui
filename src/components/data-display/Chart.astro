@@ -2,13 +2,14 @@
 /**
   * Chart — zero-JS SVG charts driven by a data prop.
   *
-  * Renders pure SVG at build time: grouped/stacked bars, a combo
-  * chart (bars + overlay line on a secondary axis), line/area chart,
-  * pie/donut, scatter plot, horizontal progress bars, a waterfall
-  * (floating signed deltas on a running total), a heatmap
-  * (color-ramped matrix cells), a cohort retention triangle, an
-  * oblique 3D terrain wireframe, or a tile-grid choropleth map
-  * depending on `type`. Everything
+   * Renders pure SVG at build time: grouped/stacked bars, a combo
+   * chart (bars + overlay line on a secondary axis), line/area chart,
+   * pie/donut, scatter plot, horizontal progress bars, a box plot
+   * (five-number summaries or raw samples with Tukey whiskers),
+   * a waterfall (floating signed deltas on a running total), a heatmap
+   * (color-ramped matrix cells), a cohort retention triangle, an
+   * oblique 3D terrain wireframe, or a tile-grid choropleth map
+   * depending on `type`. Everything
   * reads design tokens, so charts
   * follow the theme (including dark mode) with no re-render — colors
   * resolve from --ui-chart-1..6, overridable per-series via the
@@ -20,8 +21,9 @@
   *     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   *   />
   *
-  * Bar/line/area/scatter take `labels` + `series`; pie/donut take a
-  * single series (first one wins). An accessible fallback table is
+   * Bar/line/area/scatter take `labels` + `series`; pie/donut take a
+   * single series (first one wins); boxplot takes `labels` + `boxplots`
+   * (five-number summaries or raw samples). An accessible fallback table is
   * always rendered for screen readers; add `title`/`description` for
   * figure context. Hover titles come from native <title> elements.
   *
@@ -65,6 +67,37 @@ export interface SankeyLink {
   color?: string;
 }
 
+export interface BoxplotSummary {
+  /** Lower whisker end (adjacent value). */
+  min: number;
+  /** 25th percentile — lower edge of the box. */
+  q1: number;
+  /** 50th percentile — drawn as the median rule. */
+  median: number;
+  /** 75th percentile — upper edge of the box. */
+  q3: number;
+  /** Upper whisker end (adjacent value). */
+  max: number;
+  /** Outlier samples — rendered as dots past the whiskers. */
+  outliers?: number[];
+  /** Optional CSS color for this box; falls back to the group color,
+   *  then to the palette (per-box for a single group, per-group otherwise). */
+  color?: string;
+}
+
+export interface BoxplotGroup {
+  /** Group name — legend entry and tooltip prefix. */
+  name: string;
+  /** Optional CSS color for the group's boxes; falls back to --ui-chart-{index}. */
+  color?: string;
+  /** One entry per label: a precomputed summary, or raw observations
+   *  (5+ samples recommended) reduced at build time to Tukey quartiles
+   *  with 1.5×IQR fences — whiskers stop at the most extreme in-fence
+   *  sample, the rest become outliers. Fewer than 5 samples still
+   *  render (quartiles interpolate); an empty array renders no box. */
+  boxes: (BoxplotSummary | number[])[];
+}
+
 export interface MapRegion {
   /** Region name — tooltip + mapLabels text; also the fallback-table row. */
   name: string;
@@ -91,7 +124,7 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
   /** Map only: region shapes laid out in a loose tile grid, like a
    *  stylized country map. Each region is a rect cell (default) or a
    *  freeform polygon: points are viewBox coordinates, so the same
@@ -171,6 +204,18 @@ export interface Props {
    *  occupy space the rects don't, so tiles don't stretch to fill
    *  their viewBox. */
   mapColumns?: number;
+  /** Boxplot only: one group per box series, each box aligned with
+   *  `labels` (a single group renders one box per label; several
+   *  groups render side-by-side per label). Each box is a five-number
+   *  summary or raw observations (see BoxplotGroup). */
+  boxplots?: BoxplotGroup[];
+  /** Boxplot only: corner rounding of each box in px — the soft
+   *  rounded-box look when raised (default 8). */
+  boxRadius?: number;
+  /** Boxplot only: render outlier dots past the whiskers (default
+   *  true). Outliers are still listed in tooltips and the data table
+   *  when hidden. */
+  boxplotOutliers?: boolean;
   /** Map only: adds zoom controls (+ / − / Reset) over the chart and
    *  enables wheel-to-zoom plus drag-to-pan on the SVG. Requires a
    *  small inline script — the only chart feature that ships JS. */
@@ -298,6 +343,9 @@ const {
   mapRamp,
   mapLabels = false,
   mapColumns,
+  boxplots = [],
+  boxRadius = 8,
+  boxplotOutliers = true,
   zoomable = false,
   terrainMode = "both",
   terrainAxes,
@@ -361,13 +409,14 @@ const isGauge = type === "gauge";
 const isRadar = type === "radar";
 const isRadial = type === "radial";
 const isSankey = type === "sankey";
+const isBoxplot = type === "boxplot";
 
 /* Gradient fills need per-instance ids; multiple charts on one page
    must not share defs. Derived from content, so builds stay
    deterministic; an author-supplied id wins when present.
    (Declared before the bar/area/pie consumers below.) */
 const showGradient = gradient && (type === "area" || type === "bar" || type === "combo" || type === "line" || circular);
-const uidSeed = `${title ?? ""}|${labels.join(",")}|${series.map((s) => `${s.name}:${s.data.join(",")}:${s.color ?? ""}`).join(";")}`;
+const uidSeed = `${title ?? ""}|${labels.join(",")}|${series.map((s) => `${s.name}:${s.data.join(",")}:${s.color ?? ""}`).join(";")}|${boxplots.map((g) => `${g.name}:${g.color ?? ""}:${g.boxes.map((b) => Array.isArray(b) ? `raw:${b.join(",")}` : `${b.min},${b.q1},${b.median},${b.q3},${b.max},${(b.outliers ?? []).join(",")}:${b.color ?? ""}`).join(";")}`).join(";")}`;
 let uidHash = 0;
 for (let i = 0; i < uidSeed.length; i++) uidHash = (uidHash * 31 + uidSeed.charCodeAt(i)) >>> 0;
 const uid = id ?? `aui-chart-${uidHash.toString(36)}`;
@@ -1320,6 +1369,118 @@ const map = isMap
   })()
   : null;
 
+/* --- boxplot: one box per (group, label) pair. Raw samples reduce to
+   Tukey quartiles with 1.5×IQR fences (linear-interpolation quantiles,
+   the same definition as numpy's default); whiskers stop at the most
+   extreme in-fence sample and the rest become outlier dots. The y
+   scale spans the data (never forced through zero — distributions
+   float), padded 8% each side; maxY only ever extends the ceiling so
+   whiskers can't clip. --- */
+const boxResolved = isBoxplot
+  ? boxplots.map((g) => ({
+      name: g.name,
+      color: g.color,
+      boxes: g.boxes.map((b) => {
+        if (!Array.isArray(b)) return {...b, outliers: b.outliers ?? []};
+        const sorted = b.filter((v) => Number.isFinite(v)).sort((a, x) => a - x);
+        if (sorted.length === 0) return null;
+        const quantile = (p: number) => {
+          const pos = (sorted.length - 1) * p;
+          const base = Math.floor(pos);
+          const rest = pos - base;
+          return sorted[base] + (sorted[base + 1] !== undefined ? (sorted[base + 1] - sorted[base]) * rest : 0);
+        };
+        const q1 = quantile(0.25);
+        const median = quantile(0.5);
+        const q3 = quantile(0.75);
+        const iqr = q3 - q1;
+        const loF = q1 - 1.5 * iqr;
+        const hiF = q3 + 1.5 * iqr;
+        const inFence = sorted.filter((v) => v >= loF && v <= hiF);
+        return {
+          min: inFence.length ? inFence[0] : sorted[0],
+          q1,
+          median,
+          q3,
+          max: inFence.length ? inFence[inFence.length - 1] : sorted[sorted.length - 1],
+          outliers: sorted.filter((v) => v < loF || v > hiF),
+          color: undefined as string | undefined,
+        };
+      }),
+    }))
+  : [];
+const boxData = isBoxplot
+  ? (() => {
+    const cats = labels.length ? labels : (boxResolved[0]?.boxes.map((_, i) => `P${i + 1}`) ?? []);
+    const vals: number[] = [];
+    boxResolved.forEach((g) =>
+      g.boxes.forEach((b) => {
+        if (!b) return;
+        vals.push(b.min, b.q1, b.median, b.q3, b.max, ...(boxplotOutliers ? b.outliers : []));
+      }),
+    );
+    if (cats.length === 0 || vals.length === 0) return null;
+    const dMin = Math.min(...vals);
+    const dMax = Math.max(...vals);
+    const pad = Math.max(dMax - dMin, 1) * 0.08;
+    const lo = dMin - pad;
+    const hi = Math.max(dMax + pad, maxY ?? -Infinity);
+    const by = (v: number) => PAD.top + plotH - ((v - lo) / Math.max(hi - lo, 1e-9)) * plotH;
+    const n = cats.length;
+    const slotW = plotW / Math.max(n, 1);
+    const grouped = boxResolved.length > 1;
+    const bw = grouped
+      ? Math.max(8, Math.min(56, (slotW * 0.62) / Math.max(boxResolved.length, 1)))
+      : Math.max(10, Math.min(110, slotW * 0.56));
+    const capW = Math.max(10, bw * 0.36);
+    const cx = (ci: number, gi: number) =>
+      grouped
+        ? PAD.left + ci * slotW + slotW / 2 - (bw * boxResolved.length) / 2 + gi * bw + bw / 2
+        : PAD.left + ci * slotW + slotW / 2;
+    const colorOf = (gi: number, ci: number, override?: string) =>
+      override ?? boxResolved[gi]?.color ?? (grouped ? colors[gi % colors.length] : colors[ci % colors.length]);
+    const ticks = [0, 1, 2, 3].map((i) => lo + (i * (hi - lo)) / 3);
+    const boxes = boxResolved.flatMap((g, gi) =>
+      g.boxes.map((b, ci) => {
+        if (!b || ci >= cats.length) return null;
+        const color = colorOf(gi, ci, b.color);
+        const tip =
+          `${cats[ci]}${grouped ? ` — ${g.name}` : ""}: ` +
+          `min ${format(b.min)}, Q1 ${format(b.q1)}, median ${format(b.median)}, Q3 ${format(b.q3)}, max ${format(b.max)}` +
+          (b.outliers.length ? ` (${b.outliers.length} outlier${b.outliers.length === 1 ? "" : "s"}: ${b.outliers.map(format).join(", ")})` : "");
+        return {
+          gi,
+          ci,
+          cat: cats[ci],
+          group: g.name,
+          color,
+          tip,
+          x: cx(ci, gi) - bw / 2,
+          w: bw,
+          cx: cx(ci, gi),
+          yMin: by(b.min),
+          yMax: by(b.max),
+          yQ1: by(b.q1),
+          yQ3: by(b.q3),
+          yMed: by(b.median),
+          outliers: b.outliers.map((v) => ({v, y: by(v)})),
+          stats: b,
+        };
+      }).filter((r): r is NonNullable<typeof r> => r != null),
+    );
+    return {cats, ticks, slotW, bw, capW, by, cx, grouped, boxes};
+  })()
+  : null;
+/* Legend entries: per group when boxes compete side-by-side, per box
+   (like pie slices) for a lone group without an overriding color. */
+const boxLegend = isBoxplot && boxData
+  ? boxData.grouped
+    ? boxResolved.map((g, gi) => ({label: g.name, color: g.color ?? colors[gi % colors.length]}))
+    : boxResolved[0]?.color
+      ? [{label: boxResolved[0].name, color: boxResolved[0].color}]
+      : boxData.cats.map((cat, ci) => ({label: cat, color: colors[ci % colors.length]}))
+  : [];
+
 const classes = cn(
   "aui-chart",
   `aui-chart--${type}`,
@@ -1880,6 +2041,67 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
   {
+    isBoxplot && boxData && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${boxData.cats.join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <filter id={`${uid}-bshadow`} x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgb(0 0 0 / 0.14)"/>
+          </filter>
+        </defs>
+        {grid && (
+          <g class="aui-chart__grid" aria-hidden="true">
+            {boxData.ticks.map((t) => (
+              <line x1={PAD.left} x2={W - PAD.right} y1={boxData.by(t)} y2={boxData.by(t)}/>
+            ))}
+          </g>
+        )}
+        {grid &&
+          boxData.ticks.map((t) => (
+            <text class="aui-chart__tick" x={PAD.left - 6} y={boxData.by(t) + 3} text-anchor="end">
+              {format(Math.round(t * 10) / 10)}
+            </text>
+          ))}
+        {boxData.cats.map((cat, ci) => (
+          <text
+            class="aui-chart__tick"
+            x={PAD.left + ci * boxData.slotW + boxData.slotW / 2}
+            y={height - 8}
+            text-anchor="middle"
+          >
+            {cat}
+          </text>
+        ))}
+        {boxData.boxes.map((r) => (
+          <g>
+            <line class="aui-chart__whisker" x1={r.cx} x2={r.cx} y1={r.yMin} y2={r.yMax}/>
+            <line class="aui-chart__whisker" x1={r.cx - boxData.capW / 2} x2={r.cx + boxData.capW / 2} y1={r.yMin} y2={r.yMin}/>
+            <line class="aui-chart__whisker" x1={r.cx - boxData.capW / 2} x2={r.cx + boxData.capW / 2} y1={r.yMax} y2={r.yMax}/>
+            <rect class="aui-chart__box" x={r.x} y={r.yQ3} width={r.w} height={Math.max(r.yQ1 - r.yQ3, 2)}
+                  rx={Math.max(0, Math.min(boxRadius, r.w / 2))} fill={r.color} filter={`url(#${uid}-bshadow)`}>
+              <title>{r.tip}</title>
+            </rect>
+            <line class="aui-chart__median" x1={r.x} x2={r.x + r.w} y1={r.yMed} y2={r.yMed}>
+              <title>{r.tip}</title>
+            </line>
+            {boxplotOutliers &&
+              r.outliers.map((o) => (
+                <circle class="aui-chart__outlier" cx={r.cx} cy={o.y} r={3} fill={r.color}>
+                  <title>{`${r.cat}${boxData.grouped ? ` — ${r.group}` : ""}: outlier ${format(o.v)}`}</title>
+                </circle>
+              ))}
+          </g>
+        ))}
+      </svg>
+    )
+  }
+
+  {
     zoomable && isMap && map && (
       <div class="aui-chart__zoombar">
         <button type="button" class="aui-chart__zoombtn" data-aui-zoom="in" aria-label="Zoom in">+</button>
@@ -2031,6 +2253,13 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
                 {r.label}
               </li>
             )))
+        ) : isBoxplot ? (
+          boxLegend.map((e) => (
+            <li>
+              <span class="aui-chart__swatch" style={`background: ${e.color}`}/>
+              {e.label}
+            </li>
+          ))
         ) : (
           series.map((s, i) => (
             <li>
@@ -2105,6 +2334,34 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   )}
 
   {/* Screen-reader table — the visual is aria-labeled, this carries the data. */}
+  {isBoxplot && boxData ? (
+  <table class="aui-chart__table">
+    <thead>
+    <tr>
+      <th scope="col">Category</th>
+      {boxData.grouped && <th scope="col">Group</th>}
+      <th scope="col">Min</th>
+      <th scope="col">Q1</th>
+      <th scope="col">Median</th>
+      <th scope="col">Q3</th>
+      <th scope="col">Max</th>
+    </tr>
+    </thead>
+    <tbody>
+    {boxData.boxes.map((r) => (
+      <tr>
+        <th scope="row">{r.cat}</th>
+        {boxData.grouped && <td>{r.group}</td>}
+        <td>{format(r.stats.min)}</td>
+        <td>{format(r.stats.q1)}</td>
+        <td>{format(r.stats.median)}</td>
+        <td>{format(r.stats.q3)}</td>
+        <td>{format(r.stats.max)}</td>
+      </tr>
+    ))}
+    </tbody>
+  </table>
+  ) : (
   <table class="aui-chart__table">
     <thead>
     <tr>
@@ -2125,6 +2382,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     ))}
     </tbody>
   </table>
+  )}
 </figure>
 
 <style>
@@ -2630,6 +2888,35 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
 
   .aui-chart__map-region:hover {
     opacity: 0.85;
+  }
+
+  /* --- boxplot: thin muted whiskers with end caps, a filled rounded
+     box for the interquartile range, a foreground median rule, and
+     small outlier dots in the box color. --- */
+  .aui-chart__whisker {
+    stroke: var(--ui-muted-foreground);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0.55;
+  }
+
+  .aui-chart__box {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__box:hover {
+    opacity: 0.85;
+  }
+
+  .aui-chart__median {
+    stroke: var(--ui-foreground);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .aui-chart__outlier {
+    stroke: var(--ui-background);
+    stroke-width: 1;
   }
 
   /* --- fallback table: visually hidden, real data for AT.
