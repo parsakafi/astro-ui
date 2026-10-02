@@ -4,7 +4,7 @@
   *
    * Renders pure SVG at build time: grouped/stacked bars, a combo
    * chart (bars + overlay line on a secondary axis), line/area chart,
-   * pie/donut, a 3D (extruded) pie, scatter plot, horizontal progress
+   * pie/donut, a 3D (extruded) pie, a squarified treemap, scatter plot, horizontal progress
    * bars, a box plot
    * (five-number summaries or raw samples with Tukey whiskers),
    * a waterfall (floating signed deltas on a running total), a heatmap
@@ -125,7 +125,7 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "treemap" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
   /** Map only: region shapes laid out in a loose tile grid, like a
    *  stylized country map. Each region is a rect cell (default) or a
    *  freeform polygon: points are viewBox coordinates, so the same
@@ -259,6 +259,9 @@ export interface Props {
    *  clamped 0–120). Larger values read chunkier; 0 is a flat
    *  tilted ellipse. */
   depth?: number;
+  /** Treemap only: corner rounding of each tile in px (default 10),
+   *  clamped to half the tile's smallest side. */
+  tileRadius?: number;
   /** Highest y value; defaults to the data max (bar/line/area/scatter).
    *  With stack, defaults to the largest per-label total. */
   maxY?: number;
@@ -330,6 +333,7 @@ const {
   sliceLabelFormat,
   collapseBelow = 0,
   depth = 36,
+  tileRadius = 10,
   maxY,
   rightMaxY,
   stack = false,
@@ -425,6 +429,7 @@ const isRadial = type === "radial";
 const isSankey = type === "sankey";
 const isBoxplot = type === "boxplot";
 const isPie3d = type === "pie3d";
+const isTreemap = type === "treemap";
 
 /* Gradient fills need per-instance ids; multiple charts on one page
    must not share defs. Derived from content, so builds stay
@@ -1611,6 +1616,113 @@ const boxLegend = isBoxplot && boxData
       : boxData.cats.map((cat, ci) => ({label: cat, color: colors[ci % colors.length]}))
   : [];
 
+/* --- treemap: squarified tiling (Bruls et al.). Values come from
+   the first series like pie/hbar (extra series are ignored); tiles
+   sort largest-first for stable, near-square aspect ratios. Zero
+   values render no tile but stay in the legend and data table. --- */
+const treemap = isTreemap
+  ? (() => {
+    const total = (series[0]?.data ?? []).reduce((a, v) => a + Math.max(v, 0), 0) || 1;
+    const items = (series[0]?.data ?? [])
+      .map((v, i) => ({
+        label: labels[i] ?? String(i),
+        value: Math.max(v, 0),
+        color: colorAt(i, series[0]),
+      }))
+      .filter((d) => d.value > 0)
+      .sort((a, b) => b.value - a.value);
+    if (items.length === 0) return null;
+    const GAP = 6;
+    const PADT = 8;
+    const scale = ((W - PADT * 2) * (height - PADT * 2)) / total;
+    const nodes = items.map((d) => ({...d, area: d.value * scale, pct: Math.round((d.value / total) * 100)}));
+    /* Worst-aspect-ratio test for a candidate row against the row's
+       short side — the squarify decision function. */
+    const worst = (row: typeof nodes, side: number) => {
+      const s = row.reduce((a, n) => a + n.area, 0);
+      const mx = Math.max(...row.map((n) => n.area));
+      const mn = Math.min(...row.map((n) => n.area));
+      return Math.max((side * side * mx) / (s * s), (s * s) / (side * side * mn));
+    };
+    const placed = new Map<(typeof nodes)[number], { x: number; y: number; w: number; h: number }>();
+    let row: typeof nodes = [];
+    let rx = PADT;
+    let ry = PADT;
+    let rw = W - PADT * 2;
+    let rh = height - PADT * 2;
+    const flush = () => {
+      const s = row.reduce((a, n) => a + n.area, 0);
+      if (rw >= rh) {
+        const hh = s / Math.max(rw, 1e-9);
+        let xx = rx;
+        for (const n of row) {
+          const ww = n.area / Math.max(hh, 1e-9);
+          placed.set(n, {x: xx, y: ry, w: ww, h: hh});
+          xx += ww;
+        }
+        ry += hh;
+        rh -= hh;
+      } else {
+        const ww = s / Math.max(rh, 1e-9);
+        let yy = ry;
+        for (const n of row) {
+          const hh = n.area / Math.max(ww, 1e-9);
+          placed.set(n, {x: rx, y: yy, w: ww, h: hh});
+          yy += hh;
+        }
+        rx += ww;
+        rw -= ww;
+      }
+      row = [];
+    };
+    for (const n of nodes) {
+      if (row.length === 0) row.push(n);
+      else {
+        /* The row will span the LONG side (see flush), so the
+           worst-case test must use that side — testing against the
+           short side judges single-item full-width strips "good"
+           and degenerates into stacked slivers. */
+        const side = Math.max(rw, rh);
+        const before = worst(row, side);
+        const after = worst([...row, n], side);
+        if (after <= before) row.push(n);
+        else {
+          flush();
+          row.push(n);
+        }
+      }
+    }
+    if (row.length) flush();
+    const rr = Math.max(0, tileRadius);
+    const tiles = nodes.map((n) => {
+      const p = placed.get(n)!;
+      const x = p.x + GAP / 2;
+      const y = p.y + GAP / 2;
+      const w = Math.max(p.w - GAP, 1);
+      const h = Math.max(p.h - GAP, 1);
+      const name = n.label;
+      const valueText = format(n.value);
+      /* Labels only when they fit: name needs one text row, the
+         value a second; widths are estimated at ~7px per char. */
+      const showName = h >= 30 && name.length * 7 + 24 < w;
+      const showValue = h >= 54 && valueText.length * 7 + 24 < w;
+      return {
+        ...n,
+        x,
+        y,
+        w,
+        h,
+        rx: Math.min(rr, w / 2, h / 2),
+        tip: `${name}: ${valueText} (${n.pct}%)`,
+        showName,
+        showValue,
+        valueText,
+      };
+    });
+    return {tiles};
+  })()
+  : null;
+
 const classes = cn(
   "aui-chart",
   `aui-chart--${type}`,
@@ -2281,6 +2393,33 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
   {
+    isTreemap && treemap && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${treemap.tiles.map((d) => `${d.label} ${d.pct}%`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {treemap.tiles.map((t) => (
+          <g>
+            <rect class="aui-chart__tm-tile" x={t.x} y={t.y} width={t.w} height={t.h}
+                  rx={t.rx} fill={t.color}>
+              <title>{t.tip}</title>
+            </rect>
+            {t.showName && (
+              <text class="aui-chart__tm-name" x={t.x + 12} y={t.y + 24}>{t.label}</text>
+            )}
+            {t.showValue && (
+              <text class="aui-chart__tm-value" x={t.x + 12} y={t.y + 44}>{t.valueText}</text>
+            )}
+          </g>
+        ))}
+      </svg>
+    )
+  }
+
+  {
     zoomable && isMap && map && (
       <div class="aui-chart__zoombar">
         <button type="button" class="aui-chart__zoombtn" data-aui-zoom="in" aria-label="Zoom in">+</button>
@@ -2444,6 +2583,13 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
             <li>
               <span class="aui-chart__swatch" style={`background: ${e.color}`}/>
               {e.label}
+            </li>
+          ))
+        ) : isTreemap ? (
+          (treemap?.tiles ?? []).map((t) => (
+            <li>
+              <span class="aui-chart__swatch" style={`background: ${t.color}`}/>
+              {t.label}
             </li>
           ))
         ) : (
@@ -2639,6 +2785,40 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
 
   .aui-chart__hm-cell:hover {
     opacity: 0.85;
+  }
+
+  /* --- treemap: area-proportioned tiles with haloed top-left labels
+     (tiles range across saturated palette colors, so foreground plus
+     a background halo keeps the name/value readable on any tile). --- */
+  .aui-chart__tm-tile {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__tm-tile:hover {
+    opacity: 0.85;
+  }
+
+  .aui-chart__tm-name {
+    fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+    font-size: 15px;
+    font-weight: var(--ui-font-semibold);
+    font-family: var(--ui-font-sans);
+    pointer-events: none;
+  }
+
+  .aui-chart__tm-value {
+    fill: var(--ui-foreground);
+    paint-order: stroke;
+    stroke: var(--ui-background);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
+    font-size: 13px;
+    font-family: var(--ui-font-sans);
+    pointer-events: none;
   }
 
   /* --- terrain: wireframe mesh + point field. Row opacity/dash and
