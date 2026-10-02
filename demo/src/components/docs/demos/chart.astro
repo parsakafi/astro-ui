@@ -30,7 +30,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "bar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Bar</h3>
             <DemoTabs id="dm-chart-bar">
               <Fragment slot="preview">
@@ -49,7 +49,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "grouped-bar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Grouped bars</h3>
             <DemoTabs id="dm-chart-grouped">
               <Fragment slot="preview">
@@ -70,7 +70,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "stacked-bar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Stacked bars</h3>
             <DemoTabs id="dm-chart-stacked">
               <Fragment slot="preview">
@@ -94,7 +94,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "percent-stack" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">100% stacked bars</h3>
             <DemoTabs id="dm-chart-percent-stack">
               <Fragment slot="preview">
@@ -118,7 +118,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "combo" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Combo (bars + line)</h3>
             <DemoTabs id="dm-chart-combo">
               <Fragment slot="preview">
@@ -145,7 +145,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "line" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Line</h3>
             <DemoTabs id="dm-chart-line">
               <Fragment slot="preview">
@@ -166,7 +166,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "step-line" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Step line</h3>
             <DemoTabs id="dm-chart-step">
               <Fragment slot="preview">
@@ -189,7 +189,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "dashed-line" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Dashed & dotted</h3>
             <DemoTabs id="dm-chart-stroke">
               <Fragment slot="preview">
@@ -219,7 +219,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pattern-fill" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Pattern fills (dots & hatch)</h3>
             <DemoTabs id="dm-chart-pattern">
               <Fragment slot="preview">
@@ -243,7 +243,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pattern-mix" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Actual vs target (hatch + bare line)</h3>
             <DemoTabs id="dm-chart-pattern-mix">
               <Fragment slot="preview">
@@ -266,7 +266,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "bump-line" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Bump curve</h3>
             <DemoTabs id="dm-chart-bump">
               <Fragment slot="preview">
@@ -289,7 +289,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "curved-line" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Curved line</h3>
             <DemoTabs id="dm-chart-curved">
               <Fragment slot="preview">
@@ -309,7 +309,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "area" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Area</h3>
             <DemoTabs id="dm-chart-area">
               <Fragment slot="preview">
@@ -327,7 +327,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "curved-area" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Curved area</h3>
             <DemoTabs id="dm-chart-curved-area">
               <Fragment slot="preview">
@@ -347,7 +347,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gradient-area" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Gradient area</h3>
             <DemoTabs id="dm-chart-gradient">
               <Fragment slot="preview">
@@ -368,7 +368,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gradient-custom" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Gradient area, custom color</h3>
             <DemoTabs id="dm-chart-gradient-custom">
               <Fragment slot="preview">
@@ -389,7 +389,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gradient-bar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Gradient bars</h3>
             <DemoTabs id="dm-chart-gradient-bar">
               <Fragment slot="preview">
@@ -409,7 +409,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gradient-donut" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Gradient donut</h3>
             <DemoTabs id="dm-chart-gradient-donut">
               <Fragment slot="preview">
@@ -431,7 +431,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "donut-rounded" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Rounded donut (padded slices)</h3>
             <DemoTabs id="dm-chart-donut-rounded">
               <Fragment slot="preview">
@@ -453,7 +453,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pie-petal" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Petal pie (rim-rounded slices)</h3>
             <DemoTabs id="dm-chart-pie-petal">
               <Fragment slot="preview">
@@ -476,7 +476,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pie-3d" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">3D pie (extruded)</h3>
             <DemoTabs id="dm-chart-pie-3d">
               <Fragment slot="preview">
@@ -497,7 +497,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "treemap" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Treemap</h3>
             <DemoTabs id="dm-chart-treemap">
               <Fragment slot="preview">
@@ -517,7 +517,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pie" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Pie</h3>
             <DemoTabs id="dm-chart-pie">
               <Fragment slot="preview">
@@ -535,7 +535,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "donut" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Donut</h3>
             <DemoTabs id="dm-chart-donut">
               <Fragment slot="preview">
@@ -554,7 +554,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "slice-labels" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Slice labels (value & leader lines)</h3>
             <DemoTabs id="dm-chart-slice-labels">
               <Fragment slot="preview">
@@ -586,7 +586,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "slice-labels-combined" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Slice labels, value + percent</h3>
             <DemoTabs id="dm-chart-slice-labels-combined">
               <Fragment slot="preview">
@@ -619,7 +619,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "slice-collapse" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Auto-collapsed slices</h3>
             <DemoTabs id="dm-chart-slice-collapse">
               <Fragment slot="preview">
@@ -641,7 +641,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "scatter" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Scatter</h3>
             <DemoTabs id="dm-chart-scatter">
               <Fragment slot="preview">
@@ -662,7 +662,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "hbar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Horizontal bars</h3>
             <DemoTabs id="dm-chart-hbar">
               <Fragment slot="preview">
@@ -680,7 +680,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "hbar-stacked" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Stacked hbar (part-to-whole)</h3>
             <DemoTabs id="dm-chart-hbar-stacked">
               <Fragment slot="preview">
@@ -704,7 +704,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "custom-colors" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Custom colors</h3>
             <DemoTabs id="dm-chart-colors">
               <Fragment slot="preview">
@@ -724,7 +724,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "line-gradient" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Line with bottom fade</h3>
             <DemoTabs id="dm-chart-line-gradient">
               <Fragment slot="preview">
@@ -745,7 +745,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gauge" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Radial gauge</h3>
             <DemoTabs id="dm-chart-gauge">
               <Fragment slot="preview">
@@ -767,7 +767,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gauge-half" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Gauge at half</h3>
             <DemoTabs id="dm-chart-gauge-half">
               <Fragment slot="preview">
@@ -787,7 +787,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pill-bar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Pill bars</h3>
             <DemoTabs id="dm-chart-pill-bar">
               <Fragment slot="preview">
@@ -808,7 +808,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gauge-block" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Block gauge</h3>
             <DemoTabs id="dm-chart-gauge-block">
               <Fragment slot="preview">
@@ -832,7 +832,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "gradient-intensity" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Gradient intensity</h3>
             <DemoTabs id="dm-chart-gradient-intensity">
               <Fragment slot="preview">
@@ -854,7 +854,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "radar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Radar</h3>
             <DemoTabs id="dm-chart-radar">
               <Fragment slot="preview">
@@ -876,7 +876,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "radial" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Radial rings</h3>
             <DemoTabs id="dm-chart-radial">
               <Fragment slot="preview">
@@ -896,7 +896,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "radial-half" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Radial half (rainbow)</h3>
             <DemoTabs id="dm-chart-radial-half">
               <Fragment slot="preview">
@@ -918,7 +918,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sankey" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Sankey flow</h3>
             <DemoTabs id="dm-chart-sankey">
               <Fragment slot="preview">
@@ -956,7 +956,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "waterfall" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Waterfall</h3>
             <DemoTabs id="dm-chart-waterfall">
               <Fragment slot="preview">
@@ -977,7 +977,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "heatmap" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Heatmap</h3>
             <DemoTabs id="dm-chart-heatmap">
               <Fragment slot="preview">
@@ -1004,7 +1004,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "cohort" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Cohort retention</h3>
             <DemoTabs id="dm-chart-cohort">
               <Fragment slot="preview">
@@ -1031,7 +1031,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "map" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Map (choropleth)</h3>
             <DemoTabs id="dm-chart-map">
               <Fragment slot="preview">
@@ -1058,7 +1058,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "map-country" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Map (country outline)</h3>
             <DemoTabs id="dm-chart-map-country">
               <Fragment slot="preview">
@@ -1079,7 +1079,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "terrain" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Terrain</h3>
             <DemoTabs id="dm-chart-terrain">
               <Fragment slot="preview">
@@ -1101,7 +1101,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "terrain-bare" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Terrain (bare)</h3>
             <DemoTabs id="dm-chart-terrain-bare">
               <Fragment slot="preview">
@@ -1125,7 +1125,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "boxplot" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Box plot</h3>
             <DemoTabs id="dm-chart-boxplot">
               <Fragment slot="preview">
@@ -1148,7 +1148,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "boxplot-raw" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Box plot from raw samples</h3>
             <DemoTabs id="dm-chart-boxplot-raw">
               <Fragment slot="preview">
@@ -1170,7 +1170,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "no-grid" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Minimal</h3>
             <DemoTabs id="dm-chart-minimal">
               <Fragment slot="preview">

@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-slider-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-slider-basic">
               <Fragment slot="preview">
@@ -27,7 +27,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "tooltip" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-slider-${id}`}>
             <h3 class="docs-demo-title">Thumb tooltip</h3>
             <DemoTabs id="dm-slider-tooltip">
               <Fragment slot="preview">
@@ -43,7 +43,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "range" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-slider-${id}`}>
             <h3 class="docs-demo-title">Range</h3>
             <DemoTabs id="dm-slider-range">
               <Fragment slot="preview">
@@ -58,7 +58,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "vertical" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-slider-${id}`}>
             <h3 class="docs-demo-title">Vertical</h3>
             <DemoTabs id="dm-slider-vertical">
               <Fragment slot="preview">
@@ -74,7 +74,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "radial" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-slider-${id}`}>
             <h3 class="docs-demo-title">Radial</h3>
             <DemoTabs id="dm-slider-radial">
               <Fragment slot="preview">

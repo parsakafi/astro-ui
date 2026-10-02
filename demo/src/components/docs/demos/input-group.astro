@@ -14,7 +14,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-input-group-${id}`}>
             <h3 class="docs-demo-title">Icon + result count</h3>
             <DemoTabs id="dm-input-group-basic">
               <Fragment slot="preview">
@@ -33,7 +33,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "prefix" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-input-group-${id}`}>
             <h3 class="docs-demo-title">Text prefix + button</h3>
             <DemoTabs id="dm-input-group-prefix">
               <Fragment slot="preview">
@@ -52,7 +52,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "multiline" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-input-group-${id}`}>
             <h3 class="docs-demo-title">Textarea + actions</h3>
             <DemoTabs id="dm-input-group-multiline">
               <Fragment slot="preview">
@@ -81,7 +81,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-input-group-${id}`}>
             <h3 class="docs-demo-title">Sizes</h3>
             <DemoTabs id="dm-input-group-sizes">
               <Fragment slot="preview">
@@ -98,7 +98,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "states" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-input-group-${id}`}>
             <h3 class="docs-demo-title">Invalid & disabled</h3>
             <DemoTabs id="dm-input-group-states">
               <Fragment slot="preview">

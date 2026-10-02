@@ -14,7 +14,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-avatar-basic">
               <Fragment slot="preview">
@@ -30,7 +30,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "radius" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Different border radiuses</h3>
             <DemoTabs id="dm-avatar-radius">
               <Fragment slot="preview">
@@ -48,7 +48,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Different sizes</h3>
             <DemoTabs id="dm-avatar-sizes">
               <Fragment slot="preview">
@@ -66,7 +66,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "custom-size" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Custom sizes</h3>
             <DemoTabs id="dm-avatar-custom-size">
               <Fragment slot="preview">
@@ -84,7 +84,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "status" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Online status</h3>
             <DemoTabs id="dm-avatar-status">
               <Fragment slot="preview">
@@ -102,7 +102,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "status-positions" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Status badge positions</h3>
             <DemoTabs id="dm-avatar-status-positions">
               <Fragment slot="preview">
@@ -120,7 +120,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "group-basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Basic avatar group</h3>
             <DemoTabs id="dm-avatar-group-basic">
               <Fragment slot="preview">
@@ -137,7 +137,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "group-icon-count" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar group with icon count</h3>
             <DemoTabs id="dm-avatar-group-icon-count">
               <Fragment slot="preview">
@@ -155,7 +155,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "group-numeric-count" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar group with numerical count</h3>
             <DemoTabs id="dm-avatar-group-numeric-count">
               <Fragment slot="preview">
@@ -173,7 +173,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "badge-icon" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar with badge icon</h3>
             <DemoTabs id="dm-avatar-badge-icon">
               <Fragment slot="preview">
@@ -188,7 +188,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "solid-fallback" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Solid background fallback</h3>
             <DemoTabs id="dm-avatar-solid-fallback">
               <Fragment slot="preview">
@@ -206,7 +206,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "group-status" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar group with online status</h3>
             <DemoTabs id="dm-avatar-group-status">
               <Fragment slot="preview">
@@ -223,7 +223,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "grayscale" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Grayscale image filter</h3>
             <DemoTabs id="dm-avatar-grayscale">
               <Fragment slot="preview">
@@ -243,7 +243,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "group-hover" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar group with hover effect</h3>
             <DemoTabs id="dm-avatar-group-hover">
               <Fragment slot="preview">
@@ -261,7 +261,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "custom-badge" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Custom verification badge</h3>
             <DemoTabs id="dm-avatar-custom-badge">
               <Fragment slot="preview">
@@ -281,7 +281,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "multi-badge" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar with multiple badges</h3>
             <DemoTabs id="dm-avatar-multi-badge">
               <Fragment slot="preview">
@@ -298,7 +298,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "ring-gradient" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Gradient animated ring</h3>
             <DemoTabs id="dm-avatar-ring-gradient">
               <Fragment slot="preview">
@@ -315,7 +315,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "ring-animated" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Animated ring</h3>
             <DemoTabs id="dm-avatar-ring-animated">
               <Fragment slot="preview">
@@ -332,7 +332,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "loading" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Loading state</h3>
             <DemoTabs id="dm-avatar-loading">
               <Fragment slot="preview">
@@ -354,7 +354,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "shapes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Shapes &amp; variants</h3>
             <DemoTabs id="dm-avatar-shapes">
               <Fragment slot="preview">
@@ -371,7 +371,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "image" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Image</h3>
             <DemoTabs id="dm-avatar-image">
               <Fragment slot="preview">
@@ -385,7 +385,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "compact-social-proof" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Compact social proof with initials</h3>
             <DemoTabs id="dm-avatar-compact-social-proof">
               <Fragment slot="preview">
@@ -398,7 +398,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "avatar-group-hover-tooltips" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar group with hover tooltips and lift effect</h3>
             <DemoTabs id="dm-avatar-group-hover-tooltips">
               <Fragment slot="preview">
@@ -411,7 +411,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "avatar-social-proof-label" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar social proof with text label</h3>
             <DemoTabs id="dm-avatar-social-proof-label">
               <Fragment slot="preview">
@@ -424,7 +424,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pill-button-with-avatar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Pill small outline button with avatar</h3>
             <DemoTabs id="dm-avatar-pill-button">
               <Fragment slot="preview">
@@ -437,7 +437,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "avatar-group-hover-tooltips-v2" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar group with hover effect and tooltips</h3>
             <DemoTabs id="dm-avatar-group-hover-tooltips-v2">
               <Fragment slot="preview">
@@ -450,7 +450,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "avatar-empty-state" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
             <h3 class="docs-demo-title">Avatar inside an empty state</h3>
             <DemoTabs id="dm-avatar-empty-state">
               <Fragment slot="preview">

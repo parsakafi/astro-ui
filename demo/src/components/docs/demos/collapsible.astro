@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-collapsible-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-collapsible-basic">
               <Fragment slot="preview">
@@ -31,7 +31,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "open" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-collapsible-${id}`}>
             <h3 class="docs-demo-title">Open by default</h3>
             <DemoTabs id="dm-collapsible-open">
               <Fragment slot="preview">
@@ -47,7 +47,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "searchable" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-collapsible-${id}`}>
             <h3 class="docs-demo-title">Searchable collapsed content</h3>
             <DemoTabs id="dm-collapsible-searchable">
               <Fragment slot="preview">

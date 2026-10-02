@@ -12,7 +12,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "horizontal" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">Horizontal single</h3>
             <DemoTabs id="dm-carousel-horizontal">
               <Fragment slot="preview">
@@ -31,7 +31,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "multiple" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">Horizontal multiple (peek)</h3>
             <DemoTabs id="dm-carousel-multiple">
               <Fragment slot="preview">
@@ -57,7 +57,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "vertical" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">Vertical single</h3>
             <DemoTabs id="dm-carousel-vertical">
               <Fragment slot="preview">
@@ -83,7 +83,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "overlay-arrows" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">Overlay arrows</h3>
             <DemoTabs id="dm-carousel-overlay-arrows">
               <Fragment slot="preview">
@@ -113,7 +113,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "indicators" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">With indicators</h3>
             <DemoTabs id="dm-carousel-indicators">
               <Fragment slot="preview">
@@ -143,7 +143,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "captions" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">With captions</h3>
             <DemoTabs id="dm-carousel-captions">
               <Fragment slot="preview">
@@ -178,7 +178,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "autoplay" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">Autoplay</h3>
             <DemoTabs id="dm-carousel-autoplay">
               <Fragment slot="preview">
@@ -213,7 +213,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "loop" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-carousel-${id}`}>
             <h3 class="docs-demo-title">Looping</h3>
             <DemoTabs id="dm-carousel-loop">
               <Fragment slot="preview">

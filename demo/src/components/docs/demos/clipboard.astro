@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">Icon trigger</h3>
             <DemoTabs id="dm-clipboard-basic">
               <Fragment slot="preview">
@@ -28,7 +28,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "only-icon" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">Icon only</h3>
             <DemoTabs id="dm-clipboard-only-icon">
               <Fragment slot="preview">
@@ -47,7 +47,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "variants" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">Variants</h3>
             <DemoTabs id="dm-clipboard-variants">
               <Fragment slot="preview">
@@ -64,7 +64,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">Sizes</h3>
             <DemoTabs id="dm-clipboard-sizes">
               <Fragment slot="preview">
@@ -82,7 +82,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "feedback" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">Custom feedback</h3>
             <DemoTabs id="dm-clipboard-feedback">
               <Fragment slot="preview">
@@ -100,7 +100,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "disabled" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">Disabled</h3>
             <DemoTabs id="dm-clipboard-disabled">
               <Fragment slot="preview">
@@ -116,7 +116,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "manual" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">Manual wiring (zero JS shipped by the component)</h3>
             <DemoTabs id="dm-clipboard-manual">
               <Fragment slot="preview">
@@ -133,7 +133,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "code-block" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
             <h3 class="docs-demo-title">In a code block</h3>
             <DemoTabs id="dm-clipboard-code-block">
               <Fragment slot="preview">

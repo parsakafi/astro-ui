@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-radio-group-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-radio-group-basic">
               <Fragment slot="preview">
@@ -30,7 +30,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "hints" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-radio-group-${id}`}>
             <h3 class="docs-demo-title">Hints + disabled options</h3>
             <DemoTabs id="dm-radio-group-hints">
               <Fragment slot="preview">
@@ -53,7 +53,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "orientation" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-radio-group-${id}`}>
             <h3 class="docs-demo-title">Horizontal</h3>
             <DemoTabs id="dm-radio-group-orientation">
               <Fragment slot="preview">
@@ -73,7 +73,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "states" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-radio-group-${id}`}>
             <h3 class="docs-demo-title">Invalid & disabled</h3>
             <DemoTabs id="dm-radio-group-states">
               <Fragment slot="preview">
@@ -103,7 +103,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-radio-group-${id}`}>
             <h3 class="docs-demo-title">Sizes</h3>
             <DemoTabs id="dm-radio-group-sizes">
               <Fragment slot="preview">

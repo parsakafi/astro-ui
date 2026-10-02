@@ -57,6 +57,25 @@ describe("registry demo ids ↔ preview branches", () => {
   });
 });
 
+describe("demo block anchors ↔ sub-nav", () => {
+  it.each(slugs)("%s: every demo block carries a demo-<slug>-<id> anchor", (slug) => {
+    const src = readFileSync(`${DEMOS_DIR}/${slug}.astro`, "utf8");
+    const entry = components.find((c) => c.slug === slug)!;
+    // The anchor template is stamped per block inside the demoIds loop.
+    expect(src, `${slug}: missing demo block anchor template`).toContain("id={`demo-" + slug + "-${id}`}");
+    const anchored = (src.match(/docs-demo-block" id=\{`demo-/g) ?? []).length;
+    expect(anchored, `${slug}: anchored blocks != registry demos`).toBe(entry.demos.length);
+  });
+
+  it("gates the demos sub-nav on DEMOS_NAV_MIN = 5", () => {
+    const src = readFileSync("src/components/docs/Demos.astro", "utf8");
+    expect(src).toMatch(/const DEMOS_NAV_MIN = 5;/);
+    expect(src).toMatch(/demoIds\.length >= DEMOS_NAV_MIN/);
+    expect(src).toContain('class="docs-demos-nav"');
+    expect(src).toContain("href={`#demo-${slug}-${id}`}");
+  });
+});
+
 describe("registry ↔ generated docs content", () => {
   const CONTENT_DIR = "src/content/components";
   it("has a content md for every registry slug (run gen-docs)", () => {

@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-combobox-basic">
               <Fragment slot="preview">
@@ -31,7 +31,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "preselect" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
             <h3 class="docs-demo-title">Preselected + clearable</h3>
             <DemoTabs id="dm-combobox-preselect">
               <Fragment slot="preview">
@@ -58,7 +58,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "groups" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
             <h3 class="docs-demo-title">Groups</h3>
             <DemoTabs id="dm-combobox-groups">
               <Fragment slot="preview">
@@ -81,7 +81,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
             <h3 class="docs-demo-title">Sizes</h3>
             <DemoTabs id="dm-combobox-sizes">
               <Fragment slot="preview">
@@ -99,7 +99,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "states" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
             <h3 class="docs-demo-title">Invalid &amp; disabled</h3>
             <DemoTabs id="dm-combobox-states">
               <Fragment slot="preview">

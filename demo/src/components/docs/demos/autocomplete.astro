@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-autocomplete-basic">
               <Fragment slot="preview">
@@ -31,7 +31,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "hints" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
             <h3 class="docs-demo-title">Options with hints</h3>
             <DemoTabs id="dm-autocomplete-hints">
               <Fragment slot="preview">
@@ -56,7 +56,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "groups" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
             <h3 class="docs-demo-title">Groups</h3>
             <DemoTabs id="dm-autocomplete-groups">
               <Fragment slot="preview">
@@ -79,7 +79,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
             <h3 class="docs-demo-title">Sizes</h3>
             <DemoTabs id="dm-autocomplete-sizes">
               <Fragment slot="preview">
@@ -97,7 +97,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "clearable" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
             <h3 class="docs-demo-title">Clearable + open on focus</h3>
             <DemoTabs id="dm-autocomplete-clearable">
               <Fragment slot="preview">

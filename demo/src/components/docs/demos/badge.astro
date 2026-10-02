@@ -13,7 +13,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "variants" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Variants</h3>
             <DemoTabs id="dm-badge-variants">
               <Fragment slot="preview">
@@ -32,7 +32,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Sizes</h3>
             <DemoTabs id="dm-badge-sizes">
               <Fragment slot="preview">
@@ -48,7 +48,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "icon" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Badge with icon</h3>
             <DemoTabs id="dm-badge-icon">
               <Fragment slot="preview">
@@ -81,7 +81,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "dot" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Badge with status dot</h3>
             <DemoTabs id="dm-badge-dot">
               <Fragment slot="preview">
@@ -99,7 +99,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "avatar" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Badge with avatar</h3>
             <DemoTabs id="dm-badge-avatar">
               <Fragment slot="preview">
@@ -123,7 +123,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "flag" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Badge with flag image</h3>
             <DemoTabs id="dm-badge-flag">
               <Fragment slot="preview">
@@ -147,7 +147,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "dismiss" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Badge with dismiss button</h3>
             <DemoTabs id="dm-badge-dismiss">
               <Fragment slot="preview">
@@ -168,7 +168,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "overlay" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-badge-${id}`}>
             <h3 class="docs-demo-title">Overlay bubble</h3>
             <DemoTabs id="dm-badge-overlay">
               <Fragment slot="preview">

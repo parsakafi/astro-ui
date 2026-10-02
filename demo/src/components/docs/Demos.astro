@@ -65,6 +65,10 @@ const {slug, demoIds} = Astro.props;
 const component = bySlug(slug);
 if (!component) throw new Error(`Demos: unknown component slug "${slug}"`);
 
+// Long demo lists (Chart et al.) get an anchor-chip index above the
+// blocks — each block carries id={`demo-${slug}-${id}`}.
+const DEMOS_NAV_MIN = 5;
+
 // Shiki-highlight every snippet used by this component up front.
 const codeCache = new Map<string, string>();
 for (const id of demoIds) {
@@ -203,5 +207,21 @@ const Demo = demos[component.slug];
     }
   });
 </script>
+
+{demoIds.length >= DEMOS_NAV_MIN && (
+  <nav class="docs-demos-nav" aria-label="Demos">
+    <ul>
+      {demoIds.map((id) => {
+        const demo = component.demos.find((d) => d.id === id);
+        if (!demo) return null;
+        return (
+          <li>
+            <a href={`#demo-${slug}-${id}`}>{demo.title}</a>
+          </li>
+        );
+      })}
+    </ul>
+  </nav>
+)}
 
 {Demo && <Demo demoIds={demoIds} codeHtml={codeCache} />}

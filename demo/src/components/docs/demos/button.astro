@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-button-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-button-basic">
               <Fragment slot="preview">
@@ -24,7 +24,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "variant" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-button-${id}`}>
             <h3 class="docs-demo-title">Variant</h3>
             <DemoTabs id="dm-button-variant">
               <Fragment slot="preview">
@@ -47,7 +47,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "color" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-button-${id}`}>
             <h3 class="docs-demo-title">Color</h3>
             <DemoTabs id="dm-button-color">
               <Fragment slot="preview">
@@ -65,7 +65,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "size" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-button-${id}`}>
             <h3 class="docs-demo-title">Size</h3>
             <DemoTabs id="dm-button-size">
               <Fragment slot="preview">
@@ -84,7 +84,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "loading" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-button-${id}`}>
             <h3 class="docs-demo-title">Loading</h3>
             <DemoTabs id="dm-button-loading">
               <Fragment slot="preview">
@@ -100,7 +100,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "invalid" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-button-${id}`}>
             <h3 class="docs-demo-title">Invalid</h3>
             <DemoTabs id="dm-button-invalid">
               <Fragment slot="preview">
@@ -115,7 +115,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "shape-shadow" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-button-${id}`}>
             <h3 class="docs-demo-title">Shape &amp; shadow</h3>
             <DemoTabs id="dm-button-shape">
               <Fragment slot="preview">

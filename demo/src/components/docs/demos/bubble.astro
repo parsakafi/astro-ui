@@ -16,7 +16,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "billing-thread" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
             <h3 class="docs-demo-title">Two-sided billing thread</h3>
             <DemoTabs id="dm-bubble-billing">
               <Fragment slot="preview">
@@ -44,7 +44,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "deploy-thread" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
             <h3 class="docs-demo-title">Seven variants in one deploy thread</h3>
             <DemoTabs id="dm-bubble-deploy">
               <Fragment slot="preview">
@@ -79,7 +79,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "group" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
             <h3 class="docs-demo-title">Consecutive turns in a BubbleGroup</h3>
             <DemoTabs id="dm-bubble-group">
               <Fragment slot="preview">
@@ -109,7 +109,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "reactions" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
             <h3 class="docs-demo-title">Reaction rows</h3>
             <DemoTabs id="dm-bubble-reactions">
               <Fragment slot="preview">
@@ -144,7 +144,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "ghost-rich" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
             <h3 class="docs-demo-title">Ghost bubble with rich content</h3>
             <DemoTabs id="dm-bubble-ghost">
               <Fragment slot="preview">
@@ -169,7 +169,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "collapsible-answer" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
             <h3 class="docs-demo-title">Long answer behind a Collapsible</h3>
             <DemoTabs id="dm-bubble-collapsible">
               <Fragment slot="preview">
@@ -204,7 +204,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "interactive" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
             <h3 class="docs-demo-title">Tinted bubbles as buttons + action row</h3>
             <DemoTabs id="dm-bubble-interactive">
               <Fragment slot="preview">

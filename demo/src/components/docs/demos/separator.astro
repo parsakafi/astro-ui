@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "both" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-separator-${id}`}>
             <h3 class="docs-demo-title">Horizontal &amp; vertical</h3>
             <DemoTabs id="dm-separator-both">
               <Fragment slot="preview">
@@ -26,7 +26,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "variants" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-separator-${id}`}>
             <h3 class="docs-demo-title">Line variants</h3>
             <DemoTabs id="dm-separator-variants">
               <Fragment slot="preview">
@@ -46,7 +46,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "vertical-variants" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-separator-${id}`}>
             <h3 class="docs-demo-title">Vertical variants</h3>
             <DemoTabs id="dm-separator-vertical-variants">
               <Fragment slot="preview">
@@ -65,7 +65,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "labeled" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-separator-${id}`}>
             <h3 class="docs-demo-title">Labeled divider</h3>
             <DemoTabs id="dm-separator-labeled">
               <Fragment slot="preview">

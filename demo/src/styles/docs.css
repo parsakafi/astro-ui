@@ -1943,10 +1943,40 @@
 /* ---------- Demo blocks ---------- */
 /* Title/preview/code share the `.docs-demo-` prefix, not
    `.docs-demo-block-`, so they stay top-level siblings. */
+/* Anchor-chip index above long demo lists (5+ demos): jumps to each
+   demo block, which offsets for the sticky header via the shared
+   anchor scroll-margin below. */
+.docs-demos-nav {
+  margin-block-end: var(--ui-space-4);
+}
+.docs-demos-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-1) var(--ui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.docs-demos-nav a {
+  display: inline-block;
+  padding: var(--ui-space-1) var(--ui-space-3);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  text-decoration: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  transition: color var(--ui-transition-fast), border-color var(--ui-transition-fast);
+}
+.docs-demos-nav a:hover {
+  color: var(--ui-foreground);
+  border-color: var(--ui-muted-foreground);
+}
+
 .docs-demo-block {
   display: grid;
   gap: var(--ui-space-2);
   margin-block-end: var(--ui-space-6);
+  scroll-margin-block-start: 7.5rem;
 }
 
 .docs-demo-title {

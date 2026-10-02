@@ -15,7 +15,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-breadcrumb-basic">
               <Fragment slot="preview">
@@ -34,7 +34,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "chevron" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Chevron separator</h3>
             <DemoTabs id="dm-breadcrumb-chevron">
               <Fragment slot="preview">
@@ -53,7 +53,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "dropdown" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Breadcrumb with dropdown menu</h3>
             <DemoTabs id="dm-breadcrumb-dropdown">
               <Fragment slot="preview">
@@ -88,7 +88,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "slash" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Custom slash separator</h3>
             <DemoTabs id="dm-breadcrumb-slash">
               <Fragment slot="preview">
@@ -121,7 +121,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "ellipsis" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Ellipsis for long paths</h3>
             <DemoTabs id="dm-breadcrumb-ellipsis">
               <Fragment slot="preview">
@@ -141,7 +141,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "icons" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Icons for each item</h3>
             <DemoTabs id="dm-breadcrumb-icons">
               <Fragment slot="preview">
@@ -171,7 +171,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "chevrons" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Double chevron separators</h3>
             <DemoTabs id="dm-breadcrumb-chevrons">
               <Fragment slot="preview">
@@ -190,7 +190,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "pill-frame" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Pill-style breadcrumb inside frame</h3>
             <DemoTabs id="dm-breadcrumb-pill">
               <Fragment slot="preview">
@@ -215,7 +215,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "home-icon" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Home icon item</h3>
             <DemoTabs id="dm-breadcrumb-home">
               <Fragment slot="preview">
@@ -238,7 +238,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "badge-count" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Badge with count</h3>
             <DemoTabs id="dm-breadcrumb-badge">
               <Fragment slot="preview">
@@ -264,7 +264,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "buttons" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Button-style breadcrumb</h3>
             <DemoTabs id="dm-breadcrumb-buttons">
               <Fragment slot="preview">
@@ -291,7 +291,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "card" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-breadcrumb-${id}`}>
             <h3 class="docs-demo-title">Breadcrumb inside card</h3>
             <DemoTabs id="dm-breadcrumb-card">
               <Fragment slot="preview">

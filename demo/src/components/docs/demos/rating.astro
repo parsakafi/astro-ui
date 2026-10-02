@@ -11,7 +11,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     {demoIds.map((id) => (
       <Fragment>
         {id === "basic" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-rating-${id}`}>
             <h3 class="docs-demo-title">Interactive &amp; readonly</h3>
             <DemoTabs id="dm-rating-basic">
               <Fragment slot="preview">
@@ -26,7 +26,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "sizes" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-rating-${id}`}>
             <h3 class="docs-demo-title">Sizes &amp; variants</h3>
             <DemoTabs id="dm-rating-sizes">
               <Fragment slot="preview">
@@ -42,7 +42,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "icons" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-rating-${id}`}>
             <h3 class="docs-demo-title">Icon presets &amp; custom</h3>
             <DemoTabs id="dm-rating-icons">
               <Fragment slot="preview">
@@ -64,7 +64,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "emoji" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-rating-${id}`}>
             <h3 class="docs-demo-title">Emoji sentiment</h3>
             <DemoTabs id="dm-rating-emoji">
               <Fragment slot="preview">
@@ -79,7 +79,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "scale" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-rating-${id}`}>
             <h3 class="docs-demo-title">Satisfaction scale</h3>
             <DemoTabs id="dm-rating-scale">
               <Fragment slot="preview">
@@ -106,7 +106,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
           </div>
         )}
         {id === "nps" && (
-          <div class="docs-demo-block">
+          <div class="docs-demo-block" id={`demo-rating-${id}`}>
             <h3 class="docs-demo-title">Single highlight (NPS-style)</h3>
             <DemoTabs id="dm-rating-nps">
               <Fragment slot="preview">
