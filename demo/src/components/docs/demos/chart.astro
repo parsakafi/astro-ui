@@ -516,6 +516,128 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             </DemoTabs>
           </div>
         )}
+        {id === "funnel" && (
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
+            <h3 class="docs-demo-title">Funnel</h3>
+            <DemoTabs id="dm-chart-funnel">
+              <Fragment slot="preview">
+                <Chart
+                  type="funnel"
+                  title="Hiring pipeline"
+                  description="Stages keep input order — widths scale with the value"
+                  labels={["Applied", "Screened", "Interview", "Offer", "Hired"]}
+                  series={[{name: "Candidates", data: [1200, 780, 430, 180, 96]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("funnel")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "rose" && (
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
+            <h3 class="docs-demo-title">Nightingale rose</h3>
+            <DemoTabs id="dm-chart-rose">
+              <Fragment slot="preview">
+                <Chart
+                  type="rose"
+                  title="Cases by month"
+                  description="Equal angles, area encodes the value — Nightingale's polar-area manner"
+                  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}
+                  series={[{name: "Cases", data: [12, 19, 33, 27, 41, 22]}]}
+                  sliceLabels="value"
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("rose")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "histogram" && (
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
+            <h3 class="docs-demo-title">Histogram</h3>
+            <DemoTabs id="dm-chart-histogram">
+              <Fragment slot="preview">
+                <Chart
+                  type="histogram"
+                  title="Response time"
+                  description="Raw samples auto-binned (Sturges) into touching bars"
+                  series={[{name: "ms", data: [12, 18, 22, 19, 25, 31, 28, 35, 42, 38, 47, 55, 51, 62, 58, 70, 66, 74, 81, 77, 90, 95, 110, 88, 72, 64, 59, 48, 44, 39]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("histogram")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "waffle" && (
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
+            <h3 class="docs-demo-title">Waffle</h3>
+            <DemoTabs id="dm-chart-waffle">
+              <Fragment slot="preview">
+                <Chart
+                  type="waffle"
+                  title="Market share"
+                  description="10×10 unit grid — each cell is 1% of the total"
+                  height={220}
+                  labels={["Alpha", "Beta", "Gamma"]}
+                  series={[{name: "Share", data: [55, 30, 15]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("waffle")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "bullet" && (
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
+            <h3 class="docs-demo-title">Bullet graph</h3>
+            <DemoTabs id="dm-chart-bullet">
+              <Fragment slot="preview">
+                <Chart
+                  type="bullet"
+                  title="Q3 performance"
+                  description="Actual vs target against qualitative ranges (Few's bullet graph)"
+                  height={220}
+                  bullets={[
+                    {label: "Revenue", ranges: [150, 225, 300], measure: 270, target: 250},
+                    {label: "Profit", ranges: [20, 25, 30], measure: 21, target: 26},
+                    {label: "Orders", ranges: [400, 550, 700], measure: 640},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("bullet")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dumbbell" && (
+          <div class="docs-demo-block" id={`demo-chart-${id}`}>
+            <h3 class="docs-demo-title">Dumbbell</h3>
+            <DemoTabs id="dm-chart-dumbbell">
+              <Fragment slot="preview">
+                <Chart
+                  type="dumbbell"
+                  title="Before vs after"
+                  description="Paired dots with a delta connector — one series is a dot plot"
+                  labels={["Shop", "Blog", "Docs"]}
+                  series={[
+                    {name: "Before", data: [32, 48, 27]},
+                    {name: "After", data: [51, 44, 63]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("dumbbell")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "pie" && (
           <div class="docs-demo-block" id={`demo-chart-${id}`}>
             <h3 class="docs-demo-title">Pie</h3>

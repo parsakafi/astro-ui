@@ -11,7 +11,7 @@ since: "1.1.0"
 isNew: false
 related: ["progress", "table", "card"]
 features:
-  - "20 types: bar, line, area, pie, donut, pie3d, treemap, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot"
+  - "26 types: bar, line, area, pie, donut, pie3d, treemap, funnel, rose, histogram, waffle, bullet, dumbbell, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot"
   - "Pure build-time SVG — zero JS, zero chart library"
   - "Token-driven colors (--ui-chart-1..6) — themable, dark-mode aware"
   - "Grouped or stacked series (stack prop, bars and hbar part-to-whole), curved lines, gradient fills (area/bar/pie/donut), custom per-series colors, nice y-axis ticks"
@@ -32,10 +32,10 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "pie-petal", "pie-3d", "treemap", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare", "boxplot", "boxplot-raw"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "pie-petal", "pie-3d", "treemap", "funnel", "rose", "histogram", "waffle", "bullet", "dumbbell", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare", "boxplot", "boxplot-raw"]
 props:
   - name: "type"
-    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"pie3d\" | \"treemap\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\" | \"boxplot\"'"
+    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"pie3d\" | \"treemap\" | \"funnel\" | \"rose\" | \"histogram\" | \"waffle\" | \"bullet\" | \"dumbbell\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\" | \"boxplot\"'"
     def: "'\"bar\"'"
     description: "Chart type."
   - name: "labels"
@@ -98,6 +98,22 @@ props:
     type: "number"
     def: "10"
     description: "Treemap tile corner rounding in px (clamped to half the tile's smallest side)."
+  - name: "roseMode"
+    type: "\"area\" | \"radius\""
+    def: "\"area\""
+    description: "Rose wedge encoding — area-proportional (Nightingale's manner) or radius-proportional."
+  - name: "bins"
+    type: "number"
+    def: "Sturges"
+    description: "Histogram bin count override (1–40); defaults to ceil(log2(n) + 1) over the sample count."
+  - name: "barGap"
+    type: "number"
+    def: "2"
+    description: "Histogram gutter between bars in px (never more than half a bar); 0 restores touching bars."
+  - name: "bullets"
+    type: "BulletRow[]"
+    def: "—"
+    description: "Bullet rows: { label, ranges (ascending ceilings, 1–5), measure, target?, color? }."
   - name: "radialSweep"
     type: "\"full\" | \"half\""
     def: "\"full\""

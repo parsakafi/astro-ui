@@ -15,7 +15,7 @@ export const chart: ComponentMeta = {
     usage:
         `---\nimport { Chart } from "astro-ui";\n---\n\n<Chart\n  type="bar"\n  title="Revenue by month"\n  labels={["Jan", "Feb", "Mar"]}\n  series={[{ name: "Revenue", data: [12, 30, 24] }]}\n/>`,
     features: [
-        "20 types: bar, line, area, pie, donut, pie3d, treemap, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot",
+        "26 types: bar, line, area, pie, donut, pie3d, treemap, funnel, rose, histogram, waffle, bullet, dumbbell, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot",
         "Pure build-time SVG — zero JS, zero chart library",
         "Token-driven colors (--ui-chart-1..6) — themable, dark-mode aware",
         "Grouped or stacked series (stack prop, bars and hbar part-to-whole), curved lines, gradient fills (area/bar/pie/donut), custom per-series colors, nice y-axis ticks",
@@ -234,6 +234,37 @@ export const chart: ComponentMeta = {
             code: `<Chart\n  type="treemap"\n  title="Top products"\n  description="Tile area scales with the value \u2014 squarified at build time"\n  height={300}\n  labels={["Other", "Nova Chat", "Assistly", "Signal OS", "Atlas AI", "Draft Lab"]}\n  series={[{ name: "Users", data: [22, 16, 14, 21, 15, 12] }]}\n/>\n<!-- values read from series[0].data like pie; tiles sort largest-first,\n     zero values render no tile; tileRadius rounds the tile corners -->`,
         },
         {
+            id: "funnel",
+            title: "Funnel",
+            code: `<Chart\n  type="funnel"\n  title="Hiring pipeline"\n  description="Stages keep input order \u2014 widths scale with the value"\n  labels={["Applied", "Screened", "Interview", "Offer", "Hired"]}\n  series={[{ name: "Candidates", data: [1200, 780, 430, 180, 96] }]}\n/>\n<!-- one centered trapezoid per stage; narrow stages keep their tooltip -->`,
+        },
+        {
+            id: "rose",
+            title: "Nightingale rose",
+            code: `<Chart\n  type="rose"\n  title="Cases by month"\n  description="Equal angles, area encodes the value \u2014 Nightingale's polar-area manner"\n  labels={["Jan", "Feb", "Mar", "Apr", "May", "Jun"]}\n  series={[{ name: "Cases", data: [12, 19, 33, 27, 41, 22] }]}\n  sliceLabels="value"\n/>\n<!-- roseMode: "area" (default, radius \u221d \u221avalue) | "radius" (radius \u221d value) -->`,
+        },
+        {
+            id: "histogram",
+            title: "Histogram",
+            code: `<Chart\n  type="histogram"\n  title="Response time"\n  description="Raw samples auto-binned (Sturges) into touching bars"\n  series={[{ name: "ms", data: [12, 18, 22, 19, 25, 31, 28, 35, 42, 38, 47, 55, 51, 62, 58, 70, 66, 74, 81, 77, 90, 95, 110, 88, 72, 64, 59, 48, 44, 39] }]}\n/>\n<!-- bins={12} overrides the count; barGap={0} restores touching bars;
+     pass raw observations, not counts -->`,
+        },
+        {
+            id: "waffle",
+            title: "Waffle",
+            code: `<Chart\n  type="waffle"\n  title="Market share"\n  description="10\u00d710 unit grid \u2014 each cell is 1% of the total"\n  height={220}\n  labels={["Alpha", "Beta", "Gamma"]}\n  series={[{ name: "Share", data: [55, 30, 15] }]}\n/>\n<!-- values read from series[0].data like pie; sub-1% shares render no cell -->`,
+        },
+        {
+            id: "bullet",
+            title: "Bullet graph",
+            code: `<Chart\n  type="bullet"\n  title="Q3 performance"\n  description="Actual vs target against qualitative ranges (Few's bullet graph)"\n  height={220}\n  bullets={[\n    { label: "Revenue", ranges: [150, 225, 300], measure: 270, target: 250 },\n    { label: "Profit", ranges: [20, 25, 30], measure: 21, target: 26 },\n    { label: "Orders", ranges: [400, 550, 700], measure: 640 },\n  ]}\n/>\n<!-- bullets: { label, ranges (ascending ceilings), measure, target?, color? } -->`,
+        },
+        {
+            id: "dumbbell",
+            title: "Dumbbell",
+            code: `<Chart\n  type="dumbbell"\n  title="Before vs after"\n  description="Paired dots with a delta connector \u2014 one series is a dot plot"\n  labels={["Shop", "Blog", "Docs"]}\n  series={[\n    { name: "Before", data: [32, 48, 27] },\n    { name: "After", data: [51, 44, 63] },\n  ]}\n/>\n<!-- the axis need not start at zero; hover the connector for the delta -->`,
+        },
+        {
             id: "slice-labels",
             title: "Slice labels (value & leader lines)",
             code: `<Chart\n  type="donut"\n  padAngle={4}\n  sliceRadius={18}\n  sliceLabels="value"\n  title="Browser share"\n  description="Formatted values printed at each slice centroid"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Users", data: [275, 200, 187, 173, 90] }]}\n  legend={false}\n/>\n\n<Chart\n  type="pie"\n  sliceLabels="label"\n  title="Browser share"\n  description="Category names outside, connected by elbow leader lines"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Users", data: [275, 200, 187, 173, 90] }]}\n  legend={false}\n/>\n<!-- sliceLabels: "none" | "value" | "label" -->`,
@@ -397,7 +428,7 @@ export const chart: ComponentMeta = {
         },
     ],
     props: [
-        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "treemap" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot"'`, `'"bar"'`, "Chart type."),
+        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "treemap" | "funnel" | "rose" | "histogram" | "waffle" | "bullet" | "dumbbell" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot"'`, `'"bar"'`, "Chart type."),
         t("labels", "string[]", "required", "Category labels (x axis; slice names for pie/donut)."),
         t("series", "ChartSeries[]", "required", "Data series: { name, data, color? }."),
         t("title", "string", "—", "Accessible title, rendered as figcaption."),
@@ -413,6 +444,10 @@ export const chart: ComponentMeta = {
         t("collapseBelow", "number", "0", "Merge pie/donut slices below this percent share into a trailing muted Other slice (hover lists the contents)."),
         t("depth", "number", "36", "3D pie wall height in px (clamped 0–120) — chunkier extrusions read more dimensional; 0 is a flat tilted ellipse."),
         t("tileRadius", "number", "10", "Treemap tile corner rounding in px (clamped to half the tile's smallest side)."),
+        t("roseMode", '"area" | "radius"', '"area"', "Rose wedge encoding — area-proportional (Nightingale's manner) or radius-proportional."),
+        t("bins", "number", "Sturges", "Histogram bin count override (1–40); defaults to ceil(log2(n) + 1) over the sample count."),
+        t("barGap", "number", "2", "Histogram gutter between bars in px (never more than half a bar); 0 restores touching bars."),
+        t("bullets", "BulletRow[]", "—", "Bullet rows: { label, ranges (ascending ceilings, 1–5), measure, target?, color? }."),
         t("radialSweep", '"full" | "half"', '"full"', "Ring sweep for radial charts \u2014 full circle or half-circle rainbow."),
         t("nodes", "SankeyNode[]", "—", "Sankey nodes: { name, color? }."),
         t("links", "SankeyLink[]", "—", "Sankey flows: { source, target, value, color? }."),
