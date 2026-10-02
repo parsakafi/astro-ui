@@ -475,6 +475,27 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             </DemoTabs>
           </div>
         )}
+        {id === "pie-3d" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">3D pie (extruded)</h3>
+            <DemoTabs id="dm-chart-pie-3d">
+              <Fragment slot="preview">
+                <Chart
+                  type="pie3d"
+                  title="Share of voice"
+                  description="Extruded slices with shaded walls and outside callouts"
+                  height={320}
+                  labels={["Other", "Signal OS", "Nova Chat", "Pulse", "Wave", "Orbit"]}
+                  series={[{name: "Share", data: [22, 21, 16, 15, 14, 12]}]}
+                  sliceLabels="label"
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("pie-3d")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
         {id === "pie" && (
           <div class="docs-demo-block">
             <h3 class="docs-demo-title">Pie</h3>

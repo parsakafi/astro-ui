@@ -11,7 +11,7 @@ since: "1.1.0"
 isNew: false
 related: ["progress", "table", "card"]
 features:
-  - "18 types: bar, line, area, pie, donut, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot"
+  - "19 types: bar, line, area, pie, donut, pie3d, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot"
   - "Pure build-time SVG — zero JS, zero chart library"
   - "Token-driven colors (--ui-chart-1..6) — themable, dark-mode aware"
   - "Grouped or stacked series (stack prop, bars and hbar part-to-whole), curved lines, gradient fills (area/bar/pie/donut), custom per-series colors, nice y-axis ticks"
@@ -32,10 +32,10 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "pie-petal", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare", "boxplot", "boxplot-raw"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "pie-petal", "pie-3d", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare", "boxplot", "boxplot-raw"]
 props:
   - name: "type"
-    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\" | \"boxplot\"'"
+    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"pie3d\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\" | \"boxplot\"'"
     def: "'\"bar\"'"
     description: "Chart type."
   - name: "labels"
@@ -90,6 +90,10 @@ props:
     type: "number"
     def: "0"
     description: "Merge pie/donut slices below this percent share into a trailing muted Other slice (hover lists the contents)."
+  - name: "depth"
+    type: "number"
+    def: "36"
+    description: "3D pie wall height in px (clamped 0–120) — chunkier extrusions read more dimensional; 0 is a flat tilted ellipse."
   - name: "radialSweep"
     type: "\"full\" | \"half\""
     def: "\"full\""

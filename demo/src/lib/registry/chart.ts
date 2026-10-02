@@ -15,7 +15,7 @@ export const chart: ComponentMeta = {
     usage:
         `---\nimport { Chart } from "astro-ui";\n---\n\n<Chart\n  type="bar"\n  title="Revenue by month"\n  labels={["Jan", "Feb", "Mar"]}\n  series={[{ name: "Revenue", data: [12, 30, 24] }]}\n/>`,
     features: [
-        "18 types: bar, line, area, pie, donut, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot",
+        "19 types: bar, line, area, pie, donut, pie3d, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot",
         "Pure build-time SVG — zero JS, zero chart library",
         "Token-driven colors (--ui-chart-1..6) — themable, dark-mode aware",
         "Grouped or stacked series (stack prop, bars and hbar part-to-whole), curved lines, gradient fills (area/bar/pie/donut), custom per-series colors, nice y-axis ticks",
@@ -224,6 +224,11 @@ export const chart: ComponentMeta = {
             code: `<Chart\n  type="pie"\n  padAngle={2}\n  sliceRadius={18}\n  sliceCorners="outer"\n  title="Vote share"\n  description="Only the rim corners round \u2014 the center tip stays sharp"\n  labels={["A", "B", "C", "D", "E", "F"]}\n  series={[{ name: "Votes", data: [28, 22, 18, 14, 10, 8] }]}\n  legend={false}\n/>\n<!-- sliceCorners: "all" (default, every corner) | "outer" (rim only) -->`,
         },
         {
+            id: "pie-3d",
+            title: "3D pie (extruded)",
+            code: `<Chart\n  type="pie3d"\n  title="Share of voice"\n  description="Extruded slices with shaded walls and outside callouts"\n  height={320}\n  labels={["Other", "Signal OS", "Nova Chat", "Pulse", "Wave", "Orbit"]}\n  series={[{ name: "Share", data: [22, 21, 16, 15, 14, 12] }]}\n  sliceLabels="label"\n/>\n<!-- depth sets the wall height in px (default 36); sliceLabels="label"\n     renders outside "pct% NAME" callouts, "value"/"value-pct" print on\n     the top face; sliceRadius is ignored so walls meet the top exactly -->`,
+        },
+        {
             id: "slice-labels",
             title: "Slice labels (value & leader lines)",
             code: `<Chart\n  type="donut"\n  padAngle={4}\n  sliceRadius={18}\n  sliceLabels="value"\n  title="Browser share"\n  description="Formatted values printed at each slice centroid"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Users", data: [275, 200, 187, 173, 90] }]}\n  legend={false}\n/>\n\n<Chart\n  type="pie"\n  sliceLabels="label"\n  title="Browser share"\n  description="Category names outside, connected by elbow leader lines"\n  labels={["Chrome", "Safari", "Firefox", "Edge", "Other"]}\n  series={[{ name: "Users", data: [275, 200, 187, 173, 90] }]}\n  legend={false}\n/>\n<!-- sliceLabels: "none" | "value" | "label" -->`,
@@ -387,7 +392,7 @@ export const chart: ComponentMeta = {
         },
     ],
     props: [
-        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot"'`, `'"bar"'`, "Chart type."),
+        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot"'`, `'"bar"'`, "Chart type."),
         t("labels", "string[]", "required", "Category labels (x axis; slice names for pie/donut)."),
         t("series", "ChartSeries[]", "required", "Data series: { name, data, color? }."),
         t("title", "string", "—", "Accessible title, rendered as figcaption."),
@@ -401,6 +406,7 @@ export const chart: ComponentMeta = {
         t("sliceLabels", '"none" | "value" | "value-pct" | "label"', '"none"', "Slice callouts: values, value·pct at centroids, or names outside with leader lines."),
         t("sliceLabelFormat", "(value: number, pct: number) => string", "—", "Custom text for value-style slice callouts."),
         t("collapseBelow", "number", "0", "Merge pie/donut slices below this percent share into a trailing muted Other slice (hover lists the contents)."),
+        t("depth", "number", "36", "3D pie wall height in px (clamped 0–120) — chunkier extrusions read more dimensional; 0 is a flat tilted ellipse."),
         t("radialSweep", '"full" | "half"', '"full"', "Ring sweep for radial charts \u2014 full circle or half-circle rainbow."),
         t("nodes", "SankeyNode[]", "—", "Sankey nodes: { name, color? }."),
         t("links", "SankeyLink[]", "—", "Sankey flows: { source, target, value, color? }."),
