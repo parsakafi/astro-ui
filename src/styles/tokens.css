@@ -62,6 +62,17 @@
   --ui-info-foreground: #ffffff;
   --ui-info-muted: #e0f2fe;
 
+  /* Categorical chart palette — vivid, hue-spread series colors in
+     the manner of neon dashboard themes. Charts read --ui-chart-1..6
+     (with semantic fallbacks); override these six to retheme every
+     chart at once without touching component sources. */
+  --ui-chart-1: #f43f5e;
+  --ui-chart-2: #0ea5e9;
+  --ui-chart-3: #22c55e;
+  --ui-chart-4: #f59e0b;
+  --ui-chart-5: #8b5cf6;
+  --ui-chart-6: #14b8a6;
+
   --ui-disabled-opacity: 0.5;
 
   /* ---------- Typography ---------- */
@@ -168,6 +179,13 @@
   --ui-accent: #8b5cf6;
   --ui-accent-foreground: #ffffff;
 
+  --ui-chart-1: #fb7185;
+  --ui-chart-2: #38bdf8;
+  --ui-chart-3: #4ade80;
+  --ui-chart-4: #fbbf24;
+  --ui-chart-5: #a78bfa;
+  --ui-chart-6: #2dd4bf;
+
   --ui-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
   --ui-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
   --ui-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
@@ -201,5 +219,12 @@
     --ui-warning-muted: #451a03;
     --ui-error-muted: #450a0a;
     --ui-info-muted: #0c2d48;
+
+    --ui-chart-1: #fb7185;
+    --ui-chart-2: #38bdf8;
+    --ui-chart-3: #4ade80;
+    --ui-chart-4: #fbbf24;
+    --ui-chart-5: #a78bfa;
+    --ui-chart-6: #2dd4bf;
   }
 }

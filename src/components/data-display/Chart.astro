@@ -448,11 +448,39 @@ const comboRightMaxY = rightMaxY ?? Math.max(...comboRight.flatMap((s) => s.data
 const peak = combo
   ? Math.max(maxY ?? Math.max(...comboLeft.flatMap((s) => s.data), 1), 1)
   : maxY ?? (stackPercent ? 100 : stacked ? Math.max(...stackTotals, 1) : Math.max(...series.flatMap((s) => s.data), 1));
-const yMax = peak <= 0 ? 1 : peak;
-const yRMax = combo ? Math.max(comboRightMaxY <= 0 ? 1 : comboRightMaxY, 1) : yMax;
-const niceStep = Math.pow(10, Math.floor(Math.log10(yMax))) / 2;
-const yTicks = stackPercent ? [0, 25, 50, 75, 100] : [0, 1, 2, 3].map((i) => i * (yMax / 3));
-const yRTicks = [0, 1, 2, 3].map((i) => i * (yRMax / 3));
+/* Nice scales: round the raw third (peak/3) UP to a 1/1.5/2/2.5/3/4/5/6/8
+   ×10ⁿ step and extend the ceiling to a whole multiple, so ticks read
+   0, 150, 300, 450 instead of 0, 153.3, 306.7. An explicit
+   maxY/rightMaxY stays exact (clamped ≥ 1, as before). */
+const NICE_MULTS = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+const niceStepUp = (v: number) => {
+  const p = 10 ** Math.floor(Math.log10(Math.max(v, 1e-9)));
+  const n = v / p;
+  return (NICE_MULTS.find((m) => m >= n - 1e-9) ?? 10) * p;
+};
+const niceScale = (peak: number) => {
+  if (peak <= 0) return {max: 1, ticks: [0, 1 / 3, 2 / 3, 1]};
+  const step = niceStepUp(peak / 3);
+  const count = Math.max(Math.ceil(peak / step - 1e-9), 1);
+  return {max: count * step, ticks: Array.from({length: count + 1}, (_, i) => i * step)};
+};
+const thirds = (max: number) => [0, 1, 2, 3].map((i) => (i * max) / 3);
+/* 100% stacking keeps its exact 0–100 scale (full bars must touch
+   the top); everything else nices or honors the override. */
+const yScale = !combo && stackPercent
+  ? {max: 100, ticks: [0, 25, 50, 75, 100]}
+  : maxY != null
+    ? {max: Math.max(maxY, 1), ticks: thirds(Math.max(maxY, 1))}
+    : niceScale(peak);
+const yMax = yScale.max;
+const yTicks = yScale.ticks;
+const yRScale = combo
+  ? rightMaxY != null
+    ? {max: Math.max(rightMaxY, 1), ticks: thirds(Math.max(rightMaxY, 1))}
+    : niceScale(comboRightMaxY)
+  : {max: yMax, ticks: yTicks};
+const yRMax = yRScale.max;
+const yRTicks = yRScale.ticks;
 const x = (i: number, n: number) => PAD.left + (n <= 1 ? plotW / 2 : (i / (n - 1)) * plotW);
 const y = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yMax) * plotH;
 const yR = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yRMax) * plotH;
@@ -1172,7 +1200,6 @@ const radarAxisLabels = labels.map((label, i) => {
 });
 
 const hbarMax = Math.max(...(series[0]?.data ?? [1]), 1);
-const hbarRowH = 2.25;
 /* hbar + stack: one full-width track, one segment per series, sized as
    a share of the series total (part-to-whole, like the reference
    "capital inflows" bar). */
