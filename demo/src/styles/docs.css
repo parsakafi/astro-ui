@@ -2059,6 +2059,169 @@
   line-height: 1.7;
 }
 
+/* ---------- Token playground ---------- */
+/* Live token editor on /docs/styling: controls left, scoped preview +
+   generated CSS right. Overrides land as inline custom properties on
+   the preview panel only — the rest of the page keeps site tokens. */
+.token-playground {
+  display: grid;
+  grid-template-columns: minmax(16rem, 21rem) minmax(0, 1fr);
+  gap: var(--ui-space-4);
+  align-items: start;
+}
+@media (max-width: 64rem) {
+  .token-playground {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.token-playground-controls {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+
+.tp-group {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  background-color: var(--ui-background);
+}
+.tp-group[open] .tp-group-title {
+  border-block-end: 1px solid var(--ui-border);
+}
+
+.tp-group-title {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+  cursor: pointer;
+}
+
+.tp-token {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-1) var(--ui-space-3);
+}
+.tp-token:last-child {
+  padding-block-end: var(--ui-space-2);
+}
+.tp-token[data-changed] .tp-token-name {
+  color: var(--ui-primary);
+}
+
+.tp-token-name {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tp-token-color {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+}
+.tp-token-color input[type=color] {
+  inline-size: 2rem;
+  block-size: 1.75rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  cursor: pointer;
+}
+.tp-token-color input[type=text] {
+  inline-size: 5.5rem;
+}
+
+.tp-token input[type=text] {
+  padding: var(--ui-space-1) var(--ui-space-2);
+  color: var(--ui-foreground);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  background-color: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+}
+.tp-token input[type=text].is-invalid {
+  border-color: var(--ui-error);
+}
+
+.tp-token-text {
+  inline-size: 100%;
+}
+
+.token-playground-side {
+  display: grid;
+  gap: var(--ui-space-3);
+  min-inline-size: 0;
+}
+
+.token-playground-preview {
+  display: grid;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  background-color: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+
+.tp-preview-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-2);
+}
+
+.tp-output-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+.tp-output-actions {
+  display: inline-flex;
+  gap: var(--ui-space-1);
+}
+
+.tp-btn {
+  padding: var(--ui-space-1) var(--ui-space-3);
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-medium);
+  background-color: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  cursor: pointer;
+}
+.tp-btn:hover:not([disabled]) {
+  background-color: var(--ui-muted);
+}
+.tp-btn[disabled] {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.tp-output {
+  margin: 0;
+  padding: var(--ui-space-4);
+  background-color: var(--ui-muted);
+  border-radius: var(--ui-radius-md);
+  overflow-x: auto;
+}
+.tp-output code {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  line-height: 1.7;
+}
+
 /* Inline usage snippets (Usage section) */
 .docs-codeblock {
   position: relative;

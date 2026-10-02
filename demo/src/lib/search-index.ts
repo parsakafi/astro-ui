@@ -71,6 +71,13 @@ const docsPages: SearchEntry[] = [
         keywords: "theme tokens css variables customize"
     },
     {
+        title: "Token playground",
+        hint: "Edit tokens live, copy the CSS",
+        href: "/docs/styling/#playground",
+        group: "Docs",
+        keywords: "playground editor customize colors palette theme"
+    },
+    {
         title: "RTL support",
         hint: "Logical properties, mirroring",
         href: "/docs/rtl/",
