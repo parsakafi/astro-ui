@@ -4,7 +4,8 @@
   *
    * Renders pure SVG at build time: grouped/stacked bars, a combo
    * chart (bars + overlay line on a secondary axis), line/area chart,
-   * pie/donut, scatter plot, horizontal progress bars, a box plot
+   * pie/donut, a 3D (extruded) pie, scatter plot, horizontal progress
+   * bars, a box plot
    * (five-number summaries or raw samples with Tukey whiskers),
    * a waterfall (floating signed deltas on a running total), a heatmap
    * (color-ramped matrix cells), a cohort retention triangle, an
@@ -124,7 +125,7 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
   /** Map only: region shapes laid out in a loose tile grid, like a
    *  stylized country map. Each region is a rect cell (default) or a
    *  freeform polygon: points are viewBox coordinates, so the same
@@ -233,7 +234,8 @@ export interface Props {
   /** Gap between slices in degrees (pie/donut). */
   padAngle?: number;
   /** Corner rounding of each slice in px (pie/donut) — the padded,
-   *  rounded segment look when paired with padAngle. */
+   *  rounded segment look when paired with padAngle. Ignored by
+   *  pie3d: the side walls must meet the top edge exactly. */
   sliceRadius?: number;
   /** Which slice corners sliceRadius rounds (pie/donut): "all" rounds
    *  every corner (default); "outer" rounds only the two rim corners
@@ -242,7 +244,9 @@ export interface Props {
   /** Slice callouts (pie/donut): "value" prints the formatted value at
    *  each slice's centroid, "value-pct" prints "value · pct%", and
    *  "label" draws the category name outside the pie, connected by an
-   *  elbow leader line. */
+   *  elbow leader line. In pie3d, "label" instead renders outside
+   *  "pct% NAME" callouts with a dot-and-elbow leader, like the
+   *  reference; "value"/"value-pct" stay on the top face. */
   sliceLabels?: "none" | "value" | "value-pct" | "label";
   /** Overrides the text of value-style slice callouts. Receives the
    *  raw value and rounded percent, e.g. (v, pct) => `${v} (${pct}%)`. */
@@ -251,6 +255,10 @@ export interface Props {
    *  muted "Other" slice (its tooltip lists the merged labels).
    *  0 disables collapsing. */
   collapseBelow?: number;
+  /** 3D pie only: extrusion thickness in px (the side-wall height,
+   *  clamped 0–120). Larger values read chunkier; 0 is a flat
+   *  tilted ellipse. */
+  depth?: number;
   /** Highest y value; defaults to the data max (bar/line/area/scatter).
    *  With stack, defaults to the largest per-label total. */
   maxY?: number;
@@ -321,6 +329,7 @@ const {
   sliceLabels = "none",
   sliceLabelFormat,
   collapseBelow = 0,
+  depth = 36,
   maxY,
   rightMaxY,
   stack = false,
@@ -415,6 +424,7 @@ const isRadar = type === "radar";
 const isRadial = type === "radial";
 const isSankey = type === "sankey";
 const isBoxplot = type === "boxplot";
+const isPie3d = type === "pie3d";
 
 /* Gradient fills need per-instance ids; multiple charts on one page
    must not share defs. Derived from content, so builds stay
@@ -439,29 +449,33 @@ const gRim = Math.min(1, 0.52 * gk);
 const patternId = (si: number) => `${uid}-pat-${si}`;
 
 /* --- circular math --- */
+/* Shared slice bucketing for the round charts (pie, donut, pie3d):
+   values plus the total plus collapseBelow merging into a trailing
+   muted "Other" slice. Never collapses everything (needs at least
+   one kept slice) and needs 2+ small slices to bother. */
+const pieSliceDefs = () => {
+  const values = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
+  const total = values.reduce((a, b) => a + b, 0) || 1;
+  let sliceDefs: { label: string; value: number; merged?: string[] }[] = values.map((v, i) => ({
+    label: labels[i] ?? String(i),
+    value: v,
+  }));
+  const thr = Math.max(0, Math.min(collapseBelow, 50));
+  if (thr > 0 && sliceDefs.length > 2) {
+    const small = sliceDefs.filter((s) => (s.value / total) * 100 < thr);
+    if (small.length >= 2 && small.length < sliceDefs.length) {
+      const kept = sliceDefs.filter((s) => (s.value / total) * 100 >= thr);
+      sliceDefs = [
+        ...kept,
+        {label: "Other", value: small.reduce((a, s) => a + s.value, 0), merged: small.map((s) => s.label)},
+      ];
+    }
+  }
+  return {total, sliceDefs};
+};
 const pieData = circular
   ? (() => {
-    const values = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
-    const total = values.reduce((a, b) => a + b, 0) || 1;
-    /* Auto-collapse: slices under collapseBelow percent merge into
-       one trailing "Other" slice, drawn muted with the merged
-       names in its tooltip. Never collapses everything (needs at
-       least one kept slice) and needs 2+ small slices to bother. */
-    let sliceDefs: { label: string; value: number; merged?: string[] }[] = values.map((v, i) => ({
-      label: labels[i] ?? String(i),
-      value: v,
-    }));
-    const thr = Math.max(0, Math.min(collapseBelow, 50));
-    if (thr > 0 && sliceDefs.length > 2) {
-      const small = sliceDefs.filter((s) => (s.value / total) * 100 < thr);
-      if (small.length >= 2 && small.length < sliceDefs.length) {
-        const kept = sliceDefs.filter((s) => (s.value / total) * 100 >= thr);
-        sliceDefs = [
-          ...kept,
-          {label: "Other", value: small.reduce((a, s) => a + s.value, 0), merged: small.map((s) => s.label)},
-        ];
-      }
-    }
+    const {total, sliceDefs} = pieSliceDefs();
     /* padAngle (degrees) carves a gap between slices; each slice's
        corners then round by sliceRadius via quadratic corners on
        both arcs — the padded, rounded-segment donut look. */
@@ -556,6 +570,100 @@ const pieData = circular
     });
   })()
   : [];
+
+/* --- pie3d: extruded pie (cylinder look). Top faces are elliptical
+   sectors — a circle of radius r squashed vertically by K3D, viewed
+   from front-above. Front-facing rim arcs grow side walls `depth` px
+   down, shaded darker via color-mix; front radial edges grow cut
+   faces one step darker. Back geometry is culled: from this
+   viewpoint the top faces hide it. Sides render before tops, and
+   wedges only touch at shared edges, so per-wedge groups stay
+   correct. sliceRadius/sliceCorners are intentionally ignored here —
+   the walls must meet the top edge exactly. --- */
+const pie3d = isPie3d
+  ? (() => {
+    const {total, sliceDefs} = pieSliceDefs();
+    if (sliceDefs.length === 0) return null;
+    const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
+    const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
+    const gap = padFits ? pad : 0;
+    const K3D = 0.5;
+    const h = Math.max(0, Math.min(depth, 120));
+    const outside = sliceLabels === "label";
+    const r = Math.max(
+      Math.min(W / 2 - (outside ? 104 : 24), (height - 16 - h - (outside ? 24 : 0)) / (2 * K3D)),
+      40,
+    );
+    const cx3 = W / 2;
+    const cyTop = 8 + (outside ? 12 : 0) + r * K3D;
+    const TAU = Math.PI * 2;
+    const E = (a: number, dy = 0) => ({
+      x: cx3 + r * Math.cos(a),
+      y: cyTop + dy + r * K3D * Math.sin(a),
+    });
+    const f = (n: number) => n.toFixed(2);
+    const pt = (p: { x: number; y: number }) => `${f(p.x)} ${f(p.y)}`;
+    const norm = (a: number) => ((a % TAU) + TAU) % TAU;
+    /* Cut faces only for edges strictly inside the front half: edges
+       at the silhouette (sin ≈ 0) or the nearest/farthest points
+       (|cos| ≈ 0) project to edge-on slivers, so they are skipped. */
+    const showsCut = (a: number) => {
+      const n = norm(a);
+      return Math.sin(n) > 0.08 && Math.abs(Math.cos(n)) > 0.08;
+    };
+    const shade = (color: string, pct: number) => `color-mix(in srgb, ${color} ${pct}%, black)`;
+    let angle = -Math.PI / 2;
+    const slices = sliceDefs.map((def, i) => {
+      const span = Math.max((def.value / total) * TAU - gap, 0.02);
+      const s0 = angle + gap / 2;
+      const s1 = s0 + span;
+      angle += (def.value / total) * TAU;
+      const color = def.merged ? "var(--ui-muted-foreground)" : colorAt(i, series[0]);
+      const pct = Math.round((def.value / total) * 100);
+      const tip = def.merged
+        ? `Other (${def.merged.length}): ${def.merged.join(", ")}`
+        : `${def.label}: ${format(def.value)} (${pct}%)`;
+      const large = span > Math.PI ? 1 : 0;
+      const top =
+        `M ${f(cx3)} ${f(cyTop)} L ${pt(E(s0))} A ${f(r)} ${f(r * K3D)} 0 ${large} 1 ${pt(E(s1))} Z`;
+      /* Rim band: intersect the slice range with the front half
+         (unwrapped windows), one strip per piece — each piece spans
+         less than π, so both arcs take the small-arc flag. */
+      const sides: string[] = [];
+      const m = Math.floor(s0 / TAU);
+      for (let k = m - 1; k <= m + 1; k++) {
+        const a = Math.max(s0, k * TAU);
+        const b = Math.min(s1, k * TAU + Math.PI);
+        if (b - a > 0.02) {
+          sides.push(
+            `M ${pt(E(a))} A ${f(r)} ${f(r * K3D)} 0 0 1 ${pt(E(b))}` +
+            ` L ${pt(E(b, h))} A ${f(r)} ${f(r * K3D)} 0 0 0 ${pt(E(a, h))} Z`,
+          );
+        }
+      }
+      const cuts: string[] = [];
+      for (const e of [s0, s1]) {
+        if (showsCut(e)) {
+          cuts.push(
+            `M ${f(cx3)} ${f(cyTop)} L ${pt(E(e))} L ${pt(E(e, h))} L ${f(cx3)} ${f(cyTop + h)} Z`,
+          );
+        }
+      }
+      /* Outside callout: a dot on the slice, an elbow leader out past
+         the rim, then the "pct% NAME" text. */
+      const mid = (s0 + s1) / 2;
+      const dir = Math.cos(mid) >= 0 ? 1 : -1;
+      const dot = {x: cx3 + r * 0.45 * Math.cos(mid), y: cyTop + r * K3D * 0.45 * Math.sin(mid)};
+      const elbow = {x: cx3 + (r * Math.cos(mid) + 18 * Math.cos(mid)), y: cyTop + (r * K3D * Math.sin(mid) + 18 * Math.sin(mid))};
+      const tx = elbow.x + dir * 16;
+      const leader = `M ${f(dot.x)} ${f(dot.y)} L ${f(elbow.x)} ${f(elbow.y)} L ${f(tx - dir * 2)} ${f(elbow.y)}`;
+      const lx = cx3 + r * 0.62 * Math.cos(mid);
+      const ly = cyTop + r * K3D * 0.62 * Math.sin(mid);
+      return {label: def.label, value: def.value, pct, color, tip, top, sides, cuts, dir, dot, elbow, tx, leader, lx, ly};
+    });
+    return {slices, shade};
+  })()
+  : null;
 
 /* --- line/area paths --- */
 const straightPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) =>
@@ -1784,6 +1892,55 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
   {
+    isPie3d && pie3d && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${pie3d.slices.map((d) => `${d.label} ${d.pct}%`).join(", ")}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        {pie3d.slices.map((d) => (
+          <g>
+            <title>{d.tip}</title>
+            {d.cuts.map((c) => (
+              <path d={c} fill={pie3d.shade(d.color, 50)}/>
+            ))}
+            {d.sides.map((s) => (
+              <path d={s} fill={pie3d.shade(d.color, 70)}/>
+            ))}
+          </g>
+        ))}
+        {pie3d.slices.map((d) => (
+          <path class="aui-chart__slice" d={d.top} fill={d.color}>
+            <title>{d.tip}</title>
+          </path>
+        ))}
+        {(sliceLabels === "value" || sliceLabels === "value-pct") &&
+          pie3d.slices.map((d) => (
+            <text class="aui-chart__slice-value" x={d.lx} y={d.ly + 5} text-anchor="middle">
+              {sliceLabelFormat
+                ? sliceLabelFormat(d.value, d.pct)
+                : sliceLabels === "value-pct"
+                  ? `${format(d.value)} · ${d.pct}%`
+                  : format(d.value)}
+            </text>
+          ))}
+        {sliceLabels === "label" &&
+          pie3d.slices.map((d) => (
+            <g class="aui-chart__slice-label">
+              <circle class="aui-chart__slice-label-dot" cx={d.dot.x} cy={d.dot.y} r={2.5}/>
+              <path d={d.leader}/>
+              <text x={d.tx + d.dir * 2} y={d.elbow.y + 4} text-anchor={d.dir > 0 ? "start" : "end"}>
+                <tspan class="aui-chart__slice-label-pct">{d.pct}%</tspan>{` ${d.label.toUpperCase()}`}
+              </text>
+            </g>
+          ))}
+      </svg>
+    )
+  }
+
+  {
     isHbar && !hbarStacked && (
       <ul class="aui-chart__hbar"
           style={`--aui-chart-hbar-max: ${(series[0]?.data ?? [0]).reduce((a, b) => Math.max(a, b), 1)}`}>
@@ -2261,7 +2418,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
               {name}
             </li>
           ))
-        ) : circular || isRadial ? (
+        ) : circular || isRadial || isPie3d ? (
           (circular
             ? pieData.map((d) => (
               <li>
@@ -2269,12 +2426,19 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
                 {d.label}
               </li>
             ))
-            : radialRings.map((r) => (
-              <li>
-                <span class="aui-chart__swatch" style={`background: ${r.color}`}/>
-                {r.label}
-              </li>
-            )))
+            : isRadial
+              ? radialRings.map((r) => (
+                <li>
+                  <span class="aui-chart__swatch" style={`background: ${r.color}`}/>
+                  {r.label}
+                </li>
+              ))
+              : (pie3d?.slices ?? []).map((d) => (
+                <li>
+                  <span class="aui-chart__swatch" style={`background: ${d.color}`}/>
+                  {d.label}
+                </li>
+              )))
         ) : isBoxplot ? (
           boxLegend.map((e) => (
             <li>
@@ -2752,6 +2916,16 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     fill: var(--ui-foreground);
     font-size: 12px;
     font-family: var(--ui-font-sans);
+  }
+
+  /* 3D pie callouts: "22% OTHER" — bold share plus uppercased name —
+     with a dot marking the anchor on the slice. */
+  .aui-chart__slice-label-pct {
+    font-weight: var(--ui-font-semibold);
+  }
+
+  .aui-chart__slice-label-dot {
+    fill: var(--ui-foreground);
   }
 
   /* --- horizontal bars --- */
