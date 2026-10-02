@@ -78,6 +78,20 @@ const docsPages: SearchEntry[] = [
         keywords: "playground editor customize colors palette theme"
     },
     {
+        title: "Design principles",
+        hint: "Guarantees and how they are enforced",
+        href: "/docs/principles/",
+        group: "Docs",
+        keywords: "principles zero-js accessibility tokens governance"
+    },
+    {
+        title: "Repository",
+        hint: "Workspace layout and workflows",
+        href: "/docs/repository/",
+        group: "Docs",
+        keywords: "monorepo workspace layout packages scripts"
+    },
+    {
         title: "RTL support",
         hint: "Logical properties, mirroring",
         href: "/docs/rtl/",
