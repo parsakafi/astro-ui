@@ -6,8 +6,9 @@
   * chart (bars + overlay line on a secondary axis), line/area chart,
   * pie/donut, scatter plot, horizontal progress bars, a waterfall
   * (floating signed deltas on a running total), a heatmap
-  * (color-ramped matrix cells), a cohort retention triangle, or an
-  * oblique 3D terrain wireframe depending on `type`. Everything
+  * (color-ramped matrix cells), a cohort retention triangle, an
+  * oblique 3D terrain wireframe, or a tile-grid choropleth map
+  * depending on `type`. Everything
   * reads design tokens, so charts
   * follow the theme (including dark mode) with no re-render — colors
   * resolve from --ui-chart-1..6, overridable per-series via the
@@ -64,6 +65,24 @@ export interface SankeyLink {
   color?: string;
 }
 
+export interface MapRegion {
+  /** Region name — tooltip + mapLabels text; also the fallback-table row. */
+  name: string;
+  /** Tile-grid cell this region occupies: [col, row], both 0-based.
+   *  Rect regions stretch across `span` columns; polygon regions may
+   *  omit it — their `points` are absolute viewBox coordinates. */
+  at?: [number, number];
+  /** Column span for rect regions (default 1). */
+  span?: number;
+  /** Freeform region outline: viewBox-coordinate points
+   *  ("x,y x,y …" or an SVG path string starting with "M"). Overrides
+   *  the rect cell when present. */
+  points?: string;
+  /** Value for the color ramp; falls back to series[0].data aligned
+   *  with labels (map regions may also omit labels entirely). */
+  value?: number;
+}
+
 export interface Props {
   /** Category labels (x axis for cartesian charts; slice names for
    *  pie/donut/radial; axis names for radar). Sankey uses nodes/links
@@ -72,7 +91,14 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain";
+  type?: "bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map";
+  /** Map only: region shapes laid out in a loose tile grid, like a
+   *  stylized country map. Each region is a rect cell (default) or a
+   *  freeform polygon: points are viewBox coordinates, so the same
+   *  0–640 × 0–height box the SVG uses. Rect regions stretch across
+   *  `span` grid columns. Values come from `series[0].data` aligned
+   *  with `labels`, or per-region `value` overrides. */
+  mapRegions?: MapRegion[];
   /** Terrain only: rendering style — "both" (default) draws the
    *  wireframe mesh plus vertex dots, "wire" the mesh alone, "dots"
    *  a bare point field. Extremes get black ring highlights with
@@ -133,6 +159,22 @@ export interface Props {
    *  Cohort defaults to a low-contrast → high-contrast blend; pass
    *  heatmapRamp to share a custom ramp with heatmap cells. */
   cohortRamp?: string[];
+  /** Map only: color ramp the region fills interpolate across, from
+   *  the data minimum to the maximum — 2+ CSS colors, like
+   *  heatmapRamp. Defaults to muted → primary. */
+  mapRamp?: string[];
+  /** Map only: print the formatted value inside each region
+   *  (background-haloed so it reads on any fill). */
+  mapLabels?: boolean;
+  /** Map only: grid column count the tile cells divide. Defaults to
+   *  the rect regions' extent — raise it when freeform polygon regions
+   *  occupy space the rects don't, so tiles don't stretch to fill
+   *  their viewBox. */
+  mapColumns?: number;
+  /** Map only: adds zoom controls (+ / − / Reset) over the chart and
+   *  enables wheel-to-zoom plus drag-to-pan on the SVG. Requires a
+   *  small inline script — the only chart feature that ships JS. */
+  zoomable?: boolean;
   /** Accessible title (rendered as figcaption, visually hidden is not used — show it). */
   title?: string;
   /** Supporting line under the title. */
@@ -252,6 +294,11 @@ const {
   cohortValues = "percent",
   cohortMax,
   cohortRamp,
+  mapRegions,
+  mapRamp,
+  mapLabels = false,
+  mapColumns,
+  zoomable = false,
   terrainMode = "both",
   terrainAxes,
   terrainCallouts = true,
@@ -1184,17 +1231,107 @@ const terrain = isTerrain
   })()
   : null;
 
+/* --- map: tile-grid choropleth. Regions are rect cells (optionally
+   spanning columns) or freeform polygons laid out in the same viewBox,
+   filled by interpolating mapRamp from the data min to max — the
+   stylized "country built from tiles" look. White separators and
+   soft shadows keep regions readable like the reference. --- */
+const isMap = type === "map";
+const map = isMap
+  ? (() => {
+    if (!mapRegions || mapRegions.length === 0) return null;
+    /* Values: per-region override, else series[0].data aligned with
+       labels (region i reads data[i]), else 0. */
+    const valueOf = (r: (typeof mapRegions)[number], i: number) =>
+      r.value ?? series[0]?.data[i] ?? 0;
+    const values = mapRegions.map(valueOf);
+    const vMax = Math.max(...values);
+    const vMin = Math.min(...values);
+    const spanV = Math.max(vMax - vMin, 1);
+    const ramp = mapRamp && mapRamp.length >= 2 ? mapRamp : ["var(--ui-muted)", "var(--ui-primary)"];
+    const mix = (t: number) => {
+      const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
+      const seg = Math.min(Math.floor(c), ramp.length - 2);
+      const local = c - seg;
+      return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
+    };
+    /* Grid: freeform regions usually need more room than the plot
+       conventions give, so the map owns nearly the whole viewBox. */
+    /* Grid extent comes from rect regions only — points-only regions
+       position themselves in absolute viewBox coordinates. mapColumns
+       reserves extra columns for polygons when the rects don't. */
+    const rects = mapRegions.filter((r) => !r.points);
+    const COLS = Math.max(1, mapColumns ?? 0, ...rects.map((r) => (r.at?.[0] ?? 0) + (r.span ?? 1)));
+    const ROWS = Math.max(1, ...rects.map((r) => (r.at?.[1] ?? 0) + 1));
+    const GAP = 4;
+    const padL = 12;
+    const padT = 8;
+    const cw = (W - padL - 12 - GAP * (COLS - 1)) / COLS;
+    const ch = (height - padT - 12 - GAP * (ROWS - 1)) / ROWS;
+    const cellX = (c: number) => padL + c * (cw + GAP);
+    const cellY = (r: number) => padT + r * (ch + GAP);
+    /* Scale freeform outlines from their authoring box (assumed
+       0–640 × 0–height viewBox coords) into the tile-grid box so
+       polygon maps and rect maps can be mixed freely. Regions with a
+       points attr may declare at as an anchor cell for tooltips; their
+       outline is used as-is when it already fits the viewBox. */
+    const parsePoints = (s: string) => {
+      const nums = s.trim().match(/-?\d+(?:\.\d+)?/g);
+      return nums ? (nums.map(Number).reduce<{pts: [number, number][]; cur: number[]}>(
+        (acc, n) => {
+          acc.cur.push(n);
+          if (acc.cur.length === 2) {
+            acc.pts.push([acc.cur[0], acc.cur[1]]);
+            acc.cur = [];
+          }
+          return acc;
+        },
+        {pts: [], cur: []},
+      ).pts) : [];
+    };
+    const regions = mapRegions.map((r, i) => {
+      const v = values[i];
+      const t = (v - vMin) / spanV;
+      const isPath = !!r.points && /^\s*M/.test(r.points);
+      const pts = r.points ? parsePoints(r.points) : [];
+      const d = isPath
+        ? r.points!
+        : pts.length >= 3
+          ? `M ${pts.map((p) => p.join(" ")).join(" L ")} Z`
+          : null;
+      const xs = pts.map((p) => p[0]);
+      const ys = pts.map((p) => p[1]);
+      const bb = d && !isPath ? {x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys)} : null;
+      /* Rect region: stretch across span columns of the grid. */
+      const rx = cellX(r.at?.[0] ?? 0);
+      const rw = (r.span ?? 1) * cw + ((r.span ?? 1) - 1) * GAP;
+      const ry = cellY(r.at?.[1] ?? 0);
+      return {
+        name: r.name,
+        v,
+        d: d ?? null,
+        rect: d ? null : {x: rx, y: ry, w: rw, h: ch},
+        cx: d && bb ? bb.x + bb.w / 2 : rx + rw / 2,
+        cy: d && bb ? bb.y + bb.h / 2 : ry + ch / 2,
+        color: mix(t),
+      };
+    });
+    return {regions, vMin, vMax};
+  })()
+  : null;
+
 const classes = cn(
   "aui-chart",
   `aui-chart--${type}`,
   stacked && "aui-chart--stacked",
+  zoomable && isMap && "aui-chart--zoomable",
   className,
 );
 
 const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
 ---
 
-<figure id={id} class={classes} data-aui-chart={type}>
+<figure id={uid} class={classes} data-aui-chart={type}>
   {
     (title || description) && (
       <figcaption class="aui-chart__head">
@@ -1705,6 +1842,54 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
   {
+    isMap && map && (
+      <svg
+        class="aui-chart__svg"
+        viewBox={`0 0 ${W} ${height}`}
+        role="img"
+        aria-label={`${tableCaption}: ${map.regions.length} regions, values ${format(map.vMin)} to ${format(map.vMax)}`}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <filter id={`${uid}-mshadow`} x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgb(0 0 0 / 0.18)"/>
+          </filter>
+        </defs>
+        <g class="aui-chart__map-regions" filter={`url(#${uid}-mshadow)`}>
+          {map.regions.map((r) =>
+            r.d ? (
+              <path class="aui-chart__map-region" d={r.d} fill={r.color} stroke="var(--ui-background)" stroke-width={3} stroke-linejoin="round">
+                <title>{`${r.name}: ${format(r.v)}`}</title>
+              </path>
+            ) : (
+              <rect class="aui-chart__map-region" x={r.rect!.x.toFixed(1)} y={r.rect!.y.toFixed(1)} width={r.rect!.w.toFixed(1)} height={r.rect!.h.toFixed(1)}
+                    rx={2} fill={r.color} stroke="var(--ui-background)" stroke-width={3}>
+                <title>{`${r.name}: ${format(r.v)}`}</title>
+              </rect>
+            ),
+          )}
+        </g>
+        {mapLabels &&
+          map.regions.map((r) => (
+            <text class="aui-chart__hm-value" x={r.cx.toFixed(1)} y={(r.cy + 4).toFixed(1)} text-anchor="middle">
+              {format(r.v)}
+            </text>
+          ))}
+      </svg>
+    )
+  }
+
+  {
+    zoomable && isMap && map && (
+      <div class="aui-chart__zoombar">
+        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="in" aria-label="Zoom in">+</button>
+        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="out" aria-label="Zoom out">−</button>
+        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="reset" aria-label="Reset view">Reset</button>
+      </div>
+    )
+  }
+
+  {
     isSankey && sankey && (
       <svg
         class="aui-chart__svg"
@@ -1823,7 +2008,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   }
 
     {
-    legend && !isGauge && !isSankey && !isHeatmap && !isCohort && !isTerrain && (
+    legend && !isGauge && !isSankey && !isHeatmap && !isCohort && !isTerrain && !isMap && (
       <ul class="aui-chart__legend" aria-hidden="true">
         {isWaterfall ? (
           ["Increase", "Decrease", "Total"].map((name, i) => (
@@ -1858,6 +2043,67 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     )
   }
 
+  {zoomable && isMap && map && (
+    <script define:vars={{chartId: uid, chartH: height}}>
+      /* Zoom/pan drives the SVG viewBox directly — no re-render, no
+         library. Buttons zoom about the viewport center; the wheel
+         zooms toward the cursor; drag pans. Clamped to 1/6–2x so
+         the view can't get lost. */
+      const root = document.getElementById(chartId);
+      const svg = root?.querySelector("svg.aui-chart__svg");
+      const VB = {x: 0, y: 0, w: 640, h: chartH};
+      let view = Object.assign({}, VB);
+      const apply = () => svg?.setAttribute("viewBox", view.x + " " + view.y + " " + view.w + " " + view.h);
+      const clamp = () => {
+        view.w = Math.min(Math.max(view.w, VB.w / 6), VB.w * 2);
+        view.h = Math.min(Math.max(view.h, VB.h / 6), VB.h * 2);
+        view.x = Math.min(Math.max(view.x, VB.x - view.w / 2), VB.x + VB.w - view.w / 2);
+        view.y = Math.min(Math.max(view.y, VB.y - view.h / 2), VB.y + VB.h - view.h / 2);
+      };
+      const zoomTo = (f, cx, cy) => {
+        const nw = view.w * f;
+        const nh = view.h * f;
+        view.x = cx - (cx - view.x) * (nw / view.w);
+        view.y = cy - (cy - view.y) * (nh / view.h);
+        view.w = nw;
+        view.h = nh;
+        clamp();
+        apply();
+      };
+      root?.querySelectorAll("[data-aui-zoom]").forEach((btn) =>
+        btn.addEventListener("click", () => {
+          const k = btn.getAttribute("data-aui-zoom");
+          if (k === "reset") {
+            view = Object.assign({}, VB);
+            apply();
+          } else {
+            zoomTo(k === "in" ? 1 / 1.4 : 1.4, view.x + view.w / 2, view.y + view.h / 2);
+          }
+        }));
+      let drag = null;
+      svg?.addEventListener("pointerdown", (e) => {
+        drag = {x: e.clientX, y: e.clientY, vx: view.x, vy: view.y};
+        svg.setPointerCapture(e.pointerId);
+      });
+      svg?.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        const r = svg.getBoundingClientRect();
+        view.x = drag.vx - ((e.clientX - drag.x) / r.width) * view.w;
+        view.y = drag.vy - ((e.clientY - drag.y) / r.height) * view.h;
+        clamp();
+        apply();
+      });
+      svg?.addEventListener("pointerup", () => (drag = null));
+      svg?.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        const r = svg.getBoundingClientRect();
+        zoomTo(e.deltaY < 0 ? 1 / 1.15 : 1.15,
+          view.x + ((e.clientX - r.left) / r.width) * view.w,
+          view.y + ((e.clientY - r.top) / r.height) * view.h);
+      }, {passive: false});
+    </script>
+  )}
+
   {/* Screen-reader table — the visual is aria-labeled, this carries the data. */}
   <table class="aui-chart__table">
     <thead>
@@ -1890,6 +2136,8 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     inline-size: 100%;
     min-inline-size: 0;
     font-family: var(--ui-font-sans);
+    /* Anchor for the zoomable map's absolute toolbar. */
+    position: relative;
   }
 
   .aui-chart__head {
@@ -2330,6 +2578,58 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     block-size: 0.625rem;
     border-radius: 3px;
     flex-shrink: 0;
+  }
+
+  /* --- map: tile-grid choropleth. Separators ride the element
+     (background stroke, like the reference's white gutters); the
+     drop shadow gives the floating-tile look. --- */
+  .aui-chart__zoombar {
+    position: absolute;
+    inset-block-start: var(--ui-space-2);
+    inset-inline-end: var(--ui-space-2);
+    display: flex;
+    gap: var(--ui-space-1);
+    z-index: 1;
+  }
+
+  .aui-chart__zoombtn {
+    min-inline-size: 2rem;
+    block-size: 2rem;
+    padding: 0 var(--ui-space-2);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    background: var(--ui-background);
+    color: var(--ui-foreground);
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-semibold);
+    font-family: var(--ui-font-sans);
+    cursor: pointer;
+    transition: background var(--ui-transition-fast);
+  }
+
+  .aui-chart__zoombtn:hover {
+    background: var(--ui-muted);
+  }
+
+  .aui-chart--zoomable svg.aui-chart__svg {
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .aui-chart--zoomable svg.aui-chart__svg:active {
+    cursor: grabbing;
+  }
+
+  .aui-chart__map-regions {
+    stroke-linejoin: round;
+  }
+
+  .aui-chart__map-region {
+    transition: opacity var(--ui-transition-fast);
+  }
+
+  .aui-chart__map-region:hover {
+    opacity: 0.85;
   }
 
   /* --- fallback table: visually hidden, real data for AT.
