@@ -235,6 +235,10 @@ export interface Props {
   /** Corner rounding of each slice in px (pie/donut) — the padded,
    *  rounded segment look when paired with padAngle. */
   sliceRadius?: number;
+  /** Which slice corners sliceRadius rounds (pie/donut): "all" rounds
+   *  every corner (default); "outer" rounds only the two rim corners
+   *  and keeps the center tip sharp — petal slices like the reference. */
+  sliceCorners?: "all" | "outer";
   /** Slice callouts (pie/donut): "value" prints the formatted value at
    *  each slice's centroid, "value-pct" prints "value · pct%", and
    *  "label" draws the category name outside the pie, connected by an
@@ -313,6 +317,7 @@ const {
   innerRadius = 58,
   padAngle = 0,
   sliceRadius = 0,
+  sliceCorners = "all",
   sliceLabels = "none",
   sliceLabelFormat,
   collapseBelow = 0,
@@ -485,8 +490,11 @@ const pieData = circular
          to the true radii, rounding every corner with exactly ro —
          stable at any slice size, unlike corner-arc surgery. The
          stroke widens each radial edge by ro/2, so the path gap
-         adds ro/rm to keep the requested visual pad. */
-      const ro = ri > 0 ? Math.min(rr, (r - ri) / 2 - 0.5) : Math.min(rr, r / 2);
+         adds ro/rm to keep the requested visual pad. "outer" mode
+         skips the trick (ro = 0, no gap compensation) and rounds the
+         rim corners explicitly in the path below instead. */
+      const outerOnly = sliceCorners === "outer";
+      const ro = outerOnly ? 0 : ri > 0 ? Math.min(rr, (r - ri) / 2 - 0.5) : Math.min(rr, r / 2);
       const rm = (r + ri) / 2;
       const pathGap = gap + (ro > 0 ? ro / rm : 0);
       const span = Math.max((v / total) * Math.PI * 2 - pathGap, 0.02);
@@ -509,13 +517,27 @@ const pieData = circular
       const tx = bx + dir * 16;
       const leader = `M ${ax.toFixed(2)} ${ay.toFixed(2)} L ${bx.toFixed(2)} ${by.toFixed(2)} L ${(tx - dir * 2).toFixed(2)} ${by.toFixed(2)}`;
       const p = (radius: number, a: number) => `${(cx + radius * Math.cos(a)).toFixed(2)} ${(cy + radius * Math.sin(a)).toFixed(2)}`;
+      /* Rim-only rounding ("petal" slices): each radial edge stops cro
+         short of the rim, a quadratic corner with the sharp rim point
+         as control rounds onto the arc, and the center tip (plus the
+         donut inner corners) stays sharp. cro is clamped so both rim
+         corners plus a sliver of true arc fit the slice and the edge
+         stubs never cross the inner radius — degenerate slices fall
+         back to a sharp sector automatically. */
+      const cro = outerOnly ? Math.max(0, Math.min(rr, ((span - 0.02) * r) / 2, r - ri - 0.5)) : 0;
+      const edge = (a: number) => `${(cx + (r - cro) * Math.cos(a)).toFixed(2)} ${(cy + (r - cro) * Math.sin(a)).toFixed(2)}`;
+      const delta = r > 0 ? cro / r : 0;
+      const largeO = s1 - delta - (s0 + delta) > Math.PI ? 1 : 0;
       const rOut = r - ro;
       const rIn = ri + ro;
-      const arc =
-        `M ${p(rOut, s0)} A ${rOut} ${rOut} 0 ${large} 1 ${p(rOut, s1)}` +
-        (ri > 0
-          ? ` L ${p(rIn, s1)} A ${rIn} ${rIn} 0 ${large} 0 ${p(rIn, s0)} Z`
-          : ` L ${cx.toFixed(2)} ${cy.toFixed(2)} Z`);
+      const arc = outerOnly
+        ? `M ${(ri > 0 ? p(ri, s0) : `${cx.toFixed(2)} ${cy.toFixed(2)}`)} L ${edge(s0)} Q ${p(r, s0)} ${p(r, s0 + delta)}` +
+          ` A ${r} ${r} 0 ${largeO} 1 ${p(r, s1 - delta)} Q ${p(r, s1)} ${edge(s1)}` +
+          (ri > 0 ? ` L ${p(ri, s1)} A ${ri} ${ri} 0 ${large} 0 ${p(ri, s0)} Z` : " Z")
+        : `M ${p(rOut, s0)} A ${rOut} ${rOut} 0 ${large} 1 ${p(rOut, s1)}` +
+          (ri > 0
+            ? ` L ${p(rIn, s1)} A ${rIn} ${rIn} 0 ${large} 0 ${p(rIn, s0)} Z`
+            : ` L ${cx.toFixed(2)} ${cy.toFixed(2)} Z`);
       return {
         arc,
         ro,
