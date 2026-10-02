@@ -32,10 +32,10 @@ usage: |-
     labels={["Jan", "Feb", "Mar"]}
     series={[{ name: "Revenue", data: [12, 30, 24] }]}
   />
-demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "terrain", "terrain-bare"]
+demoIds: ["bar", "grouped-bar", "stacked-bar", "percent-stack", "gradient-bar", "pill-bar", "combo", "line", "curved-line", "step-line", "bump-line", "dashed-line", "line-gradient", "no-grid", "area", "curved-area", "gradient-area", "gradient-custom", "gradient-intensity", "pattern-fill", "pattern-mix", "pie", "donut", "donut-rounded", "slice-labels", "slice-labels-combined", "slice-collapse", "gradient-donut", "custom-colors", "scatter", "hbar", "hbar-stacked", "gauge", "gauge-half", "gauge-block", "radial", "radial-half", "radar", "sankey", "waterfall", "heatmap", "cohort", "map", "map-country", "terrain", "terrain-bare"]
 props:
   - name: "type"
-    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\"'"
+    type: "'\"bar\" | \"line\" | \"area\" | \"pie\" | \"donut\" | \"scatter\" | \"hbar\" | \"waterfall\" | \"heatmap\" | \"cohort\" | \"terrain\" | \"map\"'"
     def: "'\"bar\"'"
     description: "Chart type."
   - name: "labels"
@@ -198,6 +198,26 @@ props:
     type: "[string, string, string]"
     def: "muted two-tone"
     description: "Dot colors for [low, middle, high] elevation bands (thirds of the range)."
+  - name: "mapRegions"
+    type: "MapRegion[]"
+    def: "—"
+    description: "Map regions: { name, at: [col, row], span?, points?, value? } — rect tiles or freeform polygons."
+  - name: "mapRamp"
+    type: "string[]"
+    def: "muted → primary"
+    description: "2+ CSS colors the map region fills interpolate across (data min → max)."
+  - name: "mapLabels"
+    type: "boolean"
+    def: "false"
+    description: "Print the formatted value inside each map region."
+  - name: "mapColumns"
+    type: "number"
+    def: "rect extent"
+    description: "Grid column count the tile cells divide — reserve columns for freeform polygon regions so rect tiles don't stretch."
+  - name: "zoomable"
+    type: "boolean"
+    def: "false"
+    description: "Map: zoom buttons (+/−/Reset), wheel-to-zoom toward the cursor and drag-to-pan. The only chart feature that ships JS."
   - name: "format"
     type: "(value: number) => string"
     def: "—"

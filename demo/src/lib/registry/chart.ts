@@ -326,6 +326,41 @@ export const chart: ComponentMeta = {
             code: `<Chart\n  type="cohort"\n  title="Weekly signup retention"\n  description="Rows are signup cohorts, columns are weeks since signup — the empty tail hasn't been observed yet"\n  height={230}\n  labels={["Week 0", "Week 1", "Week 2", "Week 3", "Week 4"]}\n  series={[\n    { name: "Sep 1", data: [1, 0.41, 0.33, 0.29, 0.27] },\n    { name: "Sep 8", data: [1, 0.39, 0.31, 0.28, 0.26] },\n    { name: "Sep 15", data: [1, 0.44, 0.36, 0.33] },\n    { name: "Sep 22", data: [1, 0.47, 0.4] },\n  ]}\n  cohortSizes={[480, 510, 465, 530]}\n  cohortRamp={["var(--ui-muted)", "var(--ui-chart-2, var(--ui-info))", "var(--ui-primary)"]}\n/>\n<!-- cohortSizes gives each row its size sublabel; missing tail values\n     render empty (not-yet-observed); values ≤ 1 are fractions -->`,
         },
         {
+            id: "map",
+            title: "Map (choropleth)",
+            code: `<Chart
+  type="map"
+  title="Regional adoption"
+  description="Adoption intensity across operating regions"
+  height={320}
+  mapColumns={3}
+  mapRegions={[
+    { name: "Northwest", at: [0, 0], value: 55 },
+    { name: "North Central", at: [1, 0], value: 96 },
+    { name: "Southwest", at: [0, 1], value: 8 },
+    { name: "South Central", at: [1, 1], value: 82 },
+    { name: "East", points: "470 0 565 0 640 100 592 292 522 320 470 320", value: 45 },
+  ]}
+  mapRamp={["var(--ui-muted)", "var(--ui-chart-5, var(--ui-error))"]}
+/>`,
+        },
+        {
+            id: "map-country",
+            title: "Map (country outline)",
+            code: `<Chart
+  type="map"
+  title="Revenue by state"
+  description="Neighboring polygons share boundary vertices, so regions touch with no gaps"
+  height={400}
+  mapRegions={countryRegions}
+  mapRamp={["var(--ui-muted)", "var(--ui-chart-5, var(--ui-error))"]}
+  zoomable
+/>\n<!-- regions are freeform polygons; build them from a shared vertex
+     table (each neighbor references the same vertices) so states are
+     adjacent and share boundaries exactly. zoomable adds +/\u2212/Reset
+     buttons, wheel-to-zoom and drag-to-pan (ships a small script) -->`,
+        },
+        {
             id: "terrain",
             title: "Terrain",
             code: `<Chart\n  type="terrain"\n  title="Signal terrain"\n  description="Peaks and valleys across a sampled field"\n  height={400}\n  labels={Array.from({ length: 24 }, (_, i) => String(i - 12))}\n  series={[\n${terrainRows.map((row, i) => `    { name: "d${i}", color: "var(--ui-error)", data: ${JSON.stringify(row)} },`).join("\n")}\n  ]}\n  terrainAxes={["X: Position", "Y: Elevation", "Z: Depth"]}\n  format={(v) => \`\${v}m\`}\n/>\n<!-- rows are depth (front to back), columns are position, values are\n     elevation; terrainMode="wire" | "dots" | "both" (default); the\n     highest/lowest points get black rings + callouts (rename them via\n     terrainCalloutLabels, hide via terrainCallouts={false}), a fixed\n     sample lattice gets accent rings, back rows fade and dash -->`,
@@ -337,7 +372,7 @@ export const chart: ComponentMeta = {
         },
     ],
     props: [
-        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain"'`, `'"bar"'`, "Chart type."),
+        t("type", `'"bar" | "line" | "area" | "pie" | "donut" | "scatter" | "hbar" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map"'`, `'"bar"'`, "Chart type."),
         t("labels", "string[]", "required", "Category labels (x axis; slice names for pie/donut)."),
         t("series", "ChartSeries[]", "required", "Data series: { name, data, color? }."),
         t("title", "string", "—", "Accessible title, rendered as figcaption."),
@@ -378,6 +413,11 @@ export const chart: ComponentMeta = {
         t("terrainCallouts", "boolean", "true", "Highest/lowest corner titles, rail and drops; false hides them."),
         t("terrainCalloutLabels", "[string, string]", "Highest / Lowest point", "Custom corner-title texts for the extreme-point callouts."),
         t("terrainDotColors", "[string, string, string]", "muted two-tone", "Dot colors for [low, middle, high] elevation bands (thirds of the range)."),
+        t("mapRegions", "MapRegion[]", "—", "Map regions: { name, at: [col, row], span?, points?, value? } — rect tiles or freeform polygons."),
+        t("mapRamp", "string[]", "muted → primary", "2+ CSS colors the map region fills interpolate across (data min → max)."),
+        t("mapLabels", "boolean", "false", "Print the formatted value inside each map region."),
+        t("mapColumns", "number", "rect extent", "Grid column count the tile cells divide — reserve columns for freeform polygon regions so rect tiles don't stretch."),
+        t("zoomable", "boolean", "false", "Map: zoom buttons (+/−/Reset), wheel-to-zoom toward the cursor and drag-to-pan. The only chart feature that ships JS."),
         t("format", "(value: number) => string", "—", "Value formatting for ticks and the data table."),
         t("height", "number", "260", "Plot height in px."),
         ...common(false),

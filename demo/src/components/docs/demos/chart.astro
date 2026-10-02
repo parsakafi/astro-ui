@@ -4,6 +4,7 @@ import {
   Chart,
 } from "astro-ui";
 import {
+  countryRegions,
   terrainRows,
   barRevenue,
   groupedDesktop,
@@ -961,6 +962,54 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
               </Fragment>
               <Fragment slot="code">
                 <pre><code set:html={codeHtml.get("cohort")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "map" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Map (choropleth)</h3>
+            <DemoTabs id="dm-chart-map">
+              <Fragment slot="preview">
+                <Chart
+                  type="map"
+                  title="Regional adoption"
+                  description="Adoption intensity across operating regions"
+                  height={320}
+                  mapColumns={3}
+                  mapRegions={[
+                    {name: "Northwest", at: [0, 0], value: 55},
+                    {name: "North Central", at: [1, 0], value: 96},
+                    {name: "Southwest", at: [0, 1], value: 8},
+                    {name: "South Central", at: [1, 1], value: 82},
+                    {name: "East", points: "470 0 565 0 640 100 592 292 522 320 470 320", value: 45},
+                  ]}
+                  mapRamp={["var(--ui-muted)", "var(--ui-chart-5, var(--ui-error))"]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("map")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "map-country" && (
+          <div class="docs-demo-block">
+            <h3 class="docs-demo-title">Map (country outline)</h3>
+            <DemoTabs id="dm-chart-map-country">
+              <Fragment slot="preview">
+                <Chart
+                  type="map"
+                  title="Revenue by state"
+                  description="Scroll to zoom, drag to pan — neighboring polygons share boundary vertices, so no gaps"
+                  height={400}
+                  mapRegions={countryRegions}
+                  mapRamp={["var(--ui-muted)", "var(--ui-chart-5, var(--ui-error))"]}
+                  zoomable
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("map-country")}/></pre>
               </Fragment>
             </DemoTabs>
           </div>
