@@ -4,7 +4,7 @@
   */
 import DocsLayout from "../../layouts/DocsLayout.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
-import {Button, Badge} from "astro-ui";
+import {Button, Badge, Tabs} from "astro-ui";
 
 const toc = [
   {id: "install", label: "Install"},
@@ -30,7 +30,32 @@ const toc = [
         <code>.astro</code> components, a token stylesheet, and a base
         stylesheet — nothing else.
       </p>
-      <CodeBlock code="npm install astro-ui" lang="bash"/>
+      <Tabs
+        id="install-pm"
+        ariaLabel="Package manager"
+        variant="card"
+        size="sm"
+        defaultValue="npm"
+        items={[
+          {value: "npm", label: "npm"},
+          {value: "pnpm", label: "pnpm"},
+          {value: "yarn", label: "yarn"},
+          {value: "bun", label: "bun"},
+        ]}
+      >
+        <div data-tab="npm">
+          <CodeBlock code="npm install astro-ui" lang="bash"/>
+        </div>
+        <div data-tab="pnpm">
+          <CodeBlock code="pnpm add astro-ui" lang="bash"/>
+        </div>
+        <div data-tab="yarn">
+          <CodeBlock code="yarn add astro-ui" lang="bash"/>
+        </div>
+        <div data-tab="bun">
+          <CodeBlock code="bun add astro-ui" lang="bash"/>
+        </div>
+      </Tabs>
     </section>
 
     <section id="tokens">
