@@ -39,6 +39,7 @@
     "./slider": "./src/components/forms/Slider.astro",
     "./sheet": "./src/components/overlay/Sheet.astro",
     "./stepper": "./src/components/navigation/Stepper.astro",
+    "./sticky-surface": "./src/components/layout/StickySurface.astro",
     "./tag": "./src/components/data-display/Tag.astro",
     "./tooltip": "./src/components/overlay/Tooltip.astro",
     "./button": "./src/components/general/Button.astro",

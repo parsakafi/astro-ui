@@ -51,6 +51,7 @@ import {
 	tooltip,
 	popover,
 	hoverCard,
+	stickySurface,
 } from "./entries";
 import {type ComponentMeta} from "./types";
 
@@ -110,6 +111,7 @@ export const components: ComponentMeta[] = [
 	tooltip,
 	popover,
 	hoverCard,
+	stickySurface,
 ];
 
 export function bySlug(slug: string): ComponentMeta | undefined {

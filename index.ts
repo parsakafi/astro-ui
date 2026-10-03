@@ -62,6 +62,7 @@ export {default as Skeleton} from "./src/components/feedback/Skeleton.astro";
 export {default as Slider} from "./src/components/forms/Slider.astro";
 export {default as Spinner} from "./src/components/feedback/Spinner.astro";
 export {default as Stepper} from "./src/components/navigation/Stepper.astro";
+export {default as StickySurface} from "./src/components/layout/StickySurface.astro";
 export {default as Switch} from "./src/components/forms/Switch.astro";
 export {default as Table} from "./src/components/data-display/Table.astro";
 export {default as Tabs} from "./src/components/navigation/Tabs.astro";

@@ -1,0 +1,117 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  StickySurface,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "toolbar" && (
+          <div class="docs-demo-block" id={`demo-sticky-surface-${id}`}>
+            <h3 class="docs-demo-title">Toolbar</h3>
+            <DemoTabs id="dm-sticky-surface-toolbar">
+              <Fragment slot="preview">
+                <div style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
+                  <StickySurface effects={["line", "elevate"]} threshold="0px">
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--ui-space-3) var(--ui-space-4);">
+                      <strong>Toolbar</strong>
+                      <span style="color: var(--ui-muted-foreground); font-size: var(--ui-text-sm);">Scroll the box</span>
+                    </div>
+                  </StickySurface>
+                  <div style="padding: var(--ui-space-4); display: grid; gap: var(--ui-space-3);">
+                    <p>First paragraph of scrollable content.</p>
+                    <p>Second paragraph of scrollable content.</p>
+                    <p>Third paragraph of scrollable content.</p>
+                    <p>Fourth paragraph of scrollable content.</p>
+                    <p>Fifth paragraph of scrollable content.</p>
+                    <p>Sixth paragraph of scrollable content.</p>
+                    <p>Seventh paragraph of scrollable content.</p>
+                    <p>Eighth paragraph of scrollable content.</p>
+                  </div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("toolbar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "glass" && (
+          <div class="docs-demo-block" id={`demo-sticky-surface-${id}`}>
+            <h3 class="docs-demo-title">Glass header</h3>
+            <DemoTabs id="dm-sticky-surface-glass">
+              <Fragment slot="preview">
+                <div style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
+                  <StickySurface as="header" effects={["backdrop"]} threshold="8px">
+                    <div style="padding: var(--ui-space-3) var(--ui-space-4);">
+                      <strong>Glass header</strong>
+                    </div>
+                  </StickySurface>
+                  <div style="padding: var(--ui-space-4); display: grid; gap: var(--ui-space-3);">
+                    <p>First paragraph under the glass header.</p>
+                    <p>Second paragraph under the glass header.</p>
+                    <p>Third paragraph under the glass header.</p>
+                    <p>Fourth paragraph under the glass header.</p>
+                    <p>Fifth paragraph under the glass header.</p>
+                    <p>Sixth paragraph under the glass header.</p>
+                    <p>Seventh paragraph under the glass header.</p>
+                    <p>Eighth paragraph under the glass header.</p>
+                  </div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("glass")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "stuck-hook" && (
+          <div class="docs-demo-block" id={`demo-sticky-surface-${id}`}>
+            <h3 class="docs-demo-title">Stuck-state hook</h3>
+            <DemoTabs id="dm-sticky-surface-hook">
+              <Fragment slot="preview">
+                <div style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
+                  <StickySurface id="dm-sticky-hook-surface" observeStuck threshold="0px">
+                    <div style="padding: var(--ui-space-3) var(--ui-space-4);">
+                      <strong>Toolbar</strong>
+                    </div>
+                  </StickySurface>
+                  <div style="padding: var(--ui-space-4); display: grid; gap: var(--ui-space-3);">
+                    <p id="dm-sticky-hook-status">Not stuck — scroll the box.</p>
+                    <p>Second paragraph of scrollable content.</p>
+                    <p>Third paragraph of scrollable content.</p>
+                    <p>Fourth paragraph of scrollable content.</p>
+                    <p>Fifth paragraph of scrollable content.</p>
+                    <p>Sixth paragraph of scrollable content.</p>
+                    <p>Seventh paragraph of scrollable content.</p>
+                    <p>Eighth paragraph of scrollable content.</p>
+                  </div>
+                </div>
+                <script>
+                  const surface = document.getElementById("dm-sticky-hook-surface");
+                  const status = document.getElementById("dm-sticky-hook-status");
+                  let sticks = 0;
+                  let wasStuck = false;
+                  if (surface && status) {
+                    new MutationObserver(() => {
+                      const stuck = surface.classList.contains("is-stuck");
+                      if (stuck && !wasStuck) sticks += 1;
+                      wasStuck = stuck;
+                      status.textContent = stuck ? `Stuck — entered ${sticks} time${sticks === 1 ? "" : "s"}` : "Not stuck — scroll the box.";
+                    }).observe(surface, {attributes: true, attributeFilter: ["class"]});
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("stuck-hook")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

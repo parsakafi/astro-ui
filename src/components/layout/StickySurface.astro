@@ -1,0 +1,125 @@
+---
+/**
+ * StickySurface — sticky-positioned region with scroll-based effects.
+ *
+ * Sticks to the viewport (or nearest scrolling ancestor) at `threshold`
+ * with pure CSS. While stuck, `effects` add a border line, an elevation
+ * shadow, and/or a frosted-glass wash; `observeStuck` exposes the same
+ * moment as an `is-stuck` class for your own CSS. State is detected
+ * with an IntersectionObserver sentinel rendered alongside the region.
+ *
+ *   <StickySurface effects={["line", "elevate"]} threshold="0px">
+ *     <strong>Toolbar</strong>
+ *   </StickySurface>
+ *
+ * JavaScript required: Yes (stuck-state observation only — sticking
+ * itself is CSS, so without JS you get a plain sticky region)
+ */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Semantic wrapper element. */
+  as?: "div" | "header" | "nav" | "section";
+  /** Sticky offset from the viewport/scrollport edge — and the line
+   *  where stuck styles kick in. Any CSS length. */
+  threshold?: string;
+  /** Scroll effects applied while stuck: a bottom border line, an
+   *  elevation shadow, a frosted-glass wash. */
+  effects?: Array<"line" | "elevate" | "backdrop">;
+  /** Adds `is-stuck` while stuck without visual effects — a hook for
+   *  your own selectors (the Bejamas `group-[.is-stuck]` pattern). */
+  observeStuck?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  as: Tag = "div",
+  threshold = "16px",
+  effects = [],
+  observeStuck = false,
+  class: className,
+  id,
+} = Astro.props;
+
+const classes = cn(
+  "aui-sticky-surface",
+  effects.includes("line") && "aui-sticky-surface--line",
+  effects.includes("elevate") && "aui-sticky-surface--elevate",
+  effects.includes("backdrop") && "aui-sticky-surface--backdrop",
+  className,
+);
+---
+
+<span class="aui-sticky-surface__anchor" data-aui-sticky-anchor aria-hidden="true" />
+<Tag id={id} class={classes} data-aui-sticky style={`top: ${threshold}`}>
+  <slot />
+</Tag>
+
+<script>
+  /* Stuck detection: the anchor sits in normal flow exactly where the
+     region starts. While it sits below the sticky top edge the region
+     is at rest; once it crosses above, the region is stuck. A 1px
+     anchor with -1px bottom margin keeps the layout untouched while
+     giving the observer a real target. */
+  function stickyTop(el: HTMLElement): number {
+    const top = Number.parseFloat(window.getComputedStyle(el).top);
+    return Number.isFinite(top) ? top : 0;
+  }
+
+  function initSticky(el: HTMLElement): void {
+    if (el.dataset.auiStickyInit === "true") return;
+    el.dataset.auiStickyInit = "true";
+    const anchor = el.previousElementSibling;
+    if (!(anchor instanceof HTMLElement) || !anchor.hasAttribute("data-aui-sticky-anchor")) return;
+    const gauge = () => {
+      el.classList.toggle("is-stuck", anchor.getBoundingClientRect().top < stickyTop(el));
+    };
+    gauge();
+    const observer = new IntersectionObserver(gauge, {threshold: [0, 1]});
+    observer.observe(anchor);
+  }
+
+  function initAll(): void {
+    document.querySelectorAll<HTMLElement>("[data-aui-sticky]").forEach(initSticky);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAll, {once: true});
+  } else {
+    initAll();
+  }
+</script>
+
+<style>
+  .aui-sticky-surface {
+    position: sticky;
+    z-index: var(--ui-z-dropdown);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color var(--ui-transition-normal),
+      box-shadow var(--ui-transition-normal),
+      background-color var(--ui-transition-normal);
+  }
+
+  /* Zero-net-height sentinel: 1px of observer target, -1px back. */
+  .aui-sticky-surface__anchor {
+    display: block;
+    height: 1px;
+    margin-bottom: -1px;
+  }
+
+  .aui-sticky-surface--line.is-stuck {
+    border-bottom-color: var(--ui-border);
+  }
+
+  .aui-sticky-surface--elevate.is-stuck {
+    box-shadow: var(--ui-shadow-md);
+  }
+
+  .aui-sticky-surface--backdrop.is-stuck {
+    background-color: color-mix(in srgb, var(--ui-background) 82%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+</style>

@@ -50,3 +50,4 @@ export {tag} from "./tag";
 export {tooltip} from "./tooltip";
 export {popover} from "./popover";
 export {hoverCard} from "./hover-card";
+export {stickySurface} from "./sticky-surface";

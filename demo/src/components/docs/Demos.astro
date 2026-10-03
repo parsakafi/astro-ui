@@ -53,6 +53,7 @@ import tagDemo from "./demos/tag.astro";
 import tooltipDemo from "./demos/tooltip.astro";
 import popoverDemo from "./demos/popover.astro";
 import hoverCardDemo from "./demos/hover-card.astro";
+import stickySurfaceDemo from "./demos/sticky-surface.astro";
 
 interface Props {
   /** Component slug — keys the per-component demo switch below. */
@@ -136,6 +137,7 @@ const demos: Record<string, any> = {
   "tooltip": tooltipDemo,
   "popover": popoverDemo,
   "hover-card": hoverCardDemo,
+  "sticky-surface": stickySurfaceDemo,
 };
 const Demo = demos[component.slug];
 ---
