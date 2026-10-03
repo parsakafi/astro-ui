@@ -1,0 +1,227 @@
+---
+import {codeToHtml} from "shiki";
+import {bySlug} from "../../lib/components";
+import buttonDemo from "./demos/button.astro";
+import buttonGroupDemo from "./demos/button-group.astro";
+import badgeDemo from "./demos/badge.astro";
+import cardDemo from "./demos/card.astro";
+import avatarDemo from "./demos/avatar.astro";
+import alertDemo from "./demos/alert.astro";
+import spinnerDemo from "./demos/spinner.astro";
+import skeletonDemo from "./demos/skeleton.astro";
+import separatorDemo from "./demos/separator.astro";
+import scrollAreaDemo from "./demos/scroll-area.astro";
+import aspectRatioDemo from "./demos/aspect-ratio.astro";
+import attachmentDemo from "./demos/attachment.astro";
+import carouselDemo from "./demos/carousel.astro";
+import commandDemo from "./demos/command.astro";
+import comboboxDemo from "./demos/combobox.astro";
+import autocompleteDemo from "./demos/autocomplete.astro";
+import labelDemo from "./demos/label.astro";
+import fieldDemo from "./demos/field.astro";
+import inputDemo from "./demos/input.astro";
+import inputGroupDemo from "./demos/input-group.astro";
+import textareaDemo from "./demos/textarea.astro";
+import selectDemo from "./demos/select.astro";
+import checkboxDemo from "./demos/checkbox.astro";
+import radioDemo from "./demos/radio.astro";
+import switchDemo from "./demos/switch.astro";
+import toggleDemo from "./demos/toggle.astro";
+import toggleGroupDemo from "./demos/toggle-group.astro";
+import tableDemo from "./demos/table.astro";
+import tabsDemo from "./demos/tabs.astro";
+import progressDemo from "./demos/progress.astro";
+import dialogDemo from "./demos/dialog.astro";
+import alertDialogDemo from "./demos/alert-dialog.astro";
+import sheetDemo from "./demos/sheet.astro";
+import toastDemo from "./demos/toast.astro";
+import accordionDemo from "./demos/accordion.astro";
+import collapsibleDemo from "./demos/collapsible.astro";
+import bubbleDemo from "./demos/bubble.astro";
+import breadcrumbDemo from "./demos/breadcrumb.astro";
+import chartDemo from "./demos/chart.astro";
+import clipboardDemo from "./demos/clipboard.astro";
+import emptyDemo from "./demos/empty.astro";
+import kbdDemo from "./demos/kbd.astro";
+import linkDemo from "./demos/link.astro";
+import paginationDemo from "./demos/pagination.astro";
+import radioGroupDemo from "./demos/radio-group.astro";
+import ratingDemo from "./demos/rating.astro";
+import sliderDemo from "./demos/slider.astro";
+import stepperDemo from "./demos/stepper.astro";
+import tagDemo from "./demos/tag.astro";
+import tooltipDemo from "./demos/tooltip.astro";
+import popoverDemo from "./demos/popover.astro";
+import hoverCardDemo from "./demos/hover-card.astro";
+
+interface Props {
+  /** Component slug — keys the per-component demo switch below. */
+  slug: string;
+  /** Demo ids from the docs collection frontmatter (order + gating). */
+  demoIds: string[];
+}
+
+const {slug, demoIds} = Astro.props;
+const component = bySlug(slug);
+if (!component) throw new Error(`Demos: unknown component slug "${slug}"`);
+
+// Long demo lists (Chart et al.) get an anchor-chip index above the
+// blocks — each block carries id={`demo-${slug}-${id}`}.
+const DEMOS_NAV_MIN = 5;
+
+// Shiki-highlight every snippet used by this component up front.
+const codeCache = new Map<string, string>();
+for (const id of demoIds) {
+  const demo = component.demos.find((d) => d.id === id);
+  if (!demo) continue;
+  codeCache.set(
+    demo.id,
+    await codeToHtml(demo.code.trim(), {
+      lang: "astro",
+      themes: {light: "github-light", dark: "github-dark-default"},
+    }),
+  );
+}
+
+const demos: Record<string, any> = {
+  "button": buttonDemo,
+  "button-group": buttonGroupDemo,
+  "badge": badgeDemo,
+  "card": cardDemo,
+  "avatar": avatarDemo,
+  "alert": alertDemo,
+  "spinner": spinnerDemo,
+  "skeleton": skeletonDemo,
+  "separator": separatorDemo,
+  "scroll-area": scrollAreaDemo,
+  "aspect-ratio": aspectRatioDemo,
+  "attachment": attachmentDemo,
+  "carousel": carouselDemo,
+  "command": commandDemo,
+  "combobox": comboboxDemo,
+  "autocomplete": autocompleteDemo,
+  "label": labelDemo,
+  "field": fieldDemo,
+  "input": inputDemo,
+  "input-group": inputGroupDemo,
+  "textarea": textareaDemo,
+  "select": selectDemo,
+  "checkbox": checkboxDemo,
+  "radio": radioDemo,
+  "switch": switchDemo,
+  "toggle": toggleDemo,
+  "toggle-group": toggleGroupDemo,
+  "table": tableDemo,
+  "tabs": tabsDemo,
+  "progress": progressDemo,
+  "dialog": dialogDemo,
+  "alert-dialog": alertDialogDemo,
+  "sheet": sheetDemo,
+  "toast": toastDemo,
+  "accordion": accordionDemo,
+  "collapsible": collapsibleDemo,
+  "bubble": bubbleDemo,
+  "breadcrumb": breadcrumbDemo,
+  "chart": chartDemo,
+  "clipboard": clipboardDemo,
+  "empty": emptyDemo,
+  "kbd": kbdDemo,
+  "link": linkDemo,
+  "pagination": paginationDemo,
+  "radio-group": radioGroupDemo,
+  "rating": ratingDemo,
+  "slider": sliderDemo,
+  "stepper": stepperDemo,
+  "tag": tagDemo,
+  "tooltip": tooltipDemo,
+  "popover": popoverDemo,
+  "hover-card": hoverCardDemo,
+};
+const Demo = demos[component.slug];
+---
+
+<script>
+  import {toast} from "astro-ui/toast";
+
+  const wire = (id: string, fn: () => void) =>
+    document.getElementById(id)?.addEventListener("click", fn);
+
+  // Input Group · Textarea + actions: mirror the character count into the toolbar.
+  {
+    const ta = document.getElementById("dm-ig-prompt") as HTMLTextAreaElement | null;
+    const out = document.getElementById("dm-ig-count");
+    if (ta && out) {
+      const max = Number(ta.getAttribute("maxlength")) || 0;
+      const sync = () => {
+        out.textContent = max ? `${ta.value.length} / ${max}` : String(ta.value.length);
+      };
+      ta.addEventListener("input", sync);
+      sync();
+    }
+  }
+  wire("dm-toast-default", () => toast("Event has been created"));
+  wire("dm-toast-success", () => toast.success("Saved!"));
+  wire("dm-toast-error", () => toast.error("Something broke"));
+  wire("dm-toast-m-default", () => toast("Event has been created"));
+  wire("dm-toast-m-success", () => toast.success("Changes saved"));
+  wire("dm-toast-m-error", () => toast.error("Failed to save"));
+  wire("dm-toast-m-warning", () => toast.warning("Storage almost full"));
+  wire("dm-toast-m-info", () => toast.info("New version available"));
+  wire("dm-toast-m-loading", () => toast.loading("Uploading…"));
+  wire("dm-toast-d-rich", () =>
+    toast.warning("Storage almost full", {
+      description: "You have used 93% of your plan. Upgrade to keep syncing.",
+      richColors: true,
+      closeButton: true,
+      duration: 8000,
+    }),
+  );
+  wire("dm-toast-d-plain", () =>
+    toast.info("Deploy finished", {description: "32 files changed in 4.2s"}),
+  );
+  wire("dm-toast-d-close", () =>
+    toast.info("Session expires soon", {closeButton: true, duration: 10000}),
+  );
+  wire("dm-toast-act", () =>
+    toast("Event has been created", {
+      action: {label: "Undo", onClick: () => console.log("Undo")},
+    }),
+  );
+  wire("dm-toast-pos-btn", () =>
+    toast("Top-left position", {position: "top-left", duration: 6000}),
+  );
+  wire("dm-toast-load-btn", () => {
+    const id = toast.loading("Uploading…");
+    window.setTimeout(() => toast.update(id, {type: "success", title: "Uploaded!"}), 1500);
+  });
+  wire("dm-toast-x-collapse", () => {
+    toast.dismiss();
+    for (const msg of ["First", "Second", "Third"]) {
+      toast(msg, {duration: 10000});
+    }
+  });
+  wire("dm-toast-x-expand", () => {
+    toast.dismiss();
+    for (const msg of ["First", "Second", "Third"]) {
+      toast(msg, {expand: true, duration: 10000});
+    }
+  });
+</script>
+
+{demoIds.length >= DEMOS_NAV_MIN && (
+  <nav class="docs-demos-nav" aria-label="Demos">
+    <ul>
+      {demoIds.map((id) => {
+        const demo = component.demos.find((d) => d.id === id);
+        if (!demo) return null;
+        return (
+          <li>
+            <a href={`#demo-${slug}-${id}`}>{demo.title}</a>
+          </li>
+        );
+      })}
+    </ul>
+  </nav>
+)}
+
+{Demo && <Demo demoIds={demoIds} codeHtml={codeCache} />}

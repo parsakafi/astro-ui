@@ -1,0 +1,99 @@
+---
+/**
+ * /docs/principles/ — what astro-ui guarantees and why it's built this way.
+ */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+
+const toc = [
+  {id: "principles", label: "Principles"},
+  {id: "differences", label: "Deliberate differences"},
+];
+---
+
+<DocsLayout title="Design principles" description="What astro-ui guarantees: zero JS, tokens, accessibility, and small composable pieces." activePath="docs" toc={toc}>
+  <article class="docs-article docs-prose">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">Docs · Guide</p>
+      <h1>Design principles</h1>
+      <p>
+        The rules every component follows — so the library stays
+        predictable as it grows. Each one is enforced by automated
+        contract tests, not just good intentions.
+      </p>
+    </section>
+
+    <section id="principles">
+      <h2>Principles</h2>
+      <ul>
+        <li>
+          <strong>Zero JS by default.</strong> Components render on the
+          server and ship no client runtime. A dozen interactive
+          components (dialog, carousel, toast…) carry small scoped
+          scripts; everything else is pure HTML + CSS. Each component
+          page states its JavaScript requirement up front.
+        </li>
+        <li>
+          <strong>Tokens are the theming API.</strong> Every color,
+          radius, space, and type size is a <code>--ui-*</code> custom
+          property. There is no theme config — override a variable and
+          every component that reads it follows, in light and dark
+          mode. Try it in the <a href="/docs/styling/#playground">token
+          playground</a>.
+        </li>
+        <li>
+          <strong>Accessibility is structural.</strong> Semantic
+          elements first, WAI-ARIA patterns where natives fall short
+          (tabs, dialogs), visible focus rings, and a screen-reader
+          path for every chart. Accessibility notes ship on each
+          component page.
+        </li>
+        <li>
+          <strong>Small composable primitives.</strong> One component
+          per file, slots for structure, and a <code>class</code> prop
+          on everything for escape hatches — instead of a prop for
+          every CSS knob. Shared prop names (<code>variant</code>,
+          <code>size</code>, <code>disabled</code>) mean learning one
+          component teaches you the next.
+        </li>
+        <li>
+          <strong>Docs checked by tests.</strong> Props, tokens, SSR
+          safety, and markup rules are asserted by contract suites, so
+          documentation drift fails the build instead of rotting
+          silently.
+        </li>
+        <li>
+          <strong>Framework-agnostic output.</strong> Plain
+          <code>.astro</code> plus CSS — no React, Vue, or client
+          framework bundled. Use components as Astro islands or plain
+          server-rendered markup.
+        </li>
+      </ul>
+    </section>
+
+    <section id="differences">
+      <h2>Deliberate differences</h2>
+      <p>
+        Two places where astro-ui consciously differs from the
+        folder-per-component, shadcn-aligned style popularized
+        elsewhere:
+      </p>
+      <ul>
+        <li>
+          <strong>Category folders, not folders per component.</strong>
+          Components live in <code>general/</code>,
+          <code>forms/</code>, <code>data-display/</code> and similar,
+          exported from one root entry with per-component subpaths —
+          one import style to learn, tree-shakable by construction.
+        </li>
+        <li>
+          <strong>Own naming.</strong> Classes use the
+          <code>aui-</code> prefix and props follow a fixed vocabulary
+          (<code>variant</code>, <code>size</code>,
+          <code>ariaLabel</code>) rather than mirroring an external
+          registry — so examples never silently depend on another
+          system's conventions.
+        </li>
+      </ul>
+    </section>
+  </article>
+</DocsLayout>

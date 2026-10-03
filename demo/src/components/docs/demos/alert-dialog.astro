@@ -1,0 +1,92 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  AlertDialog,
+  Button,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "confirm" && (
+          <div class="docs-demo-block" id={`demo-alert-dialog-${id}`}>
+            <h3 class="docs-demo-title">Confirm a destructive action</h3>
+            <DemoTabs id="dm-alert-dialog-confirm">
+              <Fragment slot="preview">
+                <Button id="dm-alert-dialog-open" variant="destructive">Delete project</Button>
+                <AlertDialog id="dm-alert-dialog">
+                  <h2 slot="title">Delete project?</h2>
+                  <p slot="description">This cannot be undone.</p>
+                  <Fragment slot="footer">
+                    <form method="dialog">
+                      <Button variant="outline">Cancel</Button>
+                    </form>
+                    <form method="dialog">
+                      <Button variant="destructive" value="confirm">Delete</Button>
+                    </form>
+                  </Fragment>
+                </AlertDialog>
+                <script is:inline>
+                  document.getElementById("dm-alert-dialog-open")?.addEventListener("click", () => {
+                    const dlg = document.getElementById("dm-alert-dialog");
+                    if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("confirm")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block" id={`demo-alert-dialog-${id}`}>
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-alert-dialog-sizes">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Button id="dm-ad-xs-open" variant="outline">Open xs</Button>
+                  <Button id="dm-ad-lg-open" variant="outline">Open lg</Button>
+                </div>
+                <AlertDialog id="dm-ad-xs" size="xs">
+                  <h2 slot="title">Extra small</h2>
+                  <p slot="description">20rem panel for short confirmations.</p>
+                  <Fragment slot="footer">
+                    <form method="dialog">
+                      <Button variant="ghost">Close</Button>
+                    </form>
+                  </Fragment>
+                </AlertDialog>
+                <AlertDialog id="dm-ad-lg" size="lg">
+                  <h2 slot="title">Large</h2>
+                  <p slot="description">32rem panel when the message needs room.</p>
+                  <Fragment slot="footer">
+                    <form method="dialog">
+                      <Button variant="ghost">Close</Button>
+                    </form>
+                  </Fragment>
+                </AlertDialog>
+                <script is:inline>
+                  for (const [btnId, dlgId] of [
+                    ["dm-ad-xs-open", "dm-ad-xs"],
+                    ["dm-ad-lg-open", "dm-ad-lg"],
+                  ]) {
+                    document.getElementById(btnId)?.addEventListener("click", () => {
+                      const dlg = document.getElementById(dlgId);
+                      if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                    });
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

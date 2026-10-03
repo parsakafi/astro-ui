@@ -1,0 +1,23 @@
+---
+import {
+  Button,
+  Badge,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<div class="docs-cta-band docs-hero-atmosphere">
+    <Badge variant="muted">v1.0 — stable</Badge>
+    <h2>Ship your next Astro site faster</h2>
+    <p>Install once, import tokens, compose pages from blocks like this one.</p>
+    <div class="docs-hero-actions">
+      <Button href="/docs/get-started/">Get started</Button>
+      <Button href="/components/" variant="outline">Components</Button>
+    </div>
+  </div>

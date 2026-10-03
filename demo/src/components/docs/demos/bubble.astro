@@ -1,0 +1,238 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+  Button,
+  Collapsible,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "billing-thread" && (
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
+            <h3 class="docs-demo-title">Two-sided billing thread</h3>
+            <DemoTabs id="dm-bubble-billing">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <p class="docs-bubble-meta">Support · 09:12</p>
+                  <Bubble align="start" variant="outline">
+                    <BubbleContent>Hi! I see a double charge on your last invoice.</BubbleContent>
+                  </Bubble>
+                  <p class="docs-bubble-meta docs-bubble-meta--end">You · 09:14</p>
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Yes — my card was charged twice for the renewal.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Refunding the duplicate now. It lands in 3–5 business days.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="end" variant="tinted">
+                    <BubbleContent>Confirmed — thank you!</BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("billing-thread")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "deploy-thread" && (
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
+            <h3 class="docs-demo-title">Seven variants in one deploy thread</h3>
+            <DemoTabs id="dm-bubble-deploy">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Deploy the preview build to production.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="secondary">
+                    <BubbleContent>On it — building #412.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Last production deploy was v2.4.1, two days ago.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="tinted">
+                    <BubbleContent>Build passed in 1m 32s.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="outline">
+                    <BubbleContent>3 files changed, 128 additions, 12 deletions.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="destructive">
+                    <BubbleContent>Coverage dropped below 80% — consider adding tests.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="ghost">
+                    <BubbleContent>Run #412 · runner eu-west-1 · log retained 30 days</BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("deploy-thread")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group" && (
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
+            <h3 class="docs-demo-title">Consecutive turns in a BubbleGroup</h3>
+            <DemoTabs id="dm-bubble-group">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <p class="docs-bubble-meta docs-bubble-meta--end">Ada · just now</p>
+                  <BubbleGroup ariaLabel="Three messages from Ada">
+                    <Bubble align="end" variant="primary">
+                      <BubbleContent>Pushed the fix to staging.</BubbleContent>
+                    </Bubble>
+                    <Bubble align="end" variant="primary">
+                      <BubbleContent>Can you re-run the smoke tests?</BubbleContent>
+                    </Bubble>
+                    <Bubble align="end" variant="primary">
+                      <BubbleContent>Then we're clear for the release.</BubbleContent>
+                    </Bubble>
+                  </BubbleGroup>
+                  <p class="docs-bubble-meta">Grace · 1 min ago</p>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Running them now.</BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "reactions" && (
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
+            <h3 class="docs-demo-title">Reaction rows</h3>
+            <DemoTabs id="dm-bubble-reactions">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread docs-bubble-thread--spaced">
+                  <Bubble align="start" variant="outline">
+                    <BubbleContent>The release notes are ready for review.</BubbleContent>
+                    <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">
+                      <span aria-hidden="true">👍 4</span>
+                      <span aria-hidden="true">🚀 2</span>
+                    </BubbleReactions>
+                  </Bubble>
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Great — leaving a celebration on it.</BubbleContent>
+                    <BubbleReactions side="bottom" align="start" ariaLabel="Reactions">
+                      <button type="button" aria-pressed="true" aria-label="Celebrate, 3 reactions">
+                        <span aria-hidden="true">🎉</span> 3
+                      </button>
+                    </BubbleReactions>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Deployment window opens at 14:00 UTC.</BubbleContent>
+                    <BubbleReactions side="top" align="end" ariaLabel="Reactions">
+                      <span aria-hidden="true">⏰ 1</span>
+                    </BubbleReactions>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("reactions")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "ghost-rich" && (
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
+            <h3 class="docs-demo-title">Ghost bubble with rich content</h3>
+            <DemoTabs id="dm-bubble-ghost">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="start" variant="ghost">
+                    <BubbleContent>
+                      <h4>What changed in v2.5</h4>
+                      <ul>
+                        <li><strong>Bubble</strong> components for conversational UIs</li>
+                        <li>Logical-property separators in <code>Breadcrumb</code></li>
+                        <li><em>40% faster</em> docs generation</li>
+                      </ul>
+                      <p>Upgrade with <code>npm install astro-ui@latest</code>.</p>
+                    </BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("ghost-rich")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "collapsible-answer" && (
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
+            <h3 class="docs-demo-title">Long answer behind a Collapsible</h3>
+            <DemoTabs id="dm-bubble-collapsible">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="end" variant="primary">
+                    <BubbleContent>Explain how the reactions pill positions itself.</BubbleContent>
+                  </Bubble>
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>
+                      <p>
+                        The pill is absolutely positioned inside the bubble and pushed
+                        out with a translate of 75% of its own height, so it straddles
+                        the edge without occupying flow space.
+                      </p>
+                      <Collapsible id="dm-bubble-more">
+                        <span slot="trigger">Show the details</span>
+                        <p>
+                          A 3px ring in the page background separates the pill from the
+                          bubble and any media behind it. side picks the edge (top or
+                          bottom) and align picks the horizontal anchor (start or end) —
+                          both logical, so they mirror in RTL layouts.
+                        </p>
+                      </Collapsible>
+                    </BubbleContent>
+                  </Bubble>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("collapsible-answer")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "interactive" && (
+          <div class="docs-demo-block" id={`demo-bubble-${id}`}>
+            <h3 class="docs-demo-title">Tinted bubbles as buttons + action row</h3>
+            <DemoTabs id="dm-bubble-interactive">
+              <Fragment slot="preview">
+                <div class="docs-bubble-thread">
+                  <Bubble align="start" variant="muted">
+                    <BubbleContent>Two plans fit your usage. Pick one:</BubbleContent>
+                  </Bubble>
+                  <Bubble align="end" variant="tinted">
+                    <button type="button" class="aui-bubble__content">Pro — $19/mo, priority builds</button>
+                  </Bubble>
+                  <Bubble align="end" variant="tinted">
+                    <button type="button" class="aui-bubble__content">Team — $49/mo, shared themes</button>
+                  </Bubble>
+                  <Bubble align="start" variant="outline">
+                    <a class="aui-bubble__content" href="#">Compare all plans</a>
+                  </Bubble>
+                  <div class="docs-bubble-actions">
+                    <Button variant="ghost" size="sm">Regenerate</Button>
+                    <Button variant="outline" size="sm">Copy summary</Button>
+                  </div>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("interactive")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

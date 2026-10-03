@@ -1,0 +1,173 @@
+---
+/**
+  * Home — astro.build-aligned marketing page: atmosphere hero with
+  * gradient headline, capability trio, the "N free components" count
+  * band, block teaser, docs teaser, and CTA.
+  * No component demos — those live on component pages and /blocks.
+  */
+import DocsLayout from "../layouts/DocsLayout.astro";
+import Button from "astro-ui/button";
+import Badge from "astro-ui/badge";
+import {Toaster} from "astro-ui";
+import "astro-ui/toast.css";
+import {categories} from "../lib/components";
+import {SITE} from "../lib/site";
+import {getCollection} from "astro:content";
+
+const entries = await getCollection("components");
+const metas = entries.map((d) => d.data);
+const stats = {
+  components: metas.length,
+  categories: categories.length,
+  zeroJs: metas.filter((m) => !m.js).length,
+  js: metas.filter((m) => m.js).length,
+};
+
+const capabilities = [
+  {
+    title: "Zero JS by default",
+    body: `${stats.zeroJs} of ${stats.components} components render pure server-side HTML. Where behavior is needed, it's a few hundred bytes of scoped script — never a runtime.`,
+  },
+  {
+    title: "Native elements first",
+    body: "Real <button>, <input>, <details>, <dialog>. Keyboard support, focus management, and announced states come from the platform, not a headless layer.",
+  },
+  {
+    title: "Themed by tokens",
+    body: "Every color, radius, and space is a CSS custom property. Restyle the whole system — or flip to dark and RTL — without touching a component.",
+  },
+];
+
+const blockTeasers = [
+  {id: "auth", name: "Auth", desc: "Sign-in & sign-up panels", parts: "Card · Input · Button · Checkbox"},
+  {id: "pricing", name: "Pricing", desc: "Plan cards with feature lists", parts: "Card · Badge · Button · Separator"},
+  {id: "stats", name: "Stats", desc: "Metric bands with counters", parts: "Card · Progress · Badge"},
+  {id: "faq", name: "FAQ", desc: "Answer sections that stay searchable", parts: "Accordion · Kbd"},
+];
+---
+
+<DocsLayout title="Home" description={SITE.description}>
+  <!-- Atmosphere hero (astro.build-style gradient wash) -->
+  <section class="docs-hero docs-hero-atmosphere docs-hero-statement">
+    <p class="docs-hero-kicker">The component library for Astro</p>
+    <h1>
+      <span class="docs-text-gradient">UI components</span> that feel like
+      the platform
+    </h1>
+    <p class="docs-hero-lede">
+      {SITE.name} gives Astro sites accessible, token-themed interface
+      components — server-rendered HTML, no runtime, no hydration. Built for
+      the framework that ships zero JS by default.
+    </p>
+    <div class="docs-hero-actions">
+      <Button href="/docs/get-started/" size="lg">Get started</Button>
+      <Button href="/components/" variant="outline" size="lg">Components</Button>
+      <Button href={SITE.repo} variant="ghost" size="lg">GitHub ↗</Button>
+    </div>
+  </section>
+
+  <hr class="docs-gradient-rule"/>
+
+  <!-- Capability trio -->
+  <section class="docs-capabilities" aria-label="Why astro-ui">
+    {
+      capabilities.map((cap) => (
+        <div class="docs-capability">
+          <h2>{cap.title}</h2>
+          <p>{cap.body}</p>
+        </div>
+      ))
+    }
+  </section>
+
+  <!-- Count band ("N free components" pattern) -->
+  <section class="docs-count-band" aria-labelledby="count-h">
+    <p class="docs-hero-kicker">{SITE.name} · open source · MIT</p>
+    <h2 id="count-h">
+      <span class="docs-text-gradient">{stats.components}</span> free Astro UI
+      components
+    </h2>
+    <p class="docs-count-lede">
+      Every component ships as typed Astro source with design tokens,
+      accessibility wiring, and copy-paste usage — no license tiers, no
+      component paywalls.
+    </p>
+    <div class="docs-count-badges">
+      <Badge variant="muted">{stats.zeroJs} zero-JS</Badge>
+      <Badge variant="muted">{stats.js} with behavior</Badge>
+      <Badge variant="muted">{stats.categories} categories</Badge>
+      <Badge variant="muted">RTL-ready</Badge>
+      <Badge variant="muted">Dark mode</Badge>
+    </div>
+    <div class="docs-hero-actions">
+      <Button href="/components/">Browse the catalog</Button>
+      <Button href="/blocks/" variant="outline">Explore blocks</Button>
+    </div>
+  </section>
+
+  <!-- Blocks teaser -->
+  <section aria-labelledby="blocks-h">
+    <div class="docs-section-head">
+      <div>
+        <h2 id="blocks-h">Blocks — components, composed</h2>
+        <p>
+          Ready-to-adapt sections built entirely from {SITE.name}
+          components. Copy the block, keep the pieces.
+        </p>
+      </div>
+      <Button href="/blocks/" variant="outline" size="sm">All blocks</Button>
+    </div>
+    <div class="docs-block-teaser-grid">
+      {
+        blockTeasers.map((block) => (
+          <a class="docs-block-teaser" href={`/blocks/#${block.id}`}>
+            <span class="docs-block-name">{block.name}</span>
+            <span class="docs-block-desc">{block.desc}</span>
+            <span class="docs-block-parts">{block.parts}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Docs teaser -->
+  <section aria-labelledby="docs-h">
+    <div class="docs-section-head">
+      <div>
+        <h2 id="docs-h">Docs that respect your time</h2>
+        <p>Short guides for the things you'll actually configure.</p>
+      </div>
+      <Button href="/docs/" variant="outline" size="sm">Open the docs</Button>
+    </div>
+    <div class="docs-block-teaser-grid">
+      {
+        [
+          {href: "/docs/get-started/", name: "Get started", desc: "Install tokens and render your first component."},
+          {href: "/docs/styling/", name: "Styling", desc: "The token model and how to override it."},
+          {href: "/docs/rtl/", name: "RTL support", desc: "Logical properties and mirroring — no overrides."},
+          {href: "/docs/changelog/", name: "Changelog", desc: "What changed, release by release."},
+        ].map((guide) => (
+          <a class="docs-block-teaser" href={guide.href}>
+            <span class="docs-block-name">{guide.name}</span>
+            <span class="docs-block-desc">{guide.desc}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="docs-cta-band docs-hero-atmosphere">
+    <h2>Start building with {SITE.name} today</h2>
+    <p>
+      One install, one token import, {stats.components} components — free
+      and open source.
+    </p>
+    <div class="docs-hero-actions">
+      <Button href="/docs/get-started/" size="lg">Get started</Button>
+      <Button href="/docs/roadmap/" variant="outline" size="lg">Roadmap</Button>
+    </div>
+  </section>
+
+  <Toaster/>
+</DocsLayout>

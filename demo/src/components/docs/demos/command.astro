@@ -1,0 +1,93 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Command,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-command-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-command-basic">
+              <Fragment slot="preview">
+                <Command
+                  id="cmd-basic"
+                  label="Commands"
+                  style="max-inline-size:20rem"
+                  groups={[
+                    {label: "Suggestions", items: [
+                      {value: "calendar", label: "Calendar"},
+                      {value: "emoji", label: "Search Emoji"},
+                      {value: "calculator", label: "Calculator", disabled: true},
+                    ]},
+                    {label: "Settings", items: [
+                      {value: "profile", label: "Profile", shortcut: "\u2318P"},
+                      {value: "billing", label: "Billing", shortcut: "\u2318B"},
+                      {value: "settings", label: "Settings", shortcut: "\u2318S"},
+                    ]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hints" && (
+          <div class="docs-demo-block" id={`demo-command-${id}`}>
+            <h3 class="docs-demo-title">Hints &amp; keywords</h3>
+            <DemoTabs id="dm-command-hints">
+              <Fragment slot="preview">
+                <Command
+                  id="cmd-hints"
+                  label="Actions"
+                  style="max-inline-size:22rem"
+                  groups={[
+                    {label: "Repository", items: [
+                      {value: "push", label: "Push to origin", hint: "main \u2192 origin/main", keywords: ["git", "upload"]},
+                      {value: "pr", label: "Open pull request", hint: "3 files changed", keywords: ["git", "review"]},
+                      {value: "stash", label: "Stash changes", keywords: ["git", "save"]},
+                    ]},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("hints")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "loop" && (
+          <div class="docs-demo-block" id={`demo-command-${id}`}>
+            <h3 class="docs-demo-title">Loop + vim bindings</h3>
+            <DemoTabs id="dm-command-loop">
+              <Fragment slot="preview">
+                <Command
+                  id="cmd-loop"
+                  label="Commands"
+                  loop
+                  vimBindings
+                  autoHighlight
+                  style="max-inline-size:20rem"
+                  groups={[{label: "Actions", items: [
+                    {value: "one", label: "First action"},
+                    {value: "two", label: "Second action"},
+                    {value: "three", label: "Third action"},
+                  ]}]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("loop")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

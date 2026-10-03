@@ -1,0 +1,124 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Autocomplete,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-autocomplete-basic">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-basic"
+                    name="framework"
+                    placeholder="Pick a framework…"
+                    items={["Astro", "Next.js", "Nuxt", "SvelteKit", "Remix", "SolidStart"]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "hints" && (
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
+            <h3 class="docs-demo-title">Options with hints</h3>
+            <DemoTabs id="dm-autocomplete-hints">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-hints"
+                    name="city"
+                    placeholder="Choose a city…"
+                    items={[
+                      {value: "jp-tokyo", label: "Tokyo", hint: "Japan"},
+                      {value: "fr-paris", label: "Paris", hint: "France"},
+                      {value: "us-nyc", label: "New York", hint: "United States"},
+                      {value: "de-berlin", label: "Berlin", hint: "Germany"},
+                    ]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("hints")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "groups" && (
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
+            <h3 class="docs-demo-title">Groups</h3>
+            <DemoTabs id="dm-autocomplete-groups">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-groups"
+                    name="stack"
+                    placeholder="Search the stack…"
+                    groups={[
+                      {label: "Frontend", items: ["Astro", "Next.js", "Nuxt"]},
+                      {label: "Backend", items: ["Node", "Deno", "Bun"]},
+                    ]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("groups")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-autocomplete-sizes">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:20rem">
+                  <Autocomplete id="ac-xs" size="xs" placeholder="xs" items={["One", "Two"]}/>
+                  <Autocomplete id="ac-sm" size="sm" placeholder="sm" items={["One", "Two"]}/>
+                  <Autocomplete id="ac-md" size="md" placeholder="md" items={["One", "Two"]}/>
+                  <Autocomplete id="ac-lg" size="lg" placeholder="lg" items={["One", "Two"]}/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "clearable" && (
+          <div class="docs-demo-block" id={`demo-autocomplete-${id}`}>
+            <h3 class="docs-demo-title">Clearable + open on focus</h3>
+            <DemoTabs id="dm-autocomplete-clearable">
+              <Fragment slot="preview">
+                <div style="max-inline-size:20rem">
+                  <Autocomplete
+                    id="ac-clear"
+                    name="search"
+                    placeholder="Search…"
+                    clearable
+                    openOnFocus
+                    autoHighlight
+                    items={["Components", "Blocks", "Docs", "Releases", "Roadmap"]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("clearable")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

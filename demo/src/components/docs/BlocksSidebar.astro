@@ -1,0 +1,106 @@
+---
+/**
+  * BlocksSidebar — left category/block tree for /blocks/* pages,
+  * mirroring the components sidebar: All Blocks link,
+  * category groups with counts, block links beneath each category.
+  * Client-side filter matches both categories and block names.
+  */
+import {blockCategories, blocksIndexHref} from "../../lib/blocks";
+
+interface Props {
+  /** Block id of the current page (highlights in the tree). */
+  currentBlockId?: string;
+  /** Category id of the current page (highlights the group head). */
+  currentCategoryId?: string;
+  /** Whether the current page is the catalog root. */
+  isCatalog?: boolean;
+}
+
+const {currentBlockId, currentCategoryId, isCatalog = false} = Astro.props;
+---
+
+<nav class="docs-sidebar" aria-label="Blocks">
+  <div class="docs-search">
+    <input
+      type="search"
+      class="docs-search-input"
+      placeholder="Search blocks…"
+      aria-label="Search blocks"
+      autocomplete="off"
+      spellcheck="false"
+      data-docs-search
+    />
+    <p class="docs-search-empty" role="status" hidden data-docs-search-empty>
+      No blocks match.
+    </p>
+  </div>
+  <a class:list={{"docs-side-link": true, "is-active": isCatalog}} href={blocksIndexHref}>
+    All Blocks
+  </a>
+  {
+    blockCategories.map((category) => (
+      <div class="docs-side-group">
+        <a
+          class:list={{"docs-side-cat": true, "is-active": currentCategoryId === category.id && !currentBlockId}}
+          href={`/blocks/${category.id}/`}
+        >
+          <span class="docs-side-cat-icon" aria-hidden="true">{category.icon}</span>
+          {category.label}
+          <span class="docs-side-count">{category.blocks.length}</span>
+        </a>
+        <div class="docs-side-items">
+          {category.blocks.map((block) => (
+            <a
+              class:list={{
+                "docs-side-link": true,
+                "is-active": currentBlockId === block.id,
+              }}
+              aria-current={currentBlockId === block.id ? "page" : undefined}
+              href={`/blocks/${category.id}/${block.id}/`}
+              data-search-name={`${block.title} ${block.sidebarTitle ?? ""}`.toLowerCase()}
+            >
+              {block.sidebarTitle ?? block.title}
+            </a>
+          ))}
+        </div>
+      </div>
+    ))
+  }
+</nav>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>("[data-docs-search]");
+  const nav = input?.closest<HTMLElement>(".docs-sidebar");
+
+  if (input && nav) {
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>("[data-search-name]"));
+    const groups = Array.from(nav.querySelectorAll<HTMLElement>(".docs-side-group"));
+    const empty = nav.querySelector<HTMLElement>("[data-docs-search-empty]");
+
+    const filter = (): number => {
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+      for (const link of links) {
+        const match = link.dataset.searchName?.includes(query) ?? false;
+        link.hidden = query !== "" && !match;
+        if (!link.hidden) visible++;
+      }
+      for (const group of groups) {
+        const shown = Array.from(
+          group.querySelectorAll<HTMLAnchorElement>("[data-search-name]"),
+        ).some((link) => !link.hidden);
+        group.hidden = !shown;
+      }
+      if (empty) empty.hidden = !(query && visible === 0);
+      return visible;
+    };
+
+    input.addEventListener("input", () => filter());
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        input.value = "";
+        filter();
+      }
+    });
+  }
+</script>

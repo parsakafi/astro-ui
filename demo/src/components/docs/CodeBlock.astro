@@ -1,0 +1,44 @@
+---
+/**
+  * CodeBlock — highlighted code with a copy button.
+  * Uses Astro's built-in Shiki <Code /> component; the copy button
+  * degrades to a no-op without JS (clipboard API is progressive).
+  */
+import {Code} from "astro:components";
+
+interface Props {
+  /** Source to highlight. */
+  code: string;
+  /** Shiki language id. */
+  lang?: string;
+}
+
+const {code, lang = "astro"} = Astro.props;
+---
+
+<div class="docs-codeblock">
+  <Code code={code.trim()} lang={lang as "astro"} themes={{light: "github-light", dark: "github-dark-default"}}/>
+  <button
+    type="button"
+    class="docs-copy-btn"
+    data-copy={code.trim()}
+    aria-label="Copy code"
+  >
+    Copy
+  </button>
+</div>
+
+<script>
+  document.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const btn = target.closest<HTMLButtonElement>("[data-copy]");
+    if (!btn?.dataset.copy) return;
+    navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
+      btn.textContent = "Copied!";
+      window.setTimeout(() => {
+        btn.textContent = "Copy";
+      }, 1500);
+    });
+  });
+</script>

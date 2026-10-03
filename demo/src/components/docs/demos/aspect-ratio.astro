@@ -1,0 +1,108 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  AspectRatio,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "ratios" && (
+          <div class="docs-demo-block" id={`demo-aspect-ratio-${id}`}>
+            <h3 class="docs-demo-title">Common ratios</h3>
+            <DemoTabs id="dm-aspect-ratio-ratios">
+              <Fragment slot="preview">
+                <div class="demo-grid">
+                  <AspectRatio ratio="16 / 9">
+                    <img src="https://placehold.co/640x360/1f2937/9ca3af?text=wide" alt="Landscape photo in a 16:9 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio="4 / 3">
+                    <img src="https://placehold.co/480x360/1f2937/9ca3af?text=four%20thirds" alt="Photo in a 4:3 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio={1}>
+                    <img src="https://placehold.co/400x400/1f2937/9ca3af?text=square" alt="Photo in a square box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("ratios")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "widescreen" && (
+          <div class="docs-demo-block" id={`demo-aspect-ratio-${id}`}>
+            <h3 class="docs-demo-title">Widescreen</h3>
+            <DemoTabs id="dm-aspect-ratio-widescreen">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:28rem">
+                  <AspectRatio ratio="21 / 9">
+                    <img src="https://placehold.co/840x360/1f2937/9ca3af?text=cinema"
+                         alt="Cinematic panorama in a 21:9 box" class="object-cover"
+                         style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio="16 / 10">
+                    <img src="https://placehold.co/640x400/1f2937/9ca3af?text=viewport"
+                         alt="Desktop viewport in a 16:10 box" class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("widescreen")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "portrait" && (
+          <div class="docs-demo-block" id={`demo-aspect-ratio-${id}`}>
+            <h3 class="docs-demo-title">Portrait</h3>
+            <DemoTabs id="dm-aspect-ratio-portrait">
+              <Fragment slot="preview">
+                <div class="demo-grid" style="max-inline-size:26rem">
+                  <AspectRatio ratio="9 / 16">
+                    <img src="https://placehold.co/360x640/1f2937/9ca3af?text=vertical"
+                         alt="Vertical video in a 9:16 box" class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio="4 / 5">
+                    <img src="https://placehold.co/400x500/1f2937/9ca3af?text=social" alt="Social post in a 4:5 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("portrait")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "photo" && (
+          <div class="docs-demo-block" id={`demo-aspect-ratio-${id}`}>
+            <h3 class="docs-demo-title">Photo</h3>
+            <DemoTabs id="dm-aspect-ratio-photo">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="max-inline-size:28rem">
+                  <AspectRatio ratio="3 / 2">
+                    <img src="https://placehold.co/600x400/1f2937/9ca3af?text=photo" alt="Classic photo in a 3:2 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                  <AspectRatio ratio={1}>
+                    <img src="https://placehold.co/400x400/1f2937/9ca3af?text=quad" alt="Product shot in a 1:1 box"
+                         class="object-cover" style="background:var(--ui-muted)"/>
+                  </AspectRatio>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("photo")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

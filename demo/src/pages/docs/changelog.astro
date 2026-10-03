@@ -1,0 +1,69 @@
+---
+/**
+  * /docs/changelog/ — the full changelog in Keep a Changelog format
+  * (docs-flavored: dense, factual). The marketing-oriented release
+  * highlights live at /docs/releases/.
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import {parseChangelog, renderBullet} from "../../lib/changelog";
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
+
+const changelogRaw = readFileSync(
+  resolve(process.cwd(), "node_modules/astro-ui/CHANGELOG.md"),
+  "utf8",
+);
+const entries = parseChangelog(changelogRaw);
+
+const sectionIcons: Record<string, string> = {
+  added: "✚",
+  fixed: "◐",
+  changed: "↻",
+  deprecated: "⚠",
+  removed: "✕",
+  security: "🔒",
+};
+---
+
+<DocsLayout title="Changelog" description="Full changelog for astro-ui." activePath="docs"
+            toc={entries.map((e) => ({id: `v-${e.version}`, label: e.version}))}>
+  <article class="docs-article docs-prose">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">Docs · Reference</p>
+      <h1>Changelog</h1>
+      <p>
+        All notable changes to astro-ui, following
+        <a href="https://keepachangelog.com/en/1.0.0/" target="_blank" rel="noreferrer noopener">Keep a Changelog</a>.
+        The source of truth is <code>astro-ui/CHANGELOG.md</code>.
+      </p>
+    </section>
+
+    <section>
+      {
+        entries.map((entry) => (
+          <article class="docs-release" id={`v-${entry.version}`}>
+            <header class="docs-release-head">
+              <span class="docs-release-version">v{entry.version}</span>
+              {entry.date && <span class="docs-release-date">{entry.date}</span>}
+            </header>
+            {Object.entries(entry.sections).map(([section, bullets]) => (
+              <div class="docs-release-section">
+                <p class="docs-release-section-title">
+									<span class="docs-release-icon" aria-hidden="true">
+										{sectionIcons[section] ?? "•"}
+									</span>
+                  {section.charAt(0).toUpperCase() + section.slice(1)}
+                </p>
+                <ul>
+                  {bullets.map((bullet) => (
+                    <li set:html={renderBullet(bullet)}/>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </article>
+        ))
+      }
+    </section>
+  </article>
+</DocsLayout>

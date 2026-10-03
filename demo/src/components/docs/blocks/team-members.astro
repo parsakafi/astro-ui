@@ -1,0 +1,37 @@
+---
+import {
+  Button,
+  Badge,
+  Card,
+  Avatar,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<Card>
+    <h3 slot="header">Members</h3>
+    <ul class="docs-block-team">
+      {[
+        {name: "Parsa M", role: "Owner", badge: "owner"},
+        {name: "Devin V", role: "Maintainer", badge: "maintainer"},
+        {name: "Robin H", role: "Contributor", badge: "member"},
+      ].map((member) => (
+        <li class="docs-block-team-row">
+          <Avatar name={member.name} size="sm"/>
+          <span class="docs-block-team-name">{member.name}</span>
+          <Badge variant={member.badge === "owner" ? "primary" : member.badge === "maintainer" ? "info" : "muted"}
+                 size="sm">
+            {member.badge}
+          </Badge>
+          <span class="docs-block-team-role">{member.role}</span>
+        </li>
+      ))}
+    </ul>
+    <Button slot="footer" variant="outline" size="sm">Invite member</Button>
+  </Card>

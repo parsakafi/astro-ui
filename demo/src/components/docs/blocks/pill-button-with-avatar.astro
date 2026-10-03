@@ -1,0 +1,28 @@
+---
+import {
+  Button,
+  Avatar,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<div class="docs-block-pill-buttons">
+    <Button variant="outline" size="sm" shape="rounded" class="docs-block-pill-btn">
+      <Avatar name="Ada Lovelace" size="xs"/>
+      <span style="margin-inline-start:var(--ui-space-2)">Ada</span>
+    </Button>
+    <Button variant="outline" size="sm" shape="rounded" class="docs-block-pill-btn">
+      <Avatar name="Grace Hopper" size="xs"/>
+      <span style="margin-inline-start:var(--ui-space-2)">Grace</span>
+    </Button>
+    <Button variant="outline" size="sm" shape="rounded" class="docs-block-pill-btn">
+      <Avatar name="Alan Turing" size="xs" status="online"/>
+      <span style="margin-inline-start:var(--ui-space-2)">Alan</span>
+    </Button>
+  </div>

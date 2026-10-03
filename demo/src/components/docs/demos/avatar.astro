@@ -1,0 +1,467 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import BlockDemo from "../BlockDemo.astro";
+import {
+  Avatar,
+  AvatarGroup,
+  Badge,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-avatar-basic">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "radius" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Different border radiuses</h3>
+            <DemoTabs id="dm-avatar-radius">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" radius="sm"/>
+                  <Avatar name="Grace Hopper" radius="md"/>
+                  <Avatar name="Alan Turing" radius="lg"/>
+                  <Avatar name="Edsger Dijkstra" radius="full"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("radius")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Different sizes</h3>
+            <DemoTabs id="dm-avatar-sizes">
+              <Fragment slot="preview">
+                <Avatar name="Ada Lovelace" size="xs"/>
+                <Avatar name="Ada Lovelace" size="sm"/>
+                <Avatar name="Ada Lovelace" size="md"/>
+                <Avatar name="Ada Lovelace" size="lg"/>
+                <Avatar name="Ada Lovelace" size="xl"/>
+                <Avatar name="Ada Lovelace" size="2xl"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "custom-size" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Custom sizes</h3>
+            <DemoTabs id="dm-avatar-custom-size">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" customSize={16}/>
+                  <Avatar name="Grace Hopper" customSize={32}/>
+                  <Avatar name="Alan Turing" customSize={56}/>
+                  <Avatar name="Edsger Dijkstra" customSize="4.5rem"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("custom-size")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "status" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Online status</h3>
+            <DemoTabs id="dm-avatar-status">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" status="online"/>
+                  <Avatar name="Grace Hopper" status="away"/>
+                  <Avatar name="Alan Turing" status="busy"/>
+                  <Avatar name="Edsger Dijkstra" status="offline"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("status")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "status-positions" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Status badge positions</h3>
+            <DemoTabs id="dm-avatar-status-positions">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" status="online" statusPosition="top-left"/>
+                  <Avatar name="Grace Hopper" status="online" statusPosition="top-right"/>
+                  <Avatar name="Alan Turing" status="online" statusPosition="bottom-left"/>
+                  <Avatar name="Edsger Dijkstra" status="online" statusPosition="bottom-right"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("status-positions")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-basic" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Basic avatar group</h3>
+            <DemoTabs id="dm-avatar-group-basic">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Project contributors">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group-basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-icon-count" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar group with icon count</h3>
+            <DemoTabs id="dm-avatar-group-icon-count">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Project contributors">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                  <Fragment slot="count"><span aria-hidden="true">+</span></Fragment>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group-icon-count")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-numeric-count" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar group with numerical count</h3>
+            <DemoTabs id="dm-avatar-group-numeric-count">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Project contributors">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                  <Fragment slot="count">+5</Fragment>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group-numeric-count")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "badge-icon" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar with badge icon</h3>
+            <DemoTabs id="dm-avatar-badge-icon">
+              <Fragment slot="preview">
+                <Avatar name="Ada Lovelace" size="xl">
+                  <Badge slot="badge" variant="primary" size="sm">+1</Badge>
+                </Avatar>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("badge-icon")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "solid-fallback" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Solid background fallback</h3>
+            <DemoTabs id="dm-avatar-solid-fallback">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" variant="primary"/>
+                  <Avatar name="Grace Hopper" variant="success"/>
+                  <Avatar name="Alan Turing" variant="warning"/>
+                  <Avatar name="Edsger Dijkstra" variant="info"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("solid-fallback")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-status" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar group with online status</h3>
+            <DemoTabs id="dm-avatar-group-status">
+              <Fragment slot="preview">
+                <AvatarGroup ariaLabel="Team members">
+                  <Avatar name="Ada Lovelace" status="online"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group-status")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "grayscale" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Grayscale image filter</h3>
+            <DemoTabs id="dm-avatar-grayscale">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar
+                    name="Ada Lovelace"
+                    src="https://i.pravatar.cc/150?img=47"
+                    filter="grayscale"
+                    filterHover
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("grayscale")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "group-hover" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar group with hover effect</h3>
+            <DemoTabs id="dm-avatar-group-hover">
+              <Fragment slot="preview">
+                <AvatarGroup hover ariaLabel="Team members">
+                  <Avatar name="Ada Lovelace"/>
+                  <Avatar name="Grace Hopper"/>
+                  <Avatar name="Alan Turing"/>
+                  <Avatar name="Edsger Dijkstra"/>
+                </AvatarGroup>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("group-hover")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "custom-badge" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Custom verification badge</h3>
+            <DemoTabs id="dm-avatar-custom-badge">
+              <Fragment slot="preview">
+                <Avatar name="Ada Lovelace" size="xl">
+                  <Badge slot="badge" variant="success" size="sm" ariaLabel="Verified">
+                    <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="m2.5 6.5 2.25 2.25L9.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round"/>
+                    </svg>
+                  </Badge>
+                </Avatar>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("custom-badge")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "multi-badge" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar with multiple badges</h3>
+            <DemoTabs id="dm-avatar-multi-badge">
+              <Fragment slot="preview">
+                <div class="avatar-multi-badge-demo">
+                  <Avatar name="Ada Lovelace" status="online" statusPosition="bottom-right">
+                    <span class="avatar-count-badge" slot="badge" aria-label="3 notifications">3</span>
+                  </Avatar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("multi-badge")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "ring-gradient" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Gradient animated ring</h3>
+            <DemoTabs id="dm-avatar-ring-gradient">
+              <Fragment slot="preview">
+                <div class="avatar-ring-demo">
+							<span class="avatar-gradient-ring">
+								<Avatar name="Ada Lovelace"/>
+							</span>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("ring-gradient")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "ring-animated" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Animated ring</h3>
+            <DemoTabs id="dm-avatar-ring-animated">
+              <Fragment slot="preview">
+                <div class="avatar-ring-demo">
+							<span class="avatar-story-ring">
+								<Avatar name="Grace Hopper"/>
+							</span>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("ring-animated")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "loading" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Loading state</h3>
+            <DemoTabs id="dm-avatar-loading">
+              <Fragment slot="preview">
+                <div class="demo-row">
+                  <Avatar name="Ada Lovelace" size="xs" loading/>
+                  <Avatar name="Ada Lovelace" size="sm" loading/>
+                  <Avatar name="Ada Lovelace" size="md" loading/>
+                  <Avatar name="Ada Lovelace" size="lg" loading/>
+                  <Avatar name="Ada Lovelace" size="xl" loading/>
+                  <Avatar name="Ada Lovelace" size="2xl" loading/>
+                  <Avatar name="Ada Lovelace" size="3xl" loading/>
+                </div>
+                <p class="docs-demo-hint">The spinner scales with the avatar (em-based) — with a 10px floor on xs.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("loading")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "shapes" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Shapes &amp; variants</h3>
+            <DemoTabs id="dm-avatar-shapes">
+              <Fragment slot="preview">
+                <Avatar name="Grace Hopper"/>
+                <Avatar name="Grace Hopper" shape="rounded"/>
+                <Avatar name="Grace Hopper" shape="square"/>
+                <Avatar name="Alan Turing" variant="primary"/>
+                <Avatar name="Alan Turing" variant="muted"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("shapes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "image" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Image</h3>
+            <DemoTabs id="dm-avatar-image">
+              <Fragment slot="preview">
+                <Avatar src="https://placehold.co/64x64/1f2937/9ca3af?text=ada" alt="Ada Lovelace"/>
+                <Avatar src="https://placehold.co/64x64/1f2937/9ca3af?text=hopper" alt="Grace Hopper" fit="contain"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("image")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "compact-social-proof" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Compact social proof with initials</h3>
+            <DemoTabs id="dm-avatar-compact-social-proof">
+              <Fragment slot="preview">
+                <BlockDemo id="compact-social-proof"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("compact-social-proof")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-group-hover-tooltips" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar group with hover tooltips and lift effect</h3>
+            <DemoTabs id="dm-avatar-group-hover-tooltips">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-group-hover-tooltips"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("avatar-group-hover-tooltips")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-social-proof-label" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar social proof with text label</h3>
+            <DemoTabs id="dm-avatar-social-proof-label">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-social-proof-label"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("avatar-social-proof-label")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "pill-button-with-avatar" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Pill small outline button with avatar</h3>
+            <DemoTabs id="dm-avatar-pill-button">
+              <Fragment slot="preview">
+                <BlockDemo id="pill-button-with-avatar"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("pill-button-with-avatar")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-group-hover-tooltips-v2" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar group with hover effect and tooltips</h3>
+            <DemoTabs id="dm-avatar-group-hover-tooltips-v2">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-group-hover-tooltips-v2"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("avatar-group-hover-tooltips-v2")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "avatar-empty-state" && (
+          <div class="docs-demo-block" id={`demo-avatar-${id}`}>
+            <h3 class="docs-demo-title">Avatar inside an empty state</h3>
+            <DemoTabs id="dm-avatar-empty-state">
+              <Fragment slot="preview">
+                <BlockDemo id="avatar-empty-state"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("avatar-empty-state")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

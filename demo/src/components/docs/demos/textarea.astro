@@ -1,0 +1,59 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Label,
+  Textarea,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-textarea-${id}`}>
+            <h3 class="docs-demo-title">Basic + counter + clear</h3>
+            <DemoTabs id="dm-textarea-basic">
+              <Fragment slot="preview">
+                <div class="demo-field" style="width:100%">
+                  <Label for="dm-bio">Bio</Label>
+                  <Textarea id="dm-bio" rows={3} maxlength={280} placeholder="Tell us about yourself" showCount
+                            clearable/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "grow" && (
+          <div class="docs-demo-block" id={`demo-textarea-${id}`}>
+            <h3 class="docs-demo-title">Auto-grow</h3>
+            <DemoTabs id="dm-textarea-grow">
+              <Fragment slot="preview">
+                <Textarea placeholder="Grows with input" minRows={2} maxRows={5}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("grow")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "resize" && (
+          <div class="docs-demo-block" id={`demo-textarea-${id}`}>
+            <h3 class="docs-demo-title">Resize</h3>
+            <DemoTabs id="dm-textarea-resize">
+              <Fragment slot="preview">
+                <Textarea placeholder="Vertical resize" resize="vertical" rows={2}/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("resize")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

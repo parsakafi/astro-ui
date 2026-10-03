@@ -1,0 +1,267 @@
+---
+/**
+  * /components/[slug]/
+  * structure: Overview → Features → Usage → Demos → API → FAQ →
+  * Changelog → Related, with a quick-jump TOC and prev/next pager.
+  *
+  * Content source: the `components` CONTENT COLLECTION (src/content/components/*.md)
+  * — ALL content comes from it: metadata + structured API data from
+  * frontmatter (Zod-validated), overview prose + FAQ from the markdown
+  * body via Content. The registry only supplies live demo rendering
+  * (Demos.astro) and prev/next ordering.
+  */
+import {getCollection, render} from "astro:content";
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import Demos from "../../components/docs/Demos.astro";
+import PropsTable from "../../components/docs/PropsTable.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import Button from "astro-ui/button";
+import {categories} from "../../lib/components";
+import {docsComponentOrder} from "../../lib/docs-order";
+import {parseChangelog, forComponent, renderBullet} from "../../lib/changelog";
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
+
+// CHANGELOG lives in the sibling package; builds run from demo/, so
+// resolve through the node_modules symlink from the current working dir.
+const changelogRaw = readFileSync(
+  resolve(process.cwd(), "node_modules/astro-ui/CHANGELOG.md"),
+  "utf8",
+);
+
+export async function getStaticPaths() {
+  const entries = await getCollection("components");
+  return entries.map((doc) => ({
+    params: {slug: doc.data.slug},
+    props: {doc},
+  }));
+}
+
+const {doc} = Astro.props;
+const {Content} = await render(doc);
+const meta = doc.data;
+
+// Resolve related slugs against the collection itself.
+const allEntries = await getCollection("components");
+const related = meta.related
+  .map((slug) => allEntries.find((d) => d.data.slug === slug)?.data)
+  .filter((d) => d !== undefined);
+
+// Demos render from the registry, gated + ordered by the collection.
+const demoCount = meta.demoIds.length;
+
+const category = categories.find((c) => c.id === meta.category);
+
+// Prev/next follow the sidebar sequence (shared docsComponentOrder),
+// so the pager and the sidebar tree always point the same way.
+const order = await docsComponentOrder();
+const orderIndex = order.findIndex((entry) => entry.data.slug === meta.slug);
+const prev = orderIndex > 0 ? order[orderIndex - 1].data : undefined;
+const next =
+  orderIndex !== -1 && orderIndex < order.length - 1
+    ? order[orderIndex + 1].data
+    : undefined;
+
+// Changelog entries mentioning this component.
+const changelogEntries = forComponent(parseChangelog(changelogRaw), meta.name);
+
+const toc = [
+  {id: "overview", label: "Overview"},
+  ...(meta.features.length > 0 ? [{id: "features", label: "Features"}] : []),
+  {id: "usage", label: "Usage"},
+  ...(demoCount > 0 ? [{id: "demos", label: "Demos"}] : []),
+  {id: "api", label: "API"},
+  ...(meta.a11y.length > 0 ? [{id: "accessibility", label: "Accessibility"}] : []),
+  ...(meta.faq.length > 0 ? [{id: "faq", label: "FAQ"}] : []),
+  ...(changelogEntries.length > 0 ? [{id: "changelog", label: "Changelog"}] : []),
+  ...(related.length > 0 ? [{id: "related", label: "Related"}] : []),
+];
+---
+
+<DocsLayout
+  title={meta.name}
+  description={meta.description}
+  slug={meta.slug}
+  sidebar
+  toc={toc}
+>
+  <article class="docs-article">
+    <section id="overview">
+      <p class="docs-hero-kicker">
+        {category?.name} · {meta.importPath} · {meta.exportName}
+        {meta.isNew && <span class="docs-new-badge" style="margin-inline-start:.5rem">New</span>}
+      </p>
+      <h1>
+        {meta.name}
+        {meta.js && <span class="docs-brand-version" style="margin-inline-start:.5rem">JS</span>}
+      </h1>
+      <p>{meta.description}</p>
+      <div class="docs-prose">
+        <Content/>
+      </div>
+      <div class="docs-hero-actions">
+        <Button href="/components/" variant="ghost" size="sm">← All components</Button>
+      </div>
+    </section>
+
+    {
+      meta.features.length > 0 && (
+        <section id="features">
+          <h2>Features</h2>
+          <ul>
+            {meta.features.map((feature) => (
+              <li>{feature}</li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <section id="usage">
+      <h2>Usage</h2>
+      <CodeBlock code={meta.usage} lang="astro"/>
+    </section>
+
+    {
+      demoCount > 0 && (
+        <section id="demos">
+          <h2>Demos</h2>
+          <Demos slug={meta.slug} demoIds={meta.demoIds}/>
+        </section>
+      )
+    }
+
+    <section id="api">
+      <h2>API</h2>
+      <h3>Props</h3>
+      <PropsTable rows={meta.props}/>
+      {
+        meta.slots.length > 0 && (
+          <div>
+            <h3>Slots</h3>
+            <div class="docs-table-wrap">
+              <table class="docs-table">
+                <thead>
+                <tr>
+                  <th scope="col">Slot</th>
+                  <th scope="col">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {meta.slots.map((slot) => (
+                  <tr>
+                    <td><code class="docs-code-pill">{slot.name}</code></td>
+                    <td>{slot.description}</td>
+                  </tr>
+                ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )
+      }
+    </section>
+
+    {
+      meta.a11y.length > 0 && (
+        <section id="accessibility">
+          <h2>Accessibility</h2>
+          <p>
+            Implemented accessibility features — semantics, ARIA wiring, and
+            keyboard behavior that ship with the component.
+          </p>
+          <ul class="docs-a11y-list">
+            {meta.a11y.map((note) => (
+              <li set:html={renderBullet(note)}/>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      meta.faq.length > 0 && (
+        <section id="faq">
+          <h2>FAQ</h2>
+          <div class="docs-faq">
+            {meta.faq.map((item) => (
+              <div class="docs-faq-item">
+                <h3>{item.q}</h3>
+                <p>{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      changelogEntries.length > 0 && (
+        <section id="changelog">
+          <h2>Changelog</h2>
+          <p>Version history mentioning {meta.name}.</p>
+          <div class="docs-comp-changelog">
+            {changelogEntries.map((entry) => (
+              <div class="docs-changelog-entry">
+								<span class="docs-changelog-version">
+									v{entry.version}
+                  {entry.date && <span class="docs-release-date"> — {entry.date}</span>}
+								</span>
+                {Object.entries(entry.sections).map(([section, bullets]) => (
+                  <div>
+                    <span class="docs-release-section-title">{section}</span>
+                    <ul>
+                      {bullets.map((bullet) => (
+                        <li set:html={renderBullet(bullet)}/>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <section id="related">
+          <h2>Related components</h2>
+          <p>If you are composing interactions in the same family, these usually pair well together.</p>
+          <div class="docs-chip-row">
+            {related.map((rel) => (
+              <a class="docs-cat-link" href={`/components/${rel.slug}/`}>
+                {rel.name}
+                <span class="arrow" aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <nav class="docs-pager" aria-label="Component pagination">
+      {
+        prev ? (
+          <a href={`/components/${prev.slug}/`}>
+            <span class="dir">← Previous</span>
+            <span class="name">{prev.name}</span>
+          </a>
+        ) : (
+          <span/>
+        )
+      }
+      {
+        next ? (
+          <a href={`/components/${next.slug}/`} class="docs-pager-next">
+            <span class="dir">Next →</span>
+            <span class="name">{next.name}</span>
+          </a>
+        ) : (
+          <span/>
+        )
+      }
+    </nav>
+  </article>
+</DocsLayout>

@@ -1,0 +1,173 @@
+---
+/**
+  * SearchPalette — command-palette search (⌘K / Ctrl+K).
+  *
+  * A native <dialog> over an inlined, static search index (pages, docs,
+  * components, blocks). Zero dependencies: type to filter, ↑/↓ to move,
+  * Enter to open, Esc to close. The index is rendered at build time —
+  * no fetching, no runtime data.
+  */
+import {searchEntries, GROUP_ORDER} from "../../lib/search-index";
+
+const groups = GROUP_ORDER.map((group) => ({
+  group,
+  entries: searchEntries.filter((e) => e.group === group),
+})).filter((g) => g.entries.length > 0);
+
+const totalCount = searchEntries.length;
+---
+
+<button id="search-trigger" type="button" class="docs-search-btn"
+        aria-label={`Search (${totalCount} pages, components, and blocks)`}>
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <span class="docs-search-btn-label">Search…</span>
+  <kbd class="docs-search-kbd" aria-hidden="true">
+    <span class="docs-search-kbd-mac">⌘K</span>
+    <span class="docs-search-kbd-pc">Ctrl K</span>
+  </kbd>
+</button>
+
+<script is:inline>
+  // Set the platform hint before paint so the shortcut glyph matches the
+  // user's actual modifier (Ctrl on Windows/Linux, ⌘ on Apple devices).
+  // The palette shortcut itself accepts both modifiers regardless.
+  var ua = navigator.platform || navigator.userAgent || "";
+  document.documentElement.dataset.kbd = /Mac|iPhone|iPad|iPod/.test(ua) ? "mac" : "pc";
+</script>
+
+<dialog id="search-palette" class="docs-search-palette" aria-label="Search">
+  <div class="docs-search-head">
+    <svg class="docs-search-glass" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input
+      id="search-input"
+      type="search"
+      placeholder="Search components, blocks, docs…"
+      autocomplete="off"
+      spellcheck="false"
+      aria-label="Search query"
+    />
+    <button id="search-close" type="button" class="docs-search-x" aria-label="Close search">✕</button>
+  </div>
+
+  <div id="search-results" class="docs-search-results" role="listbox" aria-label="Search results">
+    {
+      groups.map(({group, entries}) => (
+        <div class="docs-search-group" data-group={group}>
+          <p class="docs-search-group-label">
+            {group}
+            <span class="docs-search-group-count">{entries.length}</span>
+          </p>
+          <ul>
+            {entries.map((entry) => (
+              <li>
+                <a
+                  class="docs-search-item"
+                  role="option"
+                  href={entry.href}
+                  data-search-text={`${entry.title} ${entry.hint} ${entry.keywords ?? ""}`.toLowerCase()}
+                >
+                  <span class="docs-search-item-title">{entry.title}</span>
+                  <span class="docs-search-item-hint">{entry.hint}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+
+  <footer class="docs-search-foot" aria-hidden="true">
+    <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+    <span><kbd>↵</kbd> open</span>
+    <span><kbd>esc</kbd> close</span>
+  </footer>
+</dialog>
+
+<script>
+  const palette = document.getElementById("search-palette") as HTMLDialogElement | null;
+  const trigger = document.getElementById("search-trigger") as HTMLButtonElement | null;
+  const input = document.getElementById("search-input") as HTMLInputElement | null;
+  const results = document.getElementById("search-results");
+  const closeBtn = document.getElementById("search-close");
+
+  if (palette && trigger && input && results) {
+    const groups = [...results.querySelectorAll<HTMLElement>(".docs-search-group")];
+    const items = () => [...results.querySelectorAll<HTMLAnchorElement>(".docs-search-item:not([hidden])")];
+
+    const open = () => {
+      palette.showModal();
+      input.value = "";
+      groups.forEach((g) => (g.hidden = false));
+      input.focus();
+    };
+
+    trigger.addEventListener("click", open);
+
+    closeBtn?.addEventListener("click", () => palette.close());
+
+    // Global shortcut: Ctrl/Cmd+K anywhere on the page.
+    document.addEventListener("keydown", (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        palette.open ? palette.close() : open();
+      }
+    });
+
+    // Filter as you type (multi-term, case-insensitive, across
+    // title/hint/keywords baked into data-search-text).
+    const applyFilter = () => {
+      const terms = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+      for (const item of results.querySelectorAll<HTMLAnchorElement>(".docs-search-item")) {
+        const text = item.dataset.searchText ?? "";
+        item.hidden = terms.length > 0 && !terms.every((t) => text.includes(t));
+      }
+      for (const group of groups) {
+        const anyVisible = group.querySelector(".docs-search-item:not([hidden])") !== null;
+        group.hidden = !anyVisible;
+      }
+      updateActive();
+    };
+
+    let activeIndex = 0;
+
+    const updateActive = () => {
+      const list = items();
+      list.forEach((el, i) => el.classList.toggle("is-active", i === activeIndex));
+      list[activeIndex]?.scrollIntoView({block: "nearest"});
+    };
+
+    input.addEventListener("input", () => {
+      activeIndex = 0;
+      applyFilter();
+    });
+
+    input.addEventListener("keydown", (event) => {
+      const list = items();
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, list.length - 1);
+        updateActive();
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, 0);
+        updateActive();
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        list[activeIndex]?.click();
+      }
+    });
+
+    // Reset when reopened (native dialog also restores focus).
+    palette.addEventListener("close", () => {
+      activeIndex = 0;
+      groups.forEach((g) => (g.hidden = false));
+    });
+  }
+</script>

@@ -1,0 +1,86 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Accordion,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-accordion-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-accordion-basic">
+              <Fragment slot="preview">
+                <Accordion
+                  id="dm-acc"
+                  items={[
+                    {value: "q1", title: "What is astro-ui?", content: "A zero-JS Astro component library."},
+                    {
+                      value: "q2",
+                      title: "Does it need JavaScript?",
+                      content: "Not for this accordion — it's native details."
+                    },
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "bordered" && (
+          <div class="docs-demo-block" id={`demo-accordion-${id}`}>
+            <h3 class="docs-demo-title">Bordered &amp; pre-opened</h3>
+            <DemoTabs id="dm-accordion-bordered">
+              <Fragment slot="preview">
+                <Accordion
+                  id="dm-acc-b"
+                  variant="bordered"
+                  items={[
+                    {value: "a", title: "Opened", content: "This panel starts open.", open: true},
+                    {value: "b", title: "Closed", content: "Click to expand."},
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("bordered")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "animated" && (
+          <div class="docs-demo-block" id={`demo-accordion-${id}`}>
+            <h3 class="docs-demo-title">Animated expand</h3>
+            <DemoTabs id="dm-accordion-animated">
+              <Fragment slot="preview">
+                <Accordion
+                  id="dm-acc-anim"
+                  animated
+                  items={[
+                    {
+                      value: "a",
+                      title: "Smooth height",
+                      content: "The panel animates open and closed instead of snapping."
+                    },
+                    {
+                      value: "b",
+                      title: "Still zero JS",
+                      content: "Pure CSS: ::details-content + interpolate-size. Unsupported browsers snap instantly."
+                    },
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("animated")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

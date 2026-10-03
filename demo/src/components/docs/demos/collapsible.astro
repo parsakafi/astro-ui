@@ -1,0 +1,73 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Collapsible,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-collapsible-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-collapsible-basic">
+              <Fragment slot="preview">
+                <Collapsible id="dm-collapsible">
+                  <span slot="trigger">Filters</span>
+                  <p>
+                    Any composed content lives in the panel — labels, inputs,
+                    lists — with Escape closing it and returning focus to the
+                    trigger.
+                  </p>
+                </Collapsible>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "open" && (
+          <div class="docs-demo-block" id={`demo-collapsible-${id}`}>
+            <h3 class="docs-demo-title">Open by default</h3>
+            <DemoTabs id="dm-collapsible-open">
+              <Fragment slot="preview">
+                <Collapsible id="dm-collapsible-open" open>
+                  <span slot="trigger">Advanced</span>
+                  <p>The open prop renders the panel expanded on first paint.</p>
+                </Collapsible>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("open")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "searchable" && (
+          <div class="docs-demo-block" id={`demo-collapsible-${id}`}>
+            <h3 class="docs-demo-title">Searchable collapsed content</h3>
+            <DemoTabs id="dm-collapsible-searchable">
+              <Fragment slot="preview">
+                <p class="docs-demo-hint">
+                  Keep this panel closed and press Ctrl/Cmd+F, then search for
+                  <b>kyoto reservation code</b> — the browser finds it inside
+                  the closed panel and reveals it (hidden=&quot;until-found&quot;).
+                  Navigating to <code>#dm-collapsible-searchable-panel</code> works too.
+                </p>
+                <Collapsible id="dm-collapsible-searchable">
+                  <span slot="trigger">Booking details</span>
+                  <p>Your kyoto reservation code is AOK-2291.</p>
+                </Collapsible>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("searchable")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

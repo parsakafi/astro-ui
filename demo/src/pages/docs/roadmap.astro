@@ -1,0 +1,142 @@
+---
+/**
+  * /docs/roadmap/ — "what's next" page: status columns with
+  * shipped / in-progress / planned work. Items reflect the actual
+  * component backlog (inputs, navigation, data-display gaps).
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import {Tag} from "astro-ui";
+import {SITE} from "../../lib/site";
+
+interface RoadmapItem {
+  title: string;
+  desc: string;
+  tag?: string;
+}
+
+const columns: {
+  id: string;
+  label: string;
+  items: RoadmapItem[];
+}[] = [
+  {
+    id: "shipped",
+    label: "Shipped",
+    items: [
+      {
+        title: "v1.0.0 — 43 components",
+        desc: "First stable release across 7 categories, with tokens, base styles, and docs.",
+        tag: "v1.0.0"
+      },
+      {
+        title: "Accessibility section on every docs page",
+        desc: "Per-component ARIA, semantics, and keyboard behavior — sourced from the implementation.",
+        tag: "docs"
+      },
+      {
+        title: "Blocks library",
+        desc: "Composed sections (auth, pricing, stats, settings…) built from the components.",
+        tag: "blocks"
+      },
+      {
+        title: "hidden=until-found in Collapsible",
+        desc: "Find-in-page and deep links reveal collapsed panels; beforematch keeps aria-expanded honest.",
+        tag: "a11y"
+      },
+      {
+        title: "Rating scale modes",
+        desc: "Icon presets, emoji faces, colorScale satisfaction ramps, and NPS-style single highlight.",
+        tag: "components"
+      },
+    ],
+  },
+  {
+    id: "in-progress",
+    label: "In progress",
+    items: [
+      {
+        title: "Combobox",
+        desc: "Filterable input + listbox on native semantics; async options supported.",
+        tag: "forms"
+      },
+      {title: "Date picker", desc: "Native-input-based month grid with keyboard entry as the base path.", tag: "forms"},
+      {title: "Command palette", desc: "Dialog + listbox pattern with keyboard-first navigation.", tag: "overlay"},
+      {title: "More blocks", desc: "App shell, dashboard, and onboarding block sets.", tag: "blocks"},
+    ],
+  },
+  {
+    id: "planned",
+    label: "Planned",
+    items: [
+      {
+        title: "File upload",
+        desc: "Dropzone + file list on native input[type=file]; drag state is the only enhancement.",
+        tag: "forms"
+      },
+      {
+        title: "Dual-thumb range slider",
+        desc: "Two-thumb min/max selection built on two synchronized range inputs.",
+        tag: "forms"
+      },
+      {
+        title: "Toast swipe-to-dismiss",
+        desc: "Pointer-gesture dismissal with velocity threshold, matching the RTL-physical contract.",
+        tag: "feedback"
+      },
+      {
+        title: "Data grid (sortable)",
+        desc: "Table enhancement layer: sorting and column pinning without a runtime.",
+        tag: "data"
+      },
+      {
+        title: "Charts foundation",
+        desc: "SSR-rendered SVG primitives (line, bar, donut) reading the token palette.",
+        tag: "data"
+      },
+      {title: "Figma kit", desc: "Design-file counterpart mapping 1:1 to the component API.", tag: "design"},
+    ],
+  },
+];
+---
+
+<DocsLayout title="Roadmap" description="What's next for astro-ui." activePath="docs"
+            toc={columns.map((c) => ({id: c.id, label: c.label}))}>
+  <article class="docs-article">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">The road ahead</p>
+      <h1>Roadmap</h1>
+      <p>
+        What's shipped, what's being built, and what's planned for
+        {SITE.name}. Nothing here is a promise — it's a priority list shaped
+        by what the library is for: platform-first components for Astro.
+      </p>
+      <p class="docs-roadmap-cta">
+        Driving the priorities? Open an issue or a discussion on <a href={SITE.repo} target="_blank"
+                                                                    rel="noreferrer noopener">GitHub</a>.
+      </p>
+    </section>
+
+    {
+      columns.map((col) => (
+        <section id={col.id} class="docs-roadmap-col">
+          <div class="docs-section-head">
+            <h2>{col.label}</h2>
+            <span class="docs-side-count">{col.items.length}</span>
+          </div>
+          <div class="docs-roadmap-grid">
+            {col.items.map((item) => (
+              <article class="docs-roadmap-card">
+                <header class="docs-roadmap-card-head">
+                  <h3>{item.title}</h3>
+                  {item.tag &&
+                    <Tag size="sm" variant="muted">{item.tag}</Tag>}
+                </header>
+                <p>{item.desc}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </article>
+</DocsLayout>

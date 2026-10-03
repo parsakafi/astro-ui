@@ -1,0 +1,87 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Tabs,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "variants" && (
+          <div class="docs-demo-block" id={`demo-tabs-${id}`}>
+            <h3 class="docs-demo-title">Line variant</h3>
+            <DemoTabs id="dm-tabs-line">
+              <Fragment slot="preview">
+                <Tabs
+                  id="dm-tabs-line-inner"
+                  ariaLabel="Line"
+                  defaultValue="billing"
+                  items={[
+                    {value: "account", label: "Account"},
+                    {value: "billing", label: "Billing"},
+                  ]}
+                >
+                  <div data-tab="account">Account panel.</div>
+                  <div data-tab="billing">Billing panel.</div>
+                </Tabs>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "card-variant" && (
+          <div class="docs-demo-block" id={`demo-tabs-${id}`}>
+            <h3 class="docs-demo-title">Card variant</h3>
+            <DemoTabs id="dm-tabs-card">
+              <Fragment slot="preview">
+                <Tabs
+                  id="dm-tabs-card-inner"
+                  ariaLabel="Card"
+                  variant="card"
+                  items={[
+                    {value: "one", label: "One"},
+                    {value: "two", label: "Two"},
+                  ]}
+                >
+                  <div data-tab="one">Panel one.</div>
+                  <div data-tab="two">Panel two.</div>
+                </Tabs>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("card-variant")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "vertical" && (
+          <div class="docs-demo-block" id={`demo-tabs-${id}`}>
+            <h3 class="docs-demo-title">Vertical</h3>
+            <DemoTabs id="dm-tabs-vertical">
+              <Fragment slot="preview">
+                <Tabs
+                  id="dm-tabs-vert-inner"
+                  ariaLabel="Vertical"
+                  orientation="vertical"
+                  items={[
+                    {value: "general", label: "General"},
+                    {value: "security", label: "Security"},
+                  ]}
+                >
+                  <div data-tab="general">General settings.</div>
+                  <div data-tab="security">Security settings.</div>
+                </Tabs>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

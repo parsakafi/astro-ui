@@ -1,0 +1,39 @@
+---
+/**
+  * BlockRecipe — the components a block is composed of, rendered as
+  * chips linked to their component pages (design-inspiration sites list
+  * every block card). Names resolve against the component registry;
+  * non-component tokens (e.g. layout hints) fall back to plain chips.
+  */
+import {parseRecipe} from "../../lib/blocks";
+import {components} from "../../lib/components";
+
+interface Props {
+  /** Recipe string from the blocks registry, e.g. "Card · Input · Button". */
+  recipe: string;
+}
+
+const {recipe} = Astro.props;
+
+const entries = parseRecipe(recipe).map((name) => {
+  const component = components.find((c) => c.name === name);
+  return {name, href: component ? `/components/${component.slug}/` : undefined};
+});
+---
+
+<p class="docs-block-recipe">
+  {
+    entries.map((entry, i) => (
+      <>
+        {i > 0 && <span class="docs-block-recipe-sep" aria-hidden="true">·</span>}
+        {entry.href ? (
+          <a class="docs-block-recipe-link" href={entry.href} title={`${entry.name} component`}>
+            {entry.name}
+          </a>
+        ) : (
+          <span class="docs-block-recipe-plain">{entry.name}</span>
+        )}
+      </>
+    ))
+  }
+</p>

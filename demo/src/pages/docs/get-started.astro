@@ -1,0 +1,115 @@
+---
+/**
+  * /docs/get-started/ — installation and first component.
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import {Button, Badge, Tabs} from "astro-ui";
+
+const toc = [
+  {id: "install", label: "Install"},
+  {id: "tokens", label: "Import tokens"},
+  {id: "first", label: "First component"},
+  {id: "next", label: "Next steps"},
+];
+---
+
+<DocsLayout title="Get started" description="Install astro-ui and render your first component." activePath="docs"
+            toc={toc}>
+  <article class="docs-article docs-prose">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">Docs · Guide</p>
+      <h1>Get started</h1>
+      <p>From npm install to a themed, accessible component in about a minute.</p>
+    </section>
+
+    <section id="install">
+      <h2>Install</h2>
+      <p>
+        Add the package to your Astro project. It ships typed
+        <code>.astro</code> components, a token stylesheet, and a base
+        stylesheet — nothing else.
+      </p>
+      <Tabs
+        id="install-pm"
+        ariaLabel="Package manager"
+        variant="card"
+        size="sm"
+        defaultValue="npm"
+        items={[
+          {value: "npm", label: "npm"},
+          {value: "pnpm", label: "pnpm"},
+          {value: "yarn", label: "yarn"},
+          {value: "bun", label: "bun"},
+        ]}
+      >
+        <div data-tab="npm">
+          <CodeBlock code="npm install astro-ui" lang="bash"/>
+        </div>
+        <div data-tab="pnpm">
+          <CodeBlock code="pnpm add astro-ui" lang="bash"/>
+        </div>
+        <div data-tab="yarn">
+          <CodeBlock code="yarn add astro-ui" lang="bash"/>
+        </div>
+        <div data-tab="bun">
+          <CodeBlock code="bun add astro-ui" lang="bash"/>
+        </div>
+      </Tabs>
+    </section>
+
+    <section id="tokens">
+      <h2>Import tokens once</h2>
+      <p>
+        In your root layout, import the design tokens and base reset. Every
+        component reads these custom properties — this import is the whole
+        theming setup.
+      </p>
+      <CodeBlock
+        code={`---
+// src/layouts/Layout.astro
+---
+<slot />`}
+        lang="astro"
+      />
+      <p>
+        Dark mode follows <code>data-theme="dark"</code> on
+        <code>&lt;html&gt;</code>; flip the attribute (persisted however you
+        like) and every component follows.
+      </p>
+    </section>
+
+    <section id="first">
+      <h2>Render your first component</h2>
+      <p>
+        Import from the root package or a subpath. Everything renders
+        server-side — this page has no client runtime.
+      </p>
+      <CodeBlock
+        code={`---
+import { Button, Badge } from "astro-ui";
+---
+<Button variant="primary">Save changes</Button>
+<Badge variant="success">Deployed</Badge>`}
+        lang="astro"
+      />
+      <p>Live result:</p>
+      <div class="docs-demo-preview">
+        <Button variant="primary">Save changes</Button>
+        <Badge variant="success">Deployed</Badge>
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>Next steps</h2>
+      <ul>
+        <li>Browse the <a href="/components/">component catalog</a> — every page has live demos, API tables, and an
+          accessibility section.
+        </li>
+        <li>Learn the token model in <a href="/docs/styling/">Styling</a>.</li>
+        <li>Compose pages faster with <a href="/blocks/">Blocks</a>.</li>
+        <li>Check <a href="/docs/changelog/">the changelog</a> for what's new.</li>
+      </ul>
+    </section>
+  </article>
+</DocsLayout>

@@ -1,0 +1,67 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Card,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-card-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-card-basic">
+              <Fragment slot="preview">
+                <Card>
+                  <h3 slot="header">Default card</h3>
+                  <p>Header, content and footer compose through slots.</p>
+                  <div slot="footer">
+                    <Button size="sm">Confirm</Button>
+                  </div>
+                </Card>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block" id={`demo-card-${id}`}>
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-card-variants">
+              <Fragment slot="preview">
+                <Card variant="outline"><p>Outline — flat surface.</p></Card>
+                <Card variant="ghost"><p>Ghost card.</p></Card>
+                <Card variant="bordered"><p>Bordered.</p></Card>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "split" && (
+          <div class="docs-demo-block" id={`demo-card-${id}`}>
+            <h3 class="docs-demo-title">Split &amp; sizes</h3>
+            <DemoTabs id="dm-card-split">
+              <Fragment slot="preview">
+                <Card split>
+                  <h3 slot="header">Split dividers</h3>
+                  <p>Borders separate header, content, and footer.</p>
+                </Card>
+                <Card size="sm"><p>Small card.</p></Card>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("split")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

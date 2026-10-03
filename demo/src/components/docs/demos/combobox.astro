@@ -1,0 +1,119 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Combobox,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-combobox-basic">
+              <Fragment slot="preview">
+                <div style="inline-size:20rem">
+                  <Combobox
+                    id="cb-basic"
+                    name="framework"
+                    placeholder="Select framework…"
+                    items={["Astro", "Next.js", "Nuxt", "SvelteKit", "Remix", "SolidStart"]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "preselect" && (
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
+            <h3 class="docs-demo-title">Preselected + clearable</h3>
+            <DemoTabs id="dm-combobox-preselect">
+              <Fragment slot="preview">
+                <div style="inline-size:20rem">
+                  <Combobox
+                    id="cb-preselect"
+                    name="city"
+                    value="jp-tokyo"
+                    clearable
+                    placeholder="Choose a city…"
+                    items={[
+                      {value: "jp-tokyo", label: "Tokyo", hint: "Japan"},
+                      {value: "fr-paris", label: "Paris", hint: "France"},
+                      {value: "us-nyc", label: "New York", hint: "United States"},
+                      {value: "de-berlin", label: "Berlin", hint: "Germany"},
+                    ]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("preselect")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "groups" && (
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
+            <h3 class="docs-demo-title">Groups</h3>
+            <DemoTabs id="dm-combobox-groups">
+              <Fragment slot="preview">
+                <div style="inline-size:20rem">
+                  <Combobox
+                    id="cb-groups"
+                    name="stack"
+                    placeholder="Search the stack…"
+                    groups={[
+                      {label: "Frontend", items: ["Astro", "Next.js", "Nuxt"]},
+                      {label: "Backend", items: ["Node", "Deno", "Bun"]},
+                    ]}
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("groups")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-combobox-sizes">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="inline-size:20rem">
+                  <Combobox id="cb-xs" size="xs" placeholder="xs" items={["One", "Two"]}/>
+                  <Combobox id="cb-sm" size="sm" placeholder="sm" items={["One", "Two"]}/>
+                  <Combobox id="cb-md" size="md" placeholder="md" items={["One", "Two"]}/>
+                  <Combobox id="cb-lg" size="lg" placeholder="lg" items={["One", "Two"]}/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "states" && (
+          <div class="docs-demo-block" id={`demo-combobox-${id}`}>
+            <h3 class="docs-demo-title">Invalid &amp; disabled</h3>
+            <DemoTabs id="dm-combobox-states">
+              <Fragment slot="preview">
+                <div class="demo-stack" style="inline-size:20rem">
+                  <Combobox id="cb-invalid" invalid placeholder="Required field…" items={["One", "Two", "Three"]}/>
+                  <Combobox id="cb-disabled" disabled placeholder="Disabled" items={["One", "Two"]}/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("states")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

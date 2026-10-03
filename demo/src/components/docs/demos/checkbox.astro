@@ -1,0 +1,46 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Checkbox,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-checkbox-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-checkbox-basic">
+              <Fragment slot="preview">
+                <Checkbox name="dm-news" checked>Email me news</Checkbox>
+                <Checkbox name="dm-sms" disabled>SMS (unavailable)</Checkbox>
+                <Checkbox name="dm-ind" indeterminate label="Indeterminate"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block" id={`demo-checkbox-${id}`}>
+            <h3 class="docs-demo-title">Variants &amp; shapes</h3>
+            <DemoTabs id="dm-checkbox-variants">
+              <Fragment slot="preview">
+                <Checkbox name="dm-sq" shape="square" checked label="Square"/>
+                <Checkbox name="dm-rd" shape="rounded" checked label="Rounded"/>
+                <Checkbox name="dm-suc" variant="success" checked label="Success"/>
+                <Checkbox name="dm-err" variant="destructive" checked label="Destructive"/>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

@@ -1,0 +1,3065 @@
+@charset "UTF-8";
+/**
+ * Docs-site chrome — `docs-*` namespace, themed entirely via astro-ui
+ * design tokens. Logical properties throughout, so the whole site
+ * mirrors under dir="rtl" with zero overrides.
+ *
+ * Source of truth — compiled to docs.css by `npm run css`.
+ */
+/* ---------- Mega menu (nav dropdowns) ---------- */
+.docs-nav-links .docs-mega {
+  position: relative;
+  /* Invisible bridge below the trigger: keeps :hover alive while the
+     pointer travels the trigger→panel gap (the panel is absolutely
+     positioned, so the band between them belongs to neither element
+     and would otherwise kill hover mid-travel). */
+}
+.docs-nav-links .docs-mega::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 100%;
+  block-size: var(--ui-space-3);
+}
+.docs-nav-links .docs-mega .docs-mega-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+.docs-nav-links .docs-mega .docs-mega-chevron {
+  transition: transform var(--ui-transition-fast);
+}
+.docs-nav-links .docs-mega .docs-mega-panel {
+  position: absolute;
+  inset-inline-start: 50%;
+  inset-block-start: 100%;
+  translate: -50% var(--ui-space-2);
+  z-index: 30;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  /* Closing is intentionally delayed (grace period): a momentary hover
+     loss — crossing the trigger→panel gap — must not slam the panel
+     shut before the pointer arrives. The open rule below resets the
+     delays to 0 so opening stays instant. */
+  transition: opacity var(--ui-transition-fast) 300ms, translate var(--ui-transition-fast) 300ms, visibility 0s 300ms, pointer-events 0s 300ms;
+}
+.docs-nav-links .docs-mega .docs-mega-panel .docs-mega-grid {
+  display: grid;
+  gap: var(--ui-space-5);
+  padding: var(--ui-space-5);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-background);
+  box-shadow: var(--ui-shadow-lg);
+}
+.docs-nav-links .docs-mega {
+  /* open on hover, trigger focus, or panel focus (keyboard path);
+     flush against the trigger (no residual gap) and zero delay */
+}
+.docs-nav-links .docs-mega:hover .docs-mega-panel, .docs-nav-links .docs-mega:focus-within .docs-mega-panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  translate: -50% 0;
+  transition-delay: 0s;
+}
+.docs-nav-links .docs-mega:hover .docs-mega-chevron, .docs-nav-links .docs-mega:focus-within .docs-mega-chevron {
+  transform: rotate(180deg);
+}
+.docs-nav-links .docs-mega[data-open] .docs-mega-chevron {
+  transform: rotate(180deg);
+}
+
+.docs-mega-label {
+  margin: 0 0 var(--ui-space-2);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ui-muted-foreground);
+}
+
+.docs-mega-list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.docs-mega-list .docs-mega-link {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border-radius: var(--ui-radius-md);
+  text-decoration: none;
+  transition: background-color var(--ui-transition-fast);
+}
+.docs-mega-list .docs-mega-link:hover, .docs-mega-list .docs-mega-link:focus-visible {
+  background: var(--ui-muted);
+}
+.docs-mega-list .docs-mega-icon {
+  flex: none;
+  margin-block-start: 2px; /* optical alignment with the sm title line */
+  color: var(--ui-muted-foreground);
+  transition: color var(--ui-transition-fast);
+}
+.docs-mega-list .docs-mega-link:hover .docs-mega-icon,
+.docs-mega-list .docs-mega-link:focus-visible .docs-mega-icon {
+  color: var(--ui-primary);
+}
+.docs-mega-list {
+  /* Featured banner ("All components") — soft violet→blue wash: brand-colored icon chip, trailing arrow. */
+}
+.docs-mega-list .docs-mega-link--featured {
+  border: 1px solid color-mix(in srgb, var(--astro-violet) 22%, transparent);
+  background: linear-gradient(to right, color-mix(in srgb, var(--astro-violet) 14%, transparent), color-mix(in srgb, var(--astro-royal) 14%, transparent));
+}
+.docs-mega-list .docs-mega-link--featured:hover, .docs-mega-list .docs-mega-link--featured:focus-visible {
+  background: linear-gradient(to right, color-mix(in srgb, var(--astro-violet) 22%, transparent), color-mix(in srgb, var(--astro-royal) 22%, transparent));
+}
+.docs-mega-list .docs-mega-link--featured .docs-mega-icon {
+  border-radius: var(--ui-radius-md);
+  color: var(--astro-violet);
+  background: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  box-shadow: var(--ui-shadow-sm);
+}
+.docs-mega-list .docs-mega-link--featured .docs-mega-title {
+  font-weight: var(--ui-font-semibold);
+}
+.docs-mega-list .docs-mega-link--featured .docs-mega-arrow {
+  flex: none;
+  align-self: center;
+  margin-inline-start: auto;
+  color: var(--ui-foreground);
+  transition: translate var(--ui-transition-fast);
+}
+.docs-mega-list .docs-mega-link--featured:hover .docs-mega-arrow, .docs-mega-list .docs-mega-link--featured:focus-visible .docs-mega-arrow {
+  translate: 3px 0; /* RTL-safe: translate is direction-agnostic */
+}
+.docs-mega-list .docs-mega-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0; /* let long descs ellipsis instead of blowing the row */
+}
+.docs-mega-list .docs-mega-title {
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-medium);
+  color: var(--ui-foreground);
+}
+.docs-mega-list .docs-mega-desc {
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+/* panel width: single-column menus narrower, components menu wide */
+.docs-mega[data-mega=components] .docs-mega-panel .docs-mega-grid {
+  grid-template-columns: repeat(2, minmax(15rem, 1fr));
+  min-width: min(90vw, 34rem);
+}
+
+.docs-mega[data-mega=blocks] .docs-mega-panel .docs-mega-grid,
+.docs-mega[data-mega=docs] .docs-mega-panel .docs-mega-grid {
+  grid-template-columns: 1fr;
+  min-width: 18rem;
+}
+
+.docs-mega[data-mega=docs] .docs-mega-panel .docs-mega-grid {
+  grid-template-columns: repeat(2, minmax(11rem, 1fr));
+  column-gap: var(--ui-space-6);
+}
+
+/* ---------- Footer (multi-column) ---------- */
+.docs-footer-mega {
+  border-block-start: 1px solid var(--ui-border);
+  margin-block-start: var(--ui-space-10);
+  padding-block-start: var(--ui-space-8);
+}
+
+.docs-footer-grid {
+  display: grid;
+  grid-template-columns: minmax(16rem, 1.4fr) repeat(3, minmax(9rem, 1fr)) minmax(9rem, 1fr);
+  gap: var(--ui-space-6);
+  max-width: 88rem;
+  margin-inline: auto;
+  padding: 0 var(--ui-space-4) var(--ui-space-8);
+}
+
+.docs-footer-brand {
+  display: grid;
+  gap: var(--ui-space-3);
+  align-content: start;
+}
+.docs-footer-brand p {
+  margin: 0;
+  max-width: 34ch;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+
+.docs-footer-kbd {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.docs-footer-col .docs-footer-title {
+  margin: 0 0 var(--ui-space-3);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ui-muted-foreground);
+}
+.docs-footer-col ul {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.docs-footer-col a {
+  font-size: var(--ui-text-sm);
+  color: var(--ui-foreground);
+  text-decoration: none;
+  opacity: 0.85;
+}
+.docs-footer-col a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.docs-footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+  align-items: center;
+  justify-content: space-between;
+  max-width: 88rem;
+  margin-inline: auto;
+  padding: var(--ui-space-4);
+  border-block-start: 1px solid var(--ui-border);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+.docs-footer-base p {
+  margin: 0;
+}
+.docs-footer-base a {
+  color: inherit;
+}
+
+@media (max-width: 64rem) {
+  .docs-footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .docs-footer-brand {
+    grid-column: 1/-1;
+  }
+}
+/* ---------- Header ---------- */
+/* Anchor offset: scroll-margin for in-page jumps (TOC, #hash). Must be
+   ≥ the sticky header's real height (~93px with nav + a11y bar) or the
+   header covers the target heading. Kept as a variable so header
+   changes only need one edit. */
+.docs-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background-color: var(--ui-background);
+  border-block-end: 1px solid var(--ui-border);
+}
+
+.docs-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-4);
+  max-width: 88rem;
+  margin-inline: auto;
+  padding: var(--ui-space-3) var(--ui-space-4);
+}
+.docs-nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+}
+.docs-nav-link {
+  padding: var(--ui-space-1) var(--ui-space-3);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+  text-decoration: none;
+  border-radius: var(--ui-radius-md);
+  transition: color var(--ui-transition-fast), background-color var(--ui-transition-fast);
+}
+.docs-nav-link:hover, .docs-nav-link:focus-visible, .docs-nav-link.is-active {
+  color: var(--ui-foreground);
+  background-color: var(--ui-muted);
+}
+.docs-nav-end {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  margin-inline-start: auto;
+}
+
+.docs-github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+}
+.docs-github-link .docs-github-icon {
+  flex: none;
+}
+
+.docs-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  font-size: var(--ui-text-lg);
+  font-weight: var(--ui-font-bold);
+  color: var(--ui-foreground);
+  text-decoration: none;
+}
+.docs-brand-mark {
+  color: var(--ui-primary);
+}
+.docs-brand-version {
+  padding-inline: var(--ui-space-2);
+  font-size: var(--ui-text-2xs);
+  font-weight: var(--ui-font-medium);
+  color: var(--ui-primary);
+  background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  border-radius: var(--ui-radius-full);
+}
+
+.docs-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-1) var(--ui-space-3);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-foreground);
+  background-color: transparent;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  cursor: pointer;
+  transition: background-color var(--ui-transition-fast);
+}
+.docs-theme-btn:hover {
+  background-color: var(--ui-muted);
+}
+
+/* ---------- Shell (sidebar · content · toc) ---------- */
+.docs-shell {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  max-width: 88rem;
+  margin-inline: auto;
+  padding-inline: var(--ui-space-4);
+  /* Shell variant without the left sidebar (releases page). */
+}
+.docs-shell--no-side {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.docs-content-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12rem;
+  gap: var(--ui-space-8);
+  align-items: start;
+  min-width: 0;
+  padding-block: var(--ui-space-8);
+}
+
+/* Wide children (API tables, code blocks) must scroll internally, never
+   stretch their grid track past the viewport (classic grid blowout). */
+.docs-article section,
+.docs-main {
+  min-width: 0;
+}
+
+.docs-table-wrap,
+.docs-codeblock {
+  min-width: 0;
+  max-inline-size: 100%;
+}
+
+/* ---------- Sidebar ---------- */
+.docs-sidebar {
+  position: sticky;
+  top: 4rem;
+  max-height: calc(100vh - 4rem);
+  padding-block: var(--ui-space-8);
+  padding-inline-end: var(--ui-space-4);
+  border-inline-end: 1px solid var(--ui-border);
+  overflow-y: auto;
+}
+
+.docs-side-cat {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-2);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: var(--ui-radius-md);
+}
+.docs-side-cat:hover {
+  background-color: var(--ui-muted);
+}
+.docs-side-cat-icon {
+  color: var(--ui-primary);
+}
+
+.docs-side-count {
+  margin-inline-start: auto;
+  color: var(--ui-muted-foreground);
+  font-weight: var(--ui-font-normal);
+}
+
+.docs-side-items {
+  display: grid;
+  margin-block-end: var(--ui-space-3);
+  padding-inline-start: var(--ui-space-4);
+  border-inline-start: 1px solid var(--ui-border);
+}
+
+.docs-side-link {
+  padding: var(--ui-space-1) var(--ui-space-2);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+  text-decoration: none;
+  border-radius: var(--ui-radius-sm);
+  transition: color var(--ui-transition-fast), background-color var(--ui-transition-fast);
+}
+.docs-side-link:hover, .docs-side-link:focus-visible {
+  color: var(--ui-foreground);
+  background-color: var(--ui-muted);
+}
+.docs-side-link.is-active {
+  color: var(--ui-primary);
+  background-color: color-mix(in srgb, var(--ui-primary) 8%, transparent);
+  font-weight: var(--ui-font-medium);
+}
+
+/* ---------- Sidebar search ---------- */
+.docs-search {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin-block-end: var(--ui-space-4);
+  padding: 0 5px;
+}
+
+.docs-search-input {
+  width: 100%;
+  padding: var(--ui-space-1) var(--ui-space-3);
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-foreground);
+  background-color: transparent;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  appearance: none;
+  transition: border-color var(--ui-transition-fast);
+}
+.docs-search-input::placeholder {
+  color: var(--ui-muted-foreground);
+}
+.docs-search-input:hover {
+  border-color: var(--ui-input);
+}
+.docs-search-input:focus-visible {
+  outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+  outline-offset: var(--ui-focus-ring-offset);
+}
+
+.docs-search-empty {
+  margin: 0;
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+/* ---------- TOC ---------- */
+.docs-toc {
+  position: sticky;
+  top: 4rem;
+  padding-block: var(--ui-space-8);
+}
+.docs-toc-title {
+  margin: 0 0 var(--ui-space-2);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.docs-toc-list {
+  display: grid;
+  gap: var(--ui-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-inline-start: 1px solid var(--ui-border);
+}
+.docs-toc-link {
+  display: block;
+  padding: var(--ui-space-1) var(--ui-space-3);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  text-decoration: none;
+  border-radius: 0 var(--ui-radius-sm) var(--ui-radius-sm) 0;
+}
+.docs-toc-link:hover {
+  color: var(--ui-foreground);
+}
+
+/* ---------- Content ---------- */
+.docs-main {
+  display: grid;
+  align-content: start;
+  gap: var(--ui-space-8);
+  max-width: 72rem;
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+  padding: var(--ui-space-8) var(--ui-space-4);
+}
+.docs-main--wide {
+  max-width: 88rem;
+}
+
+.docs-article {
+  display: grid;
+  gap: var(--ui-space-8);
+  max-width: 56rem;
+  min-width: 0;
+}
+.docs-article section {
+  display: grid;
+  gap: var(--ui-space-4);
+  /* TOC/anchor targets: keep the sticky header from covering the
+     section heading after an in-page jump. */
+  scroll-margin-block-start: 7.5rem;
+}
+.docs-article h2 {
+  margin: 0;
+  padding-block-start: var(--ui-space-4);
+  font-size: var(--ui-text-2xl);
+  letter-spacing: -0.02em;
+  scroll-margin-block-start: 7.5rem;
+}
+.docs-article h3 {
+  margin: 0;
+  font-size: var(--ui-text-lg);
+  scroll-margin-block-start: 7.5rem;
+}
+.docs-article p {
+  margin: 0;
+  max-width: 65ch;
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+.docs-article ul {
+  display: grid;
+  gap: var(--ui-space-1);
+  margin: 0;
+  padding-inline-start: var(--ui-space-5);
+  color: var(--ui-muted-foreground);
+}
+
+/* Rendered markdown from the docs collection (overview prose). */
+.docs-prose {
+  display: grid;
+  gap: var(--ui-space-3);
+}
+.docs-prose p {
+  margin: 0;
+  max-width: 65ch;
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+.docs-prose code {
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--ui-radius-sm);
+  background: var(--ui-muted);
+  font-size: 0.875em;
+}
+.docs-prose pre {
+  margin: 0;
+  padding: var(--ui-space-3) var(--ui-space-4);
+  overflow-x: auto;
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-muted);
+}
+.docs-prose pre code {
+  padding: 0;
+  background: none;
+}
+.docs-prose a {
+  color: var(--ui-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Hero blocks ---------- */
+.docs-hero {
+  display: grid;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-8);
+  background: radial-gradient(40rem 20rem at 110% -10%, color-mix(in srgb, var(--ui-primary) 8%, transparent), transparent), var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl);
+}
+.docs-hero h1 {
+  margin: 0;
+  font-size: var(--ui-text-4xl);
+  font-weight: var(--ui-font-bold);
+  letter-spacing: -0.03em;
+  color: var(--ui-foreground);
+}
+.docs-hero p {
+  margin: 0;
+  max-width: 55ch;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-lg);
+  line-height: var(--ui-leading-normal);
+}
+
+.docs-hero-kicker {
+  margin: 0;
+  color: var(--ui-primary);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.docs-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+  margin-block-start: var(--ui-space-2);
+}
+
+/* ---------- Stat cards ---------- */
+.docs-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-stat {
+  display: grid;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+}
+.docs-stat-value {
+  font-size: var(--ui-text-2xl);
+  font-weight: var(--ui-font-bold);
+  color: var(--ui-foreground);
+}
+.docs-stat-label {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+}
+
+/* ---------- Section headers on home/catalog ---------- */
+.docs-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--ui-space-4);
+  /* Breathing room between the head block and the content grid below —
+     the section's 1rem gap alone reads too tight under a two-line head. */
+  margin-block-end: var(--ui-space-6);
+}
+.docs-section-head h2 {
+  margin: 0;
+  font-size: var(--ui-text-2xl);
+  letter-spacing: -0.02em;
+  color: var(--ui-foreground);
+}
+.docs-section-head p {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+}
+
+/* ---------- Feature grid ---------- */
+.docs-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-feature {
+  display: grid;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-5);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+}
+.docs-feature h3 {
+  margin: 0;
+  font-size: var(--ui-text-md);
+  color: var(--ui-foreground);
+}
+.docs-feature p {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  line-height: var(--ui-leading-normal);
+}
+
+/* ---------- Component cards ---------- */
+.docs-comp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-comp-card {
+  display: grid;
+  gap: var(--ui-space-2);
+  align-content: start;
+  padding: var(--ui-space-5);
+  text-decoration: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  transition: border-color var(--ui-transition-fast), box-shadow var(--ui-transition-fast), translate var(--ui-transition-fast);
+}
+.docs-comp-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.docs-comp-card-icon {
+  color: var(--ui-primary);
+  font-size: var(--ui-text-lg);
+}
+.docs-comp-card-cat {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-2xs);
+  font-weight: var(--ui-font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.docs-comp-card-name {
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+}
+.docs-comp-card-desc {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  line-height: var(--ui-leading-normal);
+}
+.docs-comp-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-start: var(--ui-space-2);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+.docs-comp-card-cta {
+  color: var(--ui-primary);
+  transition: translate var(--ui-transition-fast);
+}
+.docs-comp-card:hover .docs-comp-card-cta {
+  translate: 2px 0;
+}
+
+/* Hover style shared by both card styles (comp + home category). */
+.docs-comp-card:hover,
+.docs-cat-card:hover {
+  border-color: color-mix(in srgb, var(--ui-primary) 45%, var(--ui-border));
+  box-shadow: var(--ui-shadow-md);
+  translate: 0 -2px;
+}
+
+/* ---------- Blocks gallery ---------- */
+.docs-block-section {
+  display: grid;
+  gap: var(--ui-space-4);
+  scroll-margin-block-start: 7.5rem;
+}
+
+.docs-block-head {
+  display: grid;
+  gap: var(--ui-space-1);
+}
+.docs-block-head h2 {
+  margin: 0;
+  font-size: var(--ui-text-xl);
+  letter-spacing: -0.01em;
+}
+.docs-block-head p {
+  margin: 0;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+.docs-block-head .docs-block-recipe {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+  opacity: 0.85;
+}
+
+.docs-block-canvas {
+  display: grid;
+  /* minmax(0, 1fr), not auto: the Code tab's <pre> sizes to its longest
+     line, and an auto track would adopt that max-content width — blowing
+     the block (and the page) out horizontally. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+.docs-block-canvas.docs-block-canvas-grid {
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  align-items: start;
+}
+
+/* auth block */
+.docs-block-auth {
+  max-width: 24rem;
+  margin-inline: auto;
+  width: 100%;
+}
+
+.docs-block-form {
+  display: grid;
+  gap: var(--ui-space-3);
+}
+
+.docs-block-field {
+  display: grid;
+  gap: var(--ui-space-1);
+}
+.docs-block-field label {
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-medium);
+}
+
+.docs-block-btn-full {
+  inline-size: 100%;
+}
+
+.docs-block-form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-3);
+}
+
+.docs-block-link {
+  font-size: var(--ui-text-sm);
+  color: var(--ui-primary);
+}
+
+/* pricing block — tiered plan cards (comparison best practices:
+   equal-height cards, highlighted popular tier, ✓-scannable features,
+   CTAs pinned to the same position in every card) */
+.docs-block-plan {
+  height: 100%;
+}
+.docs-block-plan .docs-block-plan__body {
+  display: grid;
+  gap: var(--ui-space-3);
+  align-content: start;
+  flex: 1;
+}
+.docs-block-plan.docs-block-plan--featured {
+  border-color: var(--ui-primary);
+  box-shadow: 0 0 0 1px var(--ui-primary), var(--ui-shadow-lg);
+}
+
+.docs-block-price {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ui-space-2);
+  margin: 0;
+}
+.docs-block-price strong {
+  font-size: var(--ui-text-3xl);
+  font-weight: var(--ui-font-bold);
+  letter-spacing: -0.03em;
+}
+.docs-block-price span {
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+
+.docs-block-features {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+.docs-block-features li {
+  display: flex;
+  align-items: start;
+  gap: var(--ui-space-2);
+}
+.docs-block-features li::before {
+  content: "✓";
+  flex-shrink: 0;
+  color: var(--ui-primary);
+  font-weight: var(--ui-font-semibold);
+}
+
+/* stats block */
+.docs-block-stat {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-stat-label {
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+
+.docs-block-stat-value {
+  font-size: var(--ui-text-2xl);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: -0.02em;
+}
+
+/* settings block */
+.docs-block-settings {
+  display: grid;
+  gap: var(--ui-space-3);
+}
+
+.docs-block-plan-label {
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+
+/* team block */
+.docs-block-team {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-block-team-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-2) 0;
+}
+
+.docs-block-team-name {
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-medium);
+}
+
+.docs-block-team-role {
+  margin-inline-start: auto;
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+/* avatar blocks (compact social proof, hover-tooltip stacks, pill
+   buttons, avatar empty state) — global so they reach every block
+   surface: category pages, detail pages, and the catalog */
+.docs-block-social-proof {
+  display: grid;
+  justify-items: start;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-social-proof__row {
+  display: flex;
+  align-items: center;
+  padding-inline-start: 0.25rem;
+}
+
+.docs-block-social-proof__row > .aui-avatar:not(:first-child) {
+  margin-inline-start: -0.35rem;
+  box-shadow: 0 0 0 2px var(--ui-background);
+}
+
+.docs-block-social-proof__label,
+.docs-block-social-proof__name,
+.docs-block-social-proof-label__headline,
+.docs-block-social-proof-label__sub {
+  margin: 0;
+}
+
+.docs-block-social-proof__label,
+.docs-block-social-proof-label__sub {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+.docs-block-social-proof__name {
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-medium);
+}
+
+.docs-block-social-proof-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-4);
+}
+
+.docs-block-social-proof-label__text {
+  display: grid;
+  gap: var(--ui-space-1);
+}
+
+.docs-block-social-proof-label__headline {
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-semibold);
+}
+
+.docs-block-pill-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-pill-btn {
+  align-items: center;
+}
+
+.docs-block-avatar-hover-tooltip {
+  display: inline-flex;
+}
+
+.docs-block-empty-avatar {
+  display: inline-flex;
+  padding: var(--ui-space-2);
+  border-radius: var(--ui-radius-full);
+  background: var(--ui-primary-subtle);
+}
+
+@media (max-width: 40rem) {
+  .docs-block-social-proof-label {
+    align-items: flex-start;
+  }
+}
+/* bubble demos — thread container, sender meta, action row */
+.docs-bubble-thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-2);
+  max-inline-size: 34rem;
+}
+
+.docs-bubble-thread--spaced {
+  /* Reactions pills hang outside their bubble (translate 75%), so the
+     thread needs extra clearance for the protruding half + breathing room. */
+  row-gap: 2.75rem;
+}
+
+.docs-bubble-thread :is(.aui-bubble__content h4) {
+  margin: 0 0 var(--ui-space-1);
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+}
+
+.docs-bubble-thread :is(.aui-bubble__content p) {
+  margin: 0 0 var(--ui-space-2);
+}
+
+.docs-bubble-thread :is(.aui-bubble__content p:last-child),
+.docs-bubble-thread :is(.aui-bubble__content ul:last-child) {
+  margin-block-end: 0;
+}
+
+.docs-bubble-thread :is(.aui-bubble__content ul) {
+  display: grid;
+  gap: var(--ui-space-1);
+  margin: 0 0 var(--ui-space-2);
+  padding-inline-start: var(--ui-space-4);
+}
+
+.docs-bubble-thread :is(.aui-bubble__content code) {
+  padding: 0.05em 0.35em;
+  background: color-mix(in srgb, currentcolor 10%, transparent);
+  border-radius: var(--ui-radius-sm);
+  font-family: var(--ui-font-mono);
+  font-size: 0.85em;
+}
+
+.docs-bubble-meta {
+  margin: 0;
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+.docs-bubble-meta--end {
+  text-align: end;
+}
+
+.docs-bubble-actions {
+  display: flex;
+  gap: var(--ui-space-2);
+}
+
+/* clipboard code-block demo — pill with trailing copy trigger */
+.docs-clipboard-code-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-1) var(--ui-space-1) var(--ui-space-1) var(--ui-space-3);
+  background: var(--ui-muted);
+  border-radius: var(--ui-radius-md);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-foreground);
+}
+
+/* analytics dashboard block — KPI row + chart panels */
+.docs-block-analytics {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+
+.docs-block-analytics__kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--ui-space-3);
+}
+
+.docs-block-analytics__kpi {
+  display: grid;
+  gap: var(--ui-space-1);
+  justify-items: start;
+}
+
+.docs-block-analytics__kpi-label {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-medium);
+}
+
+.docs-block-analytics__kpi-value {
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-2xl);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.docs-block-analytics__charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: var(--ui-space-3);
+}
+
+.docs-block-analytics__panel-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+  margin-block-end: var(--ui-space-3);
+}
+
+/* Range switcher (7d/30d/90d): dissolve the Tabs root into the card
+   grid — the tablist becomes its own row under the title and the
+   active panel's chart flows below like any other card child. */
+.docs-block-analytics__range {
+  display: contents;
+}
+
+.docs-block-analytics__engagement .aui-tabs__panels {
+  display: grid;
+}
+
+.docs-block-analytics__panel-title {
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+}
+
+.docs-block-analytics__panel-sub {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+/* capital inflows block — segmented part-to-whole bar + fund rows */
+.docs-block-capital {
+  max-inline-size: 34rem;
+}
+
+.docs-block-capital__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+  padding-bottom: var(--ui-space-2);
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.docs-block-capital__title {
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+}
+
+.docs-block-capital__total {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  margin: var(--ui-space-3) 0 var(--ui-space-2);
+  color: var(--ui-foreground);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  font-weight: var(--ui-font-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.docs-block-capital__rows {
+  display: grid;
+  margin: var(--ui-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-block-capital__row {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-2) 0;
+}
+
+.docs-block-capital__row + .docs-block-capital__row {
+  border-top: 1px solid var(--ui-border);
+}
+
+.docs-block-capital__fund {
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-medium);
+}
+
+.docs-block-capital__right {
+  display: grid;
+  justify-items: end;
+  margin-inline-start: auto;
+}
+
+.docs-block-capital__cap {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+.docs-block-capital__val {
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-md);
+  font-variant-numeric: tabular-nums;
+}
+
+/* password generator block — output, length slider, switches, action */
+.docs-block-passgen {
+  display: grid;
+  justify-items: center;
+}
+
+.docs-block-passgen__card {
+  inline-size: min(24rem, 100%);
+}
+
+.docs-block-passgen__title {
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-lg);
+  font-weight: var(--ui-font-semibold);
+}
+
+.docs-block-passgen__out {
+  display: block;
+  padding: var(--ui-space-3) var(--ui-space-4);
+  margin-block-end: var(--ui-space-4);
+  background-color: var(--ui-muted);
+  border-radius: var(--ui-radius-md);
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-md);
+  letter-spacing: 0.08em;
+  text-align: center;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.docs-block-passgen__field {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin-block-end: var(--ui-space-4);
+}
+
+.docs-block-passgen__lab {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-block-passgen__lab b {
+  color: var(--ui-foreground);
+}
+
+.docs-block-passgen__bounds {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+.docs-block-passgen__opts {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-passgen__btn {
+  inline-size: 100%;
+  margin-block-start: var(--ui-space-2);
+}
+
+/* support chat block — thread surface, turns, quick replies, composer */
+.docs-block-chat {
+  display: grid;
+  gap: var(--ui-space-3);
+  max-inline-size: 34rem;
+}
+
+.docs-block-chat__head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding-bottom: var(--ui-space-2);
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.docs-block-chat__who {
+  display: grid;
+  gap: 2px;
+  margin-inline-end: auto;
+}
+
+.docs-block-chat__name {
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+}
+
+.docs-block-chat__sub {
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+.docs-block-chat__thread {
+  display: flex;
+  flex-direction: column;
+  /* Reactions pills protrude 75% of their height — turns need clearance. */
+  gap: 1.75rem;
+  /* The thread scrolls inside a fixed viewport — like a real chat pane.
+     Head/composer stay pinned outside the scroll area. */
+  max-block-size: 30rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 10px;
+}
+
+.docs-block-chat__meta {
+  margin: 0;
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+.docs-block-chat__meta--end {
+  text-align: end;
+}
+
+.docs-block-chat__turn {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-chat__turn--end {
+  flex-direction: row-reverse;
+}
+
+.docs-block-chat__group {
+  gap: var(--ui-space-1);
+}
+
+.docs-block-chat :is(.aui-bubble__content p) {
+  margin: 0;
+}
+
+.docs-block-chat :is(.aui-bubble__content code) {
+  padding: 0.05em 0.35em;
+  background: color-mix(in srgb, currentcolor 10%, transparent);
+  border-radius: var(--ui-radius-sm);
+  font-family: var(--ui-font-mono);
+  font-size: 0.85em;
+}
+
+.docs-block-chat__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+
+.docs-block-chat__resolved {
+  padding-inline-start: var(--ui-space-2);
+}
+
+.docs-block-chat__composer {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding-top: var(--ui-space-2);
+}
+
+.docs-block-chat__composer :is(input, .aui-input) {
+  flex: 1;
+}
+
+/* breadcrumb demos — dropdown panel content + framed pill variant */
+/* The ellipsis trigger is an inline control inside the trail — strip
+   the Popover trigger's default button padding down to a tight hit
+   area so it matches the breadcrumb line height. */
+.aui-breadcrumb .aui-popover .aui-popover__trigger {
+  padding: 0.125rem var(--ui-space-1);
+  border-radius: var(--ui-radius-sm);
+}
+
+.docs-breadcrumb-menu {
+  display: grid;
+  min-inline-size: 10rem;
+}
+
+.docs-breadcrumb-menu a {
+  padding: var(--ui-space-1) var(--ui-space-2);
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  text-decoration: none;
+  border-radius: var(--ui-radius-sm);
+}
+
+.docs-breadcrumb-menu a:hover {
+  background: var(--ui-muted);
+}
+
+.docs-breadcrumb-frame {
+  display: inline-block;
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-background);
+  box-shadow: var(--ui-shadow-sm);
+}
+
+/* ---------- Roadmap ---------- */
+.docs-roadmap-cta {
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+.docs-roadmap-cta a {
+  color: var(--ui-primary);
+}
+
+.docs-roadmap-col {
+  scroll-margin-block-start: 7.5rem;
+}
+
+.docs-roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-roadmap-card {
+  display: grid;
+  gap: var(--ui-space-2);
+  align-content: start;
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+.docs-roadmap-card h3 {
+  margin: 0;
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+}
+.docs-roadmap-card p {
+  margin: 0;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+
+.docs-roadmap-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+}
+
+/* ---------- Home: count band + teasers ---------- */
+.docs-count-band {
+  display: grid;
+  gap: var(--ui-space-4);
+  justify-items: center;
+  text-align: center;
+  padding: var(--ui-space-10) var(--ui-space-6);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl, var(--ui-radius-lg));
+}
+.docs-count-band h2 {
+  margin: 0;
+  max-width: 26ch;
+  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
+  letter-spacing: -0.02em;
+}
+.docs-count-band .docs-count-lede {
+  margin: 0;
+  max-width: 58ch;
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+.docs-count-band .docs-count-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+  justify-content: center;
+}
+.docs-count-band .docs-hero-actions {
+  justify-content: center;
+}
+
+.docs-block-teaser-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-block-teaser {
+  display: grid;
+  gap: var(--ui-space-1);
+  align-content: start;
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  text-decoration: none;
+  transition: border-color var(--ui-transition-fast), translate var(--ui-transition-fast), box-shadow var(--ui-transition-fast);
+}
+.docs-block-teaser:hover {
+  border-color: var(--ui-primary);
+  translate: 0 -2px;
+  box-shadow: var(--ui-shadow-md);
+}
+.docs-block-teaser .docs-block-name {
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+}
+.docs-block-teaser .docs-block-desc {
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+.docs-block-teaser .docs-block-parts {
+  margin-block-start: var(--ui-space-2);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-2xs);
+  color: var(--ui-muted-foreground);
+}
+
+/* ---------- Home: narrative blocks ---------- */
+.docs-hero-statement {
+  /* Big statement hero: oversized headline, centered lede.
+     justify-items matters: the capped-width children (max-width h1/lede)
+     would otherwise stretch to the track's start edge and sit left. */
+  text-align: center;
+  justify-items: center;
+  align-items: center;
+  padding-block: var(--ui-space-10) var(--ui-space-6);
+}
+.docs-hero-statement h1 {
+  max-width: 22ch;
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+.docs-hero-statement .docs-hero-lede {
+  max-width: 56ch;
+  font-size: var(--ui-text-lg);
+  color: var(--ui-muted-foreground);
+}
+.docs-hero-statement .docs-hero-actions {
+  justify-content: center;
+}
+
+.docs-capabilities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--ui-space-4);
+}
+.docs-capabilities .docs-capability {
+  display: grid;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-5);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+.docs-capabilities .docs-capability h2 {
+  margin: 0;
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+}
+.docs-capabilities .docs-capability p {
+  margin: 0;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+
+.docs-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--ui-space-8);
+  align-items: center;
+  /* flip: media first on the second row */
+}
+.docs-showcase.docs-showcase-flip .docs-showcase-copy {
+  order: 2;
+}
+.docs-showcase.docs-showcase-flip .docs-showcase-media {
+  order: 1;
+}
+.docs-showcase .docs-showcase-copy {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+.docs-showcase .docs-showcase-copy h2 {
+  margin: 0;
+  font-size: var(--ui-text-2xl);
+  letter-spacing: -0.02em;
+  scroll-margin-block-start: 7.5rem;
+}
+.docs-showcase .docs-showcase-copy p {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+.docs-showcase .docs-showcase-media .docs-showcase-panel {
+  display: grid;
+  gap: var(--ui-space-5);
+  padding: var(--ui-space-6);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.docs-start-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--ui-space-4);
+}
+.docs-start-grid .docs-start-card {
+  position: relative;
+  display: grid;
+  gap: var(--ui-space-3);
+  align-content: start;
+  padding: var(--ui-space-5);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+.docs-start-grid .docs-start-card h3 {
+  margin: 0;
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+}
+.docs-start-grid .docs-start-card p {
+  margin: 0;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+  line-height: var(--ui-leading-normal);
+}
+.docs-start-grid .docs-start-num {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-primary);
+  font-weight: var(--ui-font-semibold);
+}
+
+.docs-home-faq {
+  max-width: 46rem;
+}
+
+.docs-cta-band {
+  display: grid;
+  gap: var(--ui-space-4);
+  justify-items: center;
+  text-align: center;
+  padding: var(--ui-space-10) var(--ui-space-6);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl, var(--ui-radius-lg));
+  background: radial-gradient(120% 140% at 50% 0%, color-mix(in srgb, var(--ui-primary) 14%, var(--ui-background)), var(--ui-background));
+}
+.docs-cta-band h2 {
+  margin: 0;
+  max-width: 34ch;
+  font-size: var(--ui-text-2xl);
+  letter-spacing: -0.02em;
+}
+.docs-cta-band p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--ui-muted-foreground);
+}
+.docs-cta-band .docs-hero-actions {
+  justify-content: center;
+}
+
+/* Narrow screens: showcase rows stack, media first for scannability. */
+@media (max-width: 56rem) {
+  .docs-showcase {
+    grid-template-columns: 1fr;
+  }
+  .docs-showcase .docs-showcase-copy {
+    order: 2;
+  }
+  .docs-showcase .docs-showcase-media {
+    order: 1;
+  }
+}
+/* ---------- States gallery: group intro headers ---------- */
+.docs-state-head {
+  display: grid;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-4) var(--ui-space-5);
+  border: 1px solid var(--ui-border);
+  border-inline-start: 3px solid var(--ui-primary);
+  border-radius: var(--ui-radius-md);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+.docs-state-head h2 {
+  margin: 0;
+  font-size: var(--ui-text-xl);
+  letter-spacing: -0.01em;
+  scroll-margin-block-start: 7.5rem;
+}
+.docs-state-head p {
+  margin: 0;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+
+/* ---------- Releases: release-notes structure ---------- */
+.docs-release-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+.docs-release-legend .docs-release-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-medium);
+}
+
+.docs-release-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border-radius: var(--ui-radius-full);
+  background: color-mix(in srgb, var(--ui-primary) 12%, var(--ui-background));
+  font-size: var(--ui-text-xs);
+}
+
+.docs-release-count {
+  margin-inline-start: auto;
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+  white-space: nowrap;
+}
+
+.docs-release-section {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+
+/* ---------- Catalog filter chips ---------- */
+.docs-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+.docs-filter-bar .docs-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--ui-space-1) var(--ui-space-3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-foreground);
+  text-decoration: none;
+  transition: background-color var(--ui-transition-fast), border-color var(--ui-transition-fast);
+}
+.docs-filter-bar .docs-filter-chip:hover {
+  background: var(--ui-muted);
+  border-color: var(--ui-primary);
+}
+
+/* ---------- Catalog category sections ---------- */
+.docs-cat-section {
+  display: grid;
+  gap: var(--ui-space-4);
+  scroll-margin-block-start: 7.5rem;
+}
+
+.docs-cat-head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+}
+.docs-cat-head h2 {
+  margin: 0;
+  font-size: var(--ui-text-xl);
+  color: var(--ui-foreground);
+}
+
+.docs-cat-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--ui-primary);
+  background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+  border-radius: var(--ui-radius-md);
+  font-size: var(--ui-text-lg);
+}
+
+.docs-cat-desc {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+}
+
+.docs-cat-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: var(--ui-space-2);
+}
+
+.docs-cat-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ui-space-2) var(--ui-space-3);
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  text-decoration: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  transition: border-color var(--ui-transition-fast);
+}
+.docs-cat-link:hover {
+  border-color: color-mix(in srgb, var(--ui-primary) 45%, var(--ui-border));
+}
+.docs-cat-link .arrow {
+  color: var(--ui-muted-foreground);
+}
+
+/* ---------- New badge ---------- */
+.docs-new-badge {
+  display: inline-flex;
+  padding: 1px var(--ui-space-2);
+  margin-inline-start: var(--ui-space-2);
+  color: var(--ui-success);
+  font-size: var(--ui-text-2xs);
+  font-weight: var(--ui-font-semibold);
+  background-color: color-mix(in srgb, var(--ui-success) 12%, transparent);
+  border-radius: var(--ui-radius-full);
+}
+
+/* ---------- Chip rows (related components, category links) ---------- */
+.docs-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+.docs-chip-row .docs-cat-link {
+  padding: var(--ui-space-1) var(--ui-space-3);
+  font-size: var(--ui-text-xs);
+}
+
+/* ---------- Demo blocks ---------- */
+/* Title/preview/code share the `.docs-demo-` prefix, not
+   `.docs-demo-block-`, so they stay top-level siblings. */
+/* Anchor-chip index above long demo lists (5+ demos): jumps to each
+   demo block, which offsets for the sticky header via the shared
+   anchor scroll-margin below. */
+.docs-demos-nav {
+  margin-block-end: var(--ui-space-4);
+}
+.docs-demos-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-1) var(--ui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.docs-demos-nav a {
+  display: inline-block;
+  padding: var(--ui-space-1) var(--ui-space-3);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  text-decoration: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  transition: color var(--ui-transition-fast), border-color var(--ui-transition-fast);
+}
+.docs-demos-nav a:hover {
+  color: var(--ui-foreground);
+  border-color: var(--ui-muted-foreground);
+}
+
+.docs-demo-block {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin-block-end: var(--ui-space-6);
+  scroll-margin-block-start: 7.5rem;
+}
+
+.docs-demo-title {
+  margin: 0;
+  font-size: var(--ui-text-md);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+}
+
+.docs-demo-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  /* Stage color between background panels and muted surfaces in both
+     themes — 18% foreground keeps cards, inputs, and skeletons from
+     blending into the preview surface (muted == component fill). */
+  background-color: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+  border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
+  /* Library Tabs card variant rounds the list; square the bottom edge
+     where it meets the preview surface below. */
+}
+.docs-demo-preview .demo-row {
+  gap: var(--ui-space-3);
+}
+.docs-demo-preview {
+  /* Anchor element for Badge overlay bubbles — position: relative is
+     what the bubble's absolute positioning resolves against. */
+}
+.docs-demo-preview .docs-badge-anchor {
+  position: relative;
+  display: inline-flex;
+}
+.docs-demo-preview .docs-badge-anchor .aui-badge--overlay {
+  /* zero-box wrapper: the bubble anchors to this element */
+  inline-size: 0;
+  block-size: 0;
+  overflow: visible;
+}
+.docs-demo-preview {
+  /* Chrome prose rules (.docs-article p/ul) must not tint demo content —
+     components own their colors (Alert titles inherit the variant
+     foreground; muted chrome text fails contrast on solid fills). */
+}
+.docs-demo-preview p,
+.docs-demo-preview ul {
+  color: inherit;
+}
+
+/* Preview reset above is color-only; hints keep their secondary tint. */
+.docs-demo-preview .demo-hint {
+  color: var(--ui-muted-foreground);
+}
+
+.docs-demo-preview-light {
+  background-color: color-mix(in srgb, var(--ui-foreground) 1%, var(--ui-background));
+}
+
+.docs-demo-code {
+  position: relative;
+  margin: 0;
+  padding: var(--ui-space-4);
+  background-color: var(--ui-muted);
+  border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
+}
+
+/* Cross-container shared rules — kept flat on purpose. */
+.docs-demo-code pre,
+.docs-codeblock pre {
+  margin: 0;
+  padding: 0;
+  background: none;
+  overflow-x: auto;
+}
+
+.docs-demo-code pre code,
+.docs-codeblock pre code {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  line-height: 1.7;
+}
+
+/* ---------- Token playground ---------- */
+/* Live token editor on /docs/styling: controls left, scoped preview +
+   generated CSS right. Overrides land as inline custom properties on
+   the preview panel only — the rest of the page keeps site tokens. */
+.token-playground {
+  display: grid;
+  grid-template-columns: minmax(16rem, 21rem) minmax(0, 1fr);
+  gap: var(--ui-space-4);
+  align-items: start;
+}
+@media (max-width: 64rem) {
+  .token-playground {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.token-playground-controls {
+  display: grid;
+  gap: var(--ui-space-2);
+}
+
+.tp-group {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  background-color: var(--ui-background);
+}
+.tp-group[open] .tp-group-title {
+  border-block-end: 1px solid var(--ui-border);
+}
+
+.tp-group-title {
+  padding: var(--ui-space-2) var(--ui-space-3);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+  cursor: pointer;
+}
+
+.tp-token {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-1) var(--ui-space-3);
+}
+.tp-token:last-child {
+  padding-block-end: var(--ui-space-2);
+}
+.tp-token[data-changed] .tp-token-name {
+  color: var(--ui-primary);
+}
+
+.tp-token-name {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tp-token-color {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+}
+.tp-token-color input[type=color] {
+  inline-size: 2rem;
+  block-size: 1.75rem;
+  padding: 0;
+  background: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  cursor: pointer;
+}
+.tp-token-color input[type=text] {
+  inline-size: 5.5rem;
+}
+
+.tp-token input[type=text] {
+  padding: var(--ui-space-1) var(--ui-space-2);
+  color: var(--ui-foreground);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  background-color: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+}
+.tp-token input[type=text].is-invalid {
+  border-color: var(--ui-error);
+}
+
+.tp-token-text {
+  inline-size: 100%;
+}
+
+.token-playground-side {
+  display: grid;
+  gap: var(--ui-space-3);
+  min-inline-size: 0;
+}
+
+.token-playground-preview {
+  display: grid;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  background-color: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+
+.tp-preview-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-2);
+}
+
+.tp-output-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+
+.tp-output-actions {
+  display: inline-flex;
+  gap: var(--ui-space-1);
+}
+
+.tp-btn {
+  padding: var(--ui-space-1) var(--ui-space-3);
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-medium);
+  background-color: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  cursor: pointer;
+}
+.tp-btn:hover:not([disabled]) {
+  background-color: var(--ui-muted);
+}
+.tp-btn[disabled] {
+  opacity: var(--ui-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.tp-output {
+  margin: 0;
+  padding: var(--ui-space-4);
+  background-color: var(--ui-muted);
+  border-radius: var(--ui-radius-md);
+  overflow-x: auto;
+}
+.tp-output code {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  line-height: 1.7;
+}
+
+/* Inline usage snippets (Usage section) */
+.docs-codeblock {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+.docs-codeblock pre {
+  padding: var(--ui-space-4);
+  background-color: var(--ui-muted);
+}
+
+.docs-copy-btn {
+  position: absolute;
+  inset-inline-end: var(--ui-space-2);
+  inset-block-start: var(--ui-space-2);
+  padding: var(--ui-space-1) var(--ui-space-2);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  background-color: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  cursor: pointer;
+}
+.docs-copy-btn:hover {
+  color: var(--ui-foreground);
+  background-color: var(--ui-muted);
+}
+
+/* ---------- API tables ---------- */
+.docs-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+
+.docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ui-text-sm);
+}
+.docs-table th {
+  padding: var(--ui-space-3) var(--ui-space-4);
+  background-color: var(--ui-muted);
+  color: var(--ui-foreground);
+  font-weight: var(--ui-font-semibold);
+  text-align: start;
+  white-space: nowrap;
+}
+.docs-table td {
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border-block-start: 1px solid var(--ui-border);
+  color: var(--ui-muted-foreground);
+  vertical-align: top;
+}
+.docs-table code {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-foreground);
+}
+
+.docs-code-pill {
+  padding: 0 var(--ui-space-1);
+  background-color: var(--ui-muted);
+  border-radius: var(--ui-radius-sm);
+}
+
+.docs-code-type {
+  color: var(--ui-primary);
+  word-break: break-word;
+}
+
+/* ---------- FAQ ---------- */
+.docs-faq {
+  display: grid;
+  gap: var(--ui-space-4);
+  min-width: 0;
+}
+
+.docs-faq-item {
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  min-width: 0;
+  /* Long code identifiers in prose must wrap, not blow out the track. */
+}
+.docs-faq-item p {
+  overflow-wrap: anywhere;
+}
+.docs-faq-item h3 {
+  margin: 0 0 var(--ui-space-1);
+  font-size: var(--ui-text-md);
+  color: var(--ui-foreground);
+}
+.docs-faq-item p {
+  margin: 0;
+  font-size: var(--ui-text-sm);
+}
+
+/* ---------- Home category cards ---------- */
+.docs-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-cat-card {
+  display: grid;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-5);
+  text-decoration: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  transition: border-color var(--ui-transition-fast), box-shadow var(--ui-transition-fast), translate var(--ui-transition-fast);
+  /* Hover style shared with .docs-comp-card (defined there). */
+}
+.docs-cat-card .docs-cat-head h3 {
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-lg);
+}
+
+.docs-chip {
+  display: inline-flex;
+  padding: 2px var(--ui-space-2);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  background-color: var(--ui-muted);
+  border-radius: var(--ui-radius-full);
+}
+.docs-chip-more {
+  color: var(--ui-primary);
+  background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+}
+
+/* ---------- Releases page ---------- */
+.docs-release {
+  display: grid;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+}
+.docs-release-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ui-space-3);
+}
+.docs-release-version {
+  font-size: var(--ui-text-xl);
+  font-weight: var(--ui-font-bold);
+  color: var(--ui-foreground);
+}
+.docs-release-date {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+}
+.docs-release-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.docs-release ul {
+  display: grid;
+  gap: var(--ui-space-1);
+  margin: 0;
+  padding-inline-start: var(--ui-space-5);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  line-height: var(--ui-leading-normal);
+}
+
+/* ---------- Changelog tab (component pages) ---------- */
+.docs-comp-changelog {
+  display: grid;
+  gap: var(--ui-space-3);
+}
+
+.docs-changelog-entry {
+  display: grid;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+.docs-changelog-entry ul {
+  margin: 0;
+  padding-inline-start: var(--ui-space-4);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+}
+
+.docs-changelog-version {
+  color: var(--ui-primary);
+  font-weight: var(--ui-font-semibold);
+  font-size: var(--ui-text-sm);
+}
+
+/* ---------- Prev / next pager ---------- */
+.docs-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--ui-space-4);
+  padding-block-start: var(--ui-space-4);
+  border-block-start: 1px solid var(--ui-border);
+}
+.docs-pager a {
+  display: grid;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-3) var(--ui-space-4);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  text-decoration: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+.docs-pager a:hover {
+  color: var(--ui-foreground);
+  border-color: color-mix(in srgb, var(--ui-primary) 45%, var(--ui-border));
+}
+.docs-pager .dir {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.docs-pager .name {
+  color: var(--ui-foreground);
+  font-weight: var(--ui-font-semibold);
+}
+.docs-pager-next {
+  margin-inline-start: auto;
+  text-align: end;
+}
+
+/* ---------- Footer ---------- */
+.docs-footer {
+  max-width: 88rem;
+  margin-inline: auto;
+  padding: var(--ui-space-8) var(--ui-space-4);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  border-block-start: 1px solid var(--ui-border);
+}
+.docs-footer p {
+  margin: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 64rem) {
+  .docs-shell {
+    grid-template-columns: 1fr;
+  }
+  .docs-sidebar {
+    position: static;
+    max-height: none;
+    border-inline-end: none;
+    border-block-end: 1px solid var(--ui-border);
+    padding-block-end: var(--ui-space-4);
+  }
+  .docs-content-wrap {
+    grid-template-columns: 1fr;
+  }
+  .docs-toc {
+    display: none;
+  }
+}
+@media (max-width: 40rem) {
+  /* GitHub and theme toggle collapse to icon-only to save header space. */
+  .docs-github-link .docs-github-label,
+  .docs-theme-btn .docs-theme-label {
+    display: none;
+  }
+  .docs-nav {
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+  }
+  .docs-nav-links {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+  }
+  /* Mega panels center on their trigger, which overflows a 390px viewport.
+     Pin them to the header's content box instead — full-bleed dropdowns. */
+  .docs-header {
+    overflow-x: clip;
+  }
+  .docs-nav {
+    position: relative;
+  }
+  /* Match the base rule's 0-3-0 specificity so the override wins. */
+  .docs-nav-links .docs-mega .docs-mega-panel,
+  .docs-nav-links .docs-mega:hover .docs-mega-panel,
+  .docs-nav-links .docs-mega:focus-within .docs-mega-panel,
+  .docs-nav-links .docs-mega:focus-visible .docs-mega-panel {
+    position: fixed;
+    inset-inline: var(--ui-space-3); /* full-bleed: left+right pin */
+    inset-block-start: auto;
+    translate: 0 var(--ui-space-2); /* kill the desktop -50% centering shift */
+    top: 3.5rem;
+  }
+  /* Kill the desktop min-widths/multi-column grids so panels fit 390px. */
+  .docs-mega[data-mega=components] .docs-mega-panel .docs-mega-grid,
+  .docs-mega[data-mega=blocks] .docs-mega-panel .docs-mega-grid,
+  .docs-mega[data-mega=docs] .docs-mega-panel .docs-mega-grid {
+    grid-template-columns: 1fr;
+    min-width: 0;
+    max-block-size: calc(100dvh - 6rem);
+    overflow-block: auto;
+  }
+  .docs-hero {
+    padding: var(--ui-space-6);
+  }
+  .docs-hero h1 {
+    font-size: var(--ui-text-3xl);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .docs-comp-card,
+  .docs-comp-card-cta {
+    transition: none;
+    translate: none;
+  }
+}
+/* ---------- Blocks: subject-categorized gallery ---------- */
+.docs-block-demo {
+  display: grid;
+  gap: var(--ui-space-3);
+  padding-block: var(--ui-space-5);
+}
+.docs-block-demo + .docs-block-demo {
+  border-block-start: 1px solid var(--ui-border);
+}
+
+.docs-block-demo-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: var(--ui-space-4);
+}
+.docs-block-demo-head h3 {
+  margin: 0;
+  font-size: var(--ui-text-lg);
+  letter-spacing: -0.01em;
+}
+.docs-block-demo-head p {
+  margin: var(--ui-space-1) 0 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+}
+
+/* Grid wrapper used inside ANY block canvas (category pages, detail
+   pages, catalog previews) — must not be scoped to .docs-block-demo,
+   or the cards stack vertically everywhere else. */
+.docs-block-canvas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-block-hint {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+}
+
+.docs-block-auth--narrow {
+  max-inline-size: 26rem;
+}
+
+.docs-block-empty-icon {
+  display: grid;
+  place-items: center;
+  font-size: 1.75rem;
+  color: var(--ui-primary);
+}
+
+.docs-filter-count {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+/* ---------- Search palette (⌘K) ---------- */
+.docs-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-1) var(--ui-space-2);
+  color: var(--ui-muted-foreground);
+  font: inherit;
+  font-size: var(--ui-text-sm);
+  background: transparent;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+  cursor: pointer;
+  transition: border-color var(--ui-transition-fast), color var(--ui-transition-fast);
+}
+.docs-search-btn:hover {
+  color: var(--ui-foreground);
+  border-color: var(--ui-input);
+}
+.docs-search-btn:focus-visible {
+  outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+  outline-offset: var(--ui-focus-ring-offset);
+}
+
+.docs-search-kbd {
+  padding-inline: var(--ui-space-1);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+}
+
+/* Platform-aware shortcut hint: both spans render by default (no-JS
+   fallback shows the cross-platform "Ctrl K"), then the html[data-kbd]
+   attribute set inline in <head> hides the wrong one before first paint. */
+.docs-search-kbd-mac {
+  display: none;
+}
+
+:global(html[data-kbd="mac"]) .docs-search-kbd-mac {
+  display: inline;
+}
+
+:global(html[data-kbd="mac"]) .docs-search-kbd-pc {
+  display: none;
+}
+
+.docs-search-palette {
+  inline-size: min(38rem, 100vw - 2rem);
+  /* Tailwind preflight resets margins — restore the UA's dialog centering. */
+  inset: 0;
+  margin: auto;
+  block-size: fit-content;
+  padding: 0;
+  color: var(--ui-foreground);
+  background: var(--ui-background);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--ui-shadow-lg);
+  overflow: hidden;
+}
+.docs-search-palette::backdrop {
+  background: color-mix(in srgb, black 45%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.docs-search-head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-3) var(--ui-space-4);
+  border-block-end: 1px solid var(--ui-border);
+}
+
+.docs-search-glass {
+  flex-shrink: 0;
+  color: var(--ui-muted-foreground);
+}
+
+#search-input {
+  flex: 1;
+  font: inherit;
+  color: var(--ui-foreground);
+  background: transparent;
+  border: none;
+}
+#search-input::placeholder {
+  color: var(--ui-muted-foreground);
+}
+#search-input:focus {
+  outline: none;
+}
+#search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.docs-search-x {
+  flex-shrink: 0;
+  padding: var(--ui-space-1);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.docs-search-x:hover {
+  color: var(--ui-foreground);
+}
+
+.docs-search-results {
+  max-block-size: 26rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--ui-space-2);
+}
+
+.docs-search-group[hidden] {
+  display: none;
+}
+.docs-search-group + .docs-search-group {
+  margin-block-start: var(--ui-space-2);
+}
+
+.docs-search-group-label {
+  margin: 0 0 var(--ui-space-1);
+  padding-inline: var(--ui-space-2);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.docs-search-group-count {
+  margin-inline-start: var(--ui-space-1);
+  font-weight: var(--ui-font-normal);
+}
+
+.docs-search-group ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-search-item {
+  display: grid;
+  gap: 2px;
+  padding: var(--ui-space-2);
+  border-radius: var(--ui-radius-md);
+  text-decoration: none;
+  transition: background-color var(--ui-transition-fast);
+}
+.docs-search-item:hover, .docs-search-item.is-active {
+  background: var(--ui-muted);
+}
+.docs-search-item .docs-search-item-title {
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-medium);
+}
+.docs-search-item .docs-search-item-hint {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.docs-search-item[hidden] {
+  display: none;
+}
+
+.docs-search-foot {
+  display: flex;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-2) var(--ui-space-4);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  border-block-start: 1px solid var(--ui-border);
+}
+.docs-search-foot kbd {
+  padding-inline: 4px;
+  font-family: var(--ui-font-mono);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+}
+
+@media (max-width: 48rem) {
+  .docs-search-btn-label,
+  .docs-search-kbd {
+    display: none;
+  }
+}
+/* ---------- Blocks: catalog cards + detail pages ---------- */
+.docs-block-cat-card {
+  display: grid;
+  gap: var(--ui-space-5);
+  padding: var(--ui-space-5);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl);
+  background: var(--ui-background);
+  transition: border-color var(--ui-transition-fast), box-shadow var(--ui-transition-fast);
+}
+.docs-block-cat-card:hover {
+  border-color: var(--ui-input);
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.docs-block-cat-preview {
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-muted);
+  padding: var(--ui-space-5);
+  overflow: hidden;
+  /* Scale down the live preview like screenshot tiles.
+     Disclosures (details/summary) re-enable pointer events so preview
+     widgets like the FAQ accordion stay demonstrably interactive. */
+  pointer-events: none;
+  user-select: none;
+}
+.docs-block-cat-preview details,
+.docs-block-cat-preview details summary {
+  pointer-events: auto;
+}
+
+.docs-block-cat-body {
+  display: grid;
+  gap: var(--ui-space-1);
+  justify-items: start;
+}
+.docs-block-cat-body h2 {
+  margin: 0;
+  font-size: var(--ui-text-xl);
+  letter-spacing: -0.02em;
+}
+.docs-block-cat-body h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+.docs-block-cat-body h2 a:hover {
+  color: var(--ui-primary);
+}
+.docs-block-cat-body p {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+}
+
+.docs-block-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+.docs-block-title-link:hover {
+  color: var(--ui-primary);
+}
+
+.docs-block-meta-row {
+  display: flex;
+  gap: var(--ui-space-2);
+  margin-block-start: var(--ui-space-3);
+}
+
+.docs-block-canvas--full {
+  padding: var(--ui-space-6);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-muted);
+}
+
+.docs-block-related {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.docs-block-related-card {
+  display: grid;
+  gap: var(--ui-space-1);
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  text-decoration: none;
+  transition: border-color var(--ui-transition-fast), background-color var(--ui-transition-fast);
+}
+.docs-block-related-card:hover {
+  border-color: var(--ui-input);
+  background: var(--ui-muted);
+}
+.docs-block-related-card .docs-block-related-title {
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  font-weight: var(--ui-font-medium);
+}
+.docs-block-related-card .docs-block-related-desc {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+/* ---------- Block recipe: linked component chips ---------- */
+.docs-block-recipe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-1) var(--ui-space-2);
+  margin: 0;
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  color: var(--ui-muted-foreground);
+}
+.docs-block-recipe .docs-block-recipe-sep {
+  opacity: 0.6;
+}
+.docs-block-recipe .docs-block-recipe-link {
+  padding: 1px var(--ui-space-1);
+  color: var(--ui-foreground);
+  text-decoration: none;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+  transition: border-color var(--ui-transition-fast), color var(--ui-transition-fast), background-color var(--ui-transition-fast);
+}
+.docs-block-recipe .docs-block-recipe-link:hover {
+  color: var(--ui-primary);
+  border-color: var(--ui-primary);
+  background: color-mix(in srgb, var(--ui-primary) 8%, transparent);
+}
+.docs-block-recipe .docs-block-recipe-link:focus-visible {
+  outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+  outline-offset: var(--ui-focus-ring-offset);
+}
+.docs-block-recipe .docs-block-recipe-plain {
+  padding: 1px var(--ui-space-1);
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--ui-radius-sm);
+}
+
+/* Pricing tiers: equal-height plan cards with pinned CTAs. */
+.docs-block-pricing {
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  align-items: stretch;
+}
+
+.docs-block-plan {
+  display: flex;
+  flex-direction: column;
+  /* Plan name + "Popular" badge: block h3 would butt the inline badge
+     flush against the title — flex it with a gap instead. */
+}
+.docs-block-plan .aui-card__header h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+}
+.docs-block-plan .aui-card__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.docs-block-plan .docs-block-plan__body {
+  display: grid;
+  gap: var(--ui-space-3);
+  align-content: start;
+  flex: 1;
+}
+.docs-block-plan .docs-block-plan__cta {
+  margin-block-start: var(--ui-space-4);
+}
+.docs-block-plan.docs-block-plan--featured {
+  border-color: var(--ui-primary);
+  box-shadow: 0 0 0 1px var(--ui-primary), var(--ui-shadow-lg);
+}
+
+/* ---------- BlockTabs: preview/code wrapper ---------- */
+/* BlockTabs renders inside .docs-block-canvas; neutralize the canvas
+   padding for the code tab so source spans edge to edge. */
+.docs-block-tabs .docs-demo-code {
+  padding: 0;
+  background: none;
+}
+
+.docs-codeblock--flush {
+  border: none;
+  border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
+  background: color-mix(in srgb, var(--ui-foreground) 1%, var(--ui-background));
+}
+.docs-codeblock--flush pre {
+  padding: var(--ui-space-4);
+  max-block-size: 28rem;
+  overflow: auto;
+}
+.docs-codeblock--flush .docs-copy-btn {
+  inset-block-start: var(--ui-space-3);
+}
+
+/* ---------- Shiki dual themes ---------- */
+/* Astro's <Code /> emits both themes inline (color + --shiki-dark:*).
+   Nothing activates the dark set by default — it follows
+   prefers-color-scheme only if you add the media rule. Our theme
+   toggle uses data-theme, so switch the vars there. Astro's <Code />
+   renders `pre.astro-code` while shiki's codeToHtml renders
+   `pre.shiki` — cover both class families (component Usage/API/FAQ
+   panels AND demo/block code tabs). */
+[data-theme=dark] .shiki,
+[data-theme=dark] .shiki span,
+[data-theme=dark] .astro-code,
+[data-theme=dark] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Circle-stats block: center the ring under the card head. */
+.docs-block-stat--circle {
+  justify-items: center;
+  text-align: center;
+}
+.docs-block-stat--circle .docs-block-stat-head {
+  inline-size: 100%;
+}
+
+/* BlockTabs previews are flex panels; block compositions (card grids,
+   CTA bands) would shrink-wrap to min-content as flex children.
+   Give them the full panel width — scoped to block tabs only, so
+   component demos keep their natural sizing. */
+.docs-block-tabs .docs-demo-preview > * {
+  inline-size: 100%;
+}
+
+/* --- Carousel demo cards --- */
+.aui-carousel-demo-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 10rem;
+  font-size: var(--ui-text-lg, 1.125rem);
+  font-weight: 600;
+  color: var(--ui-muted-foreground);
+  background: var(--ui-muted);
+  border-radius: var(--ui-radius-lg);
+}
+
+.docs-demo-note {
+  margin: var(--ui-space-2) 0 0;
+  font-size: var(--ui-text-sm);
+  color: var(--ui-muted-foreground);
+}
+
+.car-v-h {
+  block-size: 14rem;
+}

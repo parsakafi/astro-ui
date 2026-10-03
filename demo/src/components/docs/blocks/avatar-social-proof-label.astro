@@ -1,0 +1,38 @@
+---
+import {
+  Avatar,
+  AvatarGroup,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+
+const avatars = [
+  {name: "Ada Lovelace"},
+  {name: "Grace Hopper"},
+  {name: "Alan Turing"},
+  {name: "Edsger Dijkstra"},
+  {name: "Barbara Liskov"},
+];
+---
+
+<div class="docs-block-social-proof-label">
+    <AvatarGroup>
+      {
+        avatars.slice(0, 5).map((a) => (
+          <Avatar
+            name={a.name}
+            status={a.name === "Ada Lovelace" ? "online" : undefined}
+          />
+        ))
+      }
+    </AvatarGroup>
+    <div class="docs-block-social-proof-label__text">
+      <p class="docs-block-social-proof-label__headline">Joined by 2,411 developers this week</p>
+      <p class="docs-block-social-proof-label__sub">See why teams choose this stack for production Astro sites.</p>
+    </div>
+  </div>

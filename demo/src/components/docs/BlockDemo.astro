@@ -1,0 +1,72 @@
+---
+/**
+  * BlockDemo — renders the live markup for one block by id.
+  * Per-block components live in ./blocks/; this is a thin dispatcher
+  * so category pages, detail pages, and the catalog all render
+  * through one entry point.
+  */
+import SigninBlock from "./blocks/signin.astro";
+import SignupBlock from "./blocks/signup.astro";
+import ForgotPasswordBlock from "./blocks/forgot-password.astro";
+import PricingTiersBlock from "./blocks/pricing-tiers.astro";
+import StatsCirclesBlock from "./blocks/stats-circles.astro";
+import StatsBandBlock from "./blocks/stats-band.astro";
+import CtaBandBlock from "./blocks/cta-band.astro";
+import SettingsPanelBlock from "./blocks/settings-panel.astro";
+import PasswordGeneratorBlock from "./blocks/password-generator.astro";
+import CapitalInflowsBlock from "./blocks/capital-inflows.astro";
+import TeamMembersBlock from "./blocks/team-members.astro";
+import EmptyStateBlock from "./blocks/empty-state.astro";
+import FaqAccordionBlock from "./blocks/faq-accordion.astro";
+import ChangelogEntryBlock from "./blocks/changelog-entry.astro";
+import CompactSocialProofBlock from "./blocks/compact-social-proof.astro";
+import AvatarGroupHoverTooltipsBlock from "./blocks/avatar-group-hover-tooltips.astro";
+import AvatarSocialProofLabelBlock from "./blocks/avatar-social-proof-label.astro";
+import PillButtonWithAvatarBlock from "./blocks/pill-button-with-avatar.astro";
+import AvatarGroupHoverTooltipsV2Block from "./blocks/avatar-group-hover-tooltips-v2.astro";
+import BreadcrumbProjectInfoBlock from "./blocks/breadcrumb-project-info.astro";
+import BreadcrumbAvatarsBlock from "./blocks/breadcrumb-avatars.astro";
+import AnalyticsDashboardBlock from "./blocks/analytics-dashboard.astro";
+import ChatSupportBlock from "./blocks/chat-support.astro";
+import BreadcrumbIconsBlock from "./blocks/breadcrumb-icons.astro";
+import AvatarEmptyStateBlock from "./blocks/avatar-empty-state.astro";
+
+interface Props {
+  /** Block id from the registry (lib/blocks). */
+  id: string;
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {id, idPrefix = "bd"} = Astro.props;
+const blocks: Record<string, any> = {
+	"signin": SigninBlock,
+	"signup": SignupBlock,
+	"forgot-password": ForgotPasswordBlock,
+	"pricing-tiers": PricingTiersBlock,
+	"stats-circles": StatsCirclesBlock,
+	"stats-band": StatsBandBlock,
+	"cta-band": CtaBandBlock,
+	"settings-panel": SettingsPanelBlock,
+	"password-generator": PasswordGeneratorBlock,
+	"capital-inflows": CapitalInflowsBlock,
+	"team-members": TeamMembersBlock,
+	"empty-state": EmptyStateBlock,
+	"faq-accordion": FaqAccordionBlock,
+	"changelog-entry": ChangelogEntryBlock,
+	"compact-social-proof": CompactSocialProofBlock,
+	"avatar-group-hover-tooltips": AvatarGroupHoverTooltipsBlock,
+	"avatar-social-proof-label": AvatarSocialProofLabelBlock,
+	"pill-button-with-avatar": PillButtonWithAvatarBlock,
+	"avatar-group-hover-tooltips-v2": AvatarGroupHoverTooltipsV2Block,
+	"breadcrumb-project-info": BreadcrumbProjectInfoBlock,
+	"breadcrumb-avatars": BreadcrumbAvatarsBlock,
+	"analytics-dashboard": AnalyticsDashboardBlock,
+	"chat-support": ChatSupportBlock,
+	"breadcrumb-icons": BreadcrumbIconsBlock,
+	"avatar-empty-state": AvatarEmptyStateBlock,
+};
+const Block = blocks[id];
+---
+
+{Block && <Block idPrefix={idPrefix} />}

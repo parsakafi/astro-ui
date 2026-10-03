@@ -1,0 +1,33 @@
+---
+import {
+  Button,
+  Card,
+  Input,
+  Checkbox,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+
+const fid = (name: string) => `${idPrefix}-${name}`;
+---
+
+<Card class="docs-block-auth">
+    <h3 slot="header">Create your account</h3>
+    <div class="docs-block-form">
+      <div class="docs-block-field"><label for={fid("name")}>Full name</label><Input name={fid("name")} id={fid("name")}
+                                                                                     placeholder="Ada Lovelace"/></div>
+      <div class="docs-block-field"><label for={fid("email")}>Email</label><Input type="email" name={fid("email")}
+                                                                                  id={fid("email")}
+                                                                                  placeholder="you@example.com"/></div>
+      <div class="docs-block-field"><label for={fid("pass")}>Password</label><Input type="password" name={fid("pass")}
+                                                                                    id={fid("pass")}
+                                                                                    placeholder="8+ characters"/></div>
+      <Checkbox name={fid("terms")} label="I agree to the terms of service"/>
+      <Button class="docs-block-btn-full">Create account</Button>
+    </div>
+  </Card>

@@ -1,0 +1,134 @@
+---
+/**
+  * /docs/ — docs hub: intro prose + card grid linking the
+  * guides. Actual guide content lives at /docs/get-started, /docs/styling,
+  * /docs/rtl, /docs/changelog.
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import {Button} from "astro-ui";
+import {SITE} from "../../lib/site";
+
+const stats = {total: 43};
+
+const guides = [
+  {
+    href: "/docs/get-started/",
+    title: "Get started",
+    desc: "Install the package, import the token layer, and render your first component in a minute.",
+  },
+  {
+    href: "/docs/styling/",
+    title: "Styling",
+    desc: "The token model: CSS custom properties for every color, radius, and space — and how to override them.",
+  },
+  {
+    href: "/docs/principles/",
+    title: "Design principles",
+    desc: "What astro-ui guarantees — zero JS, tokens, accessibility, composable pieces — and how each rule is enforced.",
+  },
+  {
+    href: "/docs/repository/",
+    title: "Repository",
+    desc: "Workspace layout: the library package, the demo app, how they link, and the workflow for each side.",
+  },
+  {
+    href: "/docs/rtl/",
+    title: "RTL",
+    desc: "Logical CSS properties throughout. What mirrors automatically and the few physical exceptions.",
+  },
+  {
+    href: "/docs/changelog/",
+    title: "Changelog",
+    desc: "Release-by-release history following Keep a Changelog.",
+  },
+  {
+    href: "/docs/releases/",
+    title: "Releases",
+    desc: "Release highlights by version, with what's new at a glance.",
+  },
+  {
+    href: "/docs/roadmap/",
+    title: "Roadmap",
+    desc: "Shipped, in progress, and planned work for the library.",
+  },
+];
+
+const principles = [
+  {
+    title: "Server-rendered by default",
+    body: "Components are .astro files that output HTML. There is no client runtime to adopt and no hydration cost to pay.",
+  },
+  {
+    title: "Platform over abstraction",
+    body: "Native elements own behavior: <dialog> handles modality, <details> handles disclosure, radios handle rating. The library styles and wires — it doesn't reimplement.",
+  },
+  {
+    title: "Tokens are the API",
+    body: "Theming isn't a config file; it's CSS. Override a custom property and every component that reads it follows — including blocks and future ones.",
+  },
+];
+---
+
+<DocsLayout title="Docs" description="Guides for astro-ui: get started, styling, RTL, changelog, releases, roadmap."
+            activePath="docs" toc={[]}>
+  <article class="docs-article">
+    <section id="introduction" class="docs-hero">
+      <p class="docs-hero-kicker">Documentation</p>
+      <h1>Introduction</h1>
+      <p class="docs-hero-lede">
+        {SITE.name} is a component library for <a href="https://astro.build/" target="_blank" rel="noreferrer noopener">Astro</a>:
+        accessible, token-themed components that render on the server and
+        progressively enhance where a platform primitive needs it.
+      </p>
+      <div class="docs-hero-actions">
+        <Button href="/docs/get-started/">Get started</Button>
+        <Button href="/components/" variant="outline">Components</Button>
+      </div>
+    </section>
+
+    <section aria-labelledby="principles-h">
+      <div class="docs-section-head">
+        <h2 id="principles-h">Philosophy</h2>
+      </div>
+      <div class="docs-capabilities">
+        {
+          principles.map((p) => (
+            <div class="docs-capability">
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section aria-labelledby="guides-h">
+      <div class="docs-section-head">
+        <h2 id="guides-h">Guides</h2>
+      </div>
+      <div class="docs-block-teaser-grid">
+        {
+          guides.map((guide) => (
+            <a class="docs-block-teaser" href={guide.href}>
+              <span class="docs-block-name">{guide.title}</span>
+              <span class="docs-block-desc">{guide.desc}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section aria-labelledby="support-h">
+      <div class="docs-section-head">
+        <h2 id="support-h">Community & support</h2>
+      </div>
+      <p class="docs-prose-p">
+        {SITE.name} is MIT-licensed open source. Report bugs and request
+        features on <a href={SITE.repo} target="_blank" rel="noreferrer noopener">GitHub</a>;
+        for Astro framework questions, the
+        <a href="https://astro.build/chat/" target="_blank" rel="noreferrer noopener">Astro Discord</a>
+        is the place.
+      </p>
+    </section>
+  </article>
+</DocsLayout>

@@ -1,0 +1,72 @@
+---
+import {
+  Button,
+  Badge,
+  Card,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+
+/** Pricing tiers — tiered comparison layout (3–4 options max, popular
+ tier highlighted, features scannable, CTAs in the same place). */
+const pricingPlans = [
+  {
+    name: "Starter",
+    price: "$0",
+    note: "forever",
+    blurb: "Everything you need to evaluate the library.",
+    features: ["43 components", "Tokens & base CSS", "Community support"],
+    cta: "Start free",
+    variant: "outline" as const,
+  },
+  {
+    name: "Pro",
+    price: "$19",
+    note: "per month",
+    blurb: "For teams shipping production sites.",
+    features: ["Everything in Starter", "Priority examples", "Blocks library", "Email support"],
+    cta: "Get Pro",
+    variant: "primary" as const,
+    featured: true,
+  },
+  {
+    name: "Team",
+    price: "$49",
+    note: "per month",
+    blurb: "For organizations standardizing on astro-ui.",
+    features: ["Everything in Pro", "Unlimited projects", "Shared token themes", "Slack support"],
+    cta: "Contact us",
+    variant: "outline" as const,
+  },
+];
+---
+
+<div class="docs-block-canvas-grid docs-block-pricing">
+    {pricingPlans.map((plan) => (
+      <Card class:list={["docs-block-plan", plan.featured && "docs-block-plan--featured"]}>
+        <h3 slot="header">
+          {plan.name}
+          {plan.featured &&
+            <Badge variant="primary" size="sm">Popular</Badge>}
+        </h3>
+        <div class="docs-block-plan__body">
+          <p class="docs-block-price">
+            <strong>{plan.price}</strong> <span>{plan.note}</span>
+          </p>
+          <p class="docs-block-hint">{plan.blurb}</p>
+          <ul class="docs-block-features">
+            {plan.features.map((feature) =>
+              <li>{feature}</li>)}
+          </ul>
+        </div>
+        <Button variant={plan.variant} class="docs-block-btn-full docs-block-plan__cta">
+          {plan.cta}
+        </Button>
+      </Card>
+    ))}
+  </div>

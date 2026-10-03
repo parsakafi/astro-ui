@@ -1,0 +1,261 @@
+@charset "UTF-8";
+/**
+ * Demo app chrome — NOT part of the astro-ui library.
+ *
+ * Custom classes are prefixed `demo-*` to keep them out of the
+ * library's aui-* namespace. Themed via astro-ui design tokens so
+ * the chrome responds to the same light/dark toggle as components.
+ *
+ * Source of truth — compiled to demo.css by `npm run css`.
+ * Tailwind entry lives in tailwind.css (kept out of sass on purpose).
+ */
+/* ---------- Header / nav ---------- */
+.demo-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--ui-background);
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.demo-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-4);
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: var(--ui-space-3) var(--ui-space-4);
+}
+.demo-nav a:not(.demo-brand) {
+  color: var(--ui-muted-foreground);
+  text-decoration: none;
+  padding: var(--ui-space-1) var(--ui-space-2);
+  border-radius: var(--ui-radius-md);
+  transition: color var(--ui-transition-fast), background-color var(--ui-transition-fast);
+}
+.demo-nav a:not(.demo-brand):hover, .demo-nav a:not(.demo-brand):focus-visible {
+  color: var(--ui-foreground);
+  background-color: var(--ui-muted);
+}
+
+.demo-brand {
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-lg);
+  font-weight: var(--ui-font-bold);
+  color: var(--ui-foreground);
+  text-decoration: none;
+}
+
+.demo-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-1);
+  margin-inline-start: auto;
+  padding: var(--ui-space-1) var(--ui-space-3);
+  font-family: var(--ui-font-sans);
+  font-size: var(--ui-text-sm);
+  color: var(--ui-foreground);
+  background-color: transparent;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-full);
+  cursor: pointer;
+  transition: background-color var(--ui-transition-fast);
+}
+.demo-theme-btn:hover {
+  background-color: var(--ui-muted);
+}
+
+/* ---------- Main layout ---------- */
+.demo-main {
+  display: grid;
+  align-content: start;
+  gap: var(--ui-space-8);
+  max-width: 72rem;
+  width: 100%;
+  margin-inline: auto;
+  padding: var(--ui-space-8) var(--ui-space-4);
+}
+.demo-main h1 {
+  margin: 0;
+  font-size: var(--ui-text-2xl);
+  line-height: var(--ui-leading-tight);
+}
+.demo-main h2 {
+  margin: 0;
+  font-size: var(--ui-text-lg);
+  line-height: var(--ui-leading-tight);
+}
+.demo-main fieldset {
+  display: grid;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-4);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+.demo-main fieldset legend {
+  padding-inline: var(--ui-space-2);
+  font-weight: var(--ui-font-semibold);
+}
+.demo-main pre {
+  margin: 0;
+  padding: var(--ui-space-3) var(--ui-space-4);
+  background-color: var(--ui-muted);
+  border-radius: var(--ui-radius-md);
+  overflow-x: auto;
+}
+.demo-main pre code {
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+}
+
+/* ---------- Shared helpers ---------- */
+.demo-section {
+  display: grid;
+  gap: var(--ui-space-4);
+}
+
+.demo-hint {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  line-height: var(--ui-leading-normal);
+}
+
+.demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ui-space-3);
+}
+
+.demo-label {
+  display: inline-flex;
+  align-items: center;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-inline-end: var(--ui-space-1);
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+/* Vertical stack of demo specimens (cards, attachments, alerts).
+   Full-width inside flex preview panels — aspect-ratio children need
+   a definite width or they compute 0. */
+.demo-stack {
+  display: grid;
+  gap: var(--ui-space-3);
+  inline-size: 100%;
+  min-width: 0;
+}
+
+.demo-field {
+  display: grid;
+  gap: var(--ui-space-1);
+  max-width: 24rem;
+}
+.demo-field > p {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 40rem) {
+  .demo-nav {
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-2) var(--ui-space-4);
+  }
+  .demo-main {
+    padding: var(--ui-space-6) var(--ui-space-4);
+  }
+}
+/* ---------- Avatar: custom badge / ring demos ---------- */
+/* Notification count badge pinned top-inline-end (multi-badge demo). */
+.avatar-multi-badge-demo {
+  display: inline-flex;
+  padding: var(--ui-space-3);
+}
+
+/* Count chip for the avatar multi-badge demo — positioned by the
+   Avatar's badge anchor (badgePosition), not by this rule. */
+.avatar-count-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding-inline: 0.25rem;
+  font-size: var(--ui-text-2xs);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-error-foreground);
+  background: var(--ui-error);
+  border: 2px solid var(--ui-background);
+  border-radius: var(--ui-radius-full);
+}
+
+.avatar-ring-demo {
+  display: inline-flex;
+  padding: var(--ui-space-4);
+}
+
+/* Keep the avatar still while the decorative ring rotates behind it. */
+.avatar-gradient-ring,
+.avatar-story-ring {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+  padding: 3px;
+  border-radius: var(--ui-radius-full);
+}
+.avatar-gradient-ring::before,
+.avatar-story-ring::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+  animation: demo-ring-spin 6s linear infinite;
+}
+.avatar-gradient-ring > .aui-avatar,
+.avatar-story-ring > .aui-avatar {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 2px var(--ui-background);
+}
+
+.avatar-gradient-ring::before {
+  background: conic-gradient(from 0deg, var(--ui-primary), var(--ui-accent), var(--ui-info), var(--ui-primary));
+}
+
+/* The quicker story ring pauses on hover for inspecting its color sequence. */
+.avatar-story-ring::before {
+  background: conic-gradient(from 0deg, var(--ui-warning), var(--ui-error), var(--ui-accent), var(--ui-warning));
+  animation-duration: 3s;
+}
+
+@keyframes demo-ring-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .avatar-gradient-ring:hover::before,
+  .avatar-story-ring:hover::before {
+    animation-play-state: paused;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar-gradient-ring::before,
+  .avatar-story-ring::before {
+    animation: none;
+  }
+}

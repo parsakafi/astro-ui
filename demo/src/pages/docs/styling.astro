@@ -1,0 +1,332 @@
+---
+/**
+  * /docs/styling/ — the token model and how to override it.
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import {Button, Badge, Alert, Progress, Chart} from "astro-ui";
+import {readFileSync} from "node:fs";
+import {resolve} from "node:path";
+import {tokenGroups} from "../../lib/token-groups";
+
+const toc = [
+  {id: "model", label: "The token model"},
+  {id: "override", label: "Overriding tokens"},
+  {id: "playground", label: "Token playground"},
+  {id: "dark", label: "Dark mode"},
+  {id: "utility", label: "Utility classes"},
+];
+
+// Playground controls, parsed from the token source so they never
+// drift: light `:root` values with a color flag per token.
+const tokensRaw = readFileSync(
+  resolve(process.cwd(), "node_modules/astro-ui/src/styles/tokens.css"),
+  "utf8",
+);
+const lightBlock = tokensRaw.slice(tokensRaw.indexOf(":root"), tokensRaw.indexOf("}"));
+const tokenValues = new Map(
+  [...lightBlock.matchAll(/(--ui-[\w-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]),
+);
+const isColorToken = (value: string) => /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(value);
+const playgroundGroups = tokenGroups.map((g) => ({
+  title: g.title,
+  tokens: g.tokens.map((name) => {
+    const value = tokenValues.get(name) ?? "";
+    return {name, value, color: isColorToken(value)};
+  }),
+}));
+---
+
+<DocsLayout title="Styling" description="The astro-ui token model and theming." activePath="docs" toc={toc}>
+  <article class="docs-article docs-prose">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">Docs · Guide</p>
+      <h1>Styling</h1>
+      <p>
+        Every visual value in astro-ui is a CSS custom property. There is no
+        theme config — the tokens are the theming API.
+      </p>
+    </section>
+
+    <section id="model">
+      <h2>The token model</h2>
+      <p>
+        Tokens live on <code>:root</code> (light) and
+        <code>[data-theme="dark"]</code>, grouped by role:
+      </p>
+      <CodeBlock
+        code={`:root {
+  /* surfaces */
+  --ui-background: #ffffff;
+  --ui-foreground: #18181b;
+  --ui-muted: #f4f4f5;
+  --ui-border: #e4e4e7;
+
+  /* brand */
+  --ui-primary: #2563eb;
+  --ui-primary-foreground: #ffffff;
+
+  /* feedback */
+  --ui-success: #16a34a;
+  --ui-warning: #d97706;
+  --ui-error: #dc2626;
+
+  /* shape & type */
+  --ui-radius-md: 0.5rem;
+  --ui-text-sm: 0.875rem;
+  --ui-space-4: 1rem;
+}`}
+        lang="css"
+      />
+      <p>
+        Components never hard-code colors — they read tokens. Variant classes
+        (<code>aui-badge--success</code>, for example) just point at a
+        different token.
+      </p>
+    </section>
+
+    <section id="override">
+      <h2>Overriding tokens</h2>
+      <p>
+        Set the variables anywhere after the token import — your global CSS,
+        a page, or an element. One override re-skins everything that reads
+        it:
+      </p>
+      <CodeBlock
+        code={`:root {
+  --ui-primary: oklch(0.55 0.21 264);
+  --ui-radius-md: 0.75rem;
+}`}
+        lang="css"
+      />
+      <div class="docs-demo-preview">
+        <Button>Themed button</Button>
+        <Badge variant="primary">Themed badge</Badge>
+      </div>
+      <p class="docs-muted-note">
+        (These two are themed by this site's brand layer — the same
+        mechanism, overriding <code>--ui-primary</code>.)
+      </p>
+    </section>
+
+    <section id="playground">
+      <h2>Token playground</h2>
+      <p>
+        Edit any token and watch the preview panel — buttons, badges, an
+        alert, a progress bar, and a donut cut from the chart palette.
+        Overrides apply to the preview only (light theme), and the output
+        is copy-ready CSS for your own stylesheet.
+      </p>
+      <div class="token-playground">
+        <div class="token-playground-controls">
+          {playgroundGroups.map((group, gi) => (
+            <details class="tp-group" open={gi === 0}>
+              <summary class="tp-group-title">{group.title}</summary>
+              {group.tokens.map((token) => (
+                <div class="tp-token" data-tp-token={token.name}>
+                  <label class="tp-token-name" for={`tp-${token.name}`}>{token.name}</label>
+                  {token.color ? (
+                    <span class="tp-token-color">
+                      <input
+                        type="color"
+                        id={`tp-${token.name}`}
+                        value={token.value}
+                        aria-label={`${token.name} color picker`}
+                      />
+                      <input
+                        type="text"
+                        value={token.value}
+                        spellcheck={false}
+                        autocomplete="off"
+                        aria-label={`${token.name} value`}
+                      />
+                    </span>
+                  ) : (
+                    <input
+                      class="tp-token-text"
+                      type="text"
+                      id={`tp-${token.name}`}
+                      value={token.value}
+                      spellcheck={false}
+                      autocomplete="off"
+                    />
+                  )}
+                </div>
+              ))}
+            </details>
+          ))}
+        </div>
+        <div class="token-playground-side">
+          <div class="token-playground-preview" id="tp-preview">
+            <div class="tp-preview-row">
+              <Button>Primary</Button>
+              <Button variant="secondary">Secondary</Button>
+              <Button variant="outline">Outline</Button>
+              <Button variant="ghost">Ghost</Button>
+            </div>
+            <div class="tp-preview-row">
+              <Badge variant="primary">Primary</Badge>
+              <Badge variant="success">Active</Badge>
+              <Badge variant="warning">Pending</Badge>
+              <Badge variant="error">Failed</Badge>
+              <Badge variant="info">New</Badge>
+            </div>
+            <Alert variant="info">
+              <Fragment slot="title">Heads up</Fragment>
+              Scheduled maintenance Sunday 02:00–04:00 UTC.
+            </Alert>
+            <Progress value={64} label="Uploading" showValue />
+            <Chart
+              type="donut"
+              title="Palette"
+              height={200}
+              labels={["One", "Two", "Three", "Four", "Five", "Six"]}
+              series={[{name: "Share", data: [22, 18, 16, 14, 12, 18]}]}
+            />
+          </div>
+          <div class="token-playground-output">
+            <div class="tp-output-bar">
+              <span id="tp-count" role="status">No changes yet</span>
+              <span class="tp-output-actions">
+                <button type="button" id="tp-reset" class="tp-btn" disabled>Reset</button>
+                <button type="button" id="tp-copy" class="tp-btn" disabled>Copy</button>
+              </span>
+            </div>
+            <pre class="tp-output"><code id="tp-output-code">/* Edit a token — overrides appear here as copy-ready CSS. */</code></pre>
+          </div>
+          <p class="docs-muted-note">
+            Dark mode needs the same overrides under
+            <code>[data-theme="dark"]</code> — this preview is light-only.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="dark">
+      <h2>Dark mode</h2>
+      <p>
+        Dark values live under <code>[data-theme="dark"]</code>. Flip the
+        attribute — before paint, to avoid a flash:
+      </p>
+      <CodeBlock
+        code={`<script is:inline>
+  const saved = localStorage.getItem("theme");
+  if (saved) document.documentElement.dataset.theme = saved;
+</script>`}
+        lang="html"
+      />
+    </section>
+
+    <section id="utility">
+      <h2>Utility classes</h2>
+      <p>
+        Components style themselves from tokens; compose layouts with your
+        own utilities. The demo site uses a small utility layer plus
+        Tailwind where convenient — but nothing in the library requires
+        Tailwind. Class merging (the <code>class</code> prop on every
+        component) keeps overrides clean.
+      </p>
+    </section>
+  </article>
+</DocsLayout>
+
+<script>
+  // Token playground: mirror control edits onto the preview panel as
+  // inline custom properties, and collect the diff as copy-ready CSS.
+  const preview = document.getElementById("tp-preview");
+  const output = document.getElementById("tp-output-code");
+  const count = document.getElementById("tp-count");
+  const copyBtn = document.getElementById("tp-copy");
+  const resetBtn = document.getElementById("tp-reset");
+  const rows = Array.from(document.querySelectorAll("[data-tp-token]"));
+  const isHex = (v: string) => /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(v);
+
+  const paint = () => {
+    if (!preview || !output) return;
+    const lines: string[] = [];
+    rows.forEach((row) => {
+      const el = row as HTMLElement;
+      const name = el.dataset.tpToken ?? "";
+      const text = row.querySelector('input[type="text"]');
+      if (!(text instanceof HTMLInputElement) || !name) return;
+      const color = row.querySelector('input[type="color"]');
+      const value = text.value.trim();
+      const valid = !(color instanceof HTMLInputElement) || isHex(value);
+      text.classList.toggle("is-invalid", !valid);
+      text.setAttribute("aria-invalid", valid ? "false" : "true");
+      if (valid && color instanceof HTMLInputElement) {
+        try {
+          color.value = value;
+        } catch {
+          // 3/4/8-digit hex the native picker rejects — text still applies.
+        }
+      }
+      const changed = valid && value !== text.defaultValue;
+      if (changed) {
+        el.dataset.changed = "true";
+        preview.style.setProperty(name, value);
+        lines.push(`  ${name}: ${value};`);
+      } else {
+        delete el.dataset.changed;
+        preview.style.removeProperty(name);
+      }
+    });
+    output.textContent = lines.length
+      ? `:root {\n${lines.join("\n")}\n}`
+      : "/* Edit a token — overrides appear here as copy-ready CSS. */";
+    if (count) count.textContent = lines.length ? `${lines.length} customized` : "No changes yet";
+    if (copyBtn instanceof HTMLButtonElement) copyBtn.disabled = !lines.length;
+    if (resetBtn instanceof HTMLButtonElement) resetBtn.disabled = !lines.length;
+  };
+
+  rows.forEach((row) => {
+    row.querySelectorAll("input").forEach((el) => {
+      el.addEventListener("input", () => {
+        if (el.type === "color") {
+          const text = row.querySelector('input[type="text"]');
+          if (text instanceof HTMLInputElement) {
+            text.value = el.value;
+            text.classList.remove("is-invalid");
+            text.setAttribute("aria-invalid", "false");
+          }
+        }
+        paint();
+      });
+    });
+  });
+
+  resetBtn?.addEventListener("click", () => {
+    rows.forEach((row) => {
+      const text = row.querySelector('input[type="text"]');
+      const color = row.querySelector('input[type="color"]');
+      if (text instanceof HTMLInputElement) {
+        text.value = text.defaultValue;
+        text.classList.remove("is-invalid");
+        text.setAttribute("aria-invalid", "false");
+      }
+      if (color instanceof HTMLInputElement && text instanceof HTMLInputElement) {
+        try {
+          color.value = text.defaultValue;
+        } catch {
+          // Defaults are 6-digit hex — the picker always accepts them.
+        }
+      }
+    });
+    paint();
+  });
+
+  copyBtn?.addEventListener("click", () => {
+    if (!output || !(copyBtn instanceof HTMLButtonElement)) return;
+    const btn = copyBtn;
+    navigator.clipboard?.writeText(output.textContent ?? "").then(() => {
+      btn.textContent = "Copied!";
+      window.setTimeout(() => {
+        btn.textContent = "Copy";
+      }, 1500);
+    }).catch(() => {
+      // Non-secure context — leave the text selected for manual copy.
+    });
+  });
+
+  paint();
+</script>

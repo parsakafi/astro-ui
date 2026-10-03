@@ -1,0 +1,128 @@
+---
+import {
+  Button,
+  Badge,
+  Input,
+  Avatar,
+  Bubble,
+  BubbleContent,
+  BubbleGroup,
+  BubbleReactions,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<div class="docs-block-chat">
+    <div class="docs-block-chat__head">
+      <Avatar name="Mira Chen" size="sm" status="online"/>
+      <div class="docs-block-chat__who">
+        <span class="docs-block-chat__name">Mira · Support</span>
+        <span class="docs-block-chat__sub">Typically replies in minutes</span>
+      </div>
+      <Badge variant="success" size="sm">Online</Badge>
+    </div>
+    <div class="docs-block-chat__thread">
+      <p class="docs-block-chat__meta">Today · 09:12</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <BubbleGroup ariaLabel="Messages from Mira" class="docs-block-chat__group">
+          <Bubble align="start" variant="muted">
+            <BubbleContent>👋 Hi! I'm Mira from support. I see ticket #4821 opened on your account — the double charge on
+              last month's invoice, right?
+            </BubbleContent>
+          </Bubble>
+          <Bubble align="start" variant="muted">
+            <BubbleContent>I've already pulled up the billing log.</BubbleContent>
+          </Bubble>
+        </BubbleGroup>
+      </div>
+      <p class="docs-block-chat__meta docs-block-chat__meta--end">You · 09:14</p>
+      <div class="docs-block-chat__turn docs-block-chat__turn--end">
+        <BubbleGroup ariaLabel="Messages from you" class="docs-block-chat__group">
+          <Bubble align="end" variant="primary">
+            <BubbleContent>Yes! My card was charged twice for the renewal 🙁</BubbleContent>
+          </Bubble>
+          <Bubble align="end" variant="primary">
+            <BubbleContent>(and the renewal email never arrived either)</BubbleContent>
+            <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">
+              <button type="button" aria-pressed="true" aria-label="Heart, 1 reaction">
+                <span aria-hidden="true">❤️</span> 1
+              </button>
+            </BubbleReactions>
+          </Bubble>
+        </BubbleGroup>
+        <Avatar name="Sam Visitor" size="sm"/>
+      </div>
+      <p class="docs-block-chat__meta">Mira · 09:15</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <Bubble align="start" variant="muted">
+          <BubbleContent>
+            Confirmed — duplicate transaction at 14:02. Refund approved, lands in 3–5 business days.
+          </BubbleContent>
+        </Bubble>
+      </div>
+      <p class="docs-block-chat__meta">You · 09:16</p>
+      <div class="docs-block-chat__turn docs-block-chat__turn--end">
+        <Bubble align="end" variant="primary">
+          <BubbleContent>Amazing, thank you! Will I get a confirmation email?</BubbleContent>
+          <BubbleReactions side="bottom" align="start" ariaLabel="Reactions">
+            <span aria-hidden="true">🙏 2</span>
+          </BubbleReactions>
+        </Bubble>
+      </div>
+      <p class="docs-block-chat__meta">Mira · 09:17</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <BubbleGroup ariaLabel="Messages from Mira" class="docs-block-chat__group">
+          <Bubble align="start" variant="muted">
+            <BubbleContent>You will — and here's the refund reference for your records:</BubbleContent>
+          </Bubble>
+          <Bubble align="start" variant="outline">
+            <BubbleContent><code>RFND-2026-09482</code></BubbleContent>
+          </Bubble>
+        </BubbleGroup>
+      </div>
+      <p class="docs-block-chat__meta">You · 09:18</p>
+      <div class="docs-block-chat__turn docs-block-chat__turn--end">
+        <Bubble align="end" variant="tinted">
+          <button type="button" class="aui-bubble__content">Perfect — anything else I should know?</button>
+        </Bubble>
+      </div>
+      <p class="docs-block-chat__meta">Mira · 09:19</p>
+      <div class="docs-block-chat__turn">
+        <Avatar name="Mira Chen" size="sm"/>
+        <Bubble align="start" variant="muted">
+          <BubbleContent>All set on my side! I'll stay in this thread if anything else comes up. Quick actions before
+            you go:
+          </BubbleContent>
+        </Bubble>
+      </div>
+      <div class="docs-block-chat__quick">
+        <Button variant="outline" size="sm" shape="rounded">Email me the transcript</Button>
+        <Button variant="outline" size="sm" shape="rounded">Rate this chat</Button>
+        <Button variant="primary" size="sm" shape="rounded">Open new ticket</Button>
+      </div>
+      <div class="docs-block-chat__resolved">
+        <Bubble align="start" variant="ghost">
+          <BubbleContent>Ticket #4821 marked as <strong>resolved</strong> · Mira · 09:21</BubbleContent>
+        </Bubble>
+      </div>
+    </div>
+    <div class="docs-block-chat__composer">
+      <Input name="chat-message" placeholder="Type and press enter…" ariaLabel="Message"/>
+      <Button variant="primary" size="icon" shape="rounded" ariaLabel="Send message">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m22 2-7 20-4-9-9-4Z"/>
+          <path d="M22 2 11 13"/>
+        </svg>
+      </Button>
+    </div>
+  </div>

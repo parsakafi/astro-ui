@@ -1,0 +1,79 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Alert,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-alert-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-alert-basic">
+              <Fragment slot="preview">
+                <Alert variant="info">
+                  <Fragment slot="title">Heads up</Fragment>
+                  Scheduled maintenance Sunday 02:00–04:00 UTC.
+                </Alert>
+                <Alert variant="success">
+                  <Fragment slot="title">Saved</Fragment>
+                  Your changes are live.
+                </Alert>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block" id={`demo-alert-${id}`}>
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-alert-variants">
+              <Fragment slot="preview">
+                <Alert variant="success">
+                  <Fragment slot="title">Saved</Fragment>
+                  Your changes are live.
+                </Alert>
+                <Alert variant="destructive">
+                  <Fragment slot="title">Failed</Fragment>
+                  Announced immediately via role="alert".
+                </Alert>
+                <Alert variant="warning">
+                  <Fragment slot="title">Heads up</Fragment>
+                  This action cannot be undone.
+                </Alert>
+                <Alert variant="info">
+                  <Fragment slot="title">Info</Fragment>
+                  Secondary information.
+                </Alert>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "closable" && (
+          <div class="docs-demo-block" id={`demo-alert-${id}`}>
+            <h3 class="docs-demo-title">Closable</h3>
+            <DemoTabs id="dm-alert-closable">
+              <Fragment slot="preview">
+                <Alert variant="destructive" closable>
+                  <Fragment slot="title">Dismiss me</Fragment>
+                  Click the × to close (wire the click app-side).
+                </Alert>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("closable")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

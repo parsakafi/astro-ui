@@ -1,0 +1,139 @@
+---
+/**
+  * DocsSidebar — left category/component tree for the docs layout.
+  * Server-rendered; the current page highlights via `currentSlug`.
+  * Component metadata comes from the components content collection.
+  */
+import {categories} from "../../lib/components";
+import {docsComponentOrder} from "../../lib/docs-order";
+
+interface Props {
+  /** Component slug of the current page (highlights in the tree). */
+  currentSlug?: string;
+  /** Whether the current page is the catalog root. */
+  isCatalog?: boolean;
+}
+
+const {currentSlug, isCatalog = false} = Astro.props;
+const entries = await docsComponentOrder();
+const metas = entries.map((d) => d.data);
+---
+
+<nav class="docs-sidebar" aria-label="Components">
+  <div class="docs-search">
+    <input
+      type="search"
+      class="docs-search-input"
+      placeholder="Search components…"
+      aria-label="Search components"
+      autocomplete="off"
+      spellcheck="false"
+      data-docs-search
+    />
+    <p class="docs-search-empty" role="status" hidden data-docs-search-empty>
+      No components match.
+    </p>
+  </div>
+  <a class:list={{"docs-side-link": true, "is-active": isCatalog}} href="/components/">
+    Component Catalog
+  </a>
+  {
+    categories.map((category) => (
+      <div class="docs-side-group">
+        <a class="docs-side-cat" href={`/components/#cat-${category.id}`}>
+					<span class="docs-side-cat-icon" aria-hidden="true">
+						{category.icon}
+					</span> {category.name}
+          <span class="docs-side-count">{metas.filter((m) => m.category === category.id).length}</span>
+        </a>
+        <div class="docs-side-items">
+          {metas
+            .filter((m) => m.category === category.id)
+            .map((component) => (
+              <a
+                class:list={{
+                  "docs-side-link": true,
+                  "is-active": currentSlug === component.slug,
+                }}
+                aria-current={currentSlug === component.slug ? "page" : undefined}
+                href={`/components/${component.slug}/`}
+                data-search-name={component.name.toLowerCase()}
+              >
+                {component.name}
+                {component.isNew && <span class="docs-new-badge">New</span>}
+              </a>
+            ))}
+        </div>
+      </div>
+    ))
+  }
+</nav>
+
+<script>
+  const input = document.querySelector<HTMLInputElement>("[data-docs-search]");
+  const nav = input?.closest<HTMLElement>(".docs-sidebar");
+
+  if (input && nav) {
+    const links = Array.from(
+      nav.querySelectorAll<HTMLAnchorElement>("[data-search-name]"),
+    );
+    const groups = Array.from(
+      nav.querySelectorAll<HTMLElement>(".docs-side-group"),
+    );
+    const empty = nav.querySelector<HTMLElement>("[data-docs-search-empty]");
+
+    /** Hides non-matching links (and groups left empty). Returns match count. */
+    const filter = (): number => {
+      const query = input.value.trim().toLowerCase();
+      let visible = 0;
+      for (const link of links) {
+        const match = link.dataset.searchName?.includes(query) ?? false;
+        link.hidden = query !== "" && !match;
+        if (!link.hidden) visible++;
+      }
+      for (const group of groups) {
+        const shown = Array.from(
+          group.querySelectorAll<HTMLAnchorElement>("[data-search-name]"),
+        ).some((link) => !link.hidden);
+        group.hidden = !shown;
+      }
+      if (empty) empty.hidden = !(query && visible === 0);
+      return visible;
+    };
+
+    input.addEventListener("input", () => {
+      filter();
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        input.value = "";
+        filter();
+        return;
+      }
+      if (event.key !== "Enter") return;
+      const query = input.value.trim().toLowerCase();
+      if (!query) return;
+      // Prefer exact name, then prefix, then first visible match.
+      const target =
+        links.find((link) => !link.hidden && link.dataset.searchName === query) ??
+        links.find(
+          (link) => !link.hidden && (link.dataset.searchName?.startsWith(query) ?? false),
+        ) ??
+        links.find((link) => !link.hidden);
+      if (target) {
+        event.preventDefault();
+        location.href = target.href;
+      }
+    });
+
+    // Keep the current page's link centered in the scrollable sidebar.
+    const active = nav.querySelector<HTMLElement>(".docs-side-link.is-active");
+    if (active) {
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = active.getBoundingClientRect();
+      nav.scrollTop +=
+        linkRect.top - navRect.top - nav.clientHeight / 2 + linkRect.height / 2;
+    }
+  }
+</script>

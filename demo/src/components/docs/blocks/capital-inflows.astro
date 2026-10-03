@@ -1,0 +1,50 @@
+---
+import {
+  Button,
+  Badge,
+  Card,
+  Chart,
+  Avatar,
+} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+---
+
+<Card class="docs-block-capital">
+    <div class="docs-block-capital__head">
+      <h3 class="docs-block-capital__title">Capital Inflows</h3>
+      <Button variant="outline" size="sm">Top 3 Funds <span aria-hidden="true">⌄</span></Button>
+    </div>
+    <p class="docs-block-capital__total">
+      $12.7M
+      <Badge variant="success" size="sm">↗ $425k</Badge>
+    </p>
+    <Chart
+      type="hbar"
+      stack
+      legend={false}
+      labels={["WaveMark Capital", "Envato Finances", "QBridge Tech"]}
+      series={[
+        {name: "WaveMark Capital", data: [7652000], color: "var(--ui-success)"},
+        {name: "Envato Finances", data: [3879100], color: "var(--ui-warning)"},
+        {name: "QBridge Tech", data: [1248600], color: "var(--ui-error)"},
+      ]}
+    />
+    <ul class="docs-block-capital__rows">
+      {["WaveMark Capital", "Envato Finances", "QBridge Tech"].map((fund, i) => (
+        <li class="docs-block-capital__row">
+          <Avatar name={fund} size="sm"/>
+          <span class="docs-block-capital__fund">{fund}</span>
+          <span class="docs-block-capital__right">
+            <span class="docs-block-capital__cap">Capital In</span>
+            <span class="docs-block-capital__val">{["$7,652,000", "$3,879,100", "$1,248,600"][i]}</span>
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Card>

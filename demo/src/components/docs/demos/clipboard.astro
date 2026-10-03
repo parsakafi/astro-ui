@@ -1,0 +1,153 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Clipboard,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">Icon trigger</h3>
+            <DemoTabs id="dm-clipboard-basic">
+              <Fragment slot="preview">
+                <div class="demo-stack">
+                  <Clipboard value="npm install astro-ui" auto/>
+                  <Clipboard value="npm install astro-ui" auto icon={false}/>
+                </div>
+                <p class="docs-demo-hint">Click either — the copy icon swaps to a green check for 1.5s.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("basic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "only-icon" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">Icon only</h3>
+            <DemoTabs id="dm-clipboard-only-icon">
+              <Fragment slot="preview">
+                <div class="demo-stack">
+                  <Clipboard value="npx astro add" auto onlyIcon/>
+                  <Clipboard value="npx astro add" auto onlyIcon variant="soft"/>
+                  <Clipboard value="npx astro add" auto onlyIcon variant="ghost"/>
+                </div>
+                <p class="docs-demo-hint">The accessible name derives from the value: <code>aria-label="Copy npx astro
+                  add"</code>.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("only-icon")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "variants" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">Variants</h3>
+            <DemoTabs id="dm-clipboard-variants">
+              <Fragment slot="preview">
+                <div class="demo-stack">
+                  <Clipboard value="outline" auto variant="outline" label="Outline"/>
+                  <Clipboard value="ghost" auto variant="ghost" label="Ghost"/>
+                  <Clipboard value="soft" auto variant="soft" label="Soft"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("variants")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sizes" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">Sizes</h3>
+            <DemoTabs id="dm-clipboard-sizes">
+              <Fragment slot="preview">
+                <div class="demo-stack">
+                  <Clipboard value="small command" auto size="sm"/>
+                  <Clipboard value="regular command" auto size="md"/>
+                  <Clipboard value="small square" auto size="sm" onlyIcon/>
+                  <Clipboard value="regular square" auto size="md" onlyIcon/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "feedback" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">Custom feedback</h3>
+            <DemoTabs id="dm-clipboard-feedback">
+              <Fragment slot="preview">
+                <div class="demo-stack">
+                  <Clipboard value="pnpm add astro-ui" auto feedback="Install command copied"/>
+                  <Clipboard value="pnpm add astro-ui" auto feedback={null}/>
+                </div>
+                <p class="docs-demo-hint"><code>feedback={null}</code> skips the text entirely — the check icon alone
+                  confirms.</p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("feedback")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "disabled" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">Disabled</h3>
+            <DemoTabs id="dm-clipboard-disabled">
+              <Fragment slot="preview">
+                <div class="demo-stack">
+                  <Clipboard value="locked" auto disabled label="Copy"/>
+                  <Clipboard value="locked" auto disabled onlyIcon/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("disabled")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "manual" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">Manual wiring (zero JS shipped by the component)</h3>
+            <DemoTabs id="dm-clipboard-manual">
+              <Fragment slot="preview">
+                <Clipboard value="npx astro add"/>
+                <p class="docs-demo-hint">
+                  This instance ships no script — the docs page wires <code>data-aui-clipboard</code> globally, exactly
+                  as the copy source shows.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("manual")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "code-block" && (
+          <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
+            <h3 class="docs-demo-title">In a code block</h3>
+            <DemoTabs id="dm-clipboard-code-block">
+              <Fragment slot="preview">
+                <div class="docs-clipboard-code-pill">
+                  <code>npm install astro-ui</code>
+                  <Clipboard value="npm install astro-ui" auto onlyIcon variant="ghost" size="sm"/>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("code-block")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

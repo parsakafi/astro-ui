@@ -1,0 +1,53 @@
+---
+/**
+  * /blocks/ — catalog root.
+  *
+  * NOT a dump of every block: category cards each show the live first
+  * block as a preview and link to the per-category page. The blocks
+  * sidebar carries navigation; per-block demos live on
+  * /blocks/[category]/[block]/.
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import BlockDemo from "../../components/docs/BlockDemo.astro";
+import BlockRecipe from "../../components/docs/BlockRecipe.astro";
+import {blockCategories, blockCount, categoryHref} from "../../lib/blocks";
+---
+
+<DocsLayout title="Blocks" description="Composed sections built from astro-ui components." activePath="blocks"
+            blocksSidebar>
+  <article class="docs-article">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">Components, composed</p>
+      <h1>Blocks <span class="docs-side-count">{blockCount}</span></h1>
+      <p>
+        {blockCount} production-ready page sections built entirely from astro-ui
+        components — pick a category, then jump into complete layouts. Copy the
+        markup, keep the pieces, wire the edges to your app.
+      </p>
+    </section>
+
+    {
+      blockCategories.map((category) => (
+        <section id={category.id} class="docs-block-section">
+          <div class="docs-block-cat-card">
+            <div class="docs-block-cat-preview">
+              <BlockDemo id={category.blocks[0].id} idPrefix={`cat-${category.id}`}/>
+            </div>
+            <div class="docs-block-cat-body">
+              <div class="docs-cat-head">
+                <span class="docs-cat-icon" aria-hidden="true">{category.icon}</span>
+                <h2>
+                  <a href={categoryHref(category.id)}>{category.label}</a>
+                </h2>
+              </div>
+              <p>{category.description}</p>
+              <BlockRecipe
+                recipe={category.blocks.map((b) => b.recipe).join(" · ").split(" · ").filter((v, i, a) => a.indexOf(v) === i).join(" · ")}/>
+              <p class="docs-side-count">{category.blocks.length} blocks</p>
+            </div>
+          </div>
+        </section>
+      ))
+    }
+  </article>
+</DocsLayout>

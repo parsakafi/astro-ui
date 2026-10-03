@@ -1,0 +1,86 @@
+---
+/**
+  * /docs/rtl/ — RTL support: logical properties, automatic mirroring,
+  * and the documented physical exceptions.
+  */
+import DocsLayout from "../../layouts/DocsLayout.astro";
+import CodeBlock from "../../components/docs/CodeBlock.astro";
+import Button from "astro-ui/button";
+import Badge from "astro-ui/badge";
+
+const toc = [
+  {id: "how", label: "How it works"},
+  {id: "what-mirrors", label: "What mirrors"},
+  {id: "exceptions", label: "Physical exceptions"},
+  {id: "test", label: "Testing RTL"},
+];
+---
+
+<DocsLayout title="RTL support" description="How astro-ui supports right-to-left layouts." activePath="docs" toc={toc}>
+  <article class="docs-article docs-prose">
+    <section id="overview" class="docs-hero">
+      <p class="docs-hero-kicker">Docs · Guide</p>
+      <h1>RTL support</h1>
+      <p>
+        The library (and this site) use logical CSS properties throughout, so
+        right-to-left layouts mirror with zero overrides.
+      </p>
+    </section>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <p>
+        Instead of physical <code>left</code>/<code>right</code>, components
+        use <code>inset-inline-start/end</code>, <code>padding-inline</code>,
+        <code>margin-block</code>, and friends. The browser resolves those
+        against the writing direction, so setting <code>dir="rtl"</code> on
+        <code>&lt;html&gt;</code> mirrors the whole system:
+      </p>
+      <CodeBlock
+        code={`<html lang="ar" dir="rtl">
+  <!-- every astro-ui component mirrors automatically -->
+</html>`}
+        lang="html"
+      />
+    </section>
+
+    <section id="what-mirrors">
+      <h2>What mirrors automatically</h2>
+      <ul>
+        <li>All spacing: padding, margins, gaps (inline axis)</li>
+        <li>Text alignment and borders</li>
+        <li>Sheet slide-in direction (a <code>side="right"</code> sheet enters from the left in RTL — the inline end)
+        </li>
+        <li>Badge overlay bubbles (logical insets + flipped translate)</li>
+        <li>Slider tooltip position, Toast stack alignment, Stepper order</li>
+        <li>This site's entire layout — flip <code>dir</code> and look</li>
+      </ul>
+    </section>
+
+    <section id="exceptions">
+      <h2>Physical exceptions</h2>
+      <p>
+        A few things are deliberately physical because mirroring them would
+        be wrong:
+      </p>
+      <ul>
+        <li>Media controls and iconography that imply direction (play arrows)</li>
+        <li>Swipe-to-dismiss transforms on toasts — gestures are screen-space</li>
+        <li>Phone-number or code inputs that stay LTR inside RTL pages (set <code>dir="ltr"</code> on the input)</li>
+      </ul>
+    </section>
+
+    <section id="test">
+      <h2>Testing RTL</h2>
+      <p>
+        The fastest test: open this site and set <code>dir="rtl"</code> in
+        DevTools on the <code>&lt;html&gt;</code> element. Every page,
+        sidebar, TOC, and demo mirrors — including these buttons:
+      </p>
+      <div class="docs-demo-preview" dir="rtl">
+        <Button>مقدار</Button>
+        <Badge variant="info">۲۰٪</Badge>
+      </div>
+    </section>
+  </article>
+</DocsLayout>

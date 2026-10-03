@@ -1,0 +1,40 @@
+---
+import {
+  Avatar,
+  AvatarGroup,
+} from "astro-ui";
+import {Tooltip} from "astro-ui";
+
+interface Props {
+  /** Prefix for form control ids so multiple instances can coexist. */
+  idPrefix?: string;
+}
+
+const {idPrefix = "bd"} = Astro.props;
+
+const avatars = [
+  {name: "Ada Lovelace"},
+  {name: "Grace Hopper"},
+  {name: "Alan Turing"},
+  {name: "Edsger Dijkstra"},
+  {name: "Barbara Liskov"},
+];
+---
+
+<div class="docs-block-avatar-hover-tooltip">
+    <AvatarGroup hover>
+      {
+        avatars.slice(0, 5).map((a, i) => (
+          <Tooltip ariaLabel={a.name} placement="bottom" variant="light">
+            <Fragment slot="content">{a.name}</Fragment>
+            <Avatar
+              name={a.name}
+              ring={i === 2 ? "success" : i === 4 ? "primary" : undefined}
+              status={i === 0 ? "online" : undefined}
+            />
+          </Tooltip>
+        ))
+      }
+      <Fragment slot="count">+3</Fragment>
+    </AvatarGroup>
+  </div>
