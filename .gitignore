@@ -3,6 +3,8 @@ dist/
 # generated types
 .astro/
 astro-dev.log
+# task cache
+.turbo/
 
 # dependencies
 node_modules/

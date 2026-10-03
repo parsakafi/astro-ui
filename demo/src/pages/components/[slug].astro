@@ -20,12 +20,12 @@ import {categories} from "../../lib/components";
 import {docsComponentOrder} from "../../lib/docs-order";
 import {parseChangelog, forComponent, renderBullet} from "../../lib/changelog";
 import {readFileSync} from "node:fs";
-import {resolve} from "node:path";
+import {astroUiPath} from "../../lib/ui-path";
 
 // CHANGELOG lives in the sibling package; builds run from demo/, so
-// resolve through the node_modules symlink from the current working dir.
+// resolve it whether demo runs as a workspace or standalone.
 const changelogRaw = readFileSync(
-  resolve(process.cwd(), "node_modules/astro-ui/CHANGELOG.md"),
+  astroUiPath("CHANGELOG.md"),
   "utf8",
 );
 

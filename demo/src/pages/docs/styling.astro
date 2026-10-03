@@ -6,7 +6,7 @@ import DocsLayout from "../../layouts/DocsLayout.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 import {Button, Badge, Alert, Progress, Chart} from "astro-ui";
 import {readFileSync} from "node:fs";
-import {resolve} from "node:path";
+import {astroUiPath} from "../../lib/ui-path";
 import {tokenGroups} from "../../lib/token-groups";
 
 const toc = [
@@ -20,7 +20,7 @@ const toc = [
 // Playground controls, parsed from the token source so they never
 // drift: light `:root` values with a color flag per token.
 const tokensRaw = readFileSync(
-  resolve(process.cwd(), "node_modules/astro-ui/src/styles/tokens.css"),
+  astroUiPath("src/styles/tokens.css"),
   "utf8",
 );
 const lightBlock = tokensRaw.slice(tokensRaw.indexOf(":root"), tokensRaw.indexOf("}"));

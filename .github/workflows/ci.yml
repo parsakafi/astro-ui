@@ -17,22 +17,14 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           cache: npm
-          cache-dependency-path: astro-ui/package-lock.json
-      - name: Install library deps
+          cache-dependency-path: package-lock.json
+      - name: Install workspace deps
         run: npm ci
-        working-directory: astro-ui
-      - name: Lint (Biome)
+      - name: Lint (Biome + ESLint, library)
         run: npm run lint
-        working-directory: astro-ui
-      - name: Typecheck (astro check)
+      - name: Typecheck (astro check, all workspaces)
         run: npm run check
-        working-directory: astro-ui
-      - name: Unit + contract tests
+      - name: Unit + contract + demo tests
         run: npm test
-        working-directory: astro-ui
-      - name: Install playground deps
-        run: npm ci
-        working-directory: demo
-      - name: Build playground (SSR proof)
+      - name: Build docs site (SSR proof)
         run: npm run build
-        working-directory: demo

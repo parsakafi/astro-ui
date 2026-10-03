@@ -1,95 +1,82 @@
 ---
 /**
- * /docs/repository/ — the two GitHub repos behind this site: the
- * component library and the docs website, plus how they link.
+ * /docs/repository/ — the monorepo behind this site: the astro-ui
+ * package at the root plus the docs website in demo/, linked as npm
+ * workspaces and orchestrated with Turborepo.
  */
 import DocsLayout from "../../layouts/DocsLayout.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
 
 const toc = [
-  {id: "library", label: "Library repo"},
-  {id: "website", label: "Website repo"},
-  {id: "link", label: "How they connect"},
+  {id: "layout", label: "Layout"},
+  {id: "link", label: "Library ↔ demo link"},
+  {id: "workflows", label: "Workflows"},
 ];
 ---
 
-<DocsLayout title="Repository" description="The two repos: astro-ui-component-library and astro-ui-website, and how they link." activePath="docs" toc={toc}>
+<DocsLayout title="Repository" description="Monorepo layout: the astro-ui package, the demo workspace, workspaces plus turbo." activePath="docs" toc={toc}>
   <article class="docs-article docs-prose">
     <section id="overview" class="docs-hero">
       <p class="docs-hero-kicker">Docs · Guide</p>
       <h1>Repository</h1>
       <p>
-        Two GitHub repos, each independent:
-        <code>astro-ui-component-library</code> is the published
-        component package, <code>astro-ui-website</code> is this docs
-        site and component testbed.
+        One repo, two packages: the <code>astro-ui</code> component
+        library lives at the root, this docs site lives in
+        <code>demo/</code> — linked as npm workspaces, built and
+        tested together with Turborepo.
       </p>
     </section>
 
-    <section id="library">
-      <h2>Library repo</h2>
-      <p>
-        <a href="https://github.com/parsakafi/astro-ui-component-library" target="_blank" rel="noreferrer">parsakafi/astro-ui-component-library</a> —
-        the shippable package: sources, tokens, tests, and
-        contributor docs.
-      </p>
+    <section id="layout">
+      <h2>Layout</h2>
       <CodeBlock
-        code={`astro-ui-component-library/
+        code={`astro-ui/                   # repo root = the published package
   src/components/         # .astro sources, grouped by category
   src/styles/             # tokens.css (theming API) + base
   src/utils/              # cn(), toast()
   index.ts                # root entry (+ subpath export per component)
   tests/                  # contract + unit suites
-  docs/                   # conventions, principles, ADRs`}
+  docs/                   # contributor docs (conventions, principles, ADRs)
+  demo/                   # docs website workspace (Astro app)
+    src/pages/            # guides, component catalog, blocks
+    src/lib/registry/     # per-component docs metadata + snippets
+    src/components/docs/  # live demo renderers
+    src/content/          # generated docs (scripts/gen-docs.ts)
+    tests/                # consistency + snippet suites
+    scripts/              # gen-docs, render audits, id checks
+  package.json            # workspaces: ["demo"], turbo pipelines
+  turbo.json              # build/test/lint/check tasks
+  .github/workflows/      # CI installs once, then runs every pipeline`}
         lang="text"
-      />
-      <CodeBlock
-        code={`git clone https://github.com/parsakafi/astro-ui-component-library.git\ncd astro-ui-component-library/astro-ui\nnpm install && npm test   # contracts + unit suites\nnpm run check           # astro types\nnpm run lint            # biome + eslint`}
-        lang="bash"
-      />
-    </section>
-
-    <section id="website">
-      <h2>Website repo</h2>
-      <p>
-        <a href="https://github.com/parsakafi/astro-ui-website" target="_blank" rel="noreferrer">parsakafi/astro-ui-website</a> —
-        this Astro site: guides, catalog pages, live demo renderers,
-        and the suites that keep demos, snippets, and generated docs
-        in sync.
-      </p>
-      <CodeBlock
-        code={`astro-ui-website/
-  src/pages/              # guides, component catalog, blocks
-  src/lib/registry/       # per-component docs metadata + snippets
-  src/lib/                # catalog, search index, demo datasets
-  src/components/docs/    # live demo renderers (demos/, tabs, tables)
-  src/content/components/ # generated docs (see scripts/gen-docs.ts)
-  src/layouts/            # DocsLayout + site chrome
-  src/styles/             # docs.scss → docs.css (run npm run css)
-  tests/                  # consistency, snippet-render, playground suites
-  scripts/                # gen-docs, render audits, id checks`}
-        lang="text"
-      />
-      <CodeBlock
-        code={`git clone https://github.com/parsakafi/astro-ui-website.git\ncd astro-ui-website/demo\nnpm install\nnpm run dev    # docs site with live components\nnpm test       # consistency + snippet suites\nnpm run build  # css + astro check + production build`}
-        lang="bash"
       />
     </section>
 
     <section id="link">
-      <h2>How they connect</h2>
+      <h2>Library ↔ demo link</h2>
       <p>
-        The website consumes the library through a relative
-        <code>file:</code> dependency, so it always renders the working
-        copy — check both repos out side by side, no publish step
-        while developing components:
+        The root <code>package.json</code> declares
+        <code>"workspaces": ["demo"]</code>, so one install links
+        everything and the demo always renders the working copy — no
+        publish step while developing components. Pages that need
+        library files (changelog, token source) resolve them through
+        the shared <code>src/lib/ui-path.ts</code> helper, which finds
+        the package via its workspace link or a standalone
+        <code>node_modules</code> install alike.
       </p>
-      <CodeBlock code={`"dependencies": {\n  "astro-ui": "../astro-ui"\n}`} lang="json"/>
+      <CodeBlock code={`npm install          # once, at the root\nnpm test             # library suites, then demo suites\nnpm run build        # docs site production build (turbo-cached)`} lang="bash"/>
+    </section>
+
+    <section id="workflows">
+      <h2>Workflows</h2>
+      <CodeBlock
+        code={`npm run dev      # docs site with live components (turbo persistent)\nnpm test         # vitest (library) + turbo demo suites\nnpm run check    # astro check (library) + turbo demo check\nnpm run lint     # biome + eslint (library; demo has no lint config)\nnpm run build    # turbo demo build (css + check + astro build)`}
+        lang="bash"
+      />
       <p class="docs-muted-note">
-        One direction only: the library never depends on the website.
-        Docs-only changes (guides, demos, snippets) commit to the
-        website repo; component, token, or test changes commit to the
-        library repo.
+        Turborepo caches task outputs, so repeated
+        <code>build</code>/<code>test</code> runs only redo what
+        changed. CI (see <code>.github/workflows/ci.yml</code>) runs
+        install once, then lint, check, tests, and the docs build.
       </p>
     </section>
   </article>

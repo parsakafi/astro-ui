@@ -11,13 +11,14 @@
     "preview": "astro preview",
     "astro": "astro",
     "audit:render": "npx tsx scripts/audit-render.ts",
+    "check": "astro check",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
     "astro": "^7.3.3",
-    "astro-ui": "../astro-ui",
+    "astro-ui": "file:..",
     "typescript": "^6.0.3"
   },
   "devDependencies": {

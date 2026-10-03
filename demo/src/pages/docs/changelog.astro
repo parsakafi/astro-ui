@@ -7,12 +7,9 @@
 import DocsLayout from "../../layouts/DocsLayout.astro";
 import {parseChangelog, renderBullet} from "../../lib/changelog";
 import {readFileSync} from "node:fs";
-import {resolve} from "node:path";
+import {astroUiPath} from "../../lib/ui-path";
 
-const changelogRaw = readFileSync(
-  resolve(process.cwd(), "node_modules/astro-ui/CHANGELOG.md"),
-  "utf8",
-);
+const changelogRaw = readFileSync(astroUiPath("CHANGELOG.md"), "utf8");
 const entries = parseChangelog(changelogRaw);
 
 const sectionIcons: Record<string, string> = {

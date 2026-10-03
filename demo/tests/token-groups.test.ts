@@ -6,8 +6,9 @@
 import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
 import {tokenGroups} from "../src/lib/token-groups";
+import {astroUiPath} from "../src/lib/ui-path";
 
-const tokensCss = readFileSync("node_modules/astro-ui/src/styles/tokens.css", "utf8");
+const tokensCss = readFileSync(astroUiPath("src/styles/tokens.css"), "utf8");
 // First :root block only — later blocks are the dark overrides.
 const light = tokensCss.slice(tokensCss.indexOf(":root"), tokensCss.indexOf("}"));
 const rootVars = [...light.matchAll(/(--ui-[\w-]+)\s*:/g)].map((m) => m[1]);
