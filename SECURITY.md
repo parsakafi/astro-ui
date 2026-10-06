@@ -31,4 +31,4 @@ AstroUI components render server-side markup and CSS. Current posture:
 - Attribute forwarding is allow-list-shaped per component; event-handler
   strings are never accepted as props.
 - `base.css` sets no cookies, performs no requests, and stores nothing;
-  theme persistence in `demo/` is demo-only code.
+  theme persistence in `web/` is demo-only code.

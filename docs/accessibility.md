@@ -36,7 +36,7 @@ a11y review in its Definition of Done.
 
 - Automated: contract tests assert roles/attributes conventions;
   `astro check` types ARIA props. JS-required components additionally
-  carry a Playwright spec (`demo/tests/e2e/`, role-based locators).
+  carry a Playwright spec (`web/tests/e2e/`, role-based locators).
 - Manual checklist per component doc: Tab / Shift+Tab reachability,
   Enter/Space activation, screen-reader announcement, 200% zoom,
   forced-colors + dark theme, reduced motion.

@@ -3,7 +3,7 @@
 Astro-first, zero-JS-by-default, accessible UI components with semantic
 design tokens. Dark mode, Tailwind interop, SSR-safe, tree-shakable, typed.
 
-- Website: https://astroui.ir · Docs: `docs/` · Playground: `../demo`
+- Website: https://astroui.ir · Docs: `docs/` · Playground: `../web`
 - Status: `1.0.0` stable
 
 ## Install
@@ -65,6 +65,6 @@ npm run lint    # biome
 npm test        # 134 unit + contract tests
 ```
 
-Playground: `../demo` (`npm run dev`). Full guide: `CONTRIBUTING.md`.
+Playground: `../web` (`npm run dev`). Full guide: `CONTRIBUTING.md`.
 Architecture: `docs/ADR-001-architecture.md`. Security: `SECURITY.md`.
 Changelog: `CHANGELOG.md`. License: MIT.

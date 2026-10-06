@@ -14,7 +14,7 @@ import { Button, Card } from "astro-ui";
 
 ## Setup (consumer app)
 
-1. Install + configure Tailwind normally in your Astro app (the `demo/` playground shows `@astrojs/tailwind` v3 wiring).
+1. Install + configure Tailwind normally in your Astro app (the `web/` playground shows `@astrojs/tailwind` v3 wiring).
 2. Import library tokens once in your layout:
    `import "astro-ui/tokens.css";`
 3. Include the package in Tailwind's `content` globs only if you use

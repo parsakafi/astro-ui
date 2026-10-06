@@ -5,8 +5,9 @@
  * Sticks to the viewport (or nearest scrolling ancestor) at `threshold`
  * with pure CSS. While stuck, `effects` add a border line, an elevation
  * shadow, and/or a frosted-glass wash; `observeStuck` exposes the same
- * moment as an `is-stuck` class for your own CSS. State is detected
- * with an IntersectionObserver sentinel rendered alongside the region.
+ * moment as an `is-stuck` class for your own CSS. State is detected by
+ * comparing the region's flow slot against the threshold on scroll
+ * (plus an observer and resize listener for layout shifts).
  *
  *   <StickySurface effects={["line", "elevate"]} threshold="0px">
  *     <strong>Toolbar</strong>
@@ -23,7 +24,7 @@ export interface Props {
   /** Sticky offset from the viewport/scrollport edge — and the line
    *  where stuck styles kick in. Any CSS length. */
   threshold?: string;
-  /** Scroll effects applied while stuck: a bottom border line, an
+  /** Scroll effects applied while stuck: a bottom borderline, an
    *  elevation shadow, a frosted-glass wash. */
   effects?: Array<"line" | "elevate" | "backdrop">;
   /** Adds `is-stuck` while stuck without visual effects — a hook for
@@ -49,35 +50,91 @@ const classes = cn(
   effects.includes("backdrop") && "aui-sticky-surface--backdrop",
   className,
 );
+
+/* Observation (the is-stuck toggle) wires only when something reads
+   it — visual effects or the explicit hook. A plain region just
+   sticks via CSS with zero JS attached. */
+const observed = effects.length > 0 || observeStuck;
 ---
 
-<span class="aui-sticky-surface__anchor" data-aui-sticky-anchor aria-hidden="true" />
-<Tag id={id} class={classes} data-aui-sticky style={`top: ${threshold}`}>
+<Tag id={id} class={classes} data-aui-sticky={observed || undefined} style={`top: ${threshold}`}>
   <slot />
 </Tag>
 
 <script>
-  /* Stuck detection: the anchor sits in normal flow exactly where the
-     region starts. While it sits below the sticky top edge the region
-     is at rest; once it crosses above, the region is stuck. A 1px
-     anchor with -1px bottom margin keeps the layout untouched while
-     giving the observer a real target. */
+  /* Stuck detection: a sticky element is stuck exactly while its flow
+     slot (the edge of the content above it) has reached the threshold
+     line of its scrollport — the element's own box cannot tell stuck
+     from at rest when it starts on that line. Scroll events on the
+     nearest scrollport are the primary trigger — they fire reliably in
+     every scroll container — with an IntersectionObserver plus a resize
+     listener covering resizes and layout shifts. No sentinel element
+     needed. */
   function stickyTop(el: HTMLElement): number {
     const top = Number.parseFloat(window.getComputedStyle(el).top);
     return Number.isFinite(top) ? top : 0;
   }
 
+  function scrollport(el: HTMLElement): HTMLElement | null {
+    let p = el.parentElement;
+    while (p instanceof HTMLElement) {
+      const overflowY = window.getComputedStyle(p).overflowY;
+      if (overflowY === "auto" || overflowY === "scroll") return p;
+      p = p.parentElement;
+    }
+    return null;
+  }
+
   function initSticky(el: HTMLElement): void {
     if (el.dataset.auiStickyInit === "true") return;
     el.dataset.auiStickyInit = "true";
-    const anchor = el.previousElementSibling;
-    if (!(anchor instanceof HTMLElement) || !anchor.hasAttribute("data-aui-sticky-anchor")) return;
+    const port = scrollport(el);
     const gauge = () => {
-      el.classList.toggle("is-stuck", anchor.getBoundingClientRect().top < stickyTop(el));
+      /* Detect stuck via the element's flow slot, not its own box. Two
+         traps make the element's rect unusable: it is viewport-relative,
+         so a header pinned inside an inner scroll box never approaches
+         the threshold in viewport terms; and a sticky element at the top
+         of its scroll container is held on the threshold line even at
+         rest (the sticky constraint works both ways), so its own box
+         cannot distinguish stuck from at rest. The flow slot — the bottom
+         edge of the sibling above, or the parent's content edge for a
+         first child — moves with scrolled content, so comparing it to the
+         threshold line (both relative to the scrollport) gives the exact
+         stuck moment. The scrolled guard keeps a surface born on the line
+         (a top-of-container header) from reporting stuck before any
+         scrolling happened. */
+      const prev = el.previousElementSibling;
+      const flowTopViewport = prev
+        ? prev.getBoundingClientRect().bottom
+        : (() => {
+            const parent = el.parentElement;
+            if (!parent) return el.getBoundingClientRect().top;
+            return (
+              parent.getBoundingClientRect().top +
+              parent.clientTop +
+              (Number.parseFloat(window.getComputedStyle(parent).paddingTop) || 0)
+            );
+          })();
+      const gapAbove = Math.max(
+        prev ? Number.parseFloat(window.getComputedStyle(prev).marginBottom) || 0 : 0,
+        Number.parseFloat(window.getComputedStyle(el).marginTop) || 0,
+      );
+      const portLine = port
+        ? port.getBoundingClientRect().top + port.clientTop
+        : 0;
+      const scrolled = port ? port.scrollTop > 0 : window.scrollY > 0;
+      el.classList.toggle(
+        "is-stuck",
+        scrolled && flowTopViewport + gapAbove - portLine <= stickyTop(el) + 0.5,
+      );
     };
     gauge();
-    const observer = new IntersectionObserver(gauge, {threshold: [0, 1]});
-    observer.observe(anchor);
+    if (port) port.addEventListener("scroll", gauge, {passive: true});
+    else window.addEventListener("scroll", gauge, {passive: true});
+    window.addEventListener("resize", gauge);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(gauge, {threshold: [0, 1]}).observe(el);
+    }
   }
 
   function initAll(): void {
@@ -102,13 +159,6 @@ const classes = cn(
       background-color var(--ui-transition-normal);
   }
 
-  /* Zero-net-height sentinel: 1px of observer target, -1px back. */
-  .aui-sticky-surface__anchor {
-    display: block;
-    height: 1px;
-    margin-bottom: -1px;
-  }
-
   .aui-sticky-surface--line.is-stuck {
     border-bottom-color: var(--ui-border);
   }
@@ -119,7 +169,10 @@ const classes = cn(
 
   .aui-sticky-surface--backdrop.is-stuck {
     background-color: color-mix(in srgb, var(--ui-background) 82%, transparent);
+    /* Unprefixed only, on purpose: the minifier treats the prefixed
+       twin as the same property and drops this one, which silently
+       kills the blur in browsers without the -webkit- alias
+       (Firefox, modern Safari). Older engines still get the wash. */
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 </style>

@@ -30,7 +30,7 @@ Persisted toggle recipe (app-level JS — the library ships none):
 </script>
 ```
 
-See the `demo/` playground header for a working toggle (with
+See the `web/` playground header for a working toggle (with
 `localStorage` access isolated to a client-side script, never during SSR).
 
 ## Custom themes / multi-brand

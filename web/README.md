@@ -1,4 +1,4 @@
-# AstroUI Playground (`demo/`)
+# AstroUI Playground (`web/`)
 
 Manual-verification Astro app that consumes the real `astro-ui` package (`"astro-ui": "../astro-ui"` — never source
 imports).

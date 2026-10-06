@@ -115,7 +115,7 @@ guard included so resets can never reveal them).
 - Name the group with `ariaLabel` (e.g. `"Settings"`), not just the
   individual tabs. Panels are focusable (`tabindex="0"`) so keyboard
   users can scroll long content.
-- Playwright keyboard spec lives in `demo/tests/e2e/tabs.spec.ts`
+- Playwright keyboard spec lives in `web/tests/e2e/tabs.spec.ts`
   (role-based locators: click selection, arrow navigation, Home/End,
   disabled-tab skipping).
 

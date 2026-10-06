@@ -79,7 +79,7 @@ implementations, not dependencies.
   by `astro check` + contract tests).
 - Vitest: unit tests (utils, tokens) + static contract tests (every
   component file must satisfy API/SSR/token/zero-JS rules).
-- SSR proof: the `demo/` Astro app consumes the real package and builds
+- SSR proof: the `web/` Astro app consumes the real package and builds
   in CI. Browser/axe/Playwright tests are scaffolded for Phase 4+
   interactive components.
 

@@ -71,6 +71,8 @@ export {default as Textarea} from "./src/components/forms/Textarea.astro";
 export {default as Toaster} from "./src/components/feedback/Toaster.astro";
 export {default as Toggle} from "./src/components/forms/Toggle.astro";
 export {default as ToggleGroup} from "./src/components/forms/ToggleGroup.astro";
+export {default as Lightbox} from "./src/components/overlay/Lightbox.astro";
+export {default as LightboxItem} from "./src/components/overlay/LightboxItem.astro";
 export {default as Tooltip} from "./src/components/overlay/Tooltip.astro";
 
 export {cn} from "./src/utils/cn";

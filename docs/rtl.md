@@ -65,7 +65,7 @@ directional rules.
 
 Remaining before the RTL release:
 
-1. Add an RTL demo page and visual tests in `../demo` (e.g. a `/rtl`
+1. Add an RTL demo page and visual tests in `../web` (e.g. a `/rtl`
    route wrapping the playground in `dir="rtl"`).
 2. Verify native `<select>` dropdown alignment under `dir="rtl"` in real
    browsers (Chrome/Firefox/Safari), since the listbox popup is OS chrome.

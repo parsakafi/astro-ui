@@ -11,7 +11,7 @@
   "type": "module",
   "packageManager": "npm@10.9.8",
   "workspaces": [
-    "demo"
+    "web"
   ],
   "exports": {
     ".": "./index.ts",
@@ -41,6 +41,8 @@
     "./stepper": "./src/components/navigation/Stepper.astro",
     "./sticky-surface": "./src/components/layout/StickySurface.astro",
     "./tag": "./src/components/data-display/Tag.astro",
+    "./lightbox": "./src/components/overlay/Lightbox.astro",
+    "./lightbox-item": "./src/components/overlay/LightboxItem.astro",
     "./tooltip": "./src/components/overlay/Tooltip.astro",
     "./button": "./src/components/general/Button.astro",
     "./carousel": "./src/components/general/Carousel.astro",
@@ -103,10 +105,10 @@
     "zero-js"
   ],
   "scripts": {
-    "dev": "turbo run dev --filter=astroui-test",
-    "build": "turbo run build --filter=astroui-test",
-    "check": "astro check && turbo run check --filter=astroui-test",
-    "test": "vitest run && turbo run test --filter=astroui-test",
+    "dev": "turbo run dev --filter=astroui-web",
+    "build": "turbo run build --filter=astroui-web",
+    "check": "astro check && turbo run check --filter=astroui-web",
+    "test": "vitest run && turbo run test --filter=astroui-web",
     "test:watch": "vitest",
     "lint": "biome check src tests index.ts && eslint . --max-warnings 0",
     "format": "biome check --write src tests index.ts",

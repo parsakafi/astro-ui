@@ -23,14 +23,18 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                     </div>
                   </StickySurface>
                   <div style="padding: var(--ui-space-4); display: grid; gap: var(--ui-space-3);">
-                    <p>First paragraph of scrollable content.</p>
-                    <p>Second paragraph of scrollable content.</p>
-                    <p>Third paragraph of scrollable content.</p>
-                    <p>Fourth paragraph of scrollable content.</p>
-                    <p>Fifth paragraph of scrollable content.</p>
-                    <p>Sixth paragraph of scrollable content.</p>
-                    <p>Seventh paragraph of scrollable content.</p>
-                    <p>Eighth paragraph of scrollable content.</p>
+                    <h4 style="margin: 0;">Release notes 1.1</h4>
+                    <p style="margin: 0;">This release adds six chart types, a vivid categorical palette, and round-number axis ticks across every cartesian chart.</p>
+                    <figure class="demo-placeholder" style="aspect-ratio: 16 / 9;">
+                      <span>Release banner · 16 × 9</span>
+                    </figure>
+                    <p style="margin: 0;">The categorical palette moves off semantic colors: rose, sky, green, amber, violet, and teal keep adjacent series distinct in both themes.</p>
+                    <h4 style="margin: 0;">Breaking changes</h4>
+                    <p style="margin: 0;">None. Explicit maxY overrides stay exact, and 100% stacking keeps its 0–100 scale; only default ceilings gained headroom.</p>
+                    <figure class="demo-placeholder" style="aspect-ratio: 4 / 3;">
+                      <span>Migration sketch · 4 × 3</span>
+                    </figure>
+                    <p style="margin: 0;">See the changelog for the full list, then the token playground to retheme the new palette.</p>
                   </div>
                 </div>
               </Fragment>
@@ -52,14 +56,18 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                     </div>
                   </StickySurface>
                   <div style="padding: var(--ui-space-4); display: grid; gap: var(--ui-space-3);">
-                    <p>First paragraph under the glass header.</p>
-                    <p>Second paragraph under the glass header.</p>
-                    <p>Third paragraph under the glass header.</p>
-                    <p>Fourth paragraph under the glass header.</p>
-                    <p>Fifth paragraph under the glass header.</p>
-                    <p>Sixth paragraph under the glass header.</p>
-                    <p>Seventh paragraph under the glass header.</p>
-                    <p>Eighth paragraph under the glass header.</p>
+                    <h4 style="margin: 0;">Field guide</h4>
+                    <p style="margin: 0;">Watch this header as you scroll: the frosted wash fades in over the content behind it, keeping the title legible without a solid bar.</p>
+                    <figure class="demo-placeholder" style="aspect-ratio: 16 / 9;">
+                      <span>Hero visual · 16 × 9</span>
+                    </figure>
+                    <p style="margin: 0;">Glass works best over varied content — text, media, and color all blur into a calm backdrop instead of fighting the header.</p>
+                    <h4 style="margin: 0;">When to use it</h4>
+                    <p style="margin: 0;">Overlapping media heroes, dashboards with dense grids, and any surface where a solid bar would feel heavy.</p>
+                    <figure class="demo-placeholder" style="aspect-ratio: 1 / 1;">
+                      <span>Detail crop · 1 × 1</span>
+                    </figure>
+                    <p style="margin: 0;">Pair with the line effect when the wash alone does not separate the header strongly enough.</p>
                   </div>
                 </div>
               </Fragment>
@@ -82,13 +90,15 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   </StickySurface>
                   <div style="padding: var(--ui-space-4); display: grid; gap: var(--ui-space-3);">
                     <p id="dm-sticky-hook-status">Not stuck — scroll the box.</p>
-                    <p>Second paragraph of scrollable content.</p>
-                    <p>Third paragraph of scrollable content.</p>
-                    <p>Fourth paragraph of scrollable content.</p>
-                    <p>Fifth paragraph of scrollable content.</p>
-                    <p>Sixth paragraph of scrollable content.</p>
-                    <p>Seventh paragraph of scrollable content.</p>
-                    <p>Eighth paragraph of scrollable content.</p>
+                    <figure class="demo-placeholder" style="aspect-ratio: 16 / 9;">
+                      <span>Hook diagram · 16 × 9</span>
+                    </figure>
+                    <p style="margin: 0;">The status line above mirrors the <code>is-stuck</code> class through a MutationObserver — the same hook your own CSS or scripts can use.</p>
+                    <p style="margin: 0;">Try conditional styles, collapsing chrome, or analytics events keyed off stuck transitions.</p>
+                    <figure class="demo-placeholder" style="aspect-ratio: 4 / 3;">
+                      <span>Usage sketch · 4 × 3</span>
+                    </figure>
+                    <p style="margin: 0;">No visual effects ship with this surface; everything you see in the status line comes from the hook alone.</p>
                   </div>
                 </div>
                 <script>

@@ -12,7 +12,7 @@ npm install
 npm run check     # astro typecheck (covers .astro files)
 npm run lint      # biome lint+format check (.ts; .astro via check/tests)
 npm test          # vitest unit + contract tests
-cd ../demo
+cd ../web
 npm install
 npm run dev       # playground at http://localhost:4321
 ```

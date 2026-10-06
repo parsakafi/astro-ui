@@ -129,6 +129,22 @@
   gap: var(--ui-space-3);
 }
 
+/* Image placeholder for demo articles: muted panel with a dashed
+   frame and a centered ratio label. Set the shape inline per use,
+   e.g. style="aspect-ratio: 16 / 9;". */
+.demo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  min-block-size: 6rem;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  background-color: var(--ui-muted);
+  border: 1px dashed var(--ui-border);
+  border-radius: var(--ui-radius-md);
+}
+
 .demo-label {
   display: inline-flex;
   align-items: center;
