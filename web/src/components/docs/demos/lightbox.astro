@@ -1,0 +1,186 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Button,
+  Lightbox,
+  LightboxItem,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<style>
+  .dm-lightbox-thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+  }
+
+  .dm-lightbox-thumb {
+    padding: 0;
+    overflow: hidden;
+    background: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    cursor: zoom-in;
+    transition:
+      border-color var(--ui-transition-fast),
+      box-shadow var(--ui-transition-fast);
+  }
+
+  .dm-lightbox-thumb:hover {
+    border-color: var(--ui-ring);
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  .dm-lightbox-thumb:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .dm-lightbox-thumb img {
+    display: block;
+    width: 132px;
+    height: 84px;
+    object-fit: cover;
+  }
+</style>
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "gallery" && (
+          <div class="docs-demo-block" id={`demo-lightbox-${id}`}>
+            <h3 class="docs-demo-title">Image gallery</h3>
+            <DemoTabs id="dm-lightbox-gallery">
+              <Fragment slot="preview">
+                <Button id="dm-lightbox-open">View gallery</Button>
+                <Lightbox id="dm-lightbox-main" showCounter indicators counterLabel="Photo">
+                  <LightboxItem
+                    src="/demo/lightbox/aurora.svg"
+                    alt="Aurora over mountains"
+                    caption="Aurora borealis"
+                    captionDescription="Long exposure, Tromsø."
+                  />
+                  <LightboxItem src="/demo/lightbox/dunes.svg" alt="Desert dunes" caption="Dunes at dusk" />
+                  <LightboxItem src="/demo/lightbox/metro.svg" alt="Metro platform" caption="Night transit" />
+                  <h2 slot="title">Travel gallery</h2>
+                  <p slot="description">Use the arrows or the ← → keys to browse.</p>
+                </Lightbox>
+                <script is:inline>
+                  document.getElementById("dm-lightbox-open")?.addEventListener("click", () => {
+                    const dlg = document.getElementById("aui-lightbox-dm-lightbox-main");
+                    if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("gallery")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "programmatic" && (
+          <div class="docs-demo-block" id={`demo-lightbox-${id}`}>
+            <h3 class="docs-demo-title">Programmatic control</h3>
+            <DemoTabs id="dm-lightbox-programmatic">
+              <Fragment slot="preview">
+                <div style="display: flex; gap: var(--ui-space-2); flex-wrap: wrap;">
+                  <Button id="dm-lightbox-tour-open">Open at slide 2</Button>
+                  <Button variant="outline" id="dm-lightbox-tour-prev" disabled>◂ Prev</Button>
+                  <Button variant="outline" id="dm-lightbox-tour-next" disabled>Next ▸</Button>
+                </div>
+                <p style="margin: var(--ui-space-2) 0 0; color: var(--ui-muted-foreground); font-size: var(--ui-text-sm);">
+                  The remote buttons dispatch <code>lightbox:set</code> events; they enable once the dialog is open.
+                </p>
+                <Lightbox id="dm-lightbox-tour" ariaLabel="Product tour">
+                  <LightboxItem src="/demo/lightbox/aurora.svg" alt="Slide one" caption="Step 1" />
+                  <LightboxItem src="/demo/lightbox/dunes.svg" alt="Slide two" caption="Step 2" />
+                  <LightboxItem src="/demo/lightbox/metro.svg" alt="Slide three" caption="Step 3" />
+                </Lightbox>
+                <script is:inline>
+                  (() => {
+                    const dlg = document.getElementById("aui-lightbox-dm-lightbox-tour");
+                    const prev = document.getElementById("dm-lightbox-tour-prev");
+                    const next = document.getElementById("dm-lightbox-tour-next");
+                    if (!(dlg instanceof HTMLDialogElement)) return;
+                    const step = (action) =>
+                      dlg.dispatchEvent(new CustomEvent("lightbox:set", {detail: {action}}));
+                    document.getElementById("dm-lightbox-tour-open")?.addEventListener("click", () => {
+                      dlg.showModal();
+                      if (prev) prev.disabled = false;
+                      if (next) next.disabled = false;
+                      dlg.dispatchEvent(new CustomEvent("lightbox:set", {detail: {index: 1}}));
+                    });
+                    prev?.addEventListener("click", () => step("prev"));
+                    next?.addEventListener("click", () => step("next"));
+                    // `close` fires everywhere; `toggle` is newer-spec and
+                    // still missing in some engines.
+                    dlg.addEventListener("close", () => {
+                      if (prev) prev.disabled = true;
+                      if (next) next.disabled = true;
+                    });
+                  })();
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("programmatic")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "thumbnail" && (
+          <div class="docs-demo-block" id={`demo-lightbox-${id}`}>
+            <h3 class="docs-demo-title">Thumbnail trigger</h3>
+            <DemoTabs id="dm-lightbox-thumbnail">
+              <Fragment slot="preview">
+                <p style="margin: 0 0 var(--ui-space-2); color: var(--ui-muted-foreground); font-size: var(--ui-text-sm);">
+                  Click an image to inspect it full size.
+                </p>
+                <div class="dm-lightbox-thumbs">
+                  <button type="button" class="dm-lightbox-thumb" data-thumb="0" aria-label="Open: Aurora borealis">
+                    <img src="/demo/lightbox/aurora.svg" alt="" loading="lazy" />
+                  </button>
+                  <button type="button" class="dm-lightbox-thumb" data-thumb="1" aria-label="Open: Dunes at dusk">
+                    <img src="/demo/lightbox/dunes.svg" alt="" loading="lazy" />
+                  </button>
+                  <button type="button" class="dm-lightbox-thumb" data-thumb="2" aria-label="Open: Night transit">
+                    <img src="/demo/lightbox/metro.svg" alt="" loading="lazy" />
+                  </button>
+                </div>
+                <Lightbox id="dm-lightbox-preview" ariaLabel="Image preview">
+                  <LightboxItem
+                    src="/demo/lightbox/aurora.svg"
+                    alt="Aurora over mountains"
+                    caption="Aurora borealis"
+                    captionDescription="Long exposure, Tromsø."
+                  />
+                  <LightboxItem src="/demo/lightbox/dunes.svg" alt="Desert dunes" caption="Dunes at dusk" />
+                  <LightboxItem src="/demo/lightbox/metro.svg" alt="Metro platform" caption="Night transit" />
+                </Lightbox>
+                <script is:inline>
+                  (() => {
+                    const lb = document.getElementById("aui-lightbox-dm-lightbox-preview");
+                    if (!(lb instanceof HTMLDialogElement)) return;
+                    for (const btn of document.querySelectorAll(".dm-lightbox-thumb[data-thumb]")) {
+                      btn.addEventListener("click", () => {
+                        lb.showModal();
+                        lb.dispatchEvent(
+                          new CustomEvent("lightbox:set", {
+                            detail: {index: Number(btn.dataset.thumb)},
+                          }),
+                        );
+                      });
+                    }
+                  })();
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <pre><code set:html={codeHtml.get("thumbnail")}/></pre>
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+  </div>

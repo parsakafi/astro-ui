@@ -1,0 +1,686 @@
+---
+/**
+ * Lightbox — accessible image video gallery modal.
+ *
+ * A full-screen overlay for displaying images, videos, and iframes with
+ * gallery navigation (prev/next, keyboard arrows), counter, and indicators.
+ * Inspired by UIkit Lightbox (https://getuikit.com/v2/docs/lightbox.html).
+ *
+ * Built on the native `<dialog>` element — zero-JS closed state; opening
+ * needs one app-level `showModal()` call (see docs/components/lightbox.md).
+ *
+ * Gallery: place multiple `LightboxItem` children inside one `Lightbox`.
+ * Group linking: give several lightboxes the same `group` name to sync
+ * their active index across instances.
+ *
+ * Media detection (in LightboxItem): `.jpg/.png/.webp/.avif/.gif/.svg`
+ * → image, `.mp4/.webm/.ogv` → video, `.html/.php` → iframe; override
+ * with `type="image" | "video" | "iframe"`.
+ *
+ * ```astro
+ * import Lightbox from "astro-ui/lightbox";
+ * import LightboxItem from "astro-ui/lightbox-item";
+ * ---
+ * <button id="open">Open gallery</button>
+ * <Lightbox id="gallery" showCounter indicators>
+ *   <LightboxItem src="/img/a.jpg" caption="Sunset" />
+ *   <LightboxItem src="/vid/b.mp4" type="video" />
+ * </Lightbox>
+ * <script>document.getElementById("open")!.onclick = () => (document.getElementById("aui-lightbox-gallery") as HTMLDialogElement).showModal();</script>
+ * ```
+ *
+ * JavaScript required: Yes — trigger (`showModal()`) plus the scoped
+ * gallery script that ships with this component.
+ */
+import {cn} from "../../utils/cn";
+
+export interface Props {
+  /** Required for accessible labelling and trigger targeting. */
+  id: string;
+  /** Group name to link several Lightbox instances into one synchronized gallery. */
+  group?: string;
+  /** Explicit accessible name (overrides automatic `aria-labelledby`). */
+  ariaLabel?: string;
+  /** Override the automatic `aria-describedby` target. */
+  ariaDescribedby?: string;
+  /** Render the native (zero-JS) close button. Defaults to true. */
+  showClose?: boolean;
+  /** Accessible label for the built-in close button. */
+  closeLabel?: string;
+  /** Show prev/next navigation buttons. Defaults to true. */
+  navigation?: boolean;
+  /** Accessible label for the previous button. */
+  previousLabel?: string;
+  /** Accessible label for the next button. */
+  nextLabel?: string;
+  /** Show the "1 / 5" counter. */
+  showCounter?: boolean;
+  /** Word for the counter, e.g. "Image" → "Image 1 of 5". */
+  counterLabel?: string;
+  /** Render one dot per item; click jumps to that index. */
+  indicators?: boolean;
+  /** Auto-play videos when they become active. */
+  allowAutoplay?: boolean;
+  /** Add `allowfullscreen` to iframe elements. Defaults to true. */
+  allowFullscreen?: boolean;
+  /** Transition duration in ms for gallery scroll. */
+  duration?: number;
+  /** Enable keyboard navigation (ArrowLeft/Right, Escape via dialog). */
+  keyboard?: boolean;
+  class?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  id,
+  group,
+  ariaLabel,
+  ariaDescribedby,
+  showClose = true,
+  closeLabel = "Close lightbox",
+  navigation = true,
+  previousLabel = "Previous image",
+  nextLabel = "Next image",
+  showCounter = false,
+  counterLabel = "Image",
+  indicators = false,
+  allowAutoplay = false,
+  allowFullscreen = true,
+  duration = 400,
+  keyboard = true,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const uid = `aui-lightbox-${id}`;
+const groupAttr = group ? `aui-lightbox-group-${group}` : undefined;
+
+const hasTitle = Astro.slots.has("title");
+const hasDescription = Astro.slots.has("description");
+const titleId = hasTitle ? `${uid}-title` : undefined;
+const descriptionId = hasDescription ? `${uid}-description` : undefined;
+
+const config = {
+  uid,
+  group: groupAttr,
+  allowAutoplay,
+  allowFullscreen,
+  duration,
+  keyboard,
+  counterLabel,
+};
+
+const classes = cn("aui-lightbox", className);
+---
+
+<dialog
+  id={uid}
+  class={classes}
+  aria-label={ariaLabel}
+  aria-labelledby={ariaLabel ?? titleId}
+  aria-describedby={ariaDescribedby ?? descriptionId}
+  data-aui-lightbox
+  data-group={groupAttr}
+  {...rest}
+>
+  <div class="aui-lightbox__backdrop" data-lightbox-backdrop aria-hidden="true"></div>
+  <div class="aui-lightbox__panel" role="document">
+    {
+      showClose && (
+        <form method="dialog" class="aui-lightbox__close-form">
+          <button
+            type="submit"
+            class="aui-lightbox__close"
+            value="close"
+            aria-label={closeLabel}
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </form>
+      )
+    }
+
+    <div class="aui-lightbox__stage">
+      <div class="aui-lightbox__content" data-lightbox-content tabindex="0">
+        <slot />
+      </div>
+
+      {
+        navigation && (
+          <div class="aui-lightbox__navigation" aria-hidden="false">
+            <button
+              type="button"
+              class="aui-lightbox__button aui-lightbox__button--prev"
+              data-action="prev"
+              aria-label={previousLabel}
+            >
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="aui-lightbox__button aui-lightbox__button--next"
+              data-action="next"
+              aria-label={nextLabel}
+            >
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </button>
+          </div>
+        )
+      }
+    </div>
+
+    {
+      (showCounter || indicators) && (
+        <div class="aui-lightbox__footer">
+          {
+            showCounter && (
+              <p class="aui-lightbox__counter" aria-live="polite">
+                <span class="aui-lightbox__counter-current" data-lightbox-counter-current>1</span>
+                {" / "}
+                <span class="aui-lightbox__counter-total" data-lightbox-counter-total>
+                  <slot name="count" />
+                </span>
+              </p>
+            )
+          }
+          {
+            indicators && (
+              <div
+                class="aui-lightbox__indicators"
+                role="tablist"
+                aria-label={counterLabel ? `${counterLabel} gallery` : "Gallery"}
+                data-lightbox-indicators
+              />
+            )
+          }
+        </div>
+      )
+    }
+
+    {
+      hasTitle && (
+        <div class="aui-lightbox__header">
+          <div class="aui-lightbox__title" id={titleId}>
+            <slot name="title" />
+          </div>
+        </div>
+      )
+    }
+    {
+      hasDescription && (
+        <div class="aui-lightbox__description" id={descriptionId}>
+          <slot name="description" />
+        </div>
+      )
+    }
+  </div>
+  <script type="application/json" data-aui-lightbox-config set:html={JSON.stringify(config)} />
+</dialog>
+
+<script>
+  const SELECTOR = "[data-aui-lightbox]";
+
+  const initLightbox = (root: HTMLElement) => {
+    if (root.dataset.auiLightboxInit === "true") return;
+    root.dataset.auiLightboxInit = "true";
+
+    const dialog = root as HTMLDialogElement;
+    const cfgEl = root.querySelector<HTMLScriptElement>("script[data-aui-lightbox-config]");
+    const cfg = cfgEl
+      ? JSON.parse(cfgEl.textContent ?? "{}")
+      : {
+          uid: root.id,
+          group: undefined,
+          allowAutoplay: false,
+          allowFullscreen: true,
+          duration: 400,
+          keyboard: true,
+          counterLabel: "Image",
+        };
+
+    const content = root.querySelector<HTMLElement>("[data-lightbox-content]");
+    const backdrop = root.querySelector<HTMLElement>("[data-lightbox-backdrop]");
+    const counterCurrent = root.querySelector<HTMLElement>("[data-lightbox-counter-current]");
+    const counterTotal = root.querySelector<HTMLElement>("[data-lightbox-counter-total]");
+    const indicatorsWrap = root.querySelector<HTMLElement>("[data-lightbox-indicators]");
+
+    if (!content) return;
+
+    const items = () => [...content.querySelectorAll<HTMLElement>(".aui-lightbox-item")];
+    let activeIndex = 0;
+
+    const setActive = (index: number) => {
+      const list = items();
+      if (!list.length) return;
+      const clamped = Math.max(0, Math.min(index, list.length - 1));
+      activeIndex = clamped;
+      for (const [i, item] of list.entries()) {
+        const isActive = i === clamped;
+        item.setAttribute("aria-hidden", isActive ? "false" : "true");
+        item.setAttribute("data-state", isActive ? "active" : "inactive");
+        if (isActive) item.setAttribute("data-active", "");
+        else item.removeAttribute("data-active");
+        // Pause video when leaving
+        if (!isActive) {
+          const v = item.querySelector("video");
+          if (v) {
+            v.pause();
+          }
+        }
+        // Autoplay video when entering
+        if (isActive && cfg.allowAutoplay) {
+          const v = item.querySelector("video");
+          if (v) v.play().catch(() => {});
+        }
+      }
+      if (counterCurrent) counterCurrent.textContent = String(clamped + 1);
+      if (indicatorsWrap) {
+        for (const [i, dot] of [...indicatorsWrap.children].entries()) {
+          const on = i === clamped;
+          dot.setAttribute("aria-selected", on ? "true" : "false");
+          if (on) dot.setAttribute("data-active", "true");
+          else dot.removeAttribute("data-active");
+        }
+      }
+      const target = list[clamped];
+      if (target) {
+        const horizontal = true;
+        // Use scrollTo on the snap container so ancestors do not scroll.
+        const left = target.offsetLeft - content.offsetLeft;
+        content.scrollTo({left, behavior: "smooth"});
+      }
+      root.dispatchEvent(new CustomEvent("lightbox:change", {bubbles: true, detail: {index: clamped}}));
+    };
+
+    const step = (dir: 1 | -1) => {
+      const list = items();
+      if (!list.length) return;
+      let next = activeIndex + dir;
+      if (next >= list.length) next = 0;
+      if (next < 0) next = list.length - 1;
+      setActive(next);
+    };
+
+    // Keyboard: ArrowLeft/Right when focus is inside the dialog.
+    if (cfg.keyboard) {
+      dialog.addEventListener("keydown", (e: KeyboardEvent) => {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          step(-1);
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          step(1);
+        }
+      });
+    }
+
+    // Prev/next buttons.
+    root.addEventListener("click", (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>("[data-action]");
+      if (!btn) return;
+      e.preventDefault();
+      if (btn.dataset.action === "prev") step(-1);
+      else if (btn.dataset.action === "next") step(1);
+    });
+
+    // Backdrop click to close.
+    if (backdrop) {
+      backdrop.addEventListener("click", () => dialog.close());
+    }
+
+    // Build indicators and wire their clicks.
+    if (indicatorsWrap) {
+      const list = items();
+      for (const [i] of list.entries()) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "aui-lightbox__indicator";
+        dot.dataset.slideIndex = String(i);
+        dot.setAttribute("role", "tab");
+        dot.setAttribute("aria-label", `Go to ${cfg.counterLabel} ${i + 1}`);
+        dot.setAttribute("aria-selected", i === 0 ? "true" : "false");
+        if (i === 0) dot.setAttribute("data-active", "true");
+        dot.addEventListener("click", () => setActive(i));
+        indicatorsWrap.appendChild(dot);
+      }
+    }
+
+    // Counter total from real item count unless consumer filled the slot.
+    if (counterTotal && !counterTotal.textContent?.trim()) {
+      counterTotal.textContent = String(items().length);
+    }
+
+    // Sync scroll position to active slide on manual scroll.
+    let programmatic = false;
+    content.addEventListener(
+      "scroll",
+      () => {
+        if (programmatic) return;
+        const list = items();
+        if (!list.length) return;
+        let best = 0;
+        let bestDist = Infinity;
+        const origin = content.getBoundingClientRect().left;
+        for (const [i, el] of list.entries()) {
+          const dist = Math.abs(el.getBoundingClientRect().left - origin);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
+        }
+        if (best !== activeIndex) {
+          activeIndex = best;
+          for (const [i, item] of list.entries()) {
+            const on = i === best;
+            item.setAttribute("aria-hidden", on ? "false" : "true");
+            item.setAttribute("data-state", on ? "active" : "inactive");
+            if (on) item.setAttribute("data-active", "");
+            else item.removeAttribute("data-active");
+          }
+          if (counterCurrent) counterCurrent.textContent = String(best + 1);
+          if (indicatorsWrap) {
+            for (const [i, dot] of [...indicatorsWrap.children].entries()) {
+              const on = i === best;
+              dot.setAttribute("aria-selected", on ? "true" : "false");
+              if (on) dot.setAttribute("data-active", "true");
+              else dot.removeAttribute("data-active");
+            }
+          }
+        }
+      },
+      {passive: true},
+    );
+
+    // Programmatic API: dispatch `lightbox:set` with {index} or {action: "next"|"prev"}.
+    root.addEventListener("lightbox:set", (e) => {
+      const detail = (e as CustomEvent).detail ?? {};
+      if (typeof detail.index === "number") {
+        programmatic = true;
+        setActive(detail.index);
+        setTimeout(() => {
+          programmatic = false;
+        }, cfg.duration + 50);
+      } else if (detail.action === "next") step(1);
+      else if (detail.action === "prev") step(-1);
+    });
+
+    // Group sync: broadcast index changes to peers with the same data-group.
+    if (cfg.group) {
+      root.addEventListener("lightbox:change", (e) => {
+        const detail = (e as CustomEvent).detail ?? {};
+        if (typeof detail.index !== "number") return;
+        for (const peer of document.querySelectorAll<HTMLElement>(`[data-group="${cfg.group}"]`)) {
+          if (peer === root) continue;
+          peer.dispatchEvent(new CustomEvent("lightbox:set", {detail: {index: detail.index}}));
+        }
+      });
+    }
+
+    // Initial state.
+    const start = 0;
+    setActive(start);
+    // If dialog is already open, ensure scroll position matches.
+    if (dialog.open) {
+      const list = items();
+      if (list[start]) {
+        content.scrollLeft = list[start].offsetLeft - content.offsetLeft;
+      }
+    } else {
+      // When dialog opens later, sync scroll.
+      dialog.addEventListener(
+        "toggle",
+        () => {
+          if (dialog.open) {
+            const list = items();
+            if (list[activeIndex]) {
+              content.scrollLeft = list[activeIndex].offsetLeft - content.offsetLeft;
+            }
+          }
+        },
+        {once: false},
+      );
+    }
+  };
+
+  const initAll = () => {
+    for (const el of document.querySelectorAll<HTMLElement>(SELECTOR)) initLightbox(el);
+  };
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-lightbox {
+    border: none;
+    padding: 0;
+    margin: auto;
+    background: transparent;
+    color: var(--ui-foreground);
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    position: fixed;
+    overflow: hidden;
+  }
+
+  .aui-lightbox::backdrop {
+    background: transparent;
+  }
+
+  .aui-lightbox__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.85);
+  }
+
+  .aui-lightbox__panel {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    height: 100%;
+    padding: var(--ui-space-4);
+    gap: var(--ui-space-3);
+  }
+
+  .aui-lightbox__close-form {
+    position: absolute;
+    inset-block-start: var(--ui-space-4);
+    inset-inline-end: var(--ui-space-4);
+    z-index: 10;
+    margin: 0;
+  }
+
+  .aui-lightbox__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    font-size: var(--ui-text-2xl);
+    line-height: var(--ui-leading-none);
+    color: var(--ui-muted-foreground);
+    background-color: color-mix(in srgb, var(--ui-background) 18%, transparent);
+    border: none;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    transition:
+      background-color var(--ui-transition-fast),
+      color var(--ui-transition-fast);
+  }
+
+  .aui-lightbox__close:hover {
+    background-color: var(--ui-secondary);
+    color: var(--ui-foreground);
+  }
+
+  .aui-lightbox__close:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-lightbox__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    min-height: 0;
+    border-radius: var(--ui-radius-lg);
+  }
+
+  .aui-lightbox__content {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    width: 100%;
+    height: 100%;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .aui-lightbox__content::-webkit-scrollbar {
+    display: none;
+  }
+
+  .aui-lightbox__content:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-lightbox__navigation {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: var(--ui-space-2);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .aui-lightbox__button {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    color: var(--ui-foreground);
+    background: color-mix(in srgb, var(--ui-background) 88%, transparent);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    box-shadow: var(--ui-shadow-md);
+    transition:
+      background-color var(--ui-transition-fast),
+      border-color var(--ui-transition-fast);
+  }
+
+  .aui-lightbox__button:hover {
+    background: var(--ui-background);
+  }
+
+  .aui-lightbox__button:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-lightbox__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-4);
+    padding: var(--ui-space-3) var(--ui-space-4);
+    background: color-mix(in srgb, var(--ui-background) 92%, transparent);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+  }
+
+  .aui-lightbox__counter {
+    margin: 0;
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aui-lightbox__indicators {
+    display: flex;
+    justify-content: center;
+    gap: var(--ui-space-2);
+  }
+
+  .aui-lightbox__indicators :global(.aui-lightbox__indicator) {
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    padding: 0;
+    background: var(--ui-input);
+    border: 0;
+    border-radius: var(--ui-radius-full);
+    cursor: pointer;
+    transition:
+      background-color var(--ui-transition-fast),
+      transform var(--ui-transition-fast);
+  }
+
+  .aui-lightbox__indicators :global(.aui-lightbox__indicator:hover) {
+    background: var(--ui-muted-foreground);
+  }
+
+  .aui-lightbox__indicators :global(.aui-lightbox__indicator[data-active="true"]) {
+    background: var(--ui-primary);
+    transform: scale(1.2);
+  }
+
+  .aui-lightbox__indicators :global(.aui-lightbox__indicator:focus-visible) {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-lightbox__header {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    background: color-mix(in srgb, var(--ui-background) 92%, transparent);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+  }
+
+  .aui-lightbox__title {
+    font-size: var(--ui-text-lg);
+    font-weight: var(--ui-font-semibold);
+    line-height: var(--ui-leading-tight);
+  }
+
+  .aui-lightbox__title > :global(*),
+  .aui-lightbox__description > :global(*) {
+    margin-top: 0;
+  }
+
+  .aui-lightbox__title > :global(*:last-child),
+  .aui-lightbox__description > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+
+  .aui-lightbox__description {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-muted-foreground);
+    background: color-mix(in srgb, var(--ui-background) 92%, transparent);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-lightbox__content {
+      scroll-behavior: auto;
+    }
+  }
+</style>

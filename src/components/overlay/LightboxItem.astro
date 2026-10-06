@@ -1,0 +1,197 @@
+---
+/**
+ * LightboxItem — one media entry inside a Lightbox.
+ *
+ * Renders `src` as an image, video, or iframe depending on `type`
+ * (auto-detected from the extension when omitted). A `caption` bar
+ * overlays the lower edge of the item.
+ *
+ * Must be a direct child of `Lightbox`'s default slot.
+ *
+ * ```astro
+ * <Lightbox id="gallery">
+ *   <LightboxItem src="/img/a.jpg" alt="Sunset over water" caption="Beach sunset" />
+ *   <LightboxItem src="/vid/b.mp4" type="video" caption="Timelapse" />
+ *   <LightboxItem src="https://www.youtube.com/embed/dQw4w9WgXcQ" type="iframe" caption="Trailer" />
+ * </Lightbox>
+ * ```
+ *
+ * JavaScript required: No
+ */
+import {cn} from "../../utils/cn";
+
+export type MediaType = "image" | "video" | "iframe";
+
+export interface Props {
+  /** Media source URL. */
+  src: string;
+  /** Alt text for images (forwarded to <img alt>). */
+  alt?: string;
+  /** Force a media type; otherwise inferred from `src` extension. */
+  type?: MediaType;
+  /** Short caption title rendered over the item's lower edge. */
+  caption?: string;
+  /** Muted description line under the caption title. */
+  captionDescription?: string;
+  /** Allow fullscreen on iframes (forwards `allowfullscreen`). Video always offers fullscreen via its native controls. Defaults to true for iframes. */
+  allowFullscreen?: boolean;
+  /** Poster image for video items. */
+  poster?: string;
+  class?: string;
+  id?: string;
+
+  [key: string]: unknown;
+}
+
+const {
+  src,
+  alt = "",
+  type: explicitType,
+  caption,
+  captionDescription,
+  allowFullscreen = true,
+  poster,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+function detectType(s: string, t?: MediaType): MediaType {
+  if (t === "image" || t === "video" || t === "iframe") return t;
+  const ext = s.split("?")[0]?.split(".").pop()?.toLowerCase() ?? "";
+  if (["mp4", "webm", "ogv", "ogg", "mov"].includes(ext)) return "video";
+  if (["html", "php"].includes(ext)) return "iframe";
+  // YouTube / Vimeo embeds are iframed even without an extension.
+  if (/youtube\.com|youtu\.be|vimeo\.com|player\.vimeo/i.test(s)) return "iframe";
+  return "image";
+}
+
+const mediaType: MediaType = detectType(src, explicitType);
+
+const hasCaptionSlot = Astro.slots.has("caption");
+
+const classes = cn(
+  "aui-lightbox-item",
+  `aui-lightbox-item--${mediaType}`,
+  className,
+);
+---
+
+<div
+  class={classes}
+  id={id}
+  role="group"
+  aria-roledescription="slide"
+  data-state="inactive"
+  data-lightbox-item
+  data-media-type={mediaType}
+  {...rest}
+>
+  {
+    mediaType === "image" && (
+      <img
+        class="aui-lightbox-item__media"
+        src={src}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+      />
+    )
+  }
+  {
+    mediaType === "video" && (
+      <video
+        class="aui-lightbox-item__media"
+        src={src}
+        controls
+        playsinline
+        poster={poster}
+      />
+    )
+  }
+  {
+    mediaType === "iframe" && (
+      <iframe
+        class="aui-lightbox-item__media aui-lightbox-item__media--iframe"
+        src={src}
+        title={caption ?? alt ?? "Embedded content"}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen={allowFullscreen}
+      />
+    )
+  }
+
+  {
+    (caption || captionDescription) && (
+      <div class="aui-lightbox-item__caption">
+        {caption && <p class="aui-lightbox-item__caption-title">{caption}</p>}
+        {captionDescription && (
+          <p class="aui-lightbox-item__caption-description">{captionDescription}</p>
+        )}
+      </div>
+    )
+  }
+  {hasCaptionSlot && <slot name="caption" />}
+</div>
+
+<style>
+  .aui-lightbox-item {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 0;
+    display: grid;
+    place-items: center;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+    overflow: hidden;
+    border-radius: var(--ui-radius-lg);
+    background: var(--ui-background);
+    border: 1px solid var(--ui-border);
+  }
+
+  .aui-lightbox-item__media {
+    display: block;
+    max-width: 100%;
+    max-height: min(72vh, 720px);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-lightbox-item__media--iframe {
+    width: 100%;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+    max-height: min(72vh, 720px);
+    height: auto;
+    border: 0;
+  }
+
+  .aui-lightbox-item__caption {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: grid;
+    gap: 2px;
+    padding: var(--ui-space-3) var(--ui-space-4);
+    background: color-mix(in srgb, var(--ui-background) 78%, transparent);
+    backdrop-filter: blur(6px);
+    border-block-start: 1px solid var(--ui-border);
+    border-radius: 0 0 var(--ui-radius-lg) var(--ui-radius-lg);
+  }
+
+  .aui-lightbox-item__caption-title {
+    margin: 0;
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-foreground);
+  }
+
+  .aui-lightbox-item__caption-description {
+    margin: 0;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+</style>

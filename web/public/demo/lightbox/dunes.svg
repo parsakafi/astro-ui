@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="Desert dunes illustration">
+  <defs>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7b267"/>
+      <stop offset="1" stop-color="#f4845f"/>
+    </linearGradient>
+    <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fce1c3"/>
+      <stop offset="1" stop-color="#f7b267"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#sky2)"/>
+  <circle cx="620" cy="140" r="70" fill="url(#sun)"/>
+  <path d="M0 340 Q 220 260 440 340 T 880 340 L 880 520 L 0 520 Z" fill="#e07a5f"/>
+  <path d="M0 410 Q 260 330 520 410 T 1040 410 L 1040 520 L 0 520 Z" fill="#c05f45"/>
+  <path d="M0 470 Q 300 420 600 470 T 1200 470 L 1200 520 L 0 520 Z" fill="#9c4a35"/>
+</svg>
