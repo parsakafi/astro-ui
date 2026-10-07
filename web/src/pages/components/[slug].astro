@@ -22,8 +22,8 @@ import {parseChangelog, forComponent, renderBullet} from "../../lib/changelog";
 import {readFileSync} from "node:fs";
 import {astroUiPath} from "../../lib/ui-path";
 
-// CHANGELOG lives in the sibling package; builds run from demo/, so
-// resolve it whether demo runs as a workspace or standalone.
+// CHANGELOG lives in the sibling package; builds run from web/, so
+// resolve it whether web runs as a workspace or standalone.
 const changelogRaw = readFileSync(
   astroUiPath("CHANGELOG.md"),
   "utf8",

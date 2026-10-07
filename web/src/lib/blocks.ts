@@ -3,12 +3,9 @@
  *
  * Single source of truth for the /blocks/ catalog, the per-category
  * pages, per-block detail pages, the sidebar tree, the search index,
- * and the nav/footer links. Block MARKUP lives in the demo module
- * (real astro-ui JSX); this module describes each block so other
- * surfaces can link, count, and search them.
- *
- * NOTE: demo/src/lib/blocks.ts mirrors this file — keep titles,
- * ids, and categories in sync when editing either copy.
+ * and the nav/footer links. Block MARKUP lives next to it in
+ * components/docs/blocks/ (real astro-ui JSX); this module describes
+ * each block so other surfaces can link, count, and search them.
  */
 import {SITE} from "./site";
 

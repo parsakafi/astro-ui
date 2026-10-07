@@ -1,8 +1,8 @@
 /**
- * Resolve a file inside the astro-ui package, wherever demo runs from:
- * as a workspace (package root one level up) or standalone (the classic
- * node_modules link). Prefers the link; falls back to the workspace root
- * whose package.json is named astro-ui.
+ * Resolve a file inside the astro-ui package, wherever the docs site
+ * (web/) runs from: as a workspace (package root one level up) or
+ * standalone (the classic node_modules link). Prefers the link; falls
+ * back to the workspace root whose package.json is named astro-ui.
  */
 import {readFileSync} from "node:fs";
 import {join, resolve} from "node:path";

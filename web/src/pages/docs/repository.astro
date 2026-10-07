@@ -1,7 +1,7 @@
 ---
 /**
  * /docs/repository/ — the monorepo behind this site: the astro-ui
- * package at the root plus the docs website in demo/, linked as npm
+ * package at the root plus the docs website in web/, linked as npm
  * workspaces and orchestrated with Turborepo.
  */
 import DocsLayout from "../../layouts/DocsLayout.astro";
@@ -9,7 +9,7 @@ import CodeBlock from "../../components/docs/CodeBlock.astro";
 
 const toc = [
   {id: "layout", label: "Layout"},
-  {id: "link", label: "Library ↔ demo link"},
+  {id: "link", label: "Library ↔ site link"},
   {id: "workflows", label: "Workflows"},
 ];
 ---
@@ -22,7 +22,7 @@ const toc = [
       <p>
         One repo, two packages: the <code>astro-ui</code> component
         library lives at the root, this docs site lives in
-        <code>demo/</code> — linked as npm workspaces, built and
+        <code>web/</code> — linked as npm workspaces, built and
         tested together with Turborepo.
       </p>
     </section>
@@ -37,14 +37,14 @@ const toc = [
   index.ts                # root entry (+ subpath export per component)
   tests/                  # contract + unit suites
   docs/                   # contributor docs (conventions, principles, ADRs)
-  demo/                   # docs website workspace (Astro app)
+  web/                    # docs website workspace (Astro app)
     src/pages/            # guides, component catalog, blocks
     src/lib/registry/     # per-component docs metadata + snippets
     src/components/docs/  # live demo renderers
     src/content/          # generated docs (scripts/gen-docs.ts)
     tests/                # consistency + snippet suites
     scripts/              # gen-docs, render audits, id checks
-  package.json            # workspaces: ["demo"], turbo pipelines
+  package.json            # workspaces: ["web"], turbo pipelines
   turbo.json              # build/test/lint/check tasks
   .github/workflows/      # CI installs once, then runs every pipeline`}
         lang="text"
@@ -52,10 +52,10 @@ const toc = [
     </section>
 
     <section id="link">
-      <h2>Library ↔ demo link</h2>
+        <h2>Library ↔ site link</h2>
       <p>
         The root <code>package.json</code> declares
-        <code>"workspaces": ["demo"]</code>, so one install links
+        <code>"workspaces": ["web"]</code>, so one install links
         everything and the demo always renders the working copy — no
         publish step while developing components. Pages that need
         library files (changelog, token source) resolve them through
@@ -63,13 +63,13 @@ const toc = [
         the package via its workspace link or a standalone
         <code>node_modules</code> install alike.
       </p>
-      <CodeBlock code={`npm install          # once, at the root\nnpm test             # library suites, then demo suites\nnpm run build        # docs site production build (turbo-cached)`} lang="bash"/>
+      <CodeBlock code={`npm install          # once, at the root\nnpm test             # library suites, then web suites\nnpm run build        # docs site production build (turbo-cached)`} lang="bash"/>
     </section>
 
     <section id="workflows">
       <h2>Workflows</h2>
       <CodeBlock
-        code={`npm run dev      # docs site with live components (turbo persistent)\nnpm test         # vitest (library) + turbo demo suites\nnpm run check    # astro check (library) + turbo demo check\nnpm run lint     # biome + eslint (library; demo has no lint config)\nnpm run build    # turbo demo build (css + check + astro build)`}
+        code={`npm run dev      # docs site with live components (turbo persistent)\nnpm test         # vitest (library) + turbo web suites\nnpm run check    # astro check (library) + turbo web check\nnpm run lint     # biome + eslint (library; web has no lint config)\nnpm run build    # turbo web build (css + check + astro build)`}
         lang="bash"
       />
       <p class="docs-muted-note">
