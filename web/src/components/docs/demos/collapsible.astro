@@ -25,7 +25,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Collapsible>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -41,7 +41,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Collapsible>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("open")}/></pre>
+                <Fragment set:html={codeHtml.get("open")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -63,7 +63,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Collapsible>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("searchable")}/></pre>
+                <Fragment set:html={codeHtml.get("searchable")} />
               </Fragment>
             </DemoTabs>
           </div>

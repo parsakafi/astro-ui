@@ -20,7 +20,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Rating value={2} readonly size="lg" variant="primary"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -36,7 +36,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Rating name="dm-s-primary" value={3} variant="primary" size="lg"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+                <Fragment set:html={codeHtml.get("sizes")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -58,7 +58,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 />
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("icons")}/></pre>
+                <Fragment set:html={codeHtml.get("icons")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -73,7 +73,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Rating value={5} icon="emoji" readonly size="lg"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("emoji")}/></pre>
+                <Fragment set:html={codeHtml.get("emoji")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -100,7 +100,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 />
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("scale")}/></pre>
+                <Fragment set:html={codeHtml.get("scale")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -122,7 +122,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 />
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("nps")}/></pre>
+                <Fragment set:html={codeHtml.get("nps")} />
               </Fragment>
             </DemoTabs>
           </div>

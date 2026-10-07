@@ -20,7 +20,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Progress/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("bar")}/></pre>
+                <Fragment set:html={codeHtml.get("bar")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -34,7 +34,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Progress variant="circle" value={80} size="lg" showValue/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("circle")}/></pre>
+                <Fragment set:html={codeHtml.get("circle")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -48,7 +48,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Progress value={82} stripes="static" color="success"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("stripes")}/></pre>
+                <Fragment set:html={codeHtml.get("stripes")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -62,7 +62,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Progress value={72} stripedTrack color="success"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("striped-track")}/></pre>
+                <Fragment set:html={codeHtml.get("striped-track")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -76,7 +76,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Progress value={45} segmented={8} color="success"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("segmented")}/></pre>
+                <Fragment set:html={codeHtml.get("segmented")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -90,7 +90,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Progress value={90} squared color="success"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("squared")}/></pre>
+                <Fragment set:html={codeHtml.get("squared")} />
               </Fragment>
             </DemoTabs>
           </div>

@@ -6,6 +6,9 @@
  * and the nav/footer links. Block MARKUP lives in the demo module
  * (real astro-ui JSX); this module describes each block so other
  * surfaces can link, count, and search them.
+ *
+ * NOTE: demo/src/lib/blocks.ts mirrors this file — keep titles,
+ * ids, and categories in sync when editing either copy.
  */
 import {SITE} from "./site";
 
@@ -45,7 +48,7 @@ export const blockCategories: BlockCategory[] = [
     {
         id: "application",
         label: "Application",
-        description: "In-product surfaces: forms, settings, members, empty states.",
+        description: "In-product surfaces: settings, members, empty states, utilities, and support chat.",
         icon: "◧",
         blocks: [
             {
@@ -69,94 +72,19 @@ export const blockCategories: BlockCategory[] = [
                 recipe: "Empty · Button",
                 complexity: "simple",
             },
-            // SOCIAL PROOF / AVATAR COMPOSITIONS
-            {
-                id: "compact-social-proof",
-                title: "Compact social proof with initials",
-                sidebarTitle: "Initials social proof",
-                description: "Initial-based avatar row with a trust line for signup and onboarding flows.",
-                recipe: "Avatar · Label · Text",
-                complexity: "simple",
-            },
-            {
-                id: "avatar-group-hover-tooltips",
-                title: "Avatar group with hover tooltips and lift effect",
-                sidebarTitle: "Hover tooltips",
-                description: "Hover-spread avatar stack where each avatar shows a name tooltip on hover.",
-                recipe: "Avatar · AvatarGroup · Tooltip",
-                complexity: "medium",
-            },
-            {
-                id: "avatar-social-proof-label",
-                title: "Avatar social proof with text label",
-                sidebarTitle: "Social proof label",
-                description: "Named avatar cluster paired with a social-proof headline and count.",
-                recipe: "Avatar · AvatarGroup · Label · Text",
-                complexity: "simple",
-            },
-            {
-                id: "pill-button-with-avatar",
-                title: "Pill small outline button with avatar",
-                sidebarTitle: "Avatar pill",
-                description: "Compact pill button pairing a tiny avatar with a label for mention-style chips.",
-                recipe: "Button · Avatar",
-                complexity: "simple",
-            },
-            {
-                id: "avatar-group-hover-tooltips-v2",
-                title: "Avatar group with hover effect and tooltips",
-                sidebarTitle: "Lift + tooltips",
-                description: "Stacked avatars that lift on hover with name tooltips — denser social proof variant.",
-                recipe: "Avatar · AvatarGroup · Tooltip",
-                complexity: "medium",
-            },
             {
                 id: "avatar-empty-state",
-                title: "Avatar inside an empty state example",
-                sidebarTitle: "Avatar empty state",
+                title: "Empty state — with avatar",
+                sidebarTitle: "Empty state — avatar",
                 description: "Empty state that leads with a single avatar and a next-step CTA.",
                 recipe: "Empty · Avatar · Button",
-                complexity: "simple",
-            },
-            // BREADCRUMB COMPOSITIONS
-            {
-                id: "breadcrumb-project-info",
-                title: "Breadcrumb with project, user and document info",
-                sidebarTitle: "Project trail",
-                description: "File-surface breadcrumb pairing project and user avatars with the open document and version badge.",
-                recipe: "Breadcrumb · Avatar · Badge",
-                complexity: "simple",
-            },
-            {
-                id: "breadcrumb-avatars",
-                title: "Breadcrumb items with avatars",
-                sidebarTitle: "Avatar trail",
-                description: "Navigation trail where every segment is represented by an avatar.",
-                recipe: "Breadcrumb · Avatar",
-                complexity: "simple",
-            },
-            {
-                id: "breadcrumb-icons",
-                title: "Breadcrumb with icons for each item",
-                sidebarTitle: "Icon trail",
-                description: "File-browser breadcrumb with an icon on every segment, wrapped in a card.",
-                recipe: "Card · Breadcrumb",
                 complexity: "simple",
             },
             {
                 id: "password-generator",
                 title: "Password generator",
-                sidebarTitle: "Password generator",
                 description: "Generate a strong password: length slider, character-set switches, and a one-click generate action.",
                 recipe: "Card · Slider · Switch · Button",
-                complexity: "medium",
-            },
-            {
-                id: "capital-inflows",
-                title: "Capital inflows summary",
-                sidebarTitle: "Capital inflows",
-                description: "Fund leaderboard: part-to-whole segmented bar, headline total with trend badge, and per-fund rows with values.",
-                recipe: "Card · Chart · Badge",
                 complexity: "medium",
             },
             {
@@ -166,6 +94,86 @@ export const blockCategories: BlockCategory[] = [
                 description: "Operator + customer conversation: grouped bubbles, reactions, quick-reply buttons, and a composer.",
                 recipe: "Bubble · BubbleGroup · Avatar · Button · Input",
                 complexity: "complex",
+            },
+        ],
+    },
+    {
+        id: "social",
+        label: "Social",
+        description: "Trust and presence: social proof rows, avatar stacks, and mention pills.",
+        icon: "◉",
+        blocks: [
+            {
+                id: "compact-social-proof",
+                title: "Social proof — compact initials row",
+                sidebarTitle: "Social proof — initials",
+                description: "Initial-based avatar row with a trust line for signup and onboarding flows.",
+                recipe: "Avatar · Label · Text",
+                complexity: "simple",
+            },
+            {
+                id: "avatar-group-hover-tooltips",
+                title: "Avatar stack — hover tooltips",
+                sidebarTitle: "Avatar stack — tooltips",
+                description: "Hover-spread avatar stack where each avatar shows a name tooltip on hover.",
+                recipe: "Avatar · AvatarGroup · Tooltip",
+                complexity: "medium",
+            },
+            {
+                id: "avatar-social-proof-label",
+                title: "Social proof — avatar stack with headline",
+                sidebarTitle: "Social proof — headline",
+                description: "Named avatar cluster paired with a social-proof headline and count.",
+                recipe: "Avatar · AvatarGroup · Label · Text",
+                complexity: "simple",
+            },
+            {
+                id: "pill-button-with-avatar",
+                title: "Mention pill button with avatar",
+                sidebarTitle: "Mention pill",
+                description: "Compact pill button pairing a tiny avatar with a label for mention-style chips.",
+                recipe: "Button · Avatar",
+                complexity: "simple",
+            },
+            {
+                id: "avatar-group-hover-tooltips-v2",
+                title: "Avatar stack — tooltips with status rings",
+                sidebarTitle: "Avatar stack — status",
+                description: "Stacked avatars with bottom tooltips, online status and ring highlights — richer social proof variant.",
+                recipe: "Avatar · AvatarGroup · Tooltip",
+                complexity: "medium",
+            },
+        ],
+    },
+    {
+        id: "navigation",
+        label: "Navigation",
+        description: "Wayfinding segments: breadcrumbs with project context, avatars, and icons.",
+        icon: "⇢",
+        blocks: [
+            {
+                id: "breadcrumb-project-info",
+                title: "Breadcrumb — project and document",
+                sidebarTitle: "Breadcrumb — project",
+                description: "File-surface breadcrumb pairing project and user avatars with the open document and version badge.",
+                recipe: "Breadcrumb · Avatar · Badge",
+                complexity: "simple",
+            },
+            {
+                id: "breadcrumb-avatars",
+                title: "Breadcrumb — with avatars",
+                sidebarTitle: "Breadcrumb — avatars",
+                description: "Navigation trail where every segment is represented by an avatar.",
+                recipe: "Breadcrumb · Avatar",
+                complexity: "simple",
+            },
+            {
+                id: "breadcrumb-icons",
+                title: "Breadcrumb — with icons",
+                sidebarTitle: "Breadcrumb — icons",
+                description: "File-browser breadcrumb with an icon on every segment, wrapped in a card.",
+                recipe: "Card · Breadcrumb",
+                complexity: "simple",
             },
         ],
     },
@@ -201,13 +209,12 @@ export const blockCategories: BlockCategory[] = [
     {
         id: "marketing",
         label: "Marketing",
-        description: "Conversion-oriented sections: pricing tiers, metric bands, CTA.",
+        description: "Conversion and insight sections: pricing, dashboards, stats, and CTA.",
         icon: "◈",
         blocks: [
             {
                 id: "analytics-dashboard",
-                title: "Analytics dashboard",
-                sidebarTitle: "Analytics",
+                title: "Dashboard — analytics",
                 description: "KPI cards with trend badges over an engagement line chart and a traffic-source donut.",
                 recipe: "Card · Chart · Badge · Button",
                 complexity: "complex",
@@ -221,16 +228,26 @@ export const blockCategories: BlockCategory[] = [
             },
             {
                 id: "stats-band",
-                title: "Stats band",
+                title: "Stats — band with progress",
+                sidebarTitle: "Stats — band",
                 description: "Metric cards with progress bars and trend badges.",
                 recipe: "Card · Progress · Badge",
                 complexity: "medium",
             },
             {
                 id: "stats-circles",
-                title: "Circle stats",
+                title: "Stats — progress rings",
+                sidebarTitle: "Stats — rings",
                 description: "KPI cards with circular progress rings — compact at-a-glance metrics.",
                 recipe: "Card · Progress (circle) · Badge",
+                complexity: "medium",
+            },
+            {
+                id: "capital-inflows",
+                title: "Capital inflows summary",
+                sidebarTitle: "Capital inflows",
+                description: "Fund leaderboard: part-to-whole segmented bar, headline total with trend badge, and per-fund rows with values.",
+                recipe: "Card · Chart · Badge",
                 complexity: "medium",
             },
             {

@@ -19,7 +19,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <p><Kbd variant="outline" raised>Enter</Kbd> to submit.</p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>

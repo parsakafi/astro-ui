@@ -23,7 +23,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -36,7 +36,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Textarea placeholder="Grows with input" minRows={2} maxRows={5}/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("grow")}/></pre>
+                <Fragment set:html={codeHtml.get("grow")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -49,7 +49,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Textarea placeholder="Vertical resize" resize="vertical" rows={2}/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("resize")}/></pre>
+                <Fragment set:html={codeHtml.get("resize")} />
               </Fragment>
             </DemoTabs>
           </div>

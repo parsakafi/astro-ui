@@ -20,7 +20,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <p class="demo-hint">Below the rule.</p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("both")}/></pre>
+                <Fragment set:html={codeHtml.get("both")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -40,7 +40,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("variants")}/></pre>
+                <Fragment set:html={codeHtml.get("variants")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -59,7 +59,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("vertical-variants")}/></pre>
+                <Fragment set:html={codeHtml.get("vertical-variants")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -74,7 +74,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <p class="demo-hint">Some content below.</p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("labeled")}/></pre>
+                <Fragment set:html={codeHtml.get("labeled")} />
               </Fragment>
             </DemoTabs>
           </div>

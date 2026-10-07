@@ -21,7 +21,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Spinner icon="spin" label="Spin"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("styles")}/></pre>
+                <Fragment set:html={codeHtml.get("styles")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -38,7 +38,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Spinner variant="warning" label="Warning"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("sizes-colors")}/></pre>
+                <Fragment set:html={codeHtml.get("sizes-colors")} />
               </Fragment>
             </DemoTabs>
           </div>

@@ -19,7 +19,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Link href="#" underline={false}>No underline</Link>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -33,7 +33,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Link href="#" icon="arrow">Next step</Link>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("external")}/></pre>
+                <Fragment set:html={codeHtml.get("external")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -48,7 +48,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Link href="#" size="lg">Large</Link>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("colors")}/></pre>
+                <Fragment set:html={codeHtml.get("colors")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -62,7 +62,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Link loading loadingText="Opening…">Docs</Link>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("disabled")}/></pre>
+                <Fragment set:html={codeHtml.get("disabled")} />
               </Fragment>
             </DemoTabs>
           </div>

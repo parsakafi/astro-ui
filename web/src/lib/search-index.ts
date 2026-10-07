@@ -33,7 +33,7 @@ const pages: SearchEntry[] = [
     },
     {
         title: "Blocks",
-        hint: "Composed sections: auth, pricing, stats…",
+        hint: "Composed sections: app, social, nav, auth…",
         href: "/blocks/",
         group: "Pages",
         keywords: "composed sections templates"

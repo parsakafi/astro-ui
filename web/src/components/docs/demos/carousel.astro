@@ -25,7 +25,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Carousel>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("horizontal")}/></pre>
+                <Fragment set:html={codeHtml.get("horizontal")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -51,7 +51,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Carousel>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("multiple")}/></pre>
+                <Fragment set:html={codeHtml.get("multiple")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -77,7 +77,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Carousel>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+                <Fragment set:html={codeHtml.get("vertical")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -107,7 +107,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("overlay-arrows")}/></pre>
+                <Fragment set:html={codeHtml.get("overlay-arrows")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -137,7 +137,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("indicators")}/></pre>
+                <Fragment set:html={codeHtml.get("indicators")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -172,7 +172,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("captions")}/></pre>
+                <Fragment set:html={codeHtml.get("captions")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -207,7 +207,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("autoplay")}/></pre>
+                <Fragment set:html={codeHtml.get("autoplay")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -230,7 +230,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("loop")}/></pre>
+                <Fragment set:html={codeHtml.get("loop")} />
               </Fragment>
             </DemoTabs>
           </div>

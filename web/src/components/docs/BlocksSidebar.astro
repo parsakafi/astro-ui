@@ -102,5 +102,16 @@ const {currentBlockId, currentCategoryId, isCatalog = false} = Astro.props;
         filter();
       }
     });
+
+    // Keep the current page's link centered in the scrollable sidebar.
+    const active = nav.querySelector<HTMLElement>(
+      ".docs-side-link.is-active, .docs-side-cat.is-active",
+    );
+    if (active) {
+      const navRect = nav.getBoundingClientRect();
+      const linkRect = active.getBoundingClientRect();
+      nav.scrollTop +=
+        linkRect.top - navRect.top - nav.clientHeight / 2 + linkRect.height / 2;
+    }
   }
 </script>

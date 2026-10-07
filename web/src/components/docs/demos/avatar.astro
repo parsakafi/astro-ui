@@ -24,7 +24,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -42,7 +42,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("radius")}/></pre>
+                <Fragment set:html={codeHtml.get("radius")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -60,7 +60,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Avatar name="Ada Lovelace" size="2xl"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+                <Fragment set:html={codeHtml.get("sizes")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -78,7 +78,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("custom-size")}/></pre>
+                <Fragment set:html={codeHtml.get("custom-size")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -96,7 +96,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("status")}/></pre>
+                <Fragment set:html={codeHtml.get("status")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -114,7 +114,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("status-positions")}/></pre>
+                <Fragment set:html={codeHtml.get("status-positions")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -131,7 +131,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </AvatarGroup>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("group-basic")}/></pre>
+                <Fragment set:html={codeHtml.get("group-basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -149,7 +149,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </AvatarGroup>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("group-icon-count")}/></pre>
+                <Fragment set:html={codeHtml.get("group-icon-count")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -167,7 +167,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </AvatarGroup>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("group-numeric-count")}/></pre>
+                <Fragment set:html={codeHtml.get("group-numeric-count")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -182,7 +182,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Avatar>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("badge-icon")}/></pre>
+                <Fragment set:html={codeHtml.get("badge-icon")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -200,7 +200,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("solid-fallback")}/></pre>
+                <Fragment set:html={codeHtml.get("solid-fallback")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -217,7 +217,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </AvatarGroup>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("group-status")}/></pre>
+                <Fragment set:html={codeHtml.get("group-status")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -237,7 +237,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("grayscale")}/></pre>
+                <Fragment set:html={codeHtml.get("grayscale")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -255,7 +255,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </AvatarGroup>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("group-hover")}/></pre>
+                <Fragment set:html={codeHtml.get("group-hover")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -275,7 +275,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </Avatar>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("custom-badge")}/></pre>
+                <Fragment set:html={codeHtml.get("custom-badge")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -292,7 +292,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("multi-badge")}/></pre>
+                <Fragment set:html={codeHtml.get("multi-badge")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -309,7 +309,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("ring-gradient")}/></pre>
+                <Fragment set:html={codeHtml.get("ring-gradient")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -326,7 +326,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("ring-animated")}/></pre>
+                <Fragment set:html={codeHtml.get("ring-animated")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -348,7 +348,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <p class="docs-demo-hint">The spinner scales with the avatar (em-based) — with a 10px floor on xs.</p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("loading")}/></pre>
+                <Fragment set:html={codeHtml.get("loading")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -365,7 +365,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Avatar name="Alan Turing" variant="muted"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("shapes")}/></pre>
+                <Fragment set:html={codeHtml.get("shapes")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -379,7 +379,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Avatar src="https://placehold.co/64x64/1f2937/9ca3af?text=hopper" alt="Grace Hopper" fit="contain"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("image")}/></pre>
+                <Fragment set:html={codeHtml.get("image")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -392,7 +392,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <BlockDemo id="compact-social-proof"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("compact-social-proof")}/></pre>
+                <Fragment set:html={codeHtml.get("compact-social-proof")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -405,7 +405,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <BlockDemo id="avatar-group-hover-tooltips"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("avatar-group-hover-tooltips")}/></pre>
+                <Fragment set:html={codeHtml.get("avatar-group-hover-tooltips")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -418,7 +418,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <BlockDemo id="avatar-social-proof-label"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("avatar-social-proof-label")}/></pre>
+                <Fragment set:html={codeHtml.get("avatar-social-proof-label")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -431,7 +431,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <BlockDemo id="pill-button-with-avatar"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("pill-button-with-avatar")}/></pre>
+                <Fragment set:html={codeHtml.get("pill-button-with-avatar")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -444,7 +444,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <BlockDemo id="avatar-group-hover-tooltips-v2"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("avatar-group-hover-tooltips-v2")}/></pre>
+                <Fragment set:html={codeHtml.get("avatar-group-hover-tooltips-v2")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -457,7 +457,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <BlockDemo id="avatar-empty-state"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("avatar-empty-state")}/></pre>
+                <Fragment set:html={codeHtml.get("avatar-empty-state")} />
               </Fragment>
             </DemoTabs>
           </div>

@@ -21,7 +21,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Slider name="dm-dis" label="Disabled" value={40} disabled/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -37,7 +37,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                         marks={["50%", "125%", "200%"]}/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("tooltip")}/></pre>
+                <Fragment set:html={codeHtml.get("tooltip")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -52,7 +52,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                         marks={["0", "50", "100"]}/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("range")}/></pre>
+                <Fragment set:html={codeHtml.get("range")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -68,7 +68,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("vertical")}/></pre>
+                <Fragment set:html={codeHtml.get("vertical")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -84,7 +84,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("radial")}/></pre>
+                <Fragment set:html={codeHtml.get("radial")} />
               </Fragment>
             </DemoTabs>
           </div>

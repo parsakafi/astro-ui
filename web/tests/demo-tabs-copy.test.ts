@@ -26,3 +26,18 @@ describe("DemoTabs code copy", () => {
     expect(block).toMatch(/position:\s*relative/);
   });
 });
+
+describe("BlockTabs code parity", () => {
+  const src = readFileSync("src/components/docs/BlockTabs.astro", "utf8");
+
+  it("uses the same code-tab structure as component demos (bare Shiki pre + DemoTabs copy button)", () => {
+    expect(src).toContain("<DemoTabs id={id}>");
+    expect(src).not.toContain("copyButton={false}");
+    expect(src).not.toContain("docs-codeblock--flush");
+    expect(src).not.toContain("data-copy={");
+  });
+
+  it("has no per-instance copy handler (DemoTabs singleton covers it)", () => {
+    expect(src).not.toContain("navigator.clipboard");
+  });
+});

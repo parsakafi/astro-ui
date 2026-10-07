@@ -26,7 +26,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Badge variant="info">New</Badge>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("variants")}/></pre>
+                <Fragment set:html={codeHtml.get("variants")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -42,7 +42,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Badge size="xl">xl</Badge>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("sizes")}/></pre>
+                <Fragment set:html={codeHtml.get("sizes")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -75,7 +75,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("icon")}/></pre>
+                <Fragment set:html={codeHtml.get("icon")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -93,7 +93,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <p class="docs-demo-hint">The dot inherits the variant's text color — set it and forget it.</p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("dot")}/></pre>
+                <Fragment set:html={codeHtml.get("dot")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -117,7 +117,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   the pill padding is built in.</p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("avatar")}/></pre>
+                <Fragment set:html={codeHtml.get("avatar")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -141,7 +141,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("flag")}/></pre>
+                <Fragment set:html={codeHtml.get("flag")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -162,7 +162,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("dismiss")}/></pre>
+                <Fragment set:html={codeHtml.get("dismiss")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -197,7 +197,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("overlay")}/></pre>
+                <Fragment set:html={codeHtml.get("overlay")} />
               </Fragment>
             </DemoTabs>
           </div>

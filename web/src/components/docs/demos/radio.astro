@@ -20,7 +20,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Radio name="dm-plan" value="ent" disabled>Enterprise (unavailable)</Radio>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("group")}/></pre>
+                <Fragment set:html={codeHtml.get("group")} />
               </Fragment>
             </DemoTabs>
           </div>

@@ -20,7 +20,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Switch name="dm-air" disabled>Airplane (disabled)</Switch>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -35,7 +35,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Switch name="dm-sm" size="sm" checked label="Small"/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("shapes")}/></pre>
+                <Fragment set:html={codeHtml.get("shapes")} />
               </Fragment>
             </DemoTabs>
           </div>

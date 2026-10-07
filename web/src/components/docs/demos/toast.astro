@@ -22,7 +22,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Toaster/>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("basic")}/></pre>
+                <Fragment set:html={codeHtml.get("basic")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -42,7 +42,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("modes")}/></pre>
+                <Fragment set:html={codeHtml.get("modes")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -59,7 +59,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </div>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("description")}/></pre>
+                <Fragment set:html={codeHtml.get("description")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -72,7 +72,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Button id="dm-toast-act" variant="outline">With action</Button>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("action")}/></pre>
+                <Fragment set:html={codeHtml.get("action")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -85,7 +85,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Button id="dm-toast-pos-btn" variant="outline">Top-left toast</Button>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("position")}/></pre>
+                <Fragment set:html={codeHtml.get("position")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -98,7 +98,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Button id="dm-toast-load-btn" variant="outline">Loading flow</Button>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("promise")}/></pre>
+                <Fragment set:html={codeHtml.get("promise")} />
               </Fragment>
             </DemoTabs>
           </div>
@@ -118,7 +118,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 </p>
               </Fragment>
               <Fragment slot="code">
-                <pre><code set:html={codeHtml.get("expand")}/></pre>
+                <Fragment set:html={codeHtml.get("expand")} />
               </Fragment>
             </DemoTabs>
           </div>

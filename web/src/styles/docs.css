@@ -920,12 +920,22 @@
   display: flex;
   align-items: start;
   gap: var(--ui-space-2);
+  line-height: var(--ui-leading-normal);
 }
 .docs-block-features li::before {
   content: "✓";
   flex-shrink: 0;
   color: var(--ui-primary);
   font-weight: var(--ui-font-semibold);
+}
+
+/* version heading with status badge (e.g. changelog entry) —
+   keeps the badge off the title and vertically centered */
+.docs-block-version {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  margin: 0;
 }
 
 /* stats block */
@@ -2039,7 +2049,7 @@
 .docs-demo-code {
   position: relative;
   margin: 0;
-  padding: var(--ui-space-4);
+  padding: var(--ui-space-2);
   background-color: var(--ui-muted);
   border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
 }
@@ -2048,9 +2058,13 @@
 .docs-demo-code pre,
 .docs-codeblock pre {
   margin: 0;
-  padding: 0;
+  padding: var(--ui-space-4);
   background: none;
   overflow-x: auto;
+}
+
+.docs-demo-code pre {
+  border-radius: var(--ui-radius-sm);
 }
 
 .docs-demo-code pre code,
@@ -2991,18 +3005,11 @@
   background: none;
 }
 
-.docs-codeblock--flush {
-  border: none;
-  border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
-  background: color-mix(in srgb, var(--ui-foreground) 1%, var(--ui-background));
-}
-.docs-codeblock--flush pre {
-  padding: var(--ui-space-4);
+/* Long block sources stay bounded with an internal scroll,
+   like the old flush wrapper did. */
+.docs-block-tabs .docs-demo-code pre {
   max-block-size: 28rem;
   overflow: auto;
-}
-.docs-codeblock--flush .docs-copy-btn {
-  inset-block-start: var(--ui-space-3);
 }
 
 /* ---------- Shiki dual themes ---------- */

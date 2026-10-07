@@ -1,12 +1,12 @@
 ---
 /**
-  * BlockTabs — Preview/Code switcher for a single block, mirroring the
-  * component demo UX (DemoTabs) so blocks feel first-class: live
-  * preview on one tab, highlighted copy-paste-ready Astro source on
-  * the other (CodeBlock ships the copy button).
-  */
+ * BlockTabs — Preview/Code switcher for a single block, mirroring the
+ * component demo UX (DemoTabs) so blocks feel first-class: live
+ * preview on one tab, highlighted copy-paste-ready Astro source on
+ * the other. Same code-tab structure as component demos — a bare
+ * Shiki <pre> plus DemoTabs' built-in copy button.
+ */
 import DemoTabs from "./DemoTabs.astro";
-import CodeBlock from "./CodeBlock.astro";
 import BlockDemo from "./BlockDemo.astro";
 import {codeToHtml} from "shiki";
 import {blockCode} from "../../lib/block-code";
@@ -37,37 +37,10 @@ const highlighted = await codeToHtml(source.trim(), {
       <BlockDemo id={blockId} idPrefix={idPrefix}/>
     </Fragment>
     <Fragment slot="code">
-      <div class="docs-codeblock docs-codeblock--flush">
-        {/* codeToHtml returns a full <pre class="shiki"> — inserting it
-				    verbatim (no wrapper pre of our own) keeps exactly one
-				    scroll container. */}
-        <Fragment set:html={highlighted}/>
-        <button
-          type="button"
-          class="docs-copy-btn"
-          data-copy={source.trim()}
-          aria-label={`Copy ${blockId} block source`}
-        >
-          Copy
-        </button>
-      </div>
+      {/* codeToHtml returns a full <pre class="shiki"> — inserting it
+			    verbatim (no wrapper pre of our own) keeps exactly one
+			    scroll container, same as component demos. */}
+      <Fragment set:html={highlighted}/>
     </Fragment>
   </DemoTabs>
 </div>
-
-<script>
-  // Same contract as CodeBlock's copy button: delegated, progressive
-  // (no-op without clipboard permission), label flips to "Copied!".
-  document.addEventListener("click", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLElement)) return;
-    const btn = target.closest<HTMLButtonElement>("[data-copy]");
-    if (!btn?.dataset.copy) return;
-    navigator.clipboard?.writeText(btn.dataset.copy).then(() => {
-      btn.textContent = "Copied!";
-      window.setTimeout(() => {
-        btn.textContent = "Copy";
-      }, 1500);
-    });
-  });
-</script>
