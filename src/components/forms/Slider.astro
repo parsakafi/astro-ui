@@ -1,24 +1,24 @@
 ---
 /**
-  * Slider — native <input type="range"> with token styling.
-  *
-  * The platform owns dragging, keyboard (arrows/Home/End), and form
-  * submission. Three presentations share one API: horizontal (default),
-  * vertical (`orientation="vertical"`, min at bottom, via native
-  * writing-mode), and radial (`radial`, an SVG dial). `range` renders
-  * two thumbs bounding a filled span. The track always fills from the
-  * minimum to the thumb (or between thumbs in range mode) and mirrors
-  * in RTL via logical properties.
-  *
-  * `marks` renders tick labels under/next to the track (visual only).
-  * `tooltip` renders a value bubble that follows the thumb — RTL-aware.
-  *
-  * JavaScript required: No for rendering and keyboard interaction. A
-  * small script (bundled once per page, included automatically when the
-  * relevant mode is used) keeps the range fill + tooltips in sync while
-  * dragging and drives radial pointer dragging.
-  */
-import {cn} from "../../utils/cn";
+ * Slider — native <input type="range"> with token styling.
+ *
+ * The platform owns dragging, keyboard (arrows/Home/End), and form
+ * submission. Three presentations share one API: horizontal (default),
+ * vertical (`orientation="vertical"`, min at bottom, via native
+ * writing-mode), and radial (`radial`, an SVG dial). `range` renders
+ * two thumbs bounding a filled span. The track always fills from the
+ * minimum to the thumb (or between thumbs in range mode) and mirrors
+ * in RTL via logical properties.
+ *
+ * `marks` renders tick labels under/next to the track (visual only).
+ * `tooltip` renders a value bubble that follows the thumb — RTL-aware.
+ *
+ * JavaScript required: No for rendering and keyboard interaction. A
+ * small script (bundled once per page, included automatically when the
+ * relevant mode is used) keeps the range fill + tooltips in sync while
+ * dragging and drives radial pointer dragging.
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Field name for form submission. In range mode the end thumb submits as `nameEnd`. */
@@ -96,7 +96,8 @@ const isVertical = orientation === "vertical" && !radial;
 const isRange = range === true;
 const span = max - min;
 
-const clampPct = (v: number) => Math.min(Math.max(((v - min) / span) * 100, 0), 100);
+const clampPct = (v: number) =>
+  Math.min(Math.max(((v - min) / span) * 100, 0), 100);
 const startValue = value;
 const endValue = valueEnd ?? Math.round(min + span * 0.75);
 const pctStart = clampPct(startValue);
@@ -127,7 +128,11 @@ const pct = pctStart;
 // Radial geometry: viewBox 0 0 100 100, r=42 → circumference ≈ 263.89
 const DIAL_R = 42;
 const DIAL_C = 2 * Math.PI * DIAL_R;
-const dialSizeMap: Record<string, string> = {sm: "88px", md: "120px", lg: "152px"};
+const dialSizeMap: Record<string, string> = {
+  sm: "88px",
+  md: "120px",
+  lg: "152px",
+};
 const dialSize = dialSizeMap[size] ?? dialSizeMap.md;
 // Fill arc covers [0, pct] (single) or [pctStart, pctEnd] (range), from 12 o'clock clockwise.
 const dialFracA = isRange ? pctStart / 100 : 0;

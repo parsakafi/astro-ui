@@ -1,19 +1,19 @@
 ---
 /**
-  * CarouselSlide — one slide of a Carousel.
-  *
-  * A scroll-snap target with slide semantics: it announces itself as
-  * a slide via aria-roledescription and gets its "x of y" aria-label
-  * from the parent Carousel's scoped script (which knows the count).
-  * Put any content inside — cards, images, text.
-  *
-  * Captions: pass `caption` and `captionDescription` (or fill the
-  * `caption` slot for custom markup) to render an overlay bar across
-  * the slide's lower edge — the classic image-carousel caption.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * CarouselSlide — one slide of a Carousel.
+ *
+ * A scroll-snap target with slide semantics: it announces itself as
+ * a slide via aria-roledescription and gets its "x of y" aria-label
+ * from the parent Carousel's scoped script (which knows the count).
+ * Put any content inside — cards, images, text.
+ *
+ * Captions: pass `caption` and `captionDescription` (or fill the
+ * `caption` slot for custom markup) to render an overlay bar across
+ * the slide's lower edge — the classic image-carousel caption.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   class?: string;

@@ -1,25 +1,25 @@
 ---
 /**
-  * Radio — zero-JS single-choice control.
-  *
-  * Native <input type="radio"> wrapped in a <label> so the whole row is
-  * clickable with correct semantics. Radios in one group share `name`;
-  * `checked` sets the initial server-rendered state; selection is native
-  * browser behavior (arrows move within the group, Tab enters it).
-  * Group labelling: wrap related radios in <fieldset>/<legend>.
-  * Invalid state is visual (error ring) — pair with `ariaDescribedby`
-  * pointing at error text, since `aria-invalid` is not allowed on the
-  * radio role.
-  *
-  *   <fieldset>
-  *     <legend>Plan</legend>
-  *     <Radio name="plan" value="free" checked>Free</Radio>
-  *     <Radio name="plan" value="pro">Pro</Radio>
-  *   </fieldset>
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Radio — zero-JS single-choice control.
+ *
+ * Native <input type="radio"> wrapped in a <label> so the whole row is
+ * clickable with correct semantics. Radios in one group share `name`;
+ * `checked` sets the initial server-rendered state; selection is native
+ * browser behavior (arrows move within the group, Tab enters it).
+ * Group labelling: wrap related radios in <fieldset>/<legend>.
+ * Invalid state is visual (error ring) — pair with `ariaDescribedby`
+ * pointing at error text, since `aria-invalid` is not allowed on the
+ * radio role.
+ *
+ *   <fieldset>
+ *     <legend>Plan</legend>
+ *     <Radio name="plan" value="free" checked>Free</Radio>
+ *     <Radio name="plan" value="pro">Pro</Radio>
+ *   </fieldset>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   name?: string;
@@ -29,7 +29,15 @@ export interface Props {
   disabled?: boolean;
   invalid?: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "inherit";
   class?: string;
   id?: string;
   ariaLabel?: string;

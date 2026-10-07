@@ -1,16 +1,16 @@
 ---
 /**
-  * Pagination — zero-JS page navigation.
-  *
-  * Semantic <nav aria-label> wrapping a linked page list. Fully
-  * server-rendered: every page is a real link, so it works without JS
-  * and is crawlable. Pages outside the `siblingCount` window collapse
-  * into ellipsis items. `pageHref` builds each URL from a page number;
-  * use hash/query links or route paths as fits the app.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Pagination — zero-JS page navigation.
+ *
+ * Semantic <nav aria-label> wrapping a linked page list. Fully
+ * server-rendered: every page is a real link, so it works without JS
+ * and is crawlable. Pages outside the `siblingCount` window collapse
+ * into ellipsis items. `pageHref` builds each URL from a page number;
+ * use hash/query links or route paths as fits the app.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** 1-based current page. */
@@ -51,10 +51,14 @@ const {
 } = Astro.props;
 
 /** Page numbers + "ellipsis" markers between the fixed ends. */
-function pageRange(current: number, count: number, siblings: number): (number | "ellipsis")[] {
+function pageRange(
+  current: number,
+  count: number,
+  siblings: number,
+): (number | "ellipsis")[] {
   const totalSlots = siblings * 2 + 5;
   if (count <= totalSlots) {
-    return Array.from({length: count}, (_, i) => i + 1);
+    return Array.from({ length: count }, (_, i) => i + 1);
   }
   const left = Math.max(current - siblings, 1);
   const right = Math.min(current + siblings, count);

@@ -1,20 +1,20 @@
 ---
 /**
-  * ToggleGroup — a connected row (or column) of Toggle buttons.
-  *
-  * Composition mirrors ButtonGroup: wrap any number of <Toggle> children
-  * and the group joins their borders into one segmented control. Radius
-  * and negative-margin stitching reach slotted children through
-  * :global(); the doubled group class keeps specificity above a child's
-  * own radius rule regardless of stylesheet order.
-  *
-  * State stays per-toggle (aria-pressed on each child); whether the group
-  * enforces single-selection is the consumer's choice — a one-line app
-  * script, same recipe as Toggle.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * ToggleGroup — a connected row (or column) of Toggle buttons.
+ *
+ * Composition mirrors ButtonGroup: wrap any number of <Toggle> children
+ * and the group joins their borders into one segmented control. Radius
+ * and negative-margin stitching reach slotted children through
+ * :global(); the doubled group class keeps specificity above a child's
+ * own radius rule regardless of stylesheet order.
+ *
+ * State stays per-toggle (aria-pressed on each child); whether the group
+ * enforces single-selection is the consumer's choice — a one-line app
+ * script, same recipe as Toggle.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Stack direction of the connected group. */

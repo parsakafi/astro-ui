@@ -1,7 +1,7 @@
-import {readdirSync, readFileSync} from "node:fs";
-import {dirname, join} from "node:path";
-import {fileURLToPath} from "node:url";
-import {describe, expect, it} from "vitest";
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, it } from "vitest";
 
 /**
  * Static contracts every public component must satisfy:
@@ -13,7 +13,7 @@ const dir = join(root, "src", "components");
 // Components live in category subdirs (general/, layout/, …).
 const files: string[] = [];
 const walk = (d: string) => {
-  for (const e of readdirSync(d, {withFileTypes: true})) {
+  for (const e of readdirSync(d, { withFileTypes: true })) {
     if (e.isDirectory()) walk(join(d, e.name));
     else if (e.name.endsWith(".astro")) files.push(e.name);
   }
@@ -26,7 +26,7 @@ const sources = new Map<string, string>(
     let content = "";
     const find = (d: string): void => {
       if (content) return;
-      for (const e of readdirSync(d, {withFileTypes: true})) {
+      for (const e of readdirSync(d, { withFileTypes: true })) {
         if (e.isDirectory()) find(join(d, e.name));
         else if (e.name === f) content = readFileSync(join(d, e.name), "utf8");
       }
@@ -106,19 +106,6 @@ describe("component contracts", () => {
     );
   });
 
-  const JS_REQUIRED = new Set([
-    "Autocomplete.astro",
-    "AlertDialog.astro",
-    "Collapsible.astro",
-    "Dialog.astro",
-    "Lightbox.astro",
-    "Popover.astro",
-    "Sheet.astro",
-    "StickySurface.astro",
-    "Tabs.astro",
-    "Textarea.astro",
-    "Toaster.astro",
-  ]);
   const NO_PROPS_COMPONENTS = new Set(["Toaster.astro"]);
 
   for (const [file, src] of sources) {
@@ -144,10 +131,7 @@ describe("component contracts", () => {
           // Scoped <script> blocks run client-side only (Toaster/Tabs
           // precedent), so browser APIs are allowed there. The
           // server-rendered frontmatter + template must stay clean.
-          const serverSrc = src.replace(
-            /<script[\s\S]*?<\/script>/g,
-            "",
-          );
+          const serverSrc = src.replace(/<script[\s\S]*?<\/script>/g, "");
           for (const global of [
             "window.",
             "document.",
@@ -226,17 +210,24 @@ describe("component contracts", () => {
         ([, , body]) => /clip-path:\s*inset\(50%\)|clip:\s*rect\(/.test(body),
       );
       for (const [, selector, body] of rules) {
-        const classes = [...selector.matchAll(/\.([a-zA-Z][\w-]*)/g)].map((m) => m[1]);
+        const classes = [...selector.matchAll(/\.([a-zA-Z][\w-]*)/g)].map(
+          (m) => m[1],
+        );
         const onTable =
           // Selector names a table-family element directly (\b won't
           // match inside compound class names like __table).
           new RegExp(`\\b(${TABLE_TAGS})\\b`).test(selector) ||
           // Or one of its classes is applied to a table-family tag.
           classes.some((cls) =>
-            new RegExp(`<(${TABLE_TAGS})\\b[^>]*class="[^"]*\\b${cls}\\b[^"]*"`).test(template),
+            new RegExp(
+              `<(${TABLE_TAGS})\\b[^>]*class="[^"]*\\b${cls}\\b[^"]*"`,
+            ).test(template),
           );
         if (onTable) {
-          expect(body, `${file}: "${selector.trim()}" clips a table-family element — add display: block to the recipe`).toMatch(/display:\s*block\b/);
+          expect(
+            body,
+            `${file}: "${selector.trim()}" clips a table-family element — add display: block to the recipe`,
+          ).toMatch(/display:\s*block\b/);
         }
       }
     }

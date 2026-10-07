@@ -1,25 +1,25 @@
 ---
 /**
-  * Popover — a click-triggered anchored layer for interactive content.
-  *
-  * The trigger slot renders a real <button> (aria-expanded +
-  * aria-controls); the content slot renders in an anchored panel below
-  * (or above) it. The scoped script toggles the panel, closes on Escape
-  * and outside-pointer, moves focus into the panel on open, and returns
-  * focus to the trigger on close.
-  *
-  * Positioning is CSS-anchored relative to the trigger wrapper (same
-  * technique as Tooltip), so the panel never needs viewport math.
-  *
-  *   <Popover id="share">
-  *     <span slot="trigger">Share</span>
-  *     <span slot="content">Share via <a href="…">link</a></span>
-  *   </Popover>
-  *
-  * JavaScript required: Yes
-  */
-import {cn} from "../../utils/cn";
-import {uid} from "../../utils/uid";
+ * Popover — a click-triggered anchored layer for interactive content.
+ *
+ * The trigger slot renders a real <button> (aria-expanded +
+ * aria-controls); the content slot renders in an anchored panel below
+ * (or above) it. The scoped script toggles the panel, closes on Escape
+ * and outside-pointer, moves focus into the panel on open, and returns
+ * focus to the trigger on close.
+ *
+ * Positioning is CSS-anchored relative to the trigger wrapper (same
+ * technique as Tooltip), so the panel never needs viewport math.
+ *
+ *   <Popover id="share">
+ *     <span slot="trigger">Share</span>
+ *     <span slot="content">Share via <a href="…">link</a></span>
+ *   </Popover>
+ *
+ * JavaScript required: Yes
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
 
 export interface Props {
   /** Anchor the panel above the trigger when there is no room below. */

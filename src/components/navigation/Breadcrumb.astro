@@ -1,18 +1,18 @@
 ---
 /**
-  * Breadcrumb — zero-JS breadcrumb trail.
-  *
-  * Two authoring modes. Data-driven (default): pass `items` and get a
-  * <nav aria-label> of links — the current page is a non-link span with
-  * aria-current="page", separators are drawn in CSS. Composed: omit
-  * `items` and author your own <span class="aui-breadcrumb__item">
-  * children in the default slot — for badges, avatars, dropdown
-  * triggers, and buttons. No list markup: the trail is a plain flex
-  * container, so consumer markup stays flat.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Breadcrumb — zero-JS breadcrumb trail.
+ *
+ * Two authoring modes. Data-driven (default): pass `items` and get a
+ * <nav aria-label> of links — the current page is a non-link span with
+ * aria-current="page", separators are drawn in CSS. Composed: omit
+ * `items` and author your own <span class="aui-breadcrumb__item">
+ * children in the default slot — for badges, avatars, dropdown
+ * triggers, and buttons. No list markup: the trail is a plain flex
+ * container, so consumer markup stays flat.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface BreadcrumbItem {
   /** Link target. Omit `href` for the current (non-link) page. */

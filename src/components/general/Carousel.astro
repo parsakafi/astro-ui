@@ -1,33 +1,33 @@
 ---
 /**
-  * Carousel — accessible, scroll-snap slide deck with zero dependencies.
-  *
-  * A region (role=region, aria-roledescription="carousel") whose slides
-  * are native scroll containers with CSS scroll-snap — scrolling IS
-  * the interaction, so touch, trackpad, and drag all work with no
-  * positioning math. Prev/next buttons and an optional "1 / 5"
-  * counter ride the header row (or overlay the slides with
-  * controlsPlacement="overlay"); indicators render a dot per slide
-  * that jumps on click. The small scoped script syncs the active
-  * slide on scroll, wires the buttons, ArrowLeft/ArrowRight (↑/↓
-  * vertical) when focus is inside, wraps with loop, and can autoplay
-  * on an interval — pausing on hover/focus (and when the user prefers
-  * reduced motion).
-  *
-  *   <Carousel label="Featured cards">
-  *     <CarouselSlide><div class="card">1</div></CarouselSlide>
-  *     ...
-  *   </Carousel>
-  *
-  * Slide content is whatever you put inside CarouselSlide — captions,
-  * cards, images. Each slide carries aria-roledescription="slide" and
-  * an aria-label "x of y". A bubbling `carousel:change` event with
-  * `{index}` fires on move; dispatch `carousel:set` ({index} or
-  * {action: "next"|"prev"}) on the root to navigate programmatically.
-  *
-  * JavaScript required: Yes (button + keyboard navigation, counter sync)
-  */
-import {cn} from "../../utils/cn";
+ * Carousel — accessible, scroll-snap slide deck with zero dependencies.
+ *
+ * A region (role=region, aria-roledescription="carousel") whose slides
+ * are native scroll containers with CSS scroll-snap — scrolling IS
+ * the interaction, so touch, trackpad, and drag all work with no
+ * positioning math. Prev/next buttons and an optional "1 / 5"
+ * counter ride the header row (or overlay the slides with
+ * controlsPlacement="overlay"); indicators render a dot per slide
+ * that jumps on click. The small scoped script syncs the active
+ * slide on scroll, wires the buttons, ArrowLeft/ArrowRight (↑/↓
+ * vertical) when focus is inside, wraps with loop, and can autoplay
+ * on an interval — pausing on hover/focus (and when the user prefers
+ * reduced motion).
+ *
+ *   <Carousel label="Featured cards">
+ *     <CarouselSlide><div class="card">1</div></CarouselSlide>
+ *     ...
+ *   </Carousel>
+ *
+ * Slide content is whatever you put inside CarouselSlide — captions,
+ * cards, images. Each slide carries aria-roledescription="slide" and
+ * an aria-label "x of y". A bubbling `carousel:change` event with
+ * `{index}` fires on move; dispatch `carousel:set` ({index} or
+ * {action: "next"|"prev"}) on the root to navigate programmatically.
+ *
+ * JavaScript required: Yes (button + keyboard navigation, counter sync)
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Accessible name — required for a sensible carousel region. */
@@ -126,7 +126,9 @@ const classes = cn(
   "aui-carousel",
   `aui-carousel--${orientation}`,
   `aui-carousel--${variant}`,
-  controlsPlacement === "overlay" && controls && "aui-carousel--overlay-controls",
+  controlsPlacement === "overlay" &&
+    controls &&
+    "aui-carousel--overlay-controls",
   className,
 );
 

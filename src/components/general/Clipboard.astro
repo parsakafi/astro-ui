@@ -1,20 +1,20 @@
 ---
 /**
-  * Clipboard — copy-to-clipboard affordance with icon-first triggers.
-  *
-  * Renders a trigger plus the value to copy. The core is zero-JS: the
-  * button carries the value in `data-aui-clipboard`; wire it app-side,
-  * or set `auto` to opt into the built-in micro-script that calls the
-  * async clipboard API for you — a few lines, no hydration, and it
-  * degrades to a no-op without JS.
-  *
-  * The trigger leads with a copy icon; on success the icon swaps to a
-  * check and a polite live region confirms. `onlyIcon` renders a square
-  * icon-only trigger (docs code-block style) with a derived aria-label.
-  *
-  * JavaScript required: No (Yes when `auto` is set)
-  */
-import {cn} from "../../utils/cn";
+ * Clipboard — copy-to-clipboard affordance with icon-first triggers.
+ *
+ * Renders a trigger plus the value to copy. The core is zero-JS: the
+ * button carries the value in `data-aui-clipboard`; wire it app-side,
+ * or set `auto` to opt into the built-in micro-script that calls the
+ * async clipboard API for you — a few lines, no hydration, and it
+ * degrades to a no-op without JS.
+ *
+ * The trigger leads with a copy icon; on success the icon swaps to a
+ * check and a polite live region confirms. `onlyIcon` renders a square
+ * icon-only trigger (docs code-block style) with a derived aria-label.
+ *
+ * JavaScript required: No (Yes when `auto` is set)
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Text placed on the clipboard. */
@@ -67,7 +67,9 @@ const classes = cn(
 );
 
 const triggerLabel = ariaLabel ?? (onlyIcon ? `Copy ${value}` : undefined);
-const buttonId = id ?? `aui-clipboard-${Math.abs(value.length * 31 + value.charCodeAt(0) * 7)}`;
+const buttonId =
+  id ??
+  `aui-clipboard-${Math.abs(value.length * 31 + value.charCodeAt(0) * 7)}`;
 ---
 
 <span class={classes}>

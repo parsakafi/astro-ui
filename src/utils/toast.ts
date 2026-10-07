@@ -1,14 +1,20 @@
 // ─── types ──────────────────────────────────────────────────────────────────
 
-export type ToastTypes = 'default' | 'success' | 'info' | 'warning' | 'error' | 'loading';
+export type ToastTypes =
+  | "default"
+  | "success"
+  | "info"
+  | "warning"
+  | "error"
+  | "loading";
 
 export type Position =
-  | 'top-left'
-  | 'top-right'
-  | 'top-center'
-  | 'bottom-left'
-  | 'bottom-right'
-  | 'bottom-center';
+  | "top-left"
+  | "top-right"
+  | "top-center"
+  | "bottom-left"
+  | "bottom-right"
+  | "bottom-center";
 
 /** Button rendered at the inline-end of the toast (action).
  *  The toast is dismissed after `onClick` runs. */
@@ -57,7 +63,9 @@ function getActive(): Toast[] {
 }
 
 function notify(): void {
-  listeners.forEach((fn) => fn(getActive()));
+  listeners.forEach((fn) => {
+    fn(getActive());
+  });
 }
 
 function clearTimer(id: number | string): void {
@@ -70,7 +78,9 @@ function clearTimer(id: number | string): void {
 
 // ─── store ──────────────────────────────────────────────────────────────────
 
-function createToast(data: Omit<Toast, 'id' | 'createdAt'> & { id?: number | string }): number | string {
+function createToast(
+  data: Omit<Toast, "id" | "createdAt"> & { id?: number | string },
+): number | string {
   const id = data.id != null ? data.id : nextId++;
 
   if (dismissed.has(id)) {
@@ -80,7 +90,7 @@ function createToast(data: Omit<Toast, 'id' | 'createdAt'> & { id?: number | str
   }
 
   dismissed.delete(id);
-  toastsArr.push({...data, id, createdAt: Date.now()});
+  toastsArr.push({ ...data, id, createdAt: Date.now() });
   notify();
   return id;
 }
@@ -101,7 +111,7 @@ function dismissToast(id?: number | string): void {
 function updateToast(id: number | string, data: Partial<Toast>): void {
   const idx = toastsArr.findIndex((t) => t.id === id && !dismissed.has(id));
   if (idx >= 0) {
-    toastsArr[idx] = {...toastsArr[idx], ...data};
+    toastsArr[idx] = { ...toastsArr[idx], ...data };
     notify();
   }
 }
@@ -109,10 +119,14 @@ function updateToast(id: number | string, data: Partial<Toast>): void {
 // ─── callable object ────────────────────────────────────────────────────────
 
 function toastFn(message: string, options?: ToastOptions): number | string {
-  return createToast({...options, title: message, type: options?.type ?? 'default'});
+  return createToast({
+    ...options,
+    title: message,
+    type: options?.type ?? "default",
+  });
 }
 
-interface ToastFn extends Function {
+type ToastFn = {
   (message: string, options?: ToastOptions): number | string;
 
   success: (message: string, options?: ToastOptions) => number | string;
@@ -124,15 +138,19 @@ interface ToastFn extends Function {
   dismiss: (id?: number | string) => void;
   subscribe: (fn: Listener) => () => void;
   toasts: Toast[];
-}
+};
 
 const toast = toastFn as ToastFn;
 
-toast.success = (msg, opts) => createToast({...opts, title: msg, type: 'success'});
-toast.error = (msg, opts) => createToast({...opts, title: msg, type: 'error'});
-toast.info = (msg, opts) => createToast({...opts, title: msg, type: 'info'});
-toast.warning = (msg, opts) => createToast({...opts, title: msg, type: 'warning'});
-toast.loading = (msg, opts) => createToast({...opts, title: msg, type: 'loading'});
+toast.success = (msg, opts) =>
+  createToast({ ...opts, title: msg, type: "success" });
+toast.error = (msg, opts) =>
+  createToast({ ...opts, title: msg, type: "error" });
+toast.info = (msg, opts) => createToast({ ...opts, title: msg, type: "info" });
+toast.warning = (msg, opts) =>
+  createToast({ ...opts, title: msg, type: "warning" });
+toast.loading = (msg, opts) =>
+  createToast({ ...opts, title: msg, type: "loading" });
 toast.update = updateToast;
 toast.dismiss = dismissToast;
 toast.subscribe = (fn: Listener): (() => void) => {
@@ -141,7 +159,7 @@ toast.subscribe = (fn: Listener): (() => void) => {
   return () => listeners.delete(fn);
 };
 
-Object.defineProperty(toast, 'toasts', {
+Object.defineProperty(toast, "toasts", {
   get(): Toast[] {
     return getActive();
   },
@@ -149,7 +167,7 @@ Object.defineProperty(toast, 'toasts', {
   configurable: true,
 });
 
-export {toast};
+export { toast };
 
 // ─── inline SVG icons (no React) ────────────────────────────────────────────
 

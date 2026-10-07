@@ -1,19 +1,19 @@
 ---
 /**
-  * Badge — zero-JS status/count label.
-  *
-  * Inline semantic <span>. For counts, keep the number as text content
-  * so screen readers announce it; add aria-label for context when needed.
-  *
-  * Inline mode extras: `dot` renders a status dot tinted by the variant,
-  * an `icon` slot renders a leading icon box sized by `--aui-badge-icon`,
-  * an Avatar dropped into the default slot gets optical alignment for
-  * free, and `closable` renders an accessible dismiss button (wire the
-  * removal app-side — the component ships zero JS).
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Badge — zero-JS status/count label.
+ *
+ * Inline semantic <span>. For counts, keep the number as text content
+ * so screen readers announce it; add aria-label for context when needed.
+ *
+ * Inline mode extras: `dot` renders a status dot tinted by the variant,
+ * an `icon` slot renders a leading icon box sized by `--aui-badge-icon`,
+ * an Avatar dropped into the default slot gets optical alignment for
+ * free, and `closable` renders an accessible dismiss button (wire the
+ * removal app-side — the component ships zero JS).
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   variant?:
@@ -39,7 +39,7 @@ export interface Props {
   /** Position for the badge bubble when used as an overlay on another element. */
   position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
   /** Forwarded to the badge span element when `position` is set. */
-  contentProps?: Record<string, any>;
+  contentProps?: Record<string, unknown>;
   /** Leading status dot, tinted by the variant (inline mode only). */
   dot?: boolean;
   /** Renders a dismiss (×) button after the content (inline mode only). */

@@ -1,22 +1,22 @@
 ---
 /**
-  * Field — wraps a form control with label, hint, and error messaging.
-  *
-  * Composition over props: the default slot carries the control itself
-  * (Input, Select, Textarea…), the named slots carry the chrome. When
-  * `id` is set the wiring is automatic:
-  *
-  *   - the label points at the control (`for="${id}-control"`)
-  *   - hint + error text get stable ids consumers can reference
-  *   - the wrapper exposes data-invalid so themes can recolor the chrome
-  *
-  * For full accessibility give the control `id="${id}-control"` and, when
-  * invalid, `aria-invalid` plus `aria-describedby="${id}-error"` (Input
-  * and Textarea already expose `invalid` for this).
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Field — wraps a form control with label, hint, and error messaging.
+ *
+ * Composition over props: the default slot carries the control itself
+ * (Input, Select, Textarea…), the named slots carry the chrome. When
+ * `id` is set the wiring is automatic:
+ *
+ *   - the label points at the control (`for="${id}-control"`)
+ *   - hint + error text get stable ids consumers can reference
+ *   - the wrapper exposes data-invalid so themes can recolor the chrome
+ *
+ * For full accessibility give the control `id="${id}-control"` and, when
+ * invalid, `aria-invalid` plus `aria-describedby="${id}-error"` (Input
+ * and Textarea already expose `invalid` for this).
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Base id — enables label-for wiring and stable hint/error ids. */
@@ -26,12 +26,7 @@ export interface Props {
   class?: string;
 }
 
-const {
-  id,
-  required = false,
-  class: className,
-  ...rest
-} = Astro.props;
+const { id, required = false, class: className, ...rest } = Astro.props;
 
 const classes = cn("aui-field", className);
 

@@ -1,34 +1,34 @@
 ---
 /**
-  * Dialog — modal window built on the native <dialog> element.
-  *
-  * Structure (slots) is separated from behavior: modality, `::backdrop`,
-  * focus containment, Escape-to-close, and focus return all come from the
-  * platform, not from a headless runtime.
-  *
-  * The component itself ships zero JavaScript. Opening a modal dialog
-  * inherently needs one app-level `showModal()` call, so the consuming
-  * app owns a tiny trigger script — full recipe in docs/components/dialog.md:
-  *
-  *   <Button id="open-prefs">Preferences</Button>
-  *   <Dialog id="prefs">
-  *     <h2 slot="title">Preferences</h2>
-  *     <p>Dialog body.</p>
-  *   </Dialog>
-  *   <!-- app script: getElementById("open-prefs") → showModal() on #prefs -->
-  *
-  * Closing needs no JS: the built-in close button and any
-  * `<form method="dialog">` button dismiss natively, as does Escape.
-  *
-  * Accessible naming is wired automatically: when `id` is set, the title
-  * and description slots get `{id}-title` / `{id}-description` ids and the
-  * dialog points `aria-labelledby` / `aria-describedby` at them. Pass
-  * `ariaLabel` for an explicitly labelled dialog instead.
-  *
-  * JavaScript required: Yes — app-level trigger only (`showModal()` plus
-  * optional backdrop-dismiss); the component ships zero JS itself.
-  */
-import {cn} from "../../utils/cn";
+ * Dialog — modal window built on the native <dialog> element.
+ *
+ * Structure (slots) is separated from behavior: modality, `::backdrop`,
+ * focus containment, Escape-to-close, and focus return all come from the
+ * platform, not from a headless runtime.
+ *
+ * The component itself ships zero JavaScript. Opening a modal dialog
+ * inherently needs one app-level `showModal()` call, so the consuming
+ * app owns a tiny trigger script — full recipe in docs/components/dialog.md:
+ *
+ *   <Button id="open-prefs">Preferences</Button>
+ *   <Dialog id="prefs">
+ *     <h2 slot="title">Preferences</h2>
+ *     <p>Dialog body.</p>
+ *   </Dialog>
+ *   <!-- app script: getElementById("open-prefs") → showModal() on #prefs -->
+ *
+ * Closing needs no JS: the built-in close button and any
+ * `<form method="dialog">` button dismiss natively, as does Escape.
+ *
+ * Accessible naming is wired automatically: when `id` is set, the title
+ * and description slots get `{id}-title` / `{id}-description` ids and the
+ * dialog points `aria-labelledby` / `aria-describedby` at them. Pass
+ * `ariaLabel` for an explicitly labelled dialog instead.
+ *
+ * JavaScript required: Yes — app-level trigger only (`showModal()` plus
+ * optional backdrop-dismiss); the component ships zero JS itself.
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
@@ -44,7 +44,15 @@ export interface Props {
   showClose?: boolean;
   /** Accessible label for the built-in close button. */
   closeLabel?: string;
-  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  variant?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info";
   class?: string;
 }
 

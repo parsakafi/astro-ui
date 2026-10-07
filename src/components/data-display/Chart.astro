@@ -1,38 +1,38 @@
 ---
 /**
-  * Chart — zero-JS SVG charts driven by a data prop.
-  *
-   * Renders pure SVG at build time: grouped/stacked bars, a combo
-   * chart (bars + overlay line on a secondary axis), line/area chart,
-   * pie/donut, a 3D (extruded) pie, a squarified treemap, a funnel,
-   *  a Nightingale rose, an auto-binned histogram, a waffle unit
-   *  grid, Few-style bullet rows, Cleveland dumbbells, scatter plot, horizontal progress
-   * bars, a box plot
-   * (five-number summaries or raw samples with Tukey whiskers),
-   * a waterfall (floating signed deltas on a running total), a heatmap
-   * (color-ramped matrix cells), a cohort retention triangle, an
-   * oblique 3D terrain wireframe, or a tile-grid choropleth map
-   * depending on `type`. Everything
-  * reads design tokens, so charts
-  * follow the theme (including dark mode) with no re-render — colors
-  * resolve from --ui-chart-1..6, overridable per-series via the
-  * `colors` prop.
-  *
-  *   <Chart
-  *     type="bar"
-  *     labels={["Jan", "Feb", "Mar"]}
-  *     series={[{ name: "Revenue", data: [12, 30, 24] }]}
-  *   />
-  *
-   * Bar/line/area/scatter take `labels` + `series`; pie/donut take a
-   * single series (first one wins); boxplot takes `labels` + `boxplots`
-   * (five-number summaries or raw samples). An accessible fallback table is
-  * always rendered for screen readers; add `title`/`description` for
-  * figure context. Hover titles come from native <title> elements.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Chart — zero-JS SVG charts driven by a data prop.
+ *
+ * Renders pure SVG at build time: grouped/stacked bars, a combo
+ * chart (bars + overlay line on a secondary axis), line/area chart,
+ * pie/donut, a 3D (extruded) pie, a squarified treemap, a funnel,
+ *  a Nightingale rose, an auto-binned histogram, a waffle unit
+ *  grid, Few-style bullet rows, Cleveland dumbbells, scatter plot, horizontal progress
+ * bars, a box plot
+ * (five-number summaries or raw samples with Tukey whiskers),
+ * a waterfall (floating signed deltas on a running total), a heatmap
+ * (color-ramped matrix cells), a cohort retention triangle, an
+ * oblique 3D terrain wireframe, or a tile-grid choropleth map
+ * depending on `type`. Everything
+ * reads design tokens, so charts
+ * follow the theme (including dark mode) with no re-render — colors
+ * resolve from --ui-chart-1..6, overridable per-series via the
+ * `colors` prop.
+ *
+ *   <Chart
+ *     type="bar"
+ *     labels={["Jan", "Feb", "Mar"]}
+ *     series={[{ name: "Revenue", data: [12, 30, 24] }]}
+ *   />
+ *
+ * Bar/line/area/scatter take `labels` + `series`; pie/donut take a
+ * single series (first one wins); boxplot takes `labels` + `boxplots`
+ * (five-number summaries or raw samples). An accessible fallback table is
+ * always rendered for screen readers; add `title`/`description` for
+ * figure context. Hover titles come from native <title> elements.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface ChartSeries {
   /** Series name — used in the fallback table and aria labels. */
@@ -143,7 +143,33 @@ export interface Props {
   /** Data series. Sankey charts use nodes/links instead. */
   series?: ChartSeries[];
   /** Chart type. */
-  type?: "bar" | "line" | "area" | "pie" | "donut" | "pie3d" | "treemap" | "funnel" | "rose" | "histogram" | "waffle" | "bullet" | "dumbbell" | "scatter" | "hbar" | "combo" | "gauge" | "radar" | "radial" | "sankey" | "waterfall" | "heatmap" | "cohort" | "terrain" | "map" | "boxplot";
+  type?:
+    | "bar"
+    | "line"
+    | "area"
+    | "pie"
+    | "donut"
+    | "pie3d"
+    | "treemap"
+    | "funnel"
+    | "rose"
+    | "histogram"
+    | "waffle"
+    | "bullet"
+    | "dumbbell"
+    | "scatter"
+    | "hbar"
+    | "combo"
+    | "gauge"
+    | "radar"
+    | "radial"
+    | "sankey"
+    | "waterfall"
+    | "heatmap"
+    | "cohort"
+    | "terrain"
+    | "map"
+    | "boxplot";
   /** Map only: region shapes laid out in a loose tile grid, like a
    *  stylized country map. Each region is a rect cell (default) or a
    *  freeform polygon: points are viewBox coordinates, so the same
@@ -389,7 +415,11 @@ const {
   gaugeRamp,
   barStyle = "rect",
   waterfallTotals,
-  waterfallColors: wfColors = ["var(--ui-success)", "var(--ui-error)", "var(--ui-primary)"],
+  waterfallColors: wfColors = [
+    "var(--ui-success)",
+    "var(--ui-error)",
+    "var(--ui-primary)",
+  ],
   heatmapRamp,
   heatmapLabels = false,
   cohortSizes,
@@ -423,11 +453,17 @@ const colors = [
   "var(--ui-chart-5, var(--ui-error))",
   "var(--ui-chart-6, var(--ui-muted-foreground))",
 ];
-const colorAt = (i: number, s?: ChartSeries) => s?.color ?? colors[i % colors.length];
+const colorAt = (i: number, s?: ChartSeries) =>
+  s?.color ?? colors[i % colors.length];
 
 const W = 640;
 /* Combo needs extra right padding for the secondary axis labels. */
-const PAD = {top: 12, right: type === "combo" ? 36 : 12, bottom: 28, left: 36};
+const PAD = {
+  top: 12,
+  right: type === "combo" ? 36 : 12,
+  bottom: 28,
+  left: 36,
+};
 const plotW = W - PAD.left - PAD.right;
 const plotH = height - PAD.top - PAD.bottom;
 
@@ -435,19 +471,29 @@ const stacked = stack === true && type === "bar";
 const stackPercent = stack === "percent" && type === "bar";
 const combo = type === "combo";
 /* Per-label sums across series — the y-scale ceiling in stacked mode. */
-const stackTotals = labels.map((_, i) => series.reduce((a, s) => a + (s.data[i] ?? 0), 0));
+const stackTotals = labels.map((_, i) =>
+  series.reduce((a, s) => a + (s.data[i] ?? 0), 0),
+);
 
 /* --- combo scales: bars on the left axis, lines on the right.
    Each axis gets its own ceiling, so a count can share a plot with a
    currency without either being flattened by the other's magnitude. */
-const comboLineIdx = combo ? series.map((s, si) => (s.kind === "line" ? si : -1)).filter((si) => si >= 0) : [];
+const comboLineIdx = combo
+  ? series.map((s, si) => (s.kind === "line" ? si : -1)).filter((si) => si >= 0)
+  : [];
 const comboLeft = combo ? series.filter((s) => s.kind !== "line") : [];
 const comboRight = combo ? comboLineIdx.map((si) => series[si]) : [];
-const comboRightMaxY = rightMaxY ?? Math.max(...comboRight.flatMap((s) => s.data), 1);
+const comboRightMaxY =
+  rightMaxY ?? Math.max(...comboRight.flatMap((s) => s.data), 1);
 
 const peak = combo
   ? Math.max(maxY ?? Math.max(...comboLeft.flatMap((s) => s.data), 1), 1)
-  : maxY ?? (stackPercent ? 100 : stacked ? Math.max(...stackTotals, 1) : Math.max(...series.flatMap((s) => s.data), 1));
+  : (maxY ??
+    (stackPercent
+      ? 100
+      : stacked
+        ? Math.max(...stackTotals, 1)
+        : Math.max(...series.flatMap((s) => s.data), 1)));
 /* Nice scales: round the raw third (peak/3) UP to a 1/1.5/2/2.5/3/4/5/6/8
    ×10ⁿ step and extend the ceiling to a whole multiple, so ticks read
    0, 150, 300, 450 instead of 0, 153.3, 306.7. An explicit
@@ -459,35 +505,45 @@ const niceStepUp = (v: number) => {
   return (NICE_MULTS.find((m) => m >= n - 1e-9) ?? 10) * p;
 };
 const niceScale = (peak: number) => {
-  if (peak <= 0) return {max: 1, ticks: [0, 1 / 3, 2 / 3, 1]};
+  if (peak <= 0) return { max: 1, ticks: [0, 1 / 3, 2 / 3, 1] };
   const step = niceStepUp(peak / 3);
   const count = Math.max(Math.ceil(peak / step - 1e-9), 1);
-  return {max: count * step, ticks: Array.from({length: count + 1}, (_, i) => i * step)};
+  return {
+    max: count * step,
+    ticks: Array.from({ length: count + 1 }, (_, i) => i * step),
+  };
 };
 const thirds = (max: number) => [0, 1, 2, 3].map((i) => (i * max) / 3);
 /* 100% stacking keeps its exact 0–100 scale (full bars must touch
    the top); everything else nices or honors the override. */
-const yScale = !combo && stackPercent
-  ? {max: 100, ticks: [0, 25, 50, 75, 100]}
-  : maxY != null
-    ? {max: Math.max(maxY, 1), ticks: thirds(Math.max(maxY, 1))}
-    : niceScale(peak);
+const yScale =
+  !combo && stackPercent
+    ? { max: 100, ticks: [0, 25, 50, 75, 100] }
+    : maxY != null
+      ? { max: Math.max(maxY, 1), ticks: thirds(Math.max(maxY, 1)) }
+      : niceScale(peak);
 const yMax = yScale.max;
 const yTicks = yScale.ticks;
 const yRScale = combo
   ? rightMaxY != null
-    ? {max: Math.max(rightMaxY, 1), ticks: thirds(Math.max(rightMaxY, 1))}
+    ? { max: Math.max(rightMaxY, 1), ticks: thirds(Math.max(rightMaxY, 1)) }
     : niceScale(comboRightMaxY)
-  : {max: yMax, ticks: yTicks};
+  : { max: yMax, ticks: yTicks };
 const yRMax = yRScale.max;
 const yRTicks = yRScale.ticks;
-const x = (i: number, n: number) => PAD.left + (n <= 1 ? plotW / 2 : (i / (n - 1)) * plotW);
+const x = (i: number, n: number) =>
+  PAD.left + (n <= 1 ? plotW / 2 : (i / (n - 1)) * plotW);
 const y = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yMax) * plotH;
 const yR = (v: number) => PAD.top + plotH - (Math.max(v, 0) / yRMax) * plotH;
 
 const isWaterfall = type === "waterfall";
 const cartesian =
-  type === "bar" || type === "line" || type === "area" || type === "scatter" || type === "combo" || isWaterfall;
+  type === "bar" ||
+  type === "line" ||
+  type === "area" ||
+  type === "scatter" ||
+  type === "combo" ||
+  isWaterfall;
 const circular = type === "pie" || type === "donut";
 const isHbar = type === "hbar";
 const isGauge = type === "gauge";
@@ -508,10 +564,17 @@ const isDumbbell = type === "dumbbell";
    must not share defs. Derived from content, so builds stay
    deterministic; an author-supplied id wins when present.
    (Declared before the bar/area/pie consumers below.) */
-const showGradient = gradient && (type === "area" || type === "bar" || type === "combo" || type === "line" || circular);
-const uidSeed = `${title ?? ""}|${labels.join(",")}|${series.map((s) => `${s.name}:${s.data.join(",")}:${s.color ?? ""}`).join(";")}|${boxplots.map((g) => `${g.name}:${g.color ?? ""}:${g.boxes.map((b) => Array.isArray(b) ? `raw:${b.join(",")}` : `${b.min},${b.q1},${b.median},${b.q3},${b.max},${(b.outliers ?? []).join(",")}:${b.color ?? ""}`).join(";")}`).join(";")}`;
+const showGradient =
+  gradient &&
+  (type === "area" ||
+    type === "bar" ||
+    type === "combo" ||
+    type === "line" ||
+    circular);
+const uidSeed = `${title ?? ""}|${labels.join(",")}|${series.map((s) => `${s.name}:${s.data.join(",")}:${s.color ?? ""}`).join(";")}|${boxplots.map((g) => `${g.name}:${g.color ?? ""}:${g.boxes.map((b) => (Array.isArray(b) ? `raw:${b.join(",")}` : `${b.min},${b.q1},${b.median},${b.q3},${b.max},${(b.outliers ?? []).join(",")}:${b.color ?? ""}`)).join(";")}`).join(";")}`;
 let uidHash = 0;
-for (let i = 0; i < uidSeed.length; i++) uidHash = (uidHash * 31 + uidSeed.charCodeAt(i)) >>> 0;
+for (let i = 0; i < uidSeed.length; i++)
+  uidHash = (uidHash * 31 + uidSeed.charCodeAt(i)) >>> 0;
 const uid = id ?? `aui-chart-${uidHash.toString(36)}`;
 const gradientId = (si: number) => `${uid}-grad-${si}`;
 /* Fade strengths scale with gradientIntensity so callers can dial the
@@ -534,10 +597,11 @@ const patternId = (si: number) => `${uid}-pat-${si}`;
 const pieSliceDefs = () => {
   const values = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
   const total = values.reduce((a, b) => a + b, 0) || 1;
-  let sliceDefs: { label: string; value: number; merged?: string[] }[] = values.map((v, i) => ({
-    label: labels[i] ?? String(i),
-    value: v,
-  }));
+  let sliceDefs: { label: string; value: number; merged?: string[] }[] =
+    values.map((v, i) => ({
+      label: labels[i] ?? String(i),
+      value: v,
+    }));
   const thr = Math.max(0, Math.min(collapseBelow, 50));
   if (thr > 0 && sliceDefs.length > 2) {
     const small = sliceDefs.filter((s) => (s.value / total) * 100 < thr);
@@ -545,38 +609,44 @@ const pieSliceDefs = () => {
       const kept = sliceDefs.filter((s) => (s.value / total) * 100 >= thr);
       sliceDefs = [
         ...kept,
-        {label: "Other", value: small.reduce((a, s) => a + s.value, 0), merged: small.map((s) => s.label)},
+        {
+          label: "Other",
+          value: small.reduce((a, s) => a + s.value, 0),
+          merged: small.map((s) => s.label),
+        },
       ];
     }
   }
-  return {total, sliceDefs};
+  return { total, sliceDefs };
 };
 const pieData = circular
   ? (() => {
-    const {total, sliceDefs} = pieSliceDefs();
-    /* padAngle (degrees) carves a gap between slices; each slice's
+      const { total, sliceDefs } = pieSliceDefs();
+      /* padAngle (degrees) carves a gap between slices; each slice's
        corners then round by sliceRadius via quadratic corners on
        both arcs — the padded, rounded-segment donut look. */
-    const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
-    const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
-    const gap = padFits ? pad : 0;
-    const rr = Math.max(0, Math.min(sliceRadius, 40));
-    let angle = -Math.PI / 2;
-    return sliceDefs.map((def, i) => {
-      const v = def.value;      const cx = W / 2;
-      const cy = height / 2;
-      /* Labels need headroom: outside leader labels shrink the pie so
+      const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
+      const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
+      const gap = padFits ? pad : 0;
+      const rr = Math.max(0, Math.min(sliceRadius, 40));
+      let angle = -Math.PI / 2;
+      return sliceDefs.map((def, i) => {
+        const v = def.value;
+        const cx = W / 2;
+        const cy = height / 2;
+        /* Labels need headroom: outside leader labels shrink the pie so
          the elbow (r+18) plus text fit; centroid value labels sit on
          the ring at 0.62·r and can straddle the horizontal extremes
          (mid ≈ 0°/180°), where a wide label like "412 · 46%" would
          otherwise cross the viewBox edge — shrink for those too. */
-      const r = sliceLabels === "label"
-        ? Math.max(Math.min(W / 2 - 104, height / 2 - 40), 40)
-        : sliceLabels === "value" || sliceLabels === "value-pct"
-          ? Math.max(Math.min(W / 2 - 56, height / 2 - 24), 40)
-          : Math.min(W, height) / 2 - 8;
-      const ri = type === "donut" ? r * (innerRadius / 100) : 0;
-      /* Rounded corners via the stroke trick: the path is a plain
+        const r =
+          sliceLabels === "label"
+            ? Math.max(Math.min(W / 2 - 104, height / 2 - 40), 40)
+            : sliceLabels === "value" || sliceLabels === "value-pct"
+              ? Math.max(Math.min(W / 2 - 56, height / 2 - 24), 40)
+              : Math.min(W, height) / 2 - 8;
+        const ri = type === "donut" ? r * (innerRadius / 100) : 0;
+        /* Rounded corners via the stroke trick: the path is a plain
          sharp sector on a shrunk annulus (r-ro / ri+ro), then a
          same-color round-join stroke of width 2·ro expands it back
          to the true radii, rounding every corner with exactly ro —
@@ -585,68 +655,82 @@ const pieData = circular
          adds ro/rm to keep the requested visual pad. "outer" mode
          skips the trick (ro = 0, no gap compensation) and rounds the
          rim corners explicitly in the path below instead. */
-      const outerOnly = sliceCorners === "outer";
-      const ro = outerOnly ? 0 : ri > 0 ? Math.min(rr, (r - ri) / 2 - 0.5) : Math.min(rr, r / 2);
-      const rm = (r + ri) / 2;
-      const pathGap = gap + (ro > 0 ? ro / rm : 0);
-      const span = Math.max((v / total) * Math.PI * 2 - pathGap, 0.02);
-      const s0 = angle + pathGap / 2;
-      const s1 = s0 + span;
-      angle += (v / total) * Math.PI * 2;
-      const large = span > Math.PI ? 1 : 0;
-      /* Callout geometry: the value label sits at the slice
+        const outerOnly = sliceCorners === "outer";
+        const ro = outerOnly
+          ? 0
+          : ri > 0
+            ? Math.min(rr, (r - ri) / 2 - 0.5)
+            : Math.min(rr, r / 2);
+        const rm = (r + ri) / 2;
+        const pathGap = gap + (ro > 0 ? ro / rm : 0);
+        const span = Math.max((v / total) * Math.PI * 2 - pathGap, 0.02);
+        const s0 = angle + pathGap / 2;
+        const s1 = s0 + span;
+        angle += (v / total) * Math.PI * 2;
+        const large = span > Math.PI ? 1 : 0;
+        /* Callout geometry: the value label sits at the slice
          centroid; outside labels get an elbow leader (radial stub,
          then horizontal run) pointing at the slice's mid angle. */
-      const mid = (s0 + s1) / 2;
-      const lr = ri + (r - ri) * 0.62;
-      const lx = cx + lr * Math.cos(mid);
-      const ly = cy + lr * Math.sin(mid);
-      const dir = Math.cos(mid) >= 0 ? 1 : -1;
-      const ax = cx + (r + 4) * Math.cos(mid);
-      const ay = cy + (r + 4) * Math.sin(mid);
-      const bx = cx + (r + 18) * Math.cos(mid);
-      const by = cy + (r + 18) * Math.sin(mid);
-      const tx = bx + dir * 16;
-      const leader = `M ${ax.toFixed(2)} ${ay.toFixed(2)} L ${bx.toFixed(2)} ${by.toFixed(2)} L ${(tx - dir * 2).toFixed(2)} ${by.toFixed(2)}`;
-      const p = (radius: number, a: number) => `${(cx + radius * Math.cos(a)).toFixed(2)} ${(cy + radius * Math.sin(a)).toFixed(2)}`;
-      /* Rim-only rounding ("petal" slices): each radial edge stops cro
+        const mid = (s0 + s1) / 2;
+        const lr = ri + (r - ri) * 0.62;
+        const lx = cx + lr * Math.cos(mid);
+        const ly = cy + lr * Math.sin(mid);
+        const dir = Math.cos(mid) >= 0 ? 1 : -1;
+        const ax = cx + (r + 4) * Math.cos(mid);
+        const ay = cy + (r + 4) * Math.sin(mid);
+        const bx = cx + (r + 18) * Math.cos(mid);
+        const by = cy + (r + 18) * Math.sin(mid);
+        const tx = bx + dir * 16;
+        const leader = `M ${ax.toFixed(2)} ${ay.toFixed(2)} L ${bx.toFixed(2)} ${by.toFixed(2)} L ${(tx - dir * 2).toFixed(2)} ${by.toFixed(2)}`;
+        const p = (radius: number, a: number) =>
+          `${(cx + radius * Math.cos(a)).toFixed(2)} ${(cy + radius * Math.sin(a)).toFixed(2)}`;
+        /* Rim-only rounding ("petal" slices): each radial edge stops cro
          short of the rim, a quadratic corner with the sharp rim point
          as control rounds onto the arc, and the center tip (plus the
          donut inner corners) stays sharp. cro is clamped so both rim
          corners plus a sliver of true arc fit the slice and the edge
          stubs never cross the inner radius — degenerate slices fall
          back to a sharp sector automatically. */
-      const cro = outerOnly ? Math.max(0, Math.min(rr, ((span - 0.02) * r) / 2, r - ri - 0.5)) : 0;
-      const edge = (a: number) => `${(cx + (r - cro) * Math.cos(a)).toFixed(2)} ${(cy + (r - cro) * Math.sin(a)).toFixed(2)}`;
-      const delta = r > 0 ? cro / r : 0;
-      const largeO = s1 - delta - (s0 + delta) > Math.PI ? 1 : 0;
-      const rOut = r - ro;
-      const rIn = ri + ro;
-      const arc = outerOnly
-        ? `M ${(ri > 0 ? p(ri, s0) : `${cx.toFixed(2)} ${cy.toFixed(2)}`)} L ${edge(s0)} Q ${p(r, s0)} ${p(r, s0 + delta)}` +
-          ` A ${r} ${r} 0 ${largeO} 1 ${p(r, s1 - delta)} Q ${p(r, s1)} ${edge(s1)}` +
-          (ri > 0 ? ` L ${p(ri, s1)} A ${ri} ${ri} 0 ${large} 0 ${p(ri, s0)} Z` : " Z")
-        : `M ${p(rOut, s0)} A ${rOut} ${rOut} 0 ${large} 1 ${p(rOut, s1)}` +
-          (ri > 0
-            ? ` L ${p(rIn, s1)} A ${rIn} ${rIn} 0 ${large} 0 ${p(rIn, s0)} Z`
-            : ` L ${cx.toFixed(2)} ${cy.toFixed(2)} Z`);
-      return {
-        arc,
-        ro,
-        label: def.label,
-        value: v,
-        pct: Math.round((v / total) * 100),
-        color: def.merged ? "var(--ui-muted-foreground)" : colorAt(i, series[0]),
-        tip: def.merged ? `Other (${def.merged.length}): ${def.merged.join(", ")}` : undefined,
-        lx,
-        ly,
-        leader,
-        tx,
-        by,
-        dir,
-      };
-    });
-  })()
+        const cro = outerOnly
+          ? Math.max(0, Math.min(rr, ((span - 0.02) * r) / 2, r - ri - 0.5))
+          : 0;
+        const edge = (a: number) =>
+          `${(cx + (r - cro) * Math.cos(a)).toFixed(2)} ${(cy + (r - cro) * Math.sin(a)).toFixed(2)}`;
+        const delta = r > 0 ? cro / r : 0;
+        const largeO = s1 - delta - (s0 + delta) > Math.PI ? 1 : 0;
+        const rOut = r - ro;
+        const rIn = ri + ro;
+        const arc = outerOnly
+          ? `M ${ri > 0 ? p(ri, s0) : `${cx.toFixed(2)} ${cy.toFixed(2)}`} L ${edge(s0)} Q ${p(r, s0)} ${p(r, s0 + delta)}` +
+            ` A ${r} ${r} 0 ${largeO} 1 ${p(r, s1 - delta)} Q ${p(r, s1)} ${edge(s1)}` +
+            (ri > 0
+              ? ` L ${p(ri, s1)} A ${ri} ${ri} 0 ${large} 0 ${p(ri, s0)} Z`
+              : " Z")
+          : `M ${p(rOut, s0)} A ${rOut} ${rOut} 0 ${large} 1 ${p(rOut, s1)}` +
+            (ri > 0
+              ? ` L ${p(rIn, s1)} A ${rIn} ${rIn} 0 ${large} 0 ${p(rIn, s0)} Z`
+              : ` L ${cx.toFixed(2)} ${cy.toFixed(2)} Z`);
+        return {
+          arc,
+          ro,
+          label: def.label,
+          value: v,
+          pct: Math.round((v / total) * 100),
+          color: def.merged
+            ? "var(--ui-muted-foreground)"
+            : colorAt(i, series[0]),
+          tip: def.merged
+            ? `Other (${def.merged.length}): ${def.merged.join(", ")}`
+            : undefined,
+          lx,
+          ly,
+          leader,
+          tx,
+          by,
+          dir,
+        };
+      });
+    })()
   : [];
 
 /* --- pie3d: extruded pie (cylinder look). Top faces are elliptical
@@ -660,97 +744,137 @@ const pieData = circular
    the walls must meet the top edge exactly. --- */
 const pie3d = isPie3d
   ? (() => {
-    const {total, sliceDefs} = pieSliceDefs();
-    if (sliceDefs.length === 0) return null;
-    const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
-    const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
-    const gap = padFits ? pad : 0;
-    const K3D = 0.5;
-    const h = Math.max(0, Math.min(depth, 120));
-    const outside = sliceLabels === "label";
-    const r = Math.max(
-      Math.min(W / 2 - (outside ? 104 : 24), (height - 16 - h - (outside ? 24 : 0)) / (2 * K3D)),
-      40,
-    );
-    const cx3 = W / 2;
-    const cyTop = 8 + (outside ? 12 : 0) + r * K3D;
-    const TAU = Math.PI * 2;
-    const E = (a: number, dy = 0) => ({
-      x: cx3 + r * Math.cos(a),
-      y: cyTop + dy + r * K3D * Math.sin(a),
-    });
-    const f = (n: number) => n.toFixed(2);
-    const pt = (p: { x: number; y: number }) => `${f(p.x)} ${f(p.y)}`;
-    const norm = (a: number) => ((a % TAU) + TAU) % TAU;
-    /* Cut faces only for edges strictly inside the front half: edges
+      const { total, sliceDefs } = pieSliceDefs();
+      if (sliceDefs.length === 0) return null;
+      const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
+      const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
+      const gap = padFits ? pad : 0;
+      const K3D = 0.5;
+      const h = Math.max(0, Math.min(depth, 120));
+      const outside = sliceLabels === "label";
+      const r = Math.max(
+        Math.min(
+          W / 2 - (outside ? 104 : 24),
+          (height - 16 - h - (outside ? 24 : 0)) / (2 * K3D),
+        ),
+        40,
+      );
+      const cx3 = W / 2;
+      const cyTop = 8 + (outside ? 12 : 0) + r * K3D;
+      const TAU = Math.PI * 2;
+      const E = (a: number, dy = 0) => ({
+        x: cx3 + r * Math.cos(a),
+        y: cyTop + dy + r * K3D * Math.sin(a),
+      });
+      const f = (n: number) => n.toFixed(2);
+      const pt = (p: { x: number; y: number }) => `${f(p.x)} ${f(p.y)}`;
+      const norm = (a: number) => ((a % TAU) + TAU) % TAU;
+      /* Cut faces only for edges strictly inside the front half: edges
        at the silhouette (sin ≈ 0) or the nearest/farthest points
        (|cos| ≈ 0) project to edge-on slivers, so they are skipped. */
-    const showsCut = (a: number) => {
-      const n = norm(a);
-      return Math.sin(n) > 0.08 && Math.abs(Math.cos(n)) > 0.08;
-    };
-    const shade = (color: string, pct: number) => `color-mix(in srgb, ${color} ${pct}%, black)`;
-    let angle = -Math.PI / 2;
-    const slices = sliceDefs.map((def, i) => {
-      const span = Math.max((def.value / total) * TAU - gap, 0.02);
-      const s0 = angle + gap / 2;
-      const s1 = s0 + span;
-      angle += (def.value / total) * TAU;
-      const color = def.merged ? "var(--ui-muted-foreground)" : colorAt(i, series[0]);
-      const pct = Math.round((def.value / total) * 100);
-      const tip = def.merged
-        ? `Other (${def.merged.length}): ${def.merged.join(", ")}`
-        : `${def.label}: ${format(def.value)} (${pct}%)`;
-      const large = span > Math.PI ? 1 : 0;
-      const top =
-        `M ${f(cx3)} ${f(cyTop)} L ${pt(E(s0))} A ${f(r)} ${f(r * K3D)} 0 ${large} 1 ${pt(E(s1))} Z`;
-      /* Rim band: intersect the slice range with the front half
+      const showsCut = (a: number) => {
+        const n = norm(a);
+        return Math.sin(n) > 0.08 && Math.abs(Math.cos(n)) > 0.08;
+      };
+      const shade = (color: string, pct: number) =>
+        `color-mix(in srgb, ${color} ${pct}%, black)`;
+      let angle = -Math.PI / 2;
+      const slices = sliceDefs.map((def, i) => {
+        const span = Math.max((def.value / total) * TAU - gap, 0.02);
+        const s0 = angle + gap / 2;
+        const s1 = s0 + span;
+        angle += (def.value / total) * TAU;
+        const color = def.merged
+          ? "var(--ui-muted-foreground)"
+          : colorAt(i, series[0]);
+        const pct = Math.round((def.value / total) * 100);
+        const tip = def.merged
+          ? `Other (${def.merged.length}): ${def.merged.join(", ")}`
+          : `${def.label}: ${format(def.value)} (${pct}%)`;
+        const large = span > Math.PI ? 1 : 0;
+        const top = `M ${f(cx3)} ${f(cyTop)} L ${pt(E(s0))} A ${f(r)} ${f(r * K3D)} 0 ${large} 1 ${pt(E(s1))} Z`;
+        /* Rim band: intersect the slice range with the front half
          (unwrapped windows), one strip per piece — each piece spans
          less than π, so both arcs take the small-arc flag. */
-      const sides: string[] = [];
-      const m = Math.floor(s0 / TAU);
-      for (let k = m - 1; k <= m + 1; k++) {
-        const a = Math.max(s0, k * TAU);
-        const b = Math.min(s1, k * TAU + Math.PI);
-        if (b - a > 0.02) {
-          sides.push(
-            `M ${pt(E(a))} A ${f(r)} ${f(r * K3D)} 0 0 1 ${pt(E(b))}` +
-            ` L ${pt(E(b, h))} A ${f(r)} ${f(r * K3D)} 0 0 0 ${pt(E(a, h))} Z`,
-          );
+        const sides: string[] = [];
+        const m = Math.floor(s0 / TAU);
+        for (let k = m - 1; k <= m + 1; k++) {
+          const a = Math.max(s0, k * TAU);
+          const b = Math.min(s1, k * TAU + Math.PI);
+          if (b - a > 0.02) {
+            sides.push(
+              `M ${pt(E(a))} A ${f(r)} ${f(r * K3D)} 0 0 1 ${pt(E(b))}` +
+                ` L ${pt(E(b, h))} A ${f(r)} ${f(r * K3D)} 0 0 0 ${pt(E(a, h))} Z`,
+            );
+          }
         }
-      }
-      const cuts: string[] = [];
-      for (const e of [s0, s1]) {
-        if (showsCut(e)) {
-          cuts.push(
-            `M ${f(cx3)} ${f(cyTop)} L ${pt(E(e))} L ${pt(E(e, h))} L ${f(cx3)} ${f(cyTop + h)} Z`,
-          );
+        const cuts: string[] = [];
+        for (const e of [s0, s1]) {
+          if (showsCut(e)) {
+            cuts.push(
+              `M ${f(cx3)} ${f(cyTop)} L ${pt(E(e))} L ${pt(E(e, h))} L ${f(cx3)} ${f(cyTop + h)} Z`,
+            );
+          }
         }
-      }
-      /* Outside callout: a dot on the slice, an elbow leader out past
+        /* Outside callout: a dot on the slice, an elbow leader out past
          the rim, then the "pct% NAME" text. */
-      const mid = (s0 + s1) / 2;
-      const dir = Math.cos(mid) >= 0 ? 1 : -1;
-      const dot = {x: cx3 + r * 0.45 * Math.cos(mid), y: cyTop + r * K3D * 0.45 * Math.sin(mid)};
-      const elbow = {x: cx3 + (r * Math.cos(mid) + 18 * Math.cos(mid)), y: cyTop + (r * K3D * Math.sin(mid) + 18 * Math.sin(mid))};
-      const tx = elbow.x + dir * 16;
-      const leader = `M ${f(dot.x)} ${f(dot.y)} L ${f(elbow.x)} ${f(elbow.y)} L ${f(tx - dir * 2)} ${f(elbow.y)}`;
-      const lx = cx3 + r * 0.62 * Math.cos(mid);
-      const ly = cyTop + r * K3D * 0.62 * Math.sin(mid);
-      return {label: def.label, value: def.value, pct, color, tip, top, sides, cuts, dir, dot, elbow, tx, leader, lx, ly};
-    });
-    return {slices, shade};
-  })()
+        const mid = (s0 + s1) / 2;
+        const dir = Math.cos(mid) >= 0 ? 1 : -1;
+        const dot = {
+          x: cx3 + r * 0.45 * Math.cos(mid),
+          y: cyTop + r * K3D * 0.45 * Math.sin(mid),
+        };
+        const elbow = {
+          x: cx3 + (r * Math.cos(mid) + 18 * Math.cos(mid)),
+          y: cyTop + (r * K3D * Math.sin(mid) + 18 * Math.sin(mid)),
+        };
+        const tx = elbow.x + dir * 16;
+        const leader = `M ${f(dot.x)} ${f(dot.y)} L ${f(elbow.x)} ${f(elbow.y)} L ${f(tx - dir * 2)} ${f(elbow.y)}`;
+        const lx = cx3 + r * 0.62 * Math.cos(mid);
+        const ly = cyTop + r * K3D * 0.62 * Math.sin(mid);
+        return {
+          label: def.label,
+          value: def.value,
+          pct,
+          color,
+          tip,
+          top,
+          sides,
+          cuts,
+          dir,
+          dot,
+          elbow,
+          tx,
+          leader,
+          lx,
+          ly,
+        };
+      });
+      return { slices, shade };
+    })()
   : null;
 
 /* --- line/area paths --- */
-const straightPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) =>
-  data.map((v, i) => `${i === 0 ? "M" : "L"} ${xAt(i).toFixed(1)} ${yAt(v).toFixed(1)}`).join(" ");
+const straightPath = (
+  data: number[],
+  yAt: (v: number) => number,
+  xAt: (i: number) => number,
+) =>
+  data
+    .map(
+      (v, i) =>
+        `${i === 0 ? "M" : "L"} ${xAt(i).toFixed(1)} ${yAt(v).toFixed(1)}`,
+    )
+    .join(" ");
 
 /* Monotone cubic interpolation (Fritsch–Carlson): the curve passes
    through every data point and never overshoots between samples —
    no phantom peaks the way a naive spline produces. */
-const curvePath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) => {
+const curvePath = (
+  data: number[],
+  yAt: (v: number) => number,
+  xAt: (i: number) => number,
+) => {
   const n = data.length;
   if (n < 3) return straightPath(data, yAt, xAt);
   const px = data.map((_, i) => xAt(i));
@@ -781,7 +905,11 @@ const curvePath = (data: number[], yAt: (v: number) => number, xAt: (i: number) 
 
 /* Step interpolation: value plateaus hold until the midpoint between
    samples, then jump vertically — the classic staircase look. */
-const stepPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) => {
+const stepPath = (
+  data: number[],
+  yAt: (v: number) => number,
+  xAt: (i: number) => number,
+) => {
   const n = data.length;
   if (n < 2) return straightPath(data, yAt, xAt);
   let d = `M ${xAt(0).toFixed(1)} ${yAt(data[0]).toFixed(1)}`;
@@ -797,7 +925,9 @@ const stepPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) =
    stays solid on purpose — it keeps dash gaps clean where lines cross. */
 const lineCls = (s: ChartSeries) => {
   const st = s.stroke ?? stroke;
-  return st === "solid" ? "aui-chart__line" : `aui-chart__line aui-chart__line--${st}`;
+  return st === "solid"
+    ? "aui-chart__line"
+    : `aui-chart__line aui-chart__line--${st}`;
 };
 
 /* Area fill paint per series. "dots"/"hatch" tile a texture pattern
@@ -806,17 +936,29 @@ const lineCls = (s: ChartSeries) => {
    is the classic translucent wash or the gradient when enabled. */
 const areaFill = (s: ChartSeries, si: number) => {
   const kind = s.fill ?? fill;
-  if (kind === "none") return {skip: true as const, style: undefined as string | undefined};
+  if (kind === "none")
+    return { skip: true as const, style: undefined as string | undefined };
   if (kind === "dots" || kind === "hatch") {
-    return {skip: false as const, style: `fill: url(#${patternId(si)}); opacity: 1`};
+    return {
+      skip: false as const,
+      style: `fill: url(#${patternId(si)}); opacity: 1`,
+    };
   }
-  if (showGradient) return {skip: false as const, style: `fill: url(#${gradientId(si)}); opacity: 1`};
-  return {skip: false as const, style: undefined as string | undefined};
+  if (showGradient)
+    return {
+      skip: false as const,
+      style: `fill: url(#${gradientId(si)}); opacity: 1`,
+    };
+  return { skip: false as const, style: undefined as string | undefined };
 };
 
 /* Bump interpolation: leaves each point horizontally and glides
    through an S-curve to the next — the slope chart look. */
-const bumpPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) => {
+const bumpPath = (
+  data: number[],
+  yAt: (v: number) => number,
+  xAt: (i: number) => number,
+) => {
   const n = data.length;
   if (n < 2) return straightPath(data, yAt, xAt);
   let d = `M ${xAt(0).toFixed(1)} ${yAt(data[0]).toFixed(1)}`;
@@ -829,7 +971,13 @@ const bumpPath = (data: number[], yAt: (v: number) => number, xAt: (i: number) =
 
 const linePath = (data: number[]) => {
   const xAt = (i: number) => x(i, data.length);
-  return curve === "step" ? stepPath(data, y, xAt) : curve === "bump" ? bumpPath(data, y, xAt) : curve ? curvePath(data, y, xAt) : straightPath(data, y, xAt);
+  return curve === "step"
+    ? stepPath(data, y, xAt)
+    : curve === "bump"
+      ? bumpPath(data, y, xAt)
+      : curve
+        ? curvePath(data, y, xAt)
+        : straightPath(data, y, xAt);
 };
 const areaPath = (data: number[]) =>
   data.length
@@ -838,26 +986,51 @@ const areaPath = (data: number[]) =>
 
 /* Combo lines ride the right axis via the yR helper; points sit on
    bar-slot centers so dots align with their bars. */
-const linePathAt = (data: number[], yAt: (v: number) => number, xAt: (i: number) => number) =>
-  curve === "step" ? stepPath(data, yAt, xAt) : curve === "bump" ? bumpPath(data, yAt, xAt) : curve ? curvePath(data, yAt, xAt) : straightPath(data, yAt, xAt);
+const linePathAt = (
+  data: number[],
+  yAt: (v: number) => number,
+  xAt: (i: number) => number,
+) =>
+  curve === "step"
+    ? stepPath(data, yAt, xAt)
+    : curve === "bump"
+      ? bumpPath(data, yAt, xAt)
+      : curve
+        ? curvePath(data, yAt, xAt)
+        : straightPath(data, yAt, xAt);
 
 /* Rounded bar geometry. A plain rx rect rounds ALL corners, which
    notches every seam of a stacked column (segments share edges).
    Stacked segments instead get a path with only the column's exposed
    corners rounded — inner seams stay square. */
-const roundedColumnPath = (bx: number, by: number, bw: number, bh: number, rTop: number, rBottom: number) => {
+const roundedColumnPath = (
+  bx: number,
+  by: number,
+  bw: number,
+  bh: number,
+  rTop: number,
+  rBottom: number,
+) => {
   if (bh <= 0 || bw <= 0) return "";
   const rt = Math.max(0, Math.min(rTop, bh / 2, bw / 2));
   const rb = Math.max(0, Math.min(rBottom, bh / 2, bw / 2));
   return [
     `M ${bx.toFixed(1)} ${(by + rt).toFixed(1)}`,
-    rt > 0 ? `Q ${bx.toFixed(1)} ${by.toFixed(1)} ${(bx + rt).toFixed(1)} ${by.toFixed(1)}` : "",
+    rt > 0
+      ? `Q ${bx.toFixed(1)} ${by.toFixed(1)} ${(bx + rt).toFixed(1)} ${by.toFixed(1)}`
+      : "",
     `H ${(bx + bw - rt).toFixed(1)}`,
-    rt > 0 ? `Q ${(bx + bw).toFixed(1)} ${by.toFixed(1)} ${(bx + bw).toFixed(1)} ${(by + rt).toFixed(1)}` : "",
+    rt > 0
+      ? `Q ${(bx + bw).toFixed(1)} ${by.toFixed(1)} ${(bx + bw).toFixed(1)} ${(by + rt).toFixed(1)}`
+      : "",
     `V ${(by + bh - rb).toFixed(1)}`,
-    rb > 0 ? `Q ${(bx + bw).toFixed(1)} ${(by + bh).toFixed(1)} ${(bx + bw - rb).toFixed(1)} ${(by + bh).toFixed(1)}` : "",
+    rb > 0
+      ? `Q ${(bx + bw).toFixed(1)} ${(by + bh).toFixed(1)} ${(bx + bw - rb).toFixed(1)} ${(by + bh).toFixed(1)}`
+      : "",
     `H ${(bx + rb).toFixed(1)}`,
-    rb > 0 ? `Q ${bx.toFixed(1)} ${(by + bh).toFixed(1)} ${bx.toFixed(1)} ${(by + bh - rb).toFixed(1)}` : "",
+    rb > 0
+      ? `Q ${bx.toFixed(1)} ${(by + bh).toFixed(1)} ${bx.toFixed(1)} ${(by + bh - rb).toFixed(1)}`
+      : "",
     "Z",
   ]
     .filter(Boolean)
@@ -873,71 +1046,104 @@ const roundedColumnPath = (bx: number, by: number, bw: number, bh: number, rTop:
 const barGroupW = plotW / Math.max(labels.length, 1);
 /* Combo line points sit on slot centers so dots align with their bars. */
 const xCombo = (i: number) => PAD.left + i * barGroupW + barGroupW / 2;
-const barCount = combo ? Math.max(comboLeft.length, 1) : Math.max(series.length, 1);
+const barCount = combo
+  ? Math.max(comboLeft.length, 1)
+  : Math.max(series.length, 1);
 const barW = stacked
   ? Math.max(4, Math.min(40, barGroupW * 0.6))
   : Math.max(4, Math.min(40, (barGroupW * 0.6) / barCount));
-type BarRect = { x: number; y: number; w: number; h: number; fill: string; tip: string; gradId?: string; d?: string };
+type BarRect = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  fill: string;
+  tip: string;
+  gradId?: string;
+  d?: string;
+};
 const barRects: BarRect[][] =
-  type === "bar" ? labels.map((label, i) => {
-      let cum = 0;
-      /* Only the column's first and last visible segments expose an
+  type === "bar"
+    ? labels.map((label, i) => {
+        let cum = 0;
+        /* Only the column's first and last visible segments expose an
          edge — those get the corner radius, inner seams stay square. */
-      const vis = series.map((s, k) => ((s.data[i] ?? 0) > 0 ? k : -1)).filter((k) => k >= 0);
-      const firstV = vis[0];
-      const lastV = vis[vis.length - 1];
-      return series.map((s, si) => {
-        const v = Math.max(s.data[i] ?? 0, 0);
-        const total = stackTotals[i];
-        /* Percent mode stacks shares of the label total (0–100). */
-        const val = stackPercent && total > 0 ? (v / total) * 100 : v;
-        const base = cum;
-        cum += val;
-        /* Percent mode is a stacked layout too. */
-        const stackedLayout = stacked || stackPercent;
-        const w = stackedLayout ? barW : barW - 2;
-        const xAt = stackedLayout
-          ? PAD.left + i * barGroupW + barGroupW / 2 - barW / 2
-          : PAD.left + i * barGroupW + barGroupW / 2 - (barW * series.length) / 2 + si * barW;
-        const h = stackedLayout
-          ? Math.max(y(base) - y(cum), v > 0 ? 2 : 0)
-          : Math.max((v / yMax) * plotH, v > 0 ? 2 : 0);
-        const yAt = stackedLayout ? y(cum) : PAD.top + plotH - h;
-        const tip = stackPercent
-          ? `${label} — ${s.name}: ${format(v)} (${Math.round(val)}%)`
-          : stacked
-            ? `${label} — ${s.name}: ${format(v)} (total: ${format(stackTotals[i])})`
-            : `${label} — ${s.name}: ${format(v)}`;
-        return {
-          x: xAt,
-          y: yAt,
-          w,
-          h,
-          fill: colorAt(si, s),
-          tip,
-          gradId: showGradient && type === "bar" ? gradientId(si) : undefined,
-          d: stackedLayout
-            ? roundedColumnPath(xAt, yAt, w, h, si === lastV ? 3 : 0, si === firstV ? 3 : 0)
-            : undefined,
-        };
-      });
-    })
+        const vis = series
+          .map((s, k) => ((s.data[i] ?? 0) > 0 ? k : -1))
+          .filter((k) => k >= 0);
+        const firstV = vis[0];
+        const lastV = vis[vis.length - 1];
+        return series.map((s, si) => {
+          const v = Math.max(s.data[i] ?? 0, 0);
+          const total = stackTotals[i];
+          /* Percent mode stacks shares of the label total (0–100). */
+          const val = stackPercent && total > 0 ? (v / total) * 100 : v;
+          const base = cum;
+          cum += val;
+          /* Percent mode is a stacked layout too. */
+          const stackedLayout = stacked || stackPercent;
+          const w = stackedLayout ? barW : barW - 2;
+          const xAt = stackedLayout
+            ? PAD.left + i * barGroupW + barGroupW / 2 - barW / 2
+            : PAD.left +
+              i * barGroupW +
+              barGroupW / 2 -
+              (barW * series.length) / 2 +
+              si * barW;
+          const h = stackedLayout
+            ? Math.max(y(base) - y(cum), v > 0 ? 2 : 0)
+            : Math.max((v / yMax) * plotH, v > 0 ? 2 : 0);
+          const yAt = stackedLayout ? y(cum) : PAD.top + plotH - h;
+          const tip = stackPercent
+            ? `${label} — ${s.name}: ${format(v)} (${Math.round(val)}%)`
+            : stacked
+              ? `${label} — ${s.name}: ${format(v)} (total: ${format(stackTotals[i])})`
+              : `${label} — ${s.name}: ${format(v)}`;
+          return {
+            x: xAt,
+            y: yAt,
+            w,
+            h,
+            fill: colorAt(si, s),
+            tip,
+            gradId: showGradient && type === "bar" ? gradientId(si) : undefined,
+            d: stackedLayout
+              ? roundedColumnPath(
+                  xAt,
+                  yAt,
+                  w,
+                  h,
+                  si === lastV ? 3 : 0,
+                  si === firstV ? 3 : 0,
+                )
+              : undefined,
+          };
+        });
+      })
     : combo
       ? labels.map((label, i) =>
-        comboLeft.map((s, bi) => {
-          const v = Math.max(s.data[i] ?? 0, 0);
-          const h = Math.max((v / yMax) * plotH, v > 0 ? 2 : 0);
-          return {
-            x: PAD.left + i * barGroupW + barGroupW / 2 - (barW * comboLeft.length) / 2 + bi * barW,
-            y: PAD.top + plotH - h,
-            w: barW - 2,
-            h,
-            fill: colorAt(series.indexOf(s), s),
-            tip: `${label} — ${s.name}: ${format(v)}`,
-            gradId: showGradient && combo ? gradientId(series.indexOf(s)) : undefined,
-          };
-        }),
-      )
+          comboLeft.map((s, bi) => {
+            const v = Math.max(s.data[i] ?? 0, 0);
+            const h = Math.max((v / yMax) * plotH, v > 0 ? 2 : 0);
+            return {
+              x:
+                PAD.left +
+                i * barGroupW +
+                barGroupW / 2 -
+                (barW * comboLeft.length) / 2 +
+                bi * barW,
+              y: PAD.top + plotH - h,
+              w: barW - 2,
+              h,
+              fill: colorAt(series.indexOf(s), s),
+              tip: `${label} — ${s.name}: ${format(v)}`,
+              gradId:
+                showGradient && combo
+                  ? gradientId(series.indexOf(s))
+                  : undefined,
+            };
+          }),
+        )
       : [];
 
 /* --- pill bars: thin fully-rounded columns on the baseline (equalizer
@@ -970,7 +1176,7 @@ const gcx = W / 2;
 const gcy = height - 18;
 const gR2 = Math.min(W / 2 - 12, gcy - 14);
 const gR1 = gR2 - 26;
-const gaugeLines = Array.from({length: gaugeCount}, (_, i) => {
+const gaugeLines = Array.from({ length: gaugeCount }, (_, i) => {
   const a = Math.PI - (i / (gaugeCount - 1)) * Math.PI;
   return {
     d: `M ${(gcx + gR1 * Math.cos(a)).toFixed(1)} ${(gcy - gR1 * Math.sin(a)).toFixed(1)} L ${(gcx + gR2 * Math.cos(a)).toFixed(1)} ${(gcy - gR2 * Math.sin(a)).toFixed(1)}`,
@@ -993,7 +1199,7 @@ const gaugeMidR = (gR1 + gR2) / 2;
 /* Fraction of each slot occupied by the block (rest = gap). */
 const gaugeBlockFill = 0.85;
 const gaugeBlocks = gaugeIsBlock
-  ? Array.from({length: gaugeCount}, (_, i) => {
+  ? Array.from({ length: gaugeCount }, (_, i) => {
       /* Block centers span the full semicircle inclusive of both ends.
          The arc runs clockwise from a0 (larger angle) to a1, and the
          round caps extend the block by half the stroke on each end —
@@ -1002,7 +1208,10 @@ const gaugeBlocks = gaugeIsBlock
       const midA = Math.PI - (i / (gaugeCount - 1)) * Math.PI;
       const slot = Math.PI / (gaugeCount - 1);
       const capPad = gaugeBandW / 2 / gaugeMidR;
-      const halfArc = Math.max((slot * gaugeBlockFill) / 2 - capPad, capPad * 0.2);
+      const halfArc = Math.max(
+        (slot * gaugeBlockFill) / 2 - capPad,
+        capPad * 0.2,
+      );
       const a0 = midA + halfArc;
       const a1 = midA - halfArc;
       const x0 = gcx + gaugeMidR * Math.cos(a0);
@@ -1012,7 +1221,9 @@ const gaugeBlocks = gaugeIsBlock
       // Interpolate the ramp color at this block's position.
       const ramp = gaugeRamp && gaugeRamp.length >= 2 ? gaugeRamp : null;
       const t = ramp ? i / (gaugeCount - 1) : 0;
-      const seg = ramp ? Math.min(Math.floor(t * (ramp.length - 1)), ramp.length - 2) : 0;
+      const seg = ramp
+        ? Math.min(Math.floor(t * (ramp.length - 1)), ramp.length - 2)
+        : 0;
       const local = ramp ? t * (ramp.length - 1) - seg : 0;
       return {
         d: `M ${x0.toFixed(1)} ${y0.toFixed(1)} A ${gaugeMidR} ${gaugeMidR} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`,
@@ -1032,7 +1243,10 @@ const radarAxes = Math.max(isRadar ? labels.length : 0, 3);
 const radarCx = W / 2;
 const radarCy = height / 2;
 const radarR = Math.max(Math.min(W / 2 - 64, height / 2 - 34), 40);
-const radarPeak = Math.max(maxY ?? Math.max(...series.flatMap((s) => s.data), 1), 1);
+const radarPeak = Math.max(
+  maxY ?? Math.max(...series.flatMap((s) => s.data), 1),
+  1,
+);
 const radarAngle = (i: number) => -Math.PI / 2 + (i / radarAxes) * Math.PI * 2;
 const radarPt = (i: number, f: number) => ({
   x: radarCx + radarR * f * Math.cos(radarAngle(i)),
@@ -1040,10 +1254,12 @@ const radarPt = (i: number, f: number) => ({
 });
 const radarRings = [0.25, 0.5, 0.75, 1].map((f) => ({
   f,
-  d: labels.map((_, i) => {
-    const p = radarPt(i, f);
-    return `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
-  }).join(" ") + " Z",
+  d: `${labels
+    .map((_, i) => {
+      const p = radarPt(i, f);
+      return `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+    })
+    .join(" ")} Z`,
 }));
 const radarSpokes = labels.map((_, i) => {
   const p = radarPt(i, 1);
@@ -1051,31 +1267,43 @@ const radarSpokes = labels.map((_, i) => {
 });
 const radarSeries = series.map((s, si) => ({
   color: colorAt(si, s),
-  poly: s.data.map((v, i) => {
-    const p = radarPt(i, Math.max(Math.min(v / radarPeak, 1), 0));
-    return `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
-  }).join(" ") + " Z",
+  poly: `${s.data
+    .map((v, i) => {
+      const p = radarPt(i, Math.max(Math.min(v / radarPeak, 1), 0));
+      return `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+    })
+    .join(" ")} Z`,
   dots: s.data.map((v, i) => {
     const p = radarPt(i, Math.max(Math.min(v / radarPeak, 1), 0));
-    return {...p, tip: `${labels[i]} — ${s.name}: ${format(v)}`};
+    return { ...p, tip: `${labels[i]} — ${s.name}: ${format(v)}` };
   }),
 }));
 /* --- radial: one concentric progress ring per label (values from the
    first series, like pie/hbar). Each ring rides a muted full track;
    the colored arc starts at 12 o'clock (full sweep) or the left end
    (half sweep) and runs clockwise, rounded caps throughout. --- */
-const radialValues = isRadial ? (series[0]?.data ?? []).map((v) => Math.max(v, 0)) : [];
+const radialValues = isRadial
+  ? (series[0]?.data ?? []).map((v) => Math.max(v, 0))
+  : [];
 const radialMax = Math.max(maxY ?? Math.max(...radialValues, 1), 1);
 const radialHalf = radialSweep === "half";
 const radialCx = W / 2;
 const radialCy = radialHalf ? height - 16 : height / 2;
-const radialR0 = radialHalf ? Math.min(W / 2 - 10, height - 30) : Math.min(W, height) / 2 - 10;
+const radialR0 = radialHalf
+  ? Math.min(W / 2 - 10, height - 30)
+  : Math.min(W, height) / 2 - 10;
 const radialRings = radialValues.map((v, i) => {
   /* Rings spread evenly from the outer radius down to ~30% of it —
      evenly spaced like the reference, never collapsing inward. */
   const n = Math.max(radialValues.length, 1);
-  const R = radialValues.length > 1 ? radialR0 - (radialR0 * 0.7 * i) / (n - 1) : radialR0;
-  const t = Math.max(4, Math.min(16, ((radialR0 * 0.7) / Math.max(n - 1, 1)) * 0.5));
+  const R =
+    radialValues.length > 1
+      ? radialR0 - (radialR0 * 0.7 * i) / (n - 1)
+      : radialR0;
+  const t = Math.max(
+    4,
+    Math.min(16, ((radialR0 * 0.7) / Math.max(n - 1, 1)) * 0.5),
+  );
   const f = Math.min(v / radialMax, 1);
   const color = colorAt(i, series[0]);
   const a0 = radialHalf ? Math.PI : -Math.PI / 2;
@@ -1086,12 +1314,27 @@ const radialRings = radialValues.map((v, i) => {
   const sy = radialCy + R * Math.sin(a0);
   const ex = radialCx + R * Math.cos(a1);
   const ey = radialCy + R * Math.sin(a1);
-  const track = radialHalf ? `M ${(radialCx - R).toFixed(2)} ${radialCy.toFixed(2)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 0 1 ${(radialCx + R).toFixed(2)} ${radialCy.toFixed(2)}` : null;
+  const track = radialHalf
+    ? `M ${(radialCx - R).toFixed(2)} ${radialCy.toFixed(2)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 0 1 ${(radialCx + R).toFixed(2)} ${radialCy.toFixed(2)}`
+    : null;
   /* A 2π sweep can't be one arc command — only a true full circle
      needs the <circle> shortcut; a half-sweep 100% is a drawable arc. */
   const fullSweep = sweep >= Math.PI * 2 - 0.001;
-  const arc = fullSweep || f < 0.002 ? null : `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 ${large} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
-  return {R, t, color, f, full: fullSweep, track, arc, label: labels[i] ?? String(i), v};
+  const arc =
+    fullSweep || f < 0.002
+      ? null
+      : `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${R.toFixed(2)} ${R.toFixed(2)} 0 ${large} 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+  return {
+    R,
+    t,
+    color,
+    f,
+    full: fullSweep,
+    track,
+    arc,
+    label: labels[i] ?? String(i),
+    v,
+  };
 });
 
 /* --- sankey: layered flow layout. Nodes are assigned to columns by
@@ -1100,9 +1343,11 @@ const radialRings = radialValues.map((v, i) => {
    are cubic Béziers with source→target color fades. --- */
 const sankey = (() => {
   if (!isSankey || nodes.length === 0 || links.length === 0) return null;
-  const nameOf = new Map(nodes.map((n, i) => [n.name, {...n, i}]));
-  const unknown = links.filter((l) => !nameOf.has(l.source) || !nameOf.has(l.target));
-  if (unknown.length > 0) return null;
+  const nameOf = new Map(nodes.map((n, i) => [n.name, { ...n, i }]));
+  const unknownLinks = links.filter(
+    (l) => !nameOf.has(l.source) || !nameOf.has(l.target),
+  );
+  if (unknownLinks.length > 0) return null;
   /* column = 1 + max(column of sources); sources (no in-links) sit at 0. */
   const col = new Map<string, number>();
   const incoming = new Map<string, SankeyLink[]>();
@@ -1112,10 +1357,12 @@ const sankey = (() => {
     outgoing.set(n.name, []);
   }
   for (const l of links) {
-    outgoing.get(l.source)!.push(l);
-    incoming.get(l.target)!.push(l);
+    outgoing.get(l.source)?.push(l);
+    incoming.get(l.target)?.push(l);
   }
-  let pending = nodes.filter((n) => incoming.get(n.name)!.length === 0).map((n) => n.name);
+  let pending = nodes
+    .filter((n) => (incoming.get(n.name)?.length ?? 0) === 0)
+    .map((n) => n.name);
   if (pending.length === 0) pending = [nodes[0].name];
   for (const s of pending) col.set(s, 0);
   let guard = 0;
@@ -1134,27 +1381,54 @@ const sankey = (() => {
     pending = next;
   }
   const colCount = Math.max(...col.values()) + 1;
-  const cols: string[][] = Array.from({length: colCount}, () => []);
+  const cols: string[][] = Array.from({ length: colCount }, () => []);
   for (const n of nodes) cols[col.get(n.name) ?? 0].push(n.name);
-  const valueOf = (name: string) =>
-    Math.max(incoming.get(name)!.reduce((a, l) => a + l.value, 0), outgoing.get(name)!.reduce((a, l) => a + l.value, 0));
-  const totalPerCol = cols.map((names) => names.reduce((a, name) => a + valueOf(name), 0));
+  const valueSum = (name: string) =>
+    Math.max(
+      incoming.get(name)!.reduce((a, l) => a + l.value, 0),
+      outgoing.get(name)!.reduce((a, l) => a + l.value, 0),
+    );
+  const totalPerCol = cols.map((names) =>
+    names.reduce((a, name) => a + valueSum(name), 0),
+  );
   const maxColTotal = Math.max(...totalPerCol, 1);
   const PAD_Y = 14;
   const nodeW = 14;
   /* Reserve side bands for node name/value labels. */
   const plotLeft = 100;
   const plotRight = W - 100;
-  const colX = (c: number) => (colCount === 1 ? plotLeft : plotLeft + (c / (colCount - 1)) * (plotRight - plotLeft - nodeW));
+  const colX = (c: number) =>
+    colCount === 1
+      ? plotLeft
+      : plotLeft + (c / (colCount - 1)) * (plotRight - plotLeft - nodeW);
   /* scale: units → px, chosen so the tallest column fills the plot. */
-  const k = (plotH - PAD_Y * (Math.max(...cols.map((c) => c.length), 1) - 1)) / maxColTotal;
-  const geo = new Map<string, { x: number; y: number; h: number; color: string; v: number }>();
+  const k =
+    (plotH - PAD_Y * (Math.max(...cols.map((c) => c.length), 1) - 1)) /
+    maxColTotal;
+  const geo = new Map<
+    string,
+    { x: number; y: number; h: number; color: string; v: number }
+  >();
   cols.forEach((names, c) => {
-    let y = PAD.top + Math.max((plotH - (names.reduce((a, name) => a + valueOf(name) * k, 0) + PAD_Y * (names.length - 1))) / 2, 0);
+    let y =
+      PAD.top +
+      Math.max(
+        (plotH -
+          (names.reduce((a, name) => a + valueSum(name) * k, 0) +
+            PAD_Y * (names.length - 1))) /
+          2,
+        0,
+      );
     for (const name of names) {
-      const h = Math.max(valueOf(name) * k, 3);
+      const h = Math.max(valueSum(name) * k, 3);
       const nd = nameOf.get(name)!;
-      geo.set(name, {x: colX(c), y, h, color: nd.color ?? colors[nd.i % colors.length], v: valueOf(name)});
+      geo.set(name, {
+        x: colX(c),
+        y,
+        h,
+        color: nd.color ?? colors[nd.i % colors.length],
+        v: valueSum(name),
+      });
       y += h + PAD_Y;
     }
   });
@@ -1175,16 +1449,30 @@ const sankey = (() => {
     const y0 = s.y + so;
     const y1 = t.y + to;
     const bend = Math.max((x1 - x0) * 0.5, 24);
-    const d = `M ${x0.toFixed(2)} ${y0.toFixed(2)}` +
+    const d =
+      `M ${x0.toFixed(2)} ${y0.toFixed(2)}` +
       ` C ${(x0 + bend).toFixed(2)} ${y0.toFixed(2)} ${(x1 - bend).toFixed(2)} ${y1.toFixed(2)} ${x1.toFixed(2)} ${y1.toFixed(2)}` +
       ` L ${x1.toFixed(2)} ${(y1 + h).toFixed(2)}` +
       ` C ${(x1 - bend).toFixed(2)} ${(y1 + h).toFixed(2)} ${(x0 + bend).toFixed(2)} ${(y0 + h).toFixed(2)} ${x0.toFixed(2)} ${(y0 + h).toFixed(2)}` +
       " Z";
-    return {d, source: l.source, target: l.target, value: l.value, h, x0, x1, y0, y1, bend};
+    return {
+      d,
+      source: l.source,
+      target: l.target,
+      value: l.value,
+      h,
+      x0,
+      x1,
+      y0,
+      y1,
+      bend,
+    };
   });
-  return {geo, ribbons, nodeW, k};
+  return { geo, ribbons, nodeW, k };
 })();
-const sankeyNodes = sankey ? [...sankey.geo.entries()].map(([name, g]) => ({name, ...g})) : [];
+const sankeyNodes = sankey
+  ? [...sankey.geo.entries()].map(([name, g]) => ({ name, ...g }))
+  : [];
 const sankeyLinks = sankey ? sankey.ribbons : [];
 
 const radarAxisLabels = labels.map((label, i) => {
@@ -1194,7 +1482,10 @@ const radarAxisLabels = labels.map((label, i) => {
   return {
     label,
     x: radarCx + (radarR + 18) * c,
-    y: radarCy + (radarR + 18) * s + (Math.abs(c) < 0.35 ? (s < 0 ? -4 : 12) : 4),
+    y:
+      radarCy +
+      (radarR + 18) * s +
+      (Math.abs(c) < 0.35 ? (s < 0 ? -4 : 12) : 4),
     anchor: Math.abs(c) < 0.35 ? "middle" : c > 0 ? "start" : "end",
   };
 });
@@ -1204,12 +1495,23 @@ const hbarMax = Math.max(...(series[0]?.data ?? [1]), 1);
    a share of the series total (part-to-whole, like the reference
    "capital inflows" bar). */
 const hbarStacked = isHbar && stack;
-const hbarTotal = Math.max(series.reduce((a, s) => a + s.data.reduce((x, v) => x + Math.max(v, 0), 0), 0), 1);
+const hbarTotal = Math.max(
+  series.reduce(
+    (a, s) => a + s.data.reduce((x, v) => x + Math.max(v, 0), 0),
+    0,
+  ),
+  1,
+);
 const hbarSegments = hbarStacked
   ? series.map((s, si) => {
-    const v = s.data.reduce((x, val) => x + Math.max(val, 0), 0);
-    return {name: s.name, v, pct: Math.round((v / hbarTotal) * 100), bg: colorAt(si, s)};
-  })
+      const v = s.data.reduce((x, val) => x + Math.max(val, 0), 0);
+      return {
+        name: s.name,
+        v,
+        pct: Math.round((v / hbarTotal) * 100),
+        bg: colorAt(si, s),
+      };
+    })
   : [];
 
 /* --- waterfall: floating bars on a running total. Each non-total
@@ -1217,47 +1519,48 @@ const hbarSegments = hbarStacked
    total columns (waterfallTotals) anchor to zero and RESET the
    running sum to their value. Colors: increase / decrease / total.
    Dashed connectors join each bar's end level to the next column. */
-const waterfallColors = [
-  wfColors[0],
-  wfColors[1],
-  wfColors[2],
-];
+const waterfallColors = [wfColors[0], wfColors[1], wfColors[2]];
 const waterfallCols = isWaterfall
   ? (() => {
-    const data = series[0]?.data ?? [];
-    const totalSet = new Set((waterfallTotals ?? []).filter((i) => i >= 0 && i < labels.length));
-    let run = 0;
-    const levelAt: number[] = [];
-    const cols = labels.map((label, i) => {
-      const v = data[i] ?? 0;
-      const isTotal = totalSet.has(i);
-      let lo: number;
-      let hi: number;
-      if (isTotal) {
-        /* A total of 0 means "auto": render the running sum — the
+      const data = series[0]?.data ?? [];
+      const totalSet = new Set(
+        (waterfallTotals ?? []).filter((i) => i >= 0 && i < labels.length),
+      );
+      let run = 0;
+      const levelAt: number[] = [];
+      const cols = labels.map((label, i) => {
+        const v = data[i] ?? 0;
+        const isTotal = totalSet.has(i);
+        let lo: number;
+        let hi: number;
+        if (isTotal) {
+          /* A total of 0 means "auto": render the running sum — the
            classic trailing End/Net column without hand-computing it. */
-        const tv = v !== 0 ? v : run;
-        lo = 0;
-        hi = tv;
-        run = tv;
-      } else {
-        lo = Math.min(run, run + v);
-        hi = Math.max(run, run + v);
-        run += v;
-      }
-      levelAt[i] = run;
-      return {
-        label,
-        lo,
-        hi,
-        kind: (isTotal ? "total" : v >= 0 ? "inc" : "dec") as "inc" | "dec" | "total",
-        value: isTotal ? hi : v,
-      };
-    });
-    const wMax = maxY ?? Math.max(...cols.map((c) => c.hi), 1);
-    const wMin = Math.min(...cols.map((c) => c.lo), 0);
-    return {cols, levelAt, max: Math.max(wMax, 1), min: wMin, totalSet};
-  })()
+          const tv = v !== 0 ? v : run;
+          lo = 0;
+          hi = tv;
+          run = tv;
+        } else {
+          lo = Math.min(run, run + v);
+          hi = Math.max(run, run + v);
+          run += v;
+        }
+        levelAt[i] = run;
+        return {
+          label,
+          lo,
+          hi,
+          kind: (isTotal ? "total" : v >= 0 ? "inc" : "dec") as
+            | "inc"
+            | "dec"
+            | "total",
+          value: isTotal ? hi : v,
+        };
+      });
+      const wMax = maxY ?? Math.max(...cols.map((c) => c.hi), 1);
+      const wMin = Math.min(...cols.map((c) => c.lo), 0);
+      return { cols, levelAt, max: Math.max(wMax, 1), min: wMin, totalSet };
+    })()
   : null;
 /* Waterfall bars may hang below zero (negative running level), so the
    shared y() helper is insufficient — the scale spans [min, max]. */
@@ -1267,34 +1570,51 @@ const wy = (v: number) => {
 };
 const waterfallRects = waterfallCols
   ? waterfallCols.cols.map((c, i) => {
-    const w = Math.max(4, Math.min(40, barGroupW * 0.6));
-    return {
-      x: PAD.left + i * barGroupW + barGroupW / 2 - w / 2,
-      y: wy(c.hi),
-      h: Math.max(Math.abs(wy(c.lo) - wy(c.hi)), c.value !== 0 || c.kind === "total" ? 2 : 0),
-      w,
-      kind: c.kind,
-      fill: c.kind === "inc" ? waterfallColors[0] : c.kind === "dec" ? waterfallColors[1] : waterfallColors[2],
-      tip: `${c.label}: ${c.kind === "total" ? `total ${format(c.value)}` : `${c.value >= 0 ? "+" : "−"}${format(Math.abs(c.value))} → ${format(c.hi)}`}`,
-    };
-  })
+      const w = Math.max(4, Math.min(40, barGroupW * 0.6));
+      return {
+        x: PAD.left + i * barGroupW + barGroupW / 2 - w / 2,
+        y: wy(c.hi),
+        h: Math.max(
+          Math.abs(wy(c.lo) - wy(c.hi)),
+          c.value !== 0 || c.kind === "total" ? 2 : 0,
+        ),
+        w,
+        kind: c.kind,
+        fill:
+          c.kind === "inc"
+            ? waterfallColors[0]
+            : c.kind === "dec"
+              ? waterfallColors[1]
+              : waterfallColors[2],
+        tip: `${c.label}: ${c.kind === "total" ? `total ${format(c.value)}` : `${c.value >= 0 ? "+" : "−"}${format(Math.abs(c.value))} → ${format(c.hi)}`}`,
+      };
+    })
   : [];
 /* Connectors: from the end level of column i to the start level of
    column i+1 — a dashed bridge between adjacent bar edges. */
 const waterfallLinks = waterfallCols
-  ? waterfallCols.cols.slice(0, -1).map((c, i) => {
-    /* The bridge rides the running level AFTER column i — for a
+  ? waterfallCols.cols.slice(0, -1).map((_c, i) => {
+      /* The bridge rides the running level AFTER column i — for a
        decrease that's the bar's bottom edge, not its top. */
-    const lvl = wy(waterfallCols.levelAt[i]);
-    const x0 = PAD.left + i * barGroupW + barGroupW / 2 + waterfallRects[i].w / 2;
-    const x1 = PAD.left + (i + 1) * barGroupW + barGroupW / 2 - waterfallRects[i + 1].w / 2;
-    return {x0, x1, y: lvl};
-  })
+      const lvl = wy(waterfallCols.levelAt[i]);
+      const x0 =
+        PAD.left + i * barGroupW + barGroupW / 2 + waterfallRects[i].w / 2;
+      const x1 =
+        PAD.left +
+        (i + 1) * barGroupW +
+        barGroupW / 2 -
+        waterfallRects[i + 1].w / 2;
+      return { x0, x1, y: lvl };
+    })
   : [];
 
 /* Waterfall grid spans the shifted [min, max] scale. */
 const wfTicks = isWaterfall
-  ? [0, 1, 2, 3].map((i) => waterfallCols!.min + (i * (waterfallCols!.max - waterfallCols!.min)) / 3)
+  ? [0, 1, 2, 3].map(
+      (i) =>
+        waterfallCols!.min +
+        (i * (waterfallCols!.max - waterfallCols!.min)) / 3,
+    )
   : [];
 
 /* --- heatmap: labels = columns (x), series = rows (y), one cell per
@@ -1304,44 +1624,53 @@ const wfTicks = isWaterfall
 const isHeatmap = type === "heatmap";
 const heatmap = isHeatmap
   ? (() => {
-    const rows = series.map((s) => s.name);
-    const cols = labels.length ? labels : (series[0]?.data ?? []).map((_, i) => String(i));
-    const values = series.flatMap((s) => s.data.map((v) => v));
-    if (values.length === 0) return null;
-    const vMin = Math.min(...values);
-    const vMax = Math.max(...values);
-    const span = Math.max(vMax - vMin, 1);
-    const ramp = heatmapRamp && heatmapRamp.length >= 2 ? heatmapRamp : ["var(--ui-muted)", "var(--ui-primary)"];
-    const mix = (t: number) => {
-      const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
-      const seg = Math.min(Math.floor(c), ramp.length - 2);
-      const local = c - seg;
-      return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
-    };
-    /* Cell geometry: square-ish cells that fill the viewBox, with gaps. */
-    const GAP = 3;
-    const padL = 76;
-    const padT = 8;
-    const cw = (W - padL - 12 - GAP * Math.max(cols.length - 1, 0)) / Math.max(cols.length, 1);
-    const ch = (height - padT - 28 - GAP * Math.max(rows.length - 1, 0)) / Math.max(rows.length, 1);
-    const cells = series.flatMap((s, ri) =>
-      cols.map((col, ci) => {
-        const v = s.data[ci] ?? 0;
-        const t = (v - vMin) / span;
-        return {
-          x: padL + ci * (cw + GAP),
-          y: padT + ri * (ch + GAP),
-          w: cw,
-          h: ch,
-          color: mix(t),
-          row: s.name,
-          col,
-          v,
-        };
-      }),
-    );
-    return {rows, cols, cells, vMin, vMax};
-  })()
+      const rows = series.map((s) => s.name);
+      const cols = labels.length
+        ? labels
+        : (series[0]?.data ?? []).map((_, i) => String(i));
+      const values = series.flatMap((s) => s.data.map((v) => v));
+      if (values.length === 0) return null;
+      const vMin = Math.min(...values);
+      const vMax = Math.max(...values);
+      const span = Math.max(vMax - vMin, 1);
+      const ramp =
+        heatmapRamp && heatmapRamp.length >= 2
+          ? heatmapRamp
+          : ["var(--ui-muted)", "var(--ui-primary)"];
+      const mix = (t: number) => {
+        const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
+        const seg = Math.min(Math.floor(c), ramp.length - 2);
+        const local = c - seg;
+        return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
+      };
+      /* Cell geometry: square-ish cells that fill the viewBox, with gaps. */
+      const GAP = 3;
+      const padL = 76;
+      const padT = 8;
+      const cw =
+        (W - padL - 12 - GAP * Math.max(cols.length - 1, 0)) /
+        Math.max(cols.length, 1);
+      const ch =
+        (height - padT - 28 - GAP * Math.max(rows.length - 1, 0)) /
+        Math.max(rows.length, 1);
+      const cells = series.flatMap((s, ri) =>
+        cols.map((col, ci) => {
+          const v = s.data[ci] ?? 0;
+          const t = (v - vMin) / span;
+          return {
+            x: padL + ci * (cw + GAP),
+            y: padT + ri * (ch + GAP),
+            w: cw,
+            h: ch,
+            color: mix(t),
+            row: s.name,
+            col,
+            v,
+          };
+        }),
+      );
+      return { rows, cols, cells, vMin, vMax };
+    })()
   : null;
 
 /* --- cohort: retention triangle. Rows = series names (signup cohorts,
@@ -1351,52 +1680,64 @@ const heatmap = isHeatmap
 const isCohort = type === "cohort";
 const cohort = isCohort
   ? (() => {
-    const rows = series.map((s) => s.name);
-    const cols = labels.length ? labels : (series[0]?.data ?? []).map((_, i) => String(i));
-    /* Fractions: null/undefined = unobserved. Normalize 0–1 style
+      const rows = series.map((s) => s.name);
+      const cols = labels.length
+        ? labels
+        : (series[0]?.data ?? []).map((_, i) => String(i));
+      /* Fractions: null/undefined = unobserved. Normalize 0–1 style
        values by 100 only when cohortMax is absent (an explicit max
        means the caller owns the scale). */
-    const raw = series.map((s) => s.data.map((v) => (v == null || Number.isNaN(v) ? null : v)));
-    const flat = raw.flat().filter((v): v is number => v != null);
-    if (flat.length === 0) return null;
-    const scale = cohortMax ?? (flat.every((v) => v <= 1) ? 1 : 100);
-    const pctOf = (v: number) => (v / scale) * 100;
-    const ramp = cohortRamp ?? heatmapRamp ?? ["var(--ui-muted)", "var(--ui-primary)"];
-    const mix = (t: number) => {
-      const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
-      const seg = Math.min(Math.floor(c), ramp.length - 2);
-      const local = c - seg;
-      return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
-    };
-    /* Geometry mirrors heatmap but reserves a wider left band: the
+      const raw = series.map((s) =>
+        s.data.map((v) => (v == null || Number.isNaN(v) ? null : v)),
+      );
+      const flat = raw.flat().filter((v): v is number => v != null);
+      if (flat.length === 0) return null;
+      const scale = cohortMax ?? (flat.every((v) => v <= 1) ? 1 : 100);
+      const pctOf = (v: number) => (v / scale) * 100;
+      const ramp = cohortRamp ??
+        heatmapRamp ?? ["var(--ui-muted)", "var(--ui-primary)"];
+      const mix = (t: number) => {
+        const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
+        const seg = Math.min(Math.floor(c), ramp.length - 2);
+        const local = c - seg;
+        return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
+      };
+      /* Geometry mirrors heatmap but reserves a wider left band: the
        cohort name plus its size column sit left of the grid. */
-    const GAP = 3;
-    const padL = 150;
-    const padT = 8;
-    const cw = (W - padL - 16 - GAP * Math.max(cols.length - 1, 0)) / Math.max(cols.length, 1);
-    const ch = (height - padT - 28 - GAP * Math.max(rows.length - 1, 0)) / Math.max(rows.length, 1);
-    const cells = series.flatMap((s, ri) =>
-      cols.map((col, ci) => {
-        const v = raw[ri][ci];
-        if (v == null) return null;
-        return {
-          x: padL + ci * (cw + GAP),
-          y: padT + ri * (ch + GAP),
-          w: cw,
-          h: ch,
-          color: mix(pctOf(v) / 100),
-          row: s.name,
-          col,
-          v,
-          pct: pctOf(v),
-          text: cohortValues === "value" && cohortSizes?.[ri] != null
-            ? format(Math.round(cohortSizes[ri] * v))
-            : `${Math.round(pctOf(v))}%`,
-        };
-      }).filter((c): c is NonNullable<typeof c> => c != null),
-    );
-    return {rows, cols, cells, sizes: cohortSizes ?? [], cw, ch, padL, GAP};
-  })()
+      const GAP = 3;
+      const padL = 150;
+      const padT = 8;
+      const cw =
+        (W - padL - 16 - GAP * Math.max(cols.length - 1, 0)) /
+        Math.max(cols.length, 1);
+      const ch =
+        (height - padT - 28 - GAP * Math.max(rows.length - 1, 0)) /
+        Math.max(rows.length, 1);
+      const cells = series.flatMap((s, ri) =>
+        cols
+          .map((col, ci) => {
+            const v = raw[ri][ci];
+            if (v == null) return null;
+            return {
+              x: padL + ci * (cw + GAP),
+              y: padT + ri * (ch + GAP),
+              w: cw,
+              h: ch,
+              color: mix(pctOf(v) / 100),
+              row: s.name,
+              col,
+              v,
+              pct: pctOf(v),
+              text:
+                cohortValues === "value" && cohortSizes?.[ri] != null
+                  ? format(Math.round(cohortSizes[ri] * v))
+                  : `${Math.round(pctOf(v))}%`,
+            };
+          })
+          .filter((c): c is NonNullable<typeof c> => c != null),
+      );
+      return { rows, cols, cells, sizes: cohortSizes ?? [], cw, ch, padL, GAP };
+    })()
   : null;
 
 /* --- terrain: oblique 3D wireframe over a value grid. Rows = series
@@ -1409,82 +1750,130 @@ const cohort = isCohort
 const isTerrain = type === "terrain";
 const terrain = isTerrain
   ? (() => {
-    const rows = series.map((s) => s.name);
-    const cols = labels.length ? labels : (series[0]?.data ?? []).map((_, i) => String(i));
-    if (rows.length < 2 || cols.length < 2) return null;
-    const values = series.map((s) => s.data);
-    const flat = values.flat();
-    const vMax = Math.max(...flat);
-    const vMin = Math.min(...flat);
-    const span = Math.max(vMax - vMin, 1);
-    /* Projection: x = left + xi·dx + depth·skx, y = base − elevation
+      const rows = series.map((s) => s.name);
+      const cols = labels.length
+        ? labels
+        : (series[0]?.data ?? []).map((_, i) => String(i));
+      if (rows.length < 2 || cols.length < 2) return null;
+      const values = series.map((s) => s.data);
+      const flat = values.flat();
+      const vMax = Math.max(...flat);
+      const vMin = Math.min(...flat);
+      const span = Math.max(vMax - vMin, 1);
+      /* Projection: x = left + xi·dx + depth·skx, y = base − elevation
        ·dz − depth·sky, where depth = (rows-1-zi)/(rows-1) runs 1
        (front row, bottom-left) → 0 (back row, top-right). */
-    const padL = 46;
-    const baseY = height - (terrainAxes ? 40 : 44);
-    const depthOf = (zi: number) => (rows.length - 1 - zi) / (rows.length - 1);
-    /* Depth skew: back rows shift right by a fixed total band, not
+      const padL = 46;
+      const baseY = height - (terrainAxes ? 40 : 44);
+      const depthOf = (zi: number) =>
+        (rows.length - 1 - zi) / (rows.length - 1);
+      /* Depth skew: back rows shift right by a fixed total band, not
        per-row × rows — the reserve must match the actual offset. */
-    const skewX = Math.min(100, (W - padL - 30) * 0.18);
-    const dx = (W - padL - 30 - skewX) / (cols.length - 1);
-    const skyDrop = Math.min(36, (baseY - 60) * 0.15);
-    const dz = Math.min(baseY - 56 - skyDrop, (baseY - 56) * 0.68);
-    const xFor = (xi: number, zi: number) => padL + xi * dx + depthOf(zi) * skewX;
-    const yFor = (zi: number, v: number) => baseY - ((v - vMin) / span) * dz - depthOf(zi) * skyDrop;
-    const allPts = values.map((row, zi) => row.map((v, xi) => ({x: xFor(xi, zi), y: yFor(zi, v), v})));
-    /* Monotone cubic through screen-space points (Fritsch–Carlson,
+      const skewX = Math.min(100, (W - padL - 30) * 0.18);
+      const dx = (W - padL - 30 - skewX) / (cols.length - 1);
+      const skyDrop = Math.min(36, (baseY - 60) * 0.15);
+      const dz = Math.min(baseY - 56 - skyDrop, (baseY - 56) * 0.68);
+      const xFor = (xi: number, zi: number) =>
+        padL + xi * dx + depthOf(zi) * skewX;
+      const yFor = (zi: number, v: number) =>
+        baseY - ((v - vMin) / span) * dz - depthOf(zi) * skyDrop;
+      const allPts = values.map((row, zi) =>
+        row.map((v, xi) => ({ x: xFor(xi, zi), y: yFor(zi, v), v })),
+      );
+      /* Monotone cubic through screen-space points (Fritsch–Carlson,
        same family as the 2D curvePath) — rows and columns bow like
        the reference instead of zig-zagging between samples. */
-    const smooth = (pts: {x: number; y: number}[]) => {
-      const n = pts.length;
-      if (n < 3) return pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
-      const slope: number[] = [];
-      for (let i = 0; i < n - 1; i++) slope[i] = (pts[i + 1].y - pts[i].y) / ((pts[i + 1].x - pts[i].x) || 1);
-      const m: number[] = [slope[0]];
-      for (let i = 1; i < n - 1; i++) {
-        if (slope[i - 1] * slope[i] <= 0) m[i] = 0;
-        else {
-          const lim = 3 * Math.min(Math.abs(slope[i - 1]), Math.abs(slope[i]));
-          m[i] = Math.max(-lim, Math.min(lim, (slope[i - 1] + slope[i]) / 2));
+      const smooth = (pts: { x: number; y: number }[]) => {
+        const n = pts.length;
+        if (n < 3)
+          return pts
+            .map(
+              (p, i) =>
+                `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`,
+            )
+            .join(" ");
+        const slope: number[] = [];
+        for (let i = 0; i < n - 1; i++)
+          slope[i] = (pts[i + 1].y - pts[i].y) / (pts[i + 1].x - pts[i].x || 1);
+        const m: number[] = [slope[0]];
+        for (let i = 1; i < n - 1; i++) {
+          if (slope[i - 1] * slope[i] <= 0) m[i] = 0;
+          else {
+            const lim =
+              3 * Math.min(Math.abs(slope[i - 1]), Math.abs(slope[i]));
+            m[i] = Math.max(-lim, Math.min(lim, (slope[i - 1] + slope[i]) / 2));
+          }
         }
-      }
-      m[n - 1] = slope[n - 2];
-      let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
-      for (let i = 0; i < n - 1; i++) {
-        const dxs = (pts[i + 1].x - pts[i].x) / 3;
-        d += ` C ${(pts[i].x + dxs).toFixed(1)} ${(pts[i].y + m[i] * dxs).toFixed(1)} ${(pts[i + 1].x - dxs).toFixed(1)} ${(pts[i + 1].y - m[i + 1] * dxs).toFixed(1)} ${pts[i + 1].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
-      }
-      return d;
-    };
-    /* Painter's order: back rows (zi 0) first so front rows win.
+        m[n - 1] = slope[n - 2];
+        let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+        for (let i = 0; i < n - 1; i++) {
+          const dxs = (pts[i + 1].x - pts[i].x) / 3;
+          d += ` C ${(pts[i].x + dxs).toFixed(1)} ${(pts[i].y + m[i] * dxs).toFixed(1)} ${(pts[i + 1].x - dxs).toFixed(1)} ${(pts[i + 1].y - m[i + 1] * dxs).toFixed(1)} ${pts[i + 1].x.toFixed(1)} ${pts[i + 1].y.toFixed(1)}`;
+        }
+        return d;
+      };
+      /* Painter's order: back rows (zi 0) first so front rows win.
        Depth fade — front rows full accent, back rows faint and dashed
        (the reference's hidden-line suggestion without full HLR). */
-    const rowPaths = rows.map((_, zi) => ({
-      d: smooth(allPts[zi]),
-      front: zi / (rows.length - 1),
-    }));
-    const colPaths = cols.map((_, xi) => ({
-      d: smooth(allPts.map((row) => row[xi])),
-    }));
-    let hi = {zi: 0, xi: 0, v: -Infinity};
-    let lo = {zi: 0, xi: 0, v: Infinity};
-    allPts.forEach((row, zi) => row.forEach((p, xi) => {
-      if (p.v > hi.v) hi = {zi, xi, v: p.v};
-      if (p.v < lo.v) lo = {zi, xi, v: p.v};
-    }));
-    const hiP = allPts[hi.zi][hi.xi];
-    const loP = allPts[lo.zi][lo.xi];
-    const dots = allPts.flatMap((row, zi) => row.map((p, xi) => ({...p, zi, xi})));
-    /* Sample rings: a fixed lattice over the interior, so the field
+      const rowPaths = rows.map((_, zi) => ({
+        d: smooth(allPts[zi]),
+        front: zi / (rows.length - 1),
+      }));
+      const colPaths = cols.map((_, xi) => ({
+        d: smooth(allPts.map((row) => row[xi])),
+      }));
+      let hi = { zi: 0, xi: 0, v: -Infinity };
+      let lo = { zi: 0, xi: 0, v: Infinity };
+      allPts.forEach((row, zi) => {
+        row.forEach((p, xi) => {
+          if (p.v > hi.v) hi = { zi, xi, v: p.v };
+          if (p.v < lo.v) lo = { zi, xi, v: p.v };
+        });
+      });
+      const hiP = allPts[hi.zi][hi.xi];
+      const loP = allPts[lo.zi][lo.xi];
+      const dots = allPts.flatMap((row, zi) =>
+        row.map((p, xi) => ({ ...p, zi, xi })),
+      );
+      /* Sample rings: a fixed lattice over the interior, so the field
        carries the reference's scattered ring highlights. */
-    const rings = dots.filter((p) => p.zi > 0 && p.zi < rows.length - 1 && p.xi > 0 && p.xi < cols.length - 1
-      && p.zi % 3 === 1 && p.xi % 4 === 2);
-    const railY = Math.max(Math.min(hiP.y, loP.y) - 30, 58);
-    /* Soft wash under the crest. */
-    const wash = {cx: (padL + W - 30) / 2, cy: baseY - dz * 0.45, rx: (W - padL - 30) * 0.42, ry: dz * 0.5};
-    return {rows, cols, rowPaths, colPaths, dots, rings, hi, lo, hiP, loP, railY, wash,
-      vMin, vMax, hotAt: vMin + span * 0.7, bandLo: vMin + span / 3, bandHi: vMin + span * (2 / 3)};
-  })()
+      const rings = dots.filter(
+        (p) =>
+          p.zi > 0 &&
+          p.zi < rows.length - 1 &&
+          p.xi > 0 &&
+          p.xi < cols.length - 1 &&
+          p.zi % 3 === 1 &&
+          p.xi % 4 === 2,
+      );
+      const railY = Math.max(Math.min(hiP.y, loP.y) - 30, 58);
+      /* Soft wash under the crest. */
+      const wash = {
+        cx: (padL + W - 30) / 2,
+        cy: baseY - dz * 0.45,
+        rx: (W - padL - 30) * 0.42,
+        ry: dz * 0.5,
+      };
+      return {
+        rows,
+        cols,
+        rowPaths,
+        colPaths,
+        dots,
+        rings,
+        hi,
+        lo,
+        hiP,
+        loP,
+        railY,
+        wash,
+        vMin,
+        vMax,
+        hotAt: vMin + span * 0.7,
+        bandLo: vMin + span / 3,
+        bandHi: vMin + span * (2 / 3),
+      };
+    })()
   : null;
 
 /* --- map: tile-grid choropleth. Regions are rect cells (optionally
@@ -1495,85 +1884,102 @@ const terrain = isTerrain
 const isMap = type === "map";
 const map = isMap
   ? (() => {
-    if (!mapRegions || mapRegions.length === 0) return null;
-    /* Values: per-region override, else series[0].data aligned with
+      if (!mapRegions || mapRegions.length === 0) return null;
+      /* Values: per-region override, else series[0].data aligned with
        labels (region i reads data[i]), else 0. */
-    const valueOf = (r: (typeof mapRegions)[number], i: number) =>
-      r.value ?? series[0]?.data[i] ?? 0;
-    const values = mapRegions.map(valueOf);
-    const vMax = Math.max(...values);
-    const vMin = Math.min(...values);
-    const spanV = Math.max(vMax - vMin, 1);
-    const ramp = mapRamp && mapRamp.length >= 2 ? mapRamp : ["var(--ui-muted)", "var(--ui-primary)"];
-    const mix = (t: number) => {
-      const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
-      const seg = Math.min(Math.floor(c), ramp.length - 2);
-      const local = c - seg;
-      return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
-    };
-    /* Grid: freeform regions usually need more room than the plot
+      const regionValue = (r: (typeof mapRegions)[number], i: number) =>
+        r.value ?? series[0]?.data[i] ?? 0;
+      const values = mapRegions.map(regionValue);
+      const vMax = Math.max(...values);
+      const vMin = Math.min(...values);
+      const spanV = Math.max(vMax - vMin, 1);
+      const ramp =
+        mapRamp && mapRamp.length >= 2
+          ? mapRamp
+          : ["var(--ui-muted)", "var(--ui-primary)"];
+      const mix = (t: number) => {
+        const c = Math.min(Math.max(t, 0), 1) * (ramp.length - 1);
+        const seg = Math.min(Math.floor(c), ramp.length - 2);
+        const local = c - seg;
+        return `color-mix(in srgb, ${ramp[seg]} ${((1 - local) * 100).toFixed(1)}%, ${ramp[seg + 1]} ${(local * 100).toFixed(1)}%)`;
+      };
+      /* Grid: freeform regions usually need more room than the plot
        conventions give, so the map owns nearly the whole viewBox. */
-    /* Grid extent comes from rect regions only — points-only regions
+      /* Grid extent comes from rect regions only — points-only regions
        position themselves in absolute viewBox coordinates. mapColumns
        reserves extra columns for polygons when the rects don't. */
-    const rects = mapRegions.filter((r) => !r.points);
-    const COLS = Math.max(1, mapColumns ?? 0, ...rects.map((r) => (r.at?.[0] ?? 0) + (r.span ?? 1)));
-    const ROWS = Math.max(1, ...rects.map((r) => (r.at?.[1] ?? 0) + 1));
-    const GAP = 4;
-    const padL = 12;
-    const padT = 8;
-    const cw = (W - padL - 12 - GAP * (COLS - 1)) / COLS;
-    const ch = (height - padT - 12 - GAP * (ROWS - 1)) / ROWS;
-    const cellX = (c: number) => padL + c * (cw + GAP);
-    const cellY = (r: number) => padT + r * (ch + GAP);
-    /* Scale freeform outlines from their authoring box (assumed
+      const rects = mapRegions.filter((r) => !r.points);
+      const COLS = Math.max(
+        1,
+        mapColumns ?? 0,
+        ...rects.map((r) => (r.at?.[0] ?? 0) + (r.span ?? 1)),
+      );
+      const ROWS = Math.max(1, ...rects.map((r) => (r.at?.[1] ?? 0) + 1));
+      const GAP = 4;
+      const padL = 12;
+      const padT = 8;
+      const cw = (W - padL - 12 - GAP * (COLS - 1)) / COLS;
+      const ch = (height - padT - 12 - GAP * (ROWS - 1)) / ROWS;
+      const cellX = (c: number) => padL + c * (cw + GAP);
+      const cellY = (r: number) => padT + r * (ch + GAP);
+      /* Scale freeform outlines from their authoring box (assumed
        0–640 × 0–height viewBox coords) into the tile-grid box so
        polygon maps and rect maps can be mixed freely. Regions with a
        points attr may declare at as an anchor cell for tooltips; their
        outline is used as-is when it already fits the viewBox. */
-    const parsePoints = (s: string) => {
-      const nums = s.trim().match(/-?\d+(?:\.\d+)?/g);
-      return nums ? (nums.map(Number).reduce<{pts: [number, number][]; cur: number[]}>(
-        (acc, n) => {
-          acc.cur.push(n);
-          if (acc.cur.length === 2) {
-            acc.pts.push([acc.cur[0], acc.cur[1]]);
-            acc.cur = [];
-          }
-          return acc;
-        },
-        {pts: [], cur: []},
-      ).pts) : [];
-    };
-    const regions = mapRegions.map((r, i) => {
-      const v = values[i];
-      const t = (v - vMin) / spanV;
-      const isPath = !!r.points && /^\s*M/.test(r.points);
-      const pts = r.points ? parsePoints(r.points) : [];
-      const d = isPath
-        ? r.points!
-        : pts.length >= 3
-          ? `M ${pts.map((p) => p.join(" ")).join(" L ")} Z`
-          : null;
-      const xs = pts.map((p) => p[0]);
-      const ys = pts.map((p) => p[1]);
-      const bb = d && !isPath ? {x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys)} : null;
-      /* Rect region: stretch across span columns of the grid. */
-      const rx = cellX(r.at?.[0] ?? 0);
-      const rw = (r.span ?? 1) * cw + ((r.span ?? 1) - 1) * GAP;
-      const ry = cellY(r.at?.[1] ?? 0);
-      return {
-        name: r.name,
-        v,
-        d: d ?? null,
-        rect: d ? null : {x: rx, y: ry, w: rw, h: ch},
-        cx: d && bb ? bb.x + bb.w / 2 : rx + rw / 2,
-        cy: d && bb ? bb.y + bb.h / 2 : ry + ch / 2,
-        color: mix(t),
+      const parsePoints = (s: string) => {
+        const nums = s.trim().match(/-?\d+(?:\.\d+)?/g);
+        return nums
+          ? nums.map(Number).reduce<{ pts: [number, number][]; cur: number[] }>(
+              (acc, n) => {
+                acc.cur.push(n);
+                if (acc.cur.length === 2) {
+                  acc.pts.push([acc.cur[0], acc.cur[1]]);
+                  acc.cur = [];
+                }
+                return acc;
+              },
+              { pts: [], cur: [] },
+            ).pts
+          : [];
       };
-    });
-    return {regions, vMin, vMax};
-  })()
+      const regions = mapRegions.map((r, i) => {
+        const v = values[i];
+        const t = (v - vMin) / spanV;
+        const isPath = !!r.points && /^\s*M/.test(r.points);
+        const pts = r.points ? parsePoints(r.points) : [];
+        const d = isPath
+          ? r.points!
+          : pts.length >= 3
+            ? `M ${pts.map((p) => p.join(" ")).join(" L ")} Z`
+            : null;
+        const xs = pts.map((p) => p[0]);
+        const ys = pts.map((p) => p[1]);
+        const bb =
+          d && !isPath
+            ? {
+                x: Math.min(...xs),
+                y: Math.min(...ys),
+                w: Math.max(...xs) - Math.min(...xs),
+                h: Math.max(...ys) - Math.min(...ys),
+              }
+            : null;
+        /* Rect region: stretch across span columns of the grid. */
+        const rx = cellX(r.at?.[0] ?? 0);
+        const rw = (r.span ?? 1) * cw + ((r.span ?? 1) - 1) * GAP;
+        const ry = cellY(r.at?.[1] ?? 0);
+        return {
+          name: r.name,
+          v,
+          d: d ?? null,
+          rect: d ? null : { x: rx, y: ry, w: rw, h: ch },
+          cx: d && bb ? bb.x + bb.w / 2 : rx + rw / 2,
+          cy: d && bb ? bb.y + bb.h / 2 : ry + ch / 2,
+          color: mix(t),
+        };
+      });
+      return { regions, vMin, vMax };
+    })()
   : null;
 
 /* --- boxplot: one box per (group, label) pair. Raw samples reduce to
@@ -1588,14 +1994,21 @@ const boxResolved = isBoxplot
       name: g.name,
       color: g.color,
       boxes: g.boxes.map((b) => {
-        if (!Array.isArray(b)) return {...b, outliers: b.outliers ?? []};
-        const sorted = b.filter((v) => Number.isFinite(v)).sort((a, x) => a - x);
+        if (!Array.isArray(b)) return { ...b, outliers: b.outliers ?? [] };
+        const sorted = b
+          .filter((v) => Number.isFinite(v))
+          .sort((a, x) => a - x);
         if (sorted.length === 0) return null;
         const quantile = (p: number) => {
           const pos = (sorted.length - 1) * p;
           const base = Math.floor(pos);
           const rest = pos - base;
-          return sorted[base] + (sorted[base + 1] !== undefined ? (sorted[base + 1] - sorted[base]) * rest : 0);
+          return (
+            sorted[base] +
+            (sorted[base + 1] !== undefined
+              ? (sorted[base + 1] - sorted[base]) * rest
+              : 0)
+          );
         };
         const q1 = quantile(0.25);
         const median = quantile(0.5);
@@ -1609,7 +2022,9 @@ const boxResolved = isBoxplot
           q1,
           median,
           q3,
-          max: inFence.length ? inFence[inFence.length - 1] : sorted[sorted.length - 1],
+          max: inFence.length
+            ? inFence[inFence.length - 1]
+            : sorted[sorted.length - 1],
           outliers: sorted.filter((v) => v < loF || v > hiF),
           color: undefined as string | undefined,
         };
@@ -1618,75 +2033,106 @@ const boxResolved = isBoxplot
   : [];
 const boxData = isBoxplot
   ? (() => {
-    const cats = labels.length ? labels : (boxResolved[0]?.boxes.map((_, i) => `P${i + 1}`) ?? []);
-    const vals: number[] = [];
-    boxResolved.forEach((g) =>
-      g.boxes.forEach((b) => {
-        if (!b) return;
-        vals.push(b.min, b.q1, b.median, b.q3, b.max, ...(boxplotOutliers ? b.outliers : []));
-      }),
-    );
-    if (cats.length === 0 || vals.length === 0) return null;
-    const dMin = Math.min(...vals);
-    const dMax = Math.max(...vals);
-    const pad = Math.max(dMax - dMin, 1) * 0.08;
-    const lo = dMin - pad;
-    const hi = Math.max(dMax + pad, maxY ?? -Infinity);
-    const by = (v: number) => PAD.top + plotH - ((v - lo) / Math.max(hi - lo, 1e-9)) * plotH;
-    const n = cats.length;
-    const slotW = plotW / Math.max(n, 1);
-    const grouped = boxResolved.length > 1;
-    const bw = grouped
-      ? Math.max(8, Math.min(56, (slotW * 0.62) / Math.max(boxResolved.length, 1)))
-      : Math.max(10, Math.min(110, slotW * 0.56));
-    const capW = Math.max(10, bw * 0.36);
-    const cx = (ci: number, gi: number) =>
-      grouped
-        ? PAD.left + ci * slotW + slotW / 2 - (bw * boxResolved.length) / 2 + gi * bw + bw / 2
-        : PAD.left + ci * slotW + slotW / 2;
-    const colorOf = (gi: number, ci: number, override?: string) =>
-      override ?? boxResolved[gi]?.color ?? (grouped ? colors[gi % colors.length] : colors[ci % colors.length]);
-    const ticks = [0, 1, 2, 3].map((i) => lo + (i * (hi - lo)) / 3);
-    const boxes = boxResolved.flatMap((g, gi) =>
-      g.boxes.map((b, ci) => {
-        if (!b || ci >= cats.length) return null;
-        const color = colorOf(gi, ci, b.color);
-        const tip =
-          `${cats[ci]}${grouped ? ` — ${g.name}` : ""}: ` +
-          `min ${format(b.min)}, Q1 ${format(b.q1)}, median ${format(b.median)}, Q3 ${format(b.q3)}, max ${format(b.max)}` +
-          (b.outliers.length ? ` (${b.outliers.length} outlier${b.outliers.length === 1 ? "" : "s"}: ${b.outliers.map(format).join(", ")})` : "");
-        return {
-          gi,
-          ci,
-          cat: cats[ci],
-          group: g.name,
-          color,
-          tip,
-          x: cx(ci, gi) - bw / 2,
-          w: bw,
-          cx: cx(ci, gi),
-          yMin: by(b.min),
-          yMax: by(b.max),
-          yQ1: by(b.q1),
-          yQ3: by(b.q3),
-          yMed: by(b.median),
-          outliers: b.outliers.map((v) => ({v, y: by(v)})),
-          stats: b,
-        };
-      }).filter((r): r is NonNullable<typeof r> => r != null),
-    );
-    return {cats, ticks, slotW, bw, capW, by, cx, grouped, boxes};
-  })()
+      const cats = labels.length
+        ? labels
+        : (boxResolved[0]?.boxes.map((_, i) => `P${i + 1}`) ?? []);
+      const vals: number[] = [];
+      boxResolved.forEach((g) => {
+        g.boxes.forEach((b) => {
+          if (!b) return;
+          vals.push(
+            b.min,
+            b.q1,
+            b.median,
+            b.q3,
+            b.max,
+            ...(boxplotOutliers ? b.outliers : []),
+          );
+        });
+      });
+      if (cats.length === 0 || vals.length === 0) return null;
+      const dMin = Math.min(...vals);
+      const dMax = Math.max(...vals);
+      const pad = Math.max(dMax - dMin, 1) * 0.08;
+      const lo = dMin - pad;
+      const hi = Math.max(dMax + pad, maxY ?? -Infinity);
+      const by = (v: number) =>
+        PAD.top + plotH - ((v - lo) / Math.max(hi - lo, 1e-9)) * plotH;
+      const n = cats.length;
+      const slotW = plotW / Math.max(n, 1);
+      const grouped = boxResolved.length > 1;
+      const bw = grouped
+        ? Math.max(
+            8,
+            Math.min(56, (slotW * 0.62) / Math.max(boxResolved.length, 1)),
+          )
+        : Math.max(10, Math.min(110, slotW * 0.56));
+      const capW = Math.max(10, bw * 0.36);
+      const cx = (ci: number, gi: number) =>
+        grouped
+          ? PAD.left +
+            ci * slotW +
+            slotW / 2 -
+            (bw * boxResolved.length) / 2 +
+            gi * bw +
+            bw / 2
+          : PAD.left + ci * slotW + slotW / 2;
+      const colorOf = (gi: number, ci: number, override?: string) =>
+        override ??
+        boxResolved[gi]?.color ??
+        (grouped ? colors[gi % colors.length] : colors[ci % colors.length]);
+      const ticks = [0, 1, 2, 3].map((i) => lo + (i * (hi - lo)) / 3);
+      const boxes = boxResolved.flatMap((g, gi) =>
+        g.boxes
+          .map((b, ci) => {
+            if (!b || ci >= cats.length) return null;
+            const color = colorOf(gi, ci, b.color);
+            const tip =
+              `${cats[ci]}${grouped ? ` — ${g.name}` : ""}: ` +
+              `min ${format(b.min)}, Q1 ${format(b.q1)}, median ${format(b.median)}, Q3 ${format(b.q3)}, max ${format(b.max)}` +
+              (b.outliers.length
+                ? ` (${b.outliers.length} outlier${b.outliers.length === 1 ? "" : "s"}: ${b.outliers.map(format).join(", ")})`
+                : "");
+            return {
+              gi,
+              ci,
+              cat: cats[ci],
+              group: g.name,
+              color,
+              tip,
+              x: cx(ci, gi) - bw / 2,
+              w: bw,
+              cx: cx(ci, gi),
+              yMin: by(b.min),
+              yMax: by(b.max),
+              yQ1: by(b.q1),
+              yQ3: by(b.q3),
+              yMed: by(b.median),
+              outliers: b.outliers.map((v) => ({ v, y: by(v) })),
+              stats: b,
+            };
+          })
+          .filter((r): r is NonNullable<typeof r> => r != null),
+      );
+      return { cats, ticks, slotW, bw, capW, by, cx, grouped, boxes };
+    })()
   : null;
 /* Legend entries: per group when boxes compete side-by-side, per box
    (like pie slices) for a lone group without an overriding color. */
-const boxLegend = isBoxplot && boxData
-  ? boxData.grouped
-    ? boxResolved.map((g, gi) => ({label: g.name, color: g.color ?? colors[gi % colors.length]}))
-    : boxResolved[0]?.color
-      ? [{label: boxResolved[0].name, color: boxResolved[0].color}]
-      : boxData.cats.map((cat, ci) => ({label: cat, color: colors[ci % colors.length]}))
-  : [];
+const boxLegend =
+  isBoxplot && boxData
+    ? boxData.grouped
+      ? boxResolved.map((g, gi) => ({
+          label: g.name,
+          color: g.color ?? colors[gi % colors.length],
+        }))
+      : boxResolved[0]?.color
+        ? [{ label: boxResolved[0].name, color: boxResolved[0].color }]
+        : boxData.cats.map((cat, ci) => ({
+            label: cat,
+            color: colors[ci % colors.length],
+          }))
+    : [];
 
 /* --- treemap: squarified tiling (Bruls et al.). Values come from
    the first series like pie/hbar (extra series are ignored); tiles
@@ -1694,105 +2140,116 @@ const boxLegend = isBoxplot && boxData
    values render no tile but stay in the legend and data table. --- */
 const treemap = isTreemap
   ? (() => {
-    const total = (series[0]?.data ?? []).reduce((a, v) => a + Math.max(v, 0), 0) || 1;
-    const items = (series[0]?.data ?? [])
-      .map((v, i) => ({
-        label: labels[i] ?? String(i),
-        value: Math.max(v, 0),
-        color: colorAt(i, series[0]),
-      }))
-      .filter((d) => d.value > 0)
-      .sort((a, b) => b.value - a.value);
-    if (items.length === 0) return null;
-    const GAP = 6;
-    const PADT = 8;
-    const scale = ((W - PADT * 2) * (height - PADT * 2)) / total;
-    const nodes = items.map((d) => ({...d, area: d.value * scale, pct: Math.round((d.value / total) * 100)}));
-    /* Worst-aspect-ratio test for a candidate row against the row's
+      const total =
+        (series[0]?.data ?? []).reduce((a, v) => a + Math.max(v, 0), 0) || 1;
+      const items = (series[0]?.data ?? [])
+        .map((v, i) => ({
+          label: labels[i] ?? String(i),
+          value: Math.max(v, 0),
+          color: colorAt(i, series[0]),
+        }))
+        .filter((d) => d.value > 0)
+        .sort((a, b) => b.value - a.value);
+      if (items.length === 0) return null;
+      const GAP = 6;
+      const PADT = 8;
+      const scale = ((W - PADT * 2) * (height - PADT * 2)) / total;
+      const nodes = items.map((d) => ({
+        ...d,
+        area: d.value * scale,
+        pct: Math.round((d.value / total) * 100),
+      }));
+      /* Worst-aspect-ratio test for a candidate row against the row's
        short side — the squarify decision function. */
-    const worst = (row: typeof nodes, side: number) => {
-      const s = row.reduce((a, n) => a + n.area, 0);
-      const mx = Math.max(...row.map((n) => n.area));
-      const mn = Math.min(...row.map((n) => n.area));
-      return Math.max((side * side * mx) / (s * s), (s * s) / (side * side * mn));
-    };
-    const placed = new Map<(typeof nodes)[number], { x: number; y: number; w: number; h: number }>();
-    let row: typeof nodes = [];
-    let rx = PADT;
-    let ry = PADT;
-    let rw = W - PADT * 2;
-    let rh = height - PADT * 2;
-    const flush = () => {
-      const s = row.reduce((a, n) => a + n.area, 0);
-      if (rw >= rh) {
-        const hh = s / Math.max(rw, 1e-9);
-        let xx = rx;
-        for (const n of row) {
-          const ww = n.area / Math.max(hh, 1e-9);
-          placed.set(n, {x: xx, y: ry, w: ww, h: hh});
-          xx += ww;
+      const worst = (row: typeof nodes, side: number) => {
+        const s = row.reduce((a, n) => a + n.area, 0);
+        const mx = Math.max(...row.map((n) => n.area));
+        const mn = Math.min(...row.map((n) => n.area));
+        return Math.max(
+          (side * side * mx) / (s * s),
+          (s * s) / (side * side * mn),
+        );
+      };
+      const placed = new Map<
+        (typeof nodes)[number],
+        { x: number; y: number; w: number; h: number }
+      >();
+      let row: typeof nodes = [];
+      let rx = PADT;
+      let ry = PADT;
+      let rw = W - PADT * 2;
+      let rh = height - PADT * 2;
+      const flush = () => {
+        const s = row.reduce((a, n) => a + n.area, 0);
+        if (rw >= rh) {
+          const hh = s / Math.max(rw, 1e-9);
+          let xx = rx;
+          for (const n of row) {
+            const ww = n.area / Math.max(hh, 1e-9);
+            placed.set(n, { x: xx, y: ry, w: ww, h: hh });
+            xx += ww;
+          }
+          ry += hh;
+          rh -= hh;
+        } else {
+          const ww = s / Math.max(rh, 1e-9);
+          let yy = ry;
+          for (const n of row) {
+            const hh = n.area / Math.max(ww, 1e-9);
+            placed.set(n, { x: rx, y: yy, w: ww, h: hh });
+            yy += hh;
+          }
+          rx += ww;
+          rw -= ww;
         }
-        ry += hh;
-        rh -= hh;
-      } else {
-        const ww = s / Math.max(rh, 1e-9);
-        let yy = ry;
-        for (const n of row) {
-          const hh = n.area / Math.max(ww, 1e-9);
-          placed.set(n, {x: rx, y: yy, w: ww, h: hh});
-          yy += hh;
-        }
-        rx += ww;
-        rw -= ww;
-      }
-      row = [];
-    };
-    for (const n of nodes) {
-      if (row.length === 0) row.push(n);
-      else {
-        /* The row will span the LONG side (see flush), so the
+        row = [];
+      };
+      for (const n of nodes) {
+        if (row.length === 0) row.push(n);
+        else {
+          /* The row will span the LONG side (see flush), so the
            worst-case test must use that side — testing against the
            short side judges single-item full-width strips "good"
            and degenerates into stacked slivers. */
-        const side = Math.max(rw, rh);
-        const before = worst(row, side);
-        const after = worst([...row, n], side);
-        if (after <= before) row.push(n);
-        else {
-          flush();
-          row.push(n);
+          const side = Math.max(rw, rh);
+          const before = worst(row, side);
+          const after = worst([...row, n], side);
+          if (after <= before) row.push(n);
+          else {
+            flush();
+            row.push(n);
+          }
         }
       }
-    }
-    if (row.length) flush();
-    const rr = Math.max(0, tileRadius);
-    const tiles = nodes.map((n) => {
-      const p = placed.get(n)!;
-      const x = p.x + GAP / 2;
-      const y = p.y + GAP / 2;
-      const w = Math.max(p.w - GAP, 1);
-      const h = Math.max(p.h - GAP, 1);
-      const name = n.label;
-      const valueText = format(n.value);
-      /* Labels only when they fit: name needs one text row, the
+      if (row.length) flush();
+      const rr = Math.max(0, tileRadius);
+      const tiles = nodes.map((n) => {
+        const p = placed.get(n)!;
+        const x = p.x + GAP / 2;
+        const y = p.y + GAP / 2;
+        const w = Math.max(p.w - GAP, 1);
+        const h = Math.max(p.h - GAP, 1);
+        const name = n.label;
+        const valueText = format(n.value);
+        /* Labels only when they fit: name needs one text row, the
          value a second; widths are estimated at ~7px per char. */
-      const showName = h >= 30 && name.length * 7 + 24 < w;
-      const showValue = h >= 54 && valueText.length * 7 + 24 < w;
-      return {
-        ...n,
-        x,
-        y,
-        w,
-        h,
-        rx: Math.min(rr, w / 2, h / 2),
-        tip: `${name}: ${valueText} (${n.pct}%)`,
-        showName,
-        showValue,
-        valueText,
-      };
-    });
-    return {tiles};
-  })()
+        const showName = h >= 30 && name.length * 7 + 24 < w;
+        const showValue = h >= 54 && valueText.length * 7 + 24 < w;
+        return {
+          ...n,
+          x,
+          y,
+          w,
+          h,
+          rx: Math.min(rr, w / 2, h / 2),
+          tip: `${name}: ${valueText} (${n.pct}%)`,
+          showName,
+          showValue,
+          valueText,
+        };
+      });
+      return { tiles };
+    })()
   : null;
 
 /* --- funnel: process stages as centered trapezoids, widths ∝ value
@@ -1802,44 +2259,48 @@ const treemap = isTreemap
    stage's; the last stage closes as a rectangle. --- */
 const funnel = isFunnel
   ? (() => {
-    const data = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
-    if (data.length === 0) return null;
-    const total = data.reduce((a, b) => a + b, 0) || 1;
-    const maxV = Math.max(...data, 1e-9);
-    const GAP = 6;
-    const maxW = W - 160;
-    const sh = (plotH - GAP * (data.length - 1)) / Math.max(data.length, 1);
-    const cx = W / 2;
-    const stages = data.map((v, i) => {
-      const wTop = Math.max((v / maxV) * maxW, 2);
-      const wBot = i + 1 < data.length ? Math.max((data[i + 1] / maxV) * maxW, 2) : wTop;
-      const yTop = PAD.top + i * (sh + GAP);
-      const pct = Math.round((v / total) * 100);
-      const label = labels[i] ?? String(i);
-      const midW = (wTop + wBot) / 2;
-      const name = label;
-      const valueText = `${format(v)} (${pct}%)`;
-      /* Centered two-line label only when the widest line fits. */
-      const showText = sh >= 34 && Math.max(name.length * 7.5, valueText.length * 6.2) + 28 < midW;
-      return {
-        label,
-        value: v,
-        pct,
-        color: colorAt(i, series[0]),
-        tip: `${label}: ${format(v)} (${pct}% of total)`,
-        d: `M ${(cx - wTop / 2).toFixed(1)} ${yTop.toFixed(1)}` +
-          ` L ${(cx + wTop / 2).toFixed(1)} ${yTop.toFixed(1)}` +
-          ` L ${(cx + wBot / 2).toFixed(1)} ${(yTop + sh).toFixed(1)}` +
-          ` L ${(cx - wBot / 2).toFixed(1)} ${(yTop + sh).toFixed(1)} Z`,
-        tx: cx,
-        ty: yTop + sh / 2,
-        showText,
-        name,
-        valueText,
-      };
-    });
-    return {stages};
-  })()
+      const data = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
+      if (data.length === 0) return null;
+      const total = data.reduce((a, b) => a + b, 0) || 1;
+      const maxV = Math.max(...data, 1e-9);
+      const GAP = 6;
+      const maxW = W - 160;
+      const sh = (plotH - GAP * (data.length - 1)) / Math.max(data.length, 1);
+      const cx = W / 2;
+      const stages = data.map((v, i) => {
+        const wTop = Math.max((v / maxV) * maxW, 2);
+        const wBot =
+          i + 1 < data.length ? Math.max((data[i + 1] / maxV) * maxW, 2) : wTop;
+        const yTop = PAD.top + i * (sh + GAP);
+        const pct = Math.round((v / total) * 100);
+        const label = labels[i] ?? String(i);
+        const midW = (wTop + wBot) / 2;
+        const name = label;
+        const valueText = `${format(v)} (${pct}%)`;
+        /* Centered two-line label only when the widest line fits. */
+        const showText =
+          sh >= 34 &&
+          Math.max(name.length * 7.5, valueText.length * 6.2) + 28 < midW;
+        return {
+          label,
+          value: v,
+          pct,
+          color: colorAt(i, series[0]),
+          tip: `${label}: ${format(v)} (${pct}% of total)`,
+          d:
+            `M ${(cx - wTop / 2).toFixed(1)} ${yTop.toFixed(1)}` +
+            ` L ${(cx + wTop / 2).toFixed(1)} ${yTop.toFixed(1)}` +
+            ` L ${(cx + wBot / 2).toFixed(1)} ${(yTop + sh).toFixed(1)}` +
+            ` L ${(cx - wBot / 2).toFixed(1)} ${(yTop + sh).toFixed(1)} Z`,
+          tx: cx,
+          ty: yTop + sh / 2,
+          showText,
+          name,
+          valueText,
+        };
+      });
+      return { stages };
+    })()
   : null;
 
 /* --- rose: Nightingale's polar-area diagram (Wikipedia's Polar area
@@ -1849,58 +2310,71 @@ const funnel = isFunnel
    colors, order) but never the center — wedges always meet at it. --- */
 const rose = isRose
   ? (() => {
-    const {total, sliceDefs} = pieSliceDefs();
-    if (sliceDefs.length === 0) return null;
-    const TAU = Math.PI * 2;
-    const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
-    const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
-    const gap = padFits ? pad : 0;
-    const maxV = Math.max(...sliceDefs.map((d) => d.value), 1e-9);
-    const outside = sliceLabels === "label";
-    const R = Math.max(Math.min(W / 2 - (outside ? 104 : 24), height / 2 - (outside ? 40 : 16)), 40);
-    const cx = W / 2;
-    const cy = height / 2;
-    const p = (radius: number, a: number) => `${(cx + radius * Math.cos(a)).toFixed(2)} ${(cy + radius * Math.sin(a)).toFixed(2)}`;
-    let angle = -Math.PI / 2;
-    const slices = sliceDefs.map((def, i) => {
-      const span = Math.max((TAU / sliceDefs.length) - gap, 0.02);
-      const s0 = angle + gap / 2;
-      const s1 = s0 + span;
-      angle += TAU / sliceDefs.length;
-      const f = roseMode === "radius" ? def.value / maxV : Math.sqrt(def.value / maxV);
-      const rr = Math.max(R * f, def.value > 0 ? 3 : 0);
-      const large = span > Math.PI ? 1 : 0;
-      const color = def.merged ? "var(--ui-muted-foreground)" : colorAt(i, series[0]);
-      const pct = Math.round((def.value / total) * 100);
-      const mid = (s0 + s1) / 2;
-      const dir = Math.cos(mid) >= 0 ? 1 : -1;
-      const ax = cx + (rr + 4) * Math.cos(mid);
-      const ay = cy + (rr + 4) * Math.sin(mid);
-      const bx = cx + (rr + 18) * Math.cos(mid);
-      const by = cy + (rr + 18) * Math.sin(mid);
-      const tx = bx + dir * 16;
-      return {
-        label: def.label,
-        value: def.value,
-        pct,
-        color,
-        tip: def.merged
-          ? `Other (${def.merged.length}): ${def.merged.join(", ")}`
-          : `${def.label}: ${format(def.value)} (${pct}%)`,
-        d: span >= TAU - 0.03
-          ? `M ${(cx + rr).toFixed(2)} ${cy.toFixed(2)} A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 1 1 ${(cx - rr).toFixed(2)} ${cy.toFixed(2)}` +
-            ` A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 1 1 ${(cx + rr).toFixed(2)} ${cy.toFixed(2)} Z`
-          : `M ${cx.toFixed(2)} ${cy.toFixed(2)} L ${p(rr, s0)} A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 ${large} 1 ${p(rr, s1)} Z`,
-        lx: cx + rr * 0.62 * Math.cos(mid),
-        ly: cy + rr * 0.62 * Math.sin(mid),
-        leader: `M ${ax.toFixed(2)} ${ay.toFixed(2)} L ${bx.toFixed(2)} ${by.toFixed(2)} L ${(tx - dir * 2).toFixed(2)} ${by.toFixed(2)}`,
-        tx,
-        by,
-        dir,
-      };
-    });
-    return {slices};
-  })()
+      const { total, sliceDefs } = pieSliceDefs();
+      if (sliceDefs.length === 0) return null;
+      const TAU = Math.PI * 2;
+      const pad = Math.max(0, Math.min(padAngle, 30)) * (Math.PI / 180);
+      const padFits = (sliceDefs.length - 1) * pad < Math.PI * 2 * 0.9;
+      const gap = padFits ? pad : 0;
+      const maxV = Math.max(...sliceDefs.map((d) => d.value), 1e-9);
+      const outside = sliceLabels === "label";
+      const R = Math.max(
+        Math.min(
+          W / 2 - (outside ? 104 : 24),
+          height / 2 - (outside ? 40 : 16),
+        ),
+        40,
+      );
+      const cx = W / 2;
+      const cy = height / 2;
+      const p = (radius: number, a: number) =>
+        `${(cx + radius * Math.cos(a)).toFixed(2)} ${(cy + radius * Math.sin(a)).toFixed(2)}`;
+      let angle = -Math.PI / 2;
+      const slices = sliceDefs.map((def, i) => {
+        const span = Math.max(TAU / sliceDefs.length - gap, 0.02);
+        const s0 = angle + gap / 2;
+        const s1 = s0 + span;
+        angle += TAU / sliceDefs.length;
+        const f =
+          roseMode === "radius"
+            ? def.value / maxV
+            : Math.sqrt(def.value / maxV);
+        const rr = Math.max(R * f, def.value > 0 ? 3 : 0);
+        const large = span > Math.PI ? 1 : 0;
+        const color = def.merged
+          ? "var(--ui-muted-foreground)"
+          : colorAt(i, series[0]);
+        const pct = Math.round((def.value / total) * 100);
+        const mid = (s0 + s1) / 2;
+        const dir = Math.cos(mid) >= 0 ? 1 : -1;
+        const ax = cx + (rr + 4) * Math.cos(mid);
+        const ay = cy + (rr + 4) * Math.sin(mid);
+        const bx = cx + (rr + 18) * Math.cos(mid);
+        const by = cy + (rr + 18) * Math.sin(mid);
+        const tx = bx + dir * 16;
+        return {
+          label: def.label,
+          value: def.value,
+          pct,
+          color,
+          tip: def.merged
+            ? `Other (${def.merged.length}): ${def.merged.join(", ")}`
+            : `${def.label}: ${format(def.value)} (${pct}%)`,
+          d:
+            span >= TAU - 0.03
+              ? `M ${(cx + rr).toFixed(2)} ${cy.toFixed(2)} A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 1 1 ${(cx - rr).toFixed(2)} ${cy.toFixed(2)}` +
+                ` A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 1 1 ${(cx + rr).toFixed(2)} ${cy.toFixed(2)} Z`
+              : `M ${cx.toFixed(2)} ${cy.toFixed(2)} L ${p(rr, s0)} A ${rr.toFixed(2)} ${rr.toFixed(2)} 0 ${large} 1 ${p(rr, s1)} Z`,
+          lx: cx + rr * 0.62 * Math.cos(mid),
+          ly: cy + rr * 0.62 * Math.sin(mid),
+          leader: `M ${ax.toFixed(2)} ${ay.toFixed(2)} L ${bx.toFixed(2)} ${by.toFixed(2)} L ${(tx - dir * 2).toFixed(2)} ${by.toFixed(2)}`,
+          tx,
+          by,
+          dir,
+        };
+      });
+      return { slices };
+    })()
   : null;
 
 /* --- histogram: raw samples binned into equal-width consecutive
@@ -1908,40 +2382,57 @@ const rose = isRose
    gutter by default (barGap); 0 restores touching bars. --- */
 const histogram = isHistogram
   ? (() => {
-    const samples = (series[0]?.data ?? []).filter((v) => Number.isFinite(v));
-    if (samples.length === 0) return null;
-    const k = Math.max(1, Math.min(40, bins ?? Math.ceil(Math.log2(samples.length) + 1)));
-    const lo = Math.min(...samples);
-    const hi = Math.max(...samples);
-    const span = hi - lo;
-    const edges = Array.from({length: k + 1}, (_, i) => (span === 0 ? lo - 0.5 + i : lo + (i * span) / k));
-    const counts = Array.from({length: k}, () => 0);
-    for (const v of samples) {
-      const idx = span === 0 ? 0 : Math.min(Math.floor(((v - lo) / span) * k), k - 1);
-      counts[idx]++;
-    }
-    const peak = Math.max(...counts, 1);
-    const bw = plotW / k;
-    /* Gutters ride inside each bin slot and never eat more than half
+      const samples = (series[0]?.data ?? []).filter((v) => Number.isFinite(v));
+      if (samples.length === 0) return null;
+      const k = Math.max(
+        1,
+        Math.min(40, bins ?? Math.ceil(Math.log2(samples.length) + 1)),
+      );
+      const lo = Math.min(...samples);
+      const hi = Math.max(...samples);
+      const span = hi - lo;
+      const edges = Array.from({ length: k + 1 }, (_, i) =>
+        span === 0 ? lo - 0.5 + i : lo + (i * span) / k,
+      );
+      const counts = Array.from({ length: k }, () => 0);
+      for (const v of samples) {
+        const idx =
+          span === 0 ? 0 : Math.min(Math.floor(((v - lo) / span) * k), k - 1);
+        counts[idx]++;
+      }
+      const peak = Math.max(...counts, 1);
+      const bw = plotW / k;
+      /* Gutters ride inside each bin slot and never eat more than half
        the bar, so dense bin counts degrade to hairlines, not gaps. */
-    const hg = Math.min(Math.max(barGap, 0), bw / 2);
-    const yAt = (c: number) => PAD.top + plotH - (c / peak) * plotH;
-    const ticks = [0, 1, 2, 3].map((i) => (i * peak) / 3);
-    /* X ticks: every bin edge when few, strided when many. */
-    const stride = Math.max(1, Math.ceil((k + 1) / 8));
-    const xticks = edges
-      .map((e, i) => ({e, i}))
-      .filter(({i}) => i % stride === 0 || i === k)
-      .map(({e, i}) => ({e, x: PAD.left + (i / k) * plotW}));
-    const bars = counts.map((c, i) => ({
-      x: PAD.left + i * bw + hg / 2,
-      w: Math.max(bw - hg, 1),
-      h: Math.max((c / peak) * plotH, c > 0 ? 2 : 0),
-      y: yAt(c),
-      tip: `${format(edges[i])}–${format(edges[i + 1])}: ${c} sample${c === 1 ? "" : "s"}`,
-    }));
-    return {bars, ticks, xticks, yAt, counts, edges, k, n: samples.length, lo, hi};
-  })()
+      const hg = Math.min(Math.max(barGap, 0), bw / 2);
+      const yAt = (c: number) => PAD.top + plotH - (c / peak) * plotH;
+      const ticks = [0, 1, 2, 3].map((i) => (i * peak) / 3);
+      /* X ticks: every bin edge when few, strided when many. */
+      const stride = Math.max(1, Math.ceil((k + 1) / 8));
+      const xticks = edges
+        .map((e, i) => ({ e, i }))
+        .filter(({ i }) => i % stride === 0 || i === k)
+        .map(({ e, i }) => ({ e, x: PAD.left + (i / k) * plotW }));
+      const bars = counts.map((c, i) => ({
+        x: PAD.left + i * bw + hg / 2,
+        w: Math.max(bw - hg, 1),
+        h: Math.max((c / peak) * plotH, c > 0 ? 2 : 0),
+        y: yAt(c),
+        tip: `${format(edges[i])}–${format(edges[i + 1])}: ${c} sample${c === 1 ? "" : "s"}`,
+      }));
+      return {
+        bars,
+        ticks,
+        xticks,
+        yAt,
+        counts,
+        edges,
+        k,
+        n: samples.length,
+        lo,
+        hi,
+      };
+    })()
   : null;
 
 /* --- waffle: square pie (Wikipedia's Pie chart § Square chart) —
@@ -1951,43 +2442,49 @@ const histogram = isHistogram
    the legend and table. --- */
 const waffle = isWaffle
   ? (() => {
-    const data = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
-    const total = data.reduce((a, b) => a + b, 0) || 1;
-    if (data.length === 0) return null;
-    const exact = data.map((v) => (v / total) * 100);
-    const base = exact.map((e) => Math.floor(e));
-    let rest = 100 - base.reduce((a, b) => a + b, 0);
-    const frac = exact.map((e, i) => ({i, f: e - Math.floor(e)}))
-      .sort((a, b) => b.f - a.f || a.i - b.i);
-    for (const {i} of frac) {
-      if (rest <= 0) break;
-      base[i]++;
-      rest--;
-    }
-    const N = 10;
-    const GAP = 3;
-    const cell = Math.min((W - 16) / N, (height - 16) / N);
-    const gw = cell * N;
-    const gx = (W - gw) / 2;
-    const gy = (height - gw) / 2;
-    const groups = data.map((v, i) => ({
-      label: labels[i] ?? String(i),
-      value: v,
-      pct: Math.round((v / total) * 100),
-      color: colorAt(i, series[0]),
-      tip: `${labels[i] ?? String(i)}: ${format(v)} (${Math.round((v / total) * 100)}%)`,
-    }));
-    const cells: { x: number; y: number; s: number; gi: number }[] = [];
-    let ci = 0;
-    base.forEach((count, gi) => {
-      for (let c = 0; c < count; c++, ci++) {
-        const col = Math.floor(ci / N);
-        const row = ci % N;
-        cells.push({x: gx + col * cell, y: gy + (N - 1 - row) * cell, s: cell, gi});
+      const data = (series[0]?.data ?? []).map((v) => Math.max(v, 0));
+      const total = data.reduce((a, b) => a + b, 0) || 1;
+      if (data.length === 0) return null;
+      const exact = data.map((v) => (v / total) * 100);
+      const base = exact.map((e) => Math.floor(e));
+      let rest = 100 - base.reduce((a, b) => a + b, 0);
+      const frac = exact
+        .map((e, i) => ({ i, f: e - Math.floor(e) }))
+        .sort((a, b) => b.f - a.f || a.i - b.i);
+      for (const { i } of frac) {
+        if (rest <= 0) break;
+        base[i]++;
+        rest--;
       }
-    });
-    return {cells, groups, cell, gap: GAP};
-  })()
+      const N = 10;
+      const GAP = 3;
+      const cell = Math.min((W - 16) / N, (height - 16) / N);
+      const gw = cell * N;
+      const gx = (W - gw) / 2;
+      const gy = (height - gw) / 2;
+      const groups = data.map((v, i) => ({
+        label: labels[i] ?? String(i),
+        value: v,
+        pct: Math.round((v / total) * 100),
+        color: colorAt(i, series[0]),
+        tip: `${labels[i] ?? String(i)}: ${format(v)} (${Math.round((v / total) * 100)}%)`,
+      }));
+      const cells: { x: number; y: number; s: number; gi: number }[] = [];
+      let ci = 0;
+      base.forEach((count, gi) => {
+        for (let c = 0; c < count; c++, ci++) {
+          const col = Math.floor(ci / N);
+          const row = ci % N;
+          cells.push({
+            x: gx + col * cell,
+            y: gy + (N - 1 - row) * cell,
+            s: cell,
+            gi,
+          });
+        }
+      });
+      return { cells, groups, cell, gap: GAP };
+    })()
   : null;
 
 /* --- bullet: Stephen Few's bullet graph (Wikipedia's Bullet graph)
@@ -1996,55 +2493,71 @@ const waffle = isWaffle
    target tick. Rows are self-labeled, so no legend. --- */
 const bullet = isBullet
   ? (() => {
-    const rows = bullets
-      .filter((b) => b && Number.isFinite(b.measure))
-      .map((b) => ({
-        label: b.label,
-        ranges: [...b.ranges].filter((r) => Number.isFinite(r) && r > 0).sort((a, x) => a - x).slice(0, 5),
-        measure: Math.max(b.measure, 0),
-        target: b.target != null && Number.isFinite(b.target) ? Math.max(b.target, 0) : null,
-        color: b.color,
-      }))
-      .filter((b) => b.ranges.length > 0);
-    if (rows.length === 0) return null;
-    const maxV = Math.max(
-      1,
-      ...rows.flatMap((b) => [...b.ranges, b.measure, b.target ?? 0]),
-    );
-    /* Vertical budget: axis rail on top, then rows; rows compress
+      const rows = bullets
+        .filter((b) => b && Number.isFinite(b.measure))
+        .map((b) => ({
+          label: b.label,
+          ranges: [...b.ranges]
+            .filter((r) => Number.isFinite(r) && r > 0)
+            .sort((a, x) => a - x)
+            .slice(0, 5),
+          measure: Math.max(b.measure, 0),
+          target:
+            b.target != null && Number.isFinite(b.target)
+              ? Math.max(b.target, 0)
+              : null,
+          color: b.color,
+        }))
+        .filter((b) => b.ranges.length > 0);
+      if (rows.length === 0) return null;
+      const maxV = Math.max(
+        1,
+        ...rows.flatMap((b) => [...b.ranges, b.measure, b.target ?? 0]),
+      );
+      /* Vertical budget: axis rail on top, then rows; rows compress
        gracefully when there are many. */
-    const axisH = 22;
-    const avail = height - 8 - axisH - 8;
-    const rowH = Math.max(22, Math.min(34, (avail - 12 * (rows.length - 1)) / Math.max(rows.length, 1)));
-    const step = rowH + 12;
-    const labelW = 104;
-    const x0 = labelW + 8;
-    const trackW = W - x0 - 44;
-    const xAt = (v: number) => x0 + (Math.min(v, maxV) / maxV) * trackW;
-    const ticks = [0, 1, 2, 3].map((i) => (i * maxV) / 3);
-    const lanes = rows.map((b, i) => {
-      const y = 8 + axisH + i * step;
-      const bands = b.ranges.map((r, bi) => {
-        const prev = bi === 0 ? 0 : b.ranges[bi - 1];
-        /* Darken toward good (the last band): poor reads pale. */
-        const o = b.ranges.length === 1 ? 0.16 : 0.08 + (0.16 * bi) / (b.ranges.length - 1);
-        return {x: xAt(prev), w: Math.max(xAt(r) - xAt(prev), 0), o};
+      const axisH = 22;
+      const avail = height - 8 - axisH - 8;
+      const rowH = Math.max(
+        22,
+        Math.min(
+          34,
+          (avail - 12 * (rows.length - 1)) / Math.max(rows.length, 1),
+        ),
+      );
+      const step = rowH + 12;
+      const labelW = 104;
+      const x0 = labelW + 8;
+      const trackW = W - x0 - 44;
+      const xAt = (v: number) => x0 + (Math.min(v, maxV) / maxV) * trackW;
+      const ticks = [0, 1, 2, 3].map((i) => (i * maxV) / 3);
+      const lanes = rows.map((b, i) => {
+        const y = 8 + axisH + i * step;
+        const bands = b.ranges.map((r, bi) => {
+          const prev = bi === 0 ? 0 : b.ranges[bi - 1];
+          /* Darken toward good (the last band): poor reads pale. */
+          const o =
+            b.ranges.length === 1
+              ? 0.16
+              : 0.08 + (0.16 * bi) / (b.ranges.length - 1);
+          return { x: xAt(prev), w: Math.max(xAt(r) - xAt(prev), 0), o };
+        });
+        return {
+          ...b,
+          y,
+          h: rowH,
+          color: b.color ?? colors[i % colors.length],
+          bands,
+          barY: y + rowH / 2 - 5,
+          valText: format(b.measure),
+          tip:
+            `${b.label}: ${format(b.measure)}` +
+            (b.target != null ? ` (target ${format(b.target)})` : "") +
+            ` — ranges ${b.ranges.map(format).join(" / ")}`,
+        };
       });
-      return {
-        ...b,
-        y,
-        h: rowH,
-        color: b.color ?? colors[i % colors.length],
-        bands,
-        barY: y + rowH / 2 - 5,
-        valText: format(b.measure),
-        tip: `${b.label}: ${format(b.measure)}` +
-          (b.target != null ? ` (target ${format(b.target)})` : "") +
-          ` — ranges ${b.ranges.map(format).join(" / ")}`,
-      };
-    });
-    return {lanes, ticks, xAt, trackEnd: x0 + trackW, top: 8 + axisH};
-  })()
+      return { lanes, ticks, xAt, trackEnd: x0 + trackW, top: 8 + axisH };
+    })()
   : null;
 
 /* --- dumbbell: Cleveland dot plots (Wikipedia's Dot plot) — dots
@@ -2053,43 +2566,48 @@ const bullet = isBullet
    connector emphasizes the delta; one series is a plain dot plot. --- */
 const dumbbell = isDumbbell
   ? (() => {
-    const s0 = series[0];
-    const s1 = series[1];
-    if (!s0 || labels.length === 0) return null;
-    const vals: number[] = [];
-    labels.forEach((_, i) => {
-      if (Number.isFinite(s0.data[i])) vals.push(s0.data[i]);
-      if (s1 && Number.isFinite(s1.data[i])) vals.push(s1.data[i]);
-    });
-    if (vals.length === 0) return null;
-    const dMin = Math.min(...vals);
-    const dMax = Math.max(...vals);
-    const pad = Math.max(dMax - dMin, 1) * 0.08;
-    const lo = dMin - pad;
-    const hi = dMax + pad;
-    const labelW = 100;
-    const x0 = labelW + 8;
-    const trackW = W - x0 - 12;
-    const xAt = (v: number) => x0 + ((v - lo) / Math.max(hi - lo, 1e-9)) * trackW;
-    const n = labels.length;
-    const rowH = plotH / Math.max(n, 1);
-    const cy = (i: number) => PAD.top + i * rowH + rowH / 2;
-    const ticks = [0, 1, 2, 3].map((i) => lo + (i * (hi - lo)) / 3);
-    const rows = labels.map((label, i) => {
-      const a = Number.isFinite(s0.data[i]) ? s0.data[i] : null;
-      const b = s1 && Number.isFinite(s1.data[i]) ? s1.data[i] : null;
-      return {
-        label,
-        y: cy(i),
-        a: a != null ? {v: a, x: xAt(a), tip: `${label} — ${s0.name}: ${format(a)}`} : null,
-        b: b != null
-          ? {v: b, x: xAt(b), tip: `${label} — ${s1!.name}: ${format(b)}`}
-          : null,
-        delta: a != null && b != null ? Math.abs(b - a) : null,
-      };
-    });
-    return {rows, ticks, xAt, labelW};
-  })()
+      const s0 = series[0];
+      const s1 = series[1];
+      if (!s0 || labels.length === 0) return null;
+      const vals: number[] = [];
+      labels.forEach((_, i) => {
+        if (Number.isFinite(s0.data[i])) vals.push(s0.data[i]);
+        if (s1 && Number.isFinite(s1.data[i])) vals.push(s1.data[i]);
+      });
+      if (vals.length === 0) return null;
+      const dMin = Math.min(...vals);
+      const dMax = Math.max(...vals);
+      const pad = Math.max(dMax - dMin, 1) * 0.08;
+      const lo = dMin - pad;
+      const hi = dMax + pad;
+      const labelW = 100;
+      const x0 = labelW + 8;
+      const trackW = W - x0 - 12;
+      const xAt = (v: number) =>
+        x0 + ((v - lo) / Math.max(hi - lo, 1e-9)) * trackW;
+      const n = labels.length;
+      const rowH = plotH / Math.max(n, 1);
+      const cy = (i: number) => PAD.top + i * rowH + rowH / 2;
+      const ticks = [0, 1, 2, 3].map((i) => lo + (i * (hi - lo)) / 3);
+      const rows = labels.map((label, i) => {
+        const a = Number.isFinite(s0.data[i]) ? s0.data[i] : null;
+        const b = s1 && Number.isFinite(s1.data[i]) ? s1.data[i] : null;
+        return {
+          label,
+          y: cy(i),
+          a:
+            a != null
+              ? { v: a, x: xAt(a), tip: `${label} — ${s0.name}: ${format(a)}` }
+              : null,
+          b:
+            b != null
+              ? { v: b, x: xAt(b), tip: `${label} — ${s1!.name}: ${format(b)}` }
+              : null,
+          delta: a != null && b != null ? Math.abs(b - a) : null,
+        };
+      });
+      return { rows, ticks, xAt, labelW };
+    })()
   : null;
 
 const classes = cn(

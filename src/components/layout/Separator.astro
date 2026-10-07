@@ -1,19 +1,19 @@
 ---
 /**
-  * Separator — zero-JS thematic break.
-  *
-  * Horizontal uses semantic <hr>; vertical uses <div role="separator">
-  * (an <hr> cannot be vertical). `label` adds an accessible name when
-  * the separator delimits labelled regions.
-  *
-  * `variant` paints the line: dashed, dotted, double, an accent gradient
-  * bar, or a fade-to-transparent edge. `labeled` (horizontal only)
-  * centers the default slot between two lines — an "or continue with"
-  * style divider; it renders a div since an <hr> cannot hold content.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Separator — zero-JS thematic break.
+ *
+ * Horizontal uses semantic <hr>; vertical uses <div role="separator">
+ * (an <hr> cannot be vertical). `label` adds an accessible name when
+ * the separator delimits labelled regions.
+ *
+ * `variant` paints the line: dashed, dotted, double, an accent gradient
+ * bar, or a fade-to-transparent edge. `labeled` (horizontal only)
+ * centers the default slot between two lines — an "or continue with"
+ * style divider; it renders a div since an <hr> cannot hold content.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   orientation?: "horizontal" | "vertical";

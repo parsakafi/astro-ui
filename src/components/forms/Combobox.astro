@@ -1,23 +1,23 @@
 ---
 /**
-  * Combobox — a select-style trigger that opens a searchable listbox.
-  *
-  * Unlike Autocomplete (a typable text input that suggests), Combobox
-  * reads like a select: the trigger shows the committed value, and a
-  * search field inside the panel filters the options. Implements the
-  * WAI-ARIA combobox + listbox pattern:
-  *
-  *   <Combobox name="framework" items={["Astro", "Next.js"]} />
-  *
-  * Pass plain strings, or `{ value, label, hint }` objects for a muted
-  * hint line per option. `groups` renders labelled sections instead.
-  * The trigger participates in forms via a hidden input (name +
-  * committed value). With JS disabled the trigger still renders the
-  * current value; the search/listbox needs the small scoped script.
-  *
-  * JavaScript required: Yes (popup, search filter, listbox navigation)
-  */
-import {cn} from "../../utils/cn";
+ * Combobox — a select-style trigger that opens a searchable listbox.
+ *
+ * Unlike Autocomplete (a typable text input that suggests), Combobox
+ * reads like a select: the trigger shows the committed value, and a
+ * search field inside the panel filters the options. Implements the
+ * WAI-ARIA combobox + listbox pattern:
+ *
+ *   <Combobox name="framework" items={["Astro", "Next.js"]} />
+ *
+ * Pass plain strings, or `{ value, label, hint }` objects for a muted
+ * hint line per option. `groups` renders labelled sections instead.
+ * The trigger participates in forms via a hidden input (name +
+ * committed value). With JS disabled the trigger still renders the
+ * current value; the search/listbox needs the small scoped script.
+ *
+ * JavaScript required: Yes (popup, search filter, listbox navigation)
+ */
+import { cn } from "../../utils/cn";
 
 export interface ComboboxOption {
   value: string;
@@ -46,7 +46,15 @@ export interface Props {
   /** Renders the trigger matching a control size. */
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   /** Visual variant of the trigger. */
-  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  variant?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info";
   disabled?: boolean;
   required?: boolean;
   invalid?: boolean;
@@ -94,9 +102,11 @@ interface Norm {
   hint?: string;
 }
 const norm = (o: string | ComboboxOption): Norm =>
-  typeof o === "string" ? {value: o, label: o} : o;
+  typeof o === "string" ? { value: o, label: o } : o;
 
-const allOptions = (groups ?? [{label: "", items}]).flatMap((g) => g.items.map(norm));
+const allOptions = (groups ?? [{ label: "", items }]).flatMap((g) =>
+  g.items.map(norm),
+);
 const initial = allOptions.find((o) => o.value === value);
 const initialLabel = initial?.label ?? value ?? "";
 

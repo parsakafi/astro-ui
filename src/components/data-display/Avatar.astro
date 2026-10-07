@@ -1,26 +1,27 @@
 ---
+// biome-ignore lint/correctness/noUnusedImports: used in the Astro template below; biome does not see component usage in .astro markup
+import { Image } from "astro:assets";
 /**
-  * Avatar — zero-JS user/system image with initials fallback.
-  *
-  * Renders <img> when `src` is provided, otherwise initials derived
-  * from `name`. Always sets a meaningful `alt` (or alt="" when
-  * `ariaLabel` describes the wrapper, e.g. inside a button).
-  *
-  * Extras beyond the base surface:
-  *  - `status` renders an online badge (success/warning/error/muted
-  *    or any variant color); `statusPosition` pins it to a corner;
-  *    `statusLabel` is the accessible name for the indicator.
-  *  - `ring` adds a colored ring (token names); `ringInset` keeps the
-  *    ring from clipping in overflow contexts.
-  *  - `loading` overlays a spinner veil over the image.
-  *  - `filter` applies grayscale (hover to restore with `filterHover`).
-  *  - `radius` overrides the shape preset (circle/square/rounded/sm).
-  *  - `badge` slot renders arbitrary badge content (count, ✓, icon).
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
-import {Image} from "astro:assets";
+ * Avatar — zero-JS user/system image with initials fallback.
+ *
+ * Renders <img> when `src` is provided, otherwise initials derived
+ * from `name`. Always sets a meaningful `alt` (or alt="" when
+ * `ariaLabel` describes the wrapper, e.g. inside a button).
+ *
+ * Extras beyond the base surface:
+ *  - `status` renders an online badge (success/warning/error/muted
+ *    or any variant color); `statusPosition` pins it to a corner;
+ *    `statusLabel` is the accessible name for the indicator.
+ *  - `ring` adds a colored ring (token names); `ringInset` keeps the
+ *    ring from clipping in overflow contexts.
+ *  - `loading` overlays a spinner veil over the image.
+ *  - `filter` applies grayscale (hover to restore with `filterHover`).
+ *  - `radius` overrides the shape preset (circle/square/rounded/sm).
+ *  - `badge` slot renders arbitrary badge content (count, ✓, icon).
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   src?: string;
@@ -30,7 +31,15 @@ export interface Props {
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
   /** Explicit box size (e.g. "3.5rem", "56") — overrides `size`. */
   customSize?: string | number;
-  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "inherit";
   shape?: "circle" | "square" | "rounded";
   /** Radius override: token-based corner treatment (mirrors shape + finer control). */
   radius?: "none" | "sm" | "md" | "lg" | "full";
@@ -121,7 +130,11 @@ const classes = cn(
 );
 
 const inlineStyle = [
-  typeof customSize === "number" ? `inline-size:${customSize}px;block-size:${customSize}px` : customSize ? `inline-size:${customSize};block-size:${customSize}` : "",
+  typeof customSize === "number"
+    ? `inline-size:${customSize}px;block-size:${customSize}px`
+    : customSize
+      ? `inline-size:${customSize};block-size:${customSize}`
+      : "",
   fit === "contain" ? "" : "",
 ]
   .filter(Boolean)

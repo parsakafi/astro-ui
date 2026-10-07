@@ -1,30 +1,30 @@
 ---
 /**
-  * Collapsible — an expand/collapse region with a dedicated trigger.
-  *
-  * Unlike Accordion (native <details>, content authored as data), the
-  * trigger here is a separate button that can live anywhere in the
-  * markup, and the panel is arbitrary composed content. The scoped
-  * script toggles hidden + aria-expanded, and closes on Escape.
-  * Multiple collapsibles on one page are supported — each root is wired
-  * independently by its data attribute.
-  *
-  * The closed panel is hidden with hidden="until-found" where supported:
-  * find-in-page (Ctrl/Cmd+F), #hash deep links, and :~:text= fragment
-  * navigation can still match and reveal collapsed content — the browser
-  * fires `beforematch` and removes the attribute itself. Browsers without
-  * support fall back to plain hidden (display: none). A `beforematch`
-  * listener keeps aria-expanded in sync when the browser reveals the panel.
-  *
-  *   <Collapsible id="filters" open>
-  *     <span slot="trigger">Filters</span>
-  *     <p>Any composed content…</p>
-  *   </Collapsible>
-  *
-  * JavaScript required: Yes
-  */
-import {cn} from "../../utils/cn";
-import {uid} from "../../utils/uid";
+ * Collapsible — an expand/collapse region with a dedicated trigger.
+ *
+ * Unlike Accordion (native <details>, content authored as data), the
+ * trigger here is a separate button that can live anywhere in the
+ * markup, and the panel is arbitrary composed content. The scoped
+ * script toggles hidden + aria-expanded, and closes on Escape.
+ * Multiple collapsibles on one page are supported — each root is wired
+ * independently by its data attribute.
+ *
+ * The closed panel is hidden with hidden="until-found" where supported:
+ * find-in-page (Ctrl/Cmd+F), #hash deep links, and :~:text= fragment
+ * navigation can still match and reveal collapsed content — the browser
+ * fires `beforematch` and removes the attribute itself. Browsers without
+ * support fall back to plain hidden (display: none). A `beforematch`
+ * listener keeps aria-expanded in sync when the browser reveals the panel.
+ *
+ *   <Collapsible id="filters" open>
+ *     <span slot="trigger">Filters</span>
+ *     <p>Any composed content…</p>
+ *   </Collapsible>
+ *
+ * JavaScript required: Yes
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
 
 export interface Props {
   /** Open on first render (SSR). */

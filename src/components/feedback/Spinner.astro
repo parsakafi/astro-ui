@@ -1,20 +1,30 @@
 ---
 /**
-  * Spinner — zero-JS loading indicator.
-  *
-  * Built-in visual styles (ring, dots, pulse, spin) render as inline SVG
-  * or CSS shapes — no Iconify dependency, no client JS. The `loading`
-  * prop is forwarded to Button; standalone use is for page/region states.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Spinner — zero-JS loading indicator.
+ *
+ * Built-in visual styles (ring, dots, pulse, spin) render as inline SVG
+ * or CSS shapes — no Iconify dependency, no client JS. The `loading`
+ * prop is forwarded to Button; standalone use is for page/region states.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
   /** Accessible label, e.g. "Loading results". */
   label?: string;
-  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "carbon" | "accent";
+  variant?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "carbon"
+    | "accent";
   /**
    * Visual style of the spinner.
    * - `ring` (default): bordered ring rotating around a gap.
@@ -55,7 +65,7 @@ const ringSize: Record<string, string> = {
 };
 
 const dotCount = 3;
-const dots = Array.from({length: dotCount}, (_, i) => i);
+const dots = Array.from({ length: dotCount }, (_, i) => i);
 ---
 
 <span id={id} class={classes} role="status" {...rest}>

@@ -1,25 +1,25 @@
 ---
 /**
-  * InputGroup — input with attached addons (icon, text prefix, button).
-  *
-  * A zero-JS compositional wrapper: the wrapper owns the border, focus
-  * ring and height; the control inside is rendered "bare" and the addons
-  * sit flush against it on either side. Works with any control placed in
-  * the default slot (typically Input or Textarea) plus two named slots:
-  *
-  *   <InputGroup>
-  *     <svg slot="start" .../>          (icon or prefix markup)
-  *     <Input name="search" placeholder="Search…" />
-  *     <Fragment slot="end"><Button size="xs">Check</Button></Fragment>
-  *   </InputGroup>
-  *
-  * Addons are plain markup — an icon SVG, a text span, or any component
-  * (Button, Kbd, Tag…). No JavaScript required: focus styling is CSS
-  * :focus-within on the wrapper.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * InputGroup — input with attached addons (icon, text prefix, button).
+ *
+ * A zero-JS compositional wrapper: the wrapper owns the border, focus
+ * ring and height; the control inside is rendered "bare" and the addons
+ * sit flush against it on either side. Works with any control placed in
+ * the default slot (typically Input or Textarea) plus two named slots:
+ *
+ *   <InputGroup>
+ *     <svg slot="start" .../>          (icon or prefix markup)
+ *     <Input name="search" placeholder="Search…" />
+ *     <Fragment slot="end"><Button size="xs">Check</Button></Fragment>
+ *   </InputGroup>
+ *
+ * Addons are plain markup — an icon SVG, a text span, or any component
+ * (Button, Kbd, Tag…). No JavaScript required: focus styling is CSS
+ * :focus-within on the wrapper.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Control height + paddings (mirrors Input sizes). */

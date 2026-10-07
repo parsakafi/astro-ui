@@ -18,7 +18,7 @@
  *
  * JavaScript required: No
  */
-import {cn} from "../../utils/cn";
+import { cn } from "../../utils/cn";
 
 export type MediaType = "image" | "video" | "iframe";
 
@@ -62,7 +62,8 @@ function detectType(s: string, t?: MediaType): MediaType {
   if (["mp4", "webm", "ogv", "ogg", "mov"].includes(ext)) return "video";
   if (["html", "php"].includes(ext)) return "iframe";
   // YouTube / Vimeo embeds are iframed even without an extension.
-  if (/youtube\.com|youtu\.be|vimeo\.com|player\.vimeo/i.test(s)) return "iframe";
+  if (/youtube\.com|youtu\.be|vimeo\.com|player\.vimeo/i.test(s))
+    return "iframe";
   return "image";
 }
 

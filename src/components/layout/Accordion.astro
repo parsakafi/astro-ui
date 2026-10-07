@@ -1,16 +1,16 @@
 ---
 /**
-  * Accordion — collapsible sections with zero JS.
-  *
-  * Built on native <details>/<summary>: expand/collapse, keyboard
-  * (Space/Enter), and announcements all come from the platform. The
-  * `single` mode emulates one-open-at-a-time behavior without script —
-  * see the FAQ note: a browser-native `name` attribute on <details>
-  * (Chrome 120+) enforces exclusivity when provided via rest props.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Accordion — collapsible sections with zero JS.
+ *
+ * Built on native <details>/<summary>: expand/collapse, keyboard
+ * (Space/Enter), and announcements all come from the platform. The
+ * `single` mode emulates one-open-at-a-time behavior without script —
+ * see the FAQ note: a browser-native `name` attribute on <details>
+ * (Chrome 120+) enforces exclusivity when provided via rest props.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface AccordionItem {
   /** Unique value identifying the panel. */

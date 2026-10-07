@@ -1,33 +1,33 @@
 ---
 /**
-  * AlertDialog — a modal that interrupts for a decision.
-  *
-  * role="alertdialog" tells assistive tech to announce the message
-  * immediately. Structure mirrors Dialog (native <dialog>, platform
-  * modality/focus containment, zero JS in the component) with an
-  * action-oriented footer: cancel buttons are plain
-  * `<form method="dialog">` submissions, so dismissal needs no JS.
-  *
-  *   <Button id="open-delete">Delete project</Button>
-  *   <AlertDialog id="delete">
-  *     <h2 slot="title">Delete project?</h2>
-  *     <p slot="description">This cannot be undone.</p>
-  *     <Fragment slot="footer">
-  *       <form method="dialog"><Button variant="outline">Cancel</Button></form>
-  *       <form method="dialog">
-  *         <Button variant="destructive" value="confirm">Delete</Button>
-  *       </form>
-  *     </Fragment>
-  *   </AlertDialog>
-  *   <!-- app script: getElementById("open-delete") → showModal() -->
-  *
-  * The dialog's `returnValue` receives the submitting button's `value`,
-  * so the app can tell which action dismissed it.
-  *
-  * JavaScript required: Yes — app-level trigger only (`showModal()`); the
-  * component ships zero JS itself.
-  */
-import {cn} from "../../utils/cn";
+ * AlertDialog — a modal that interrupts for a decision.
+ *
+ * role="alertdialog" tells assistive tech to announce the message
+ * immediately. Structure mirrors Dialog (native <dialog>, platform
+ * modality/focus containment, zero JS in the component) with an
+ * action-oriented footer: cancel buttons are plain
+ * `<form method="dialog">` submissions, so dismissal needs no JS.
+ *
+ *   <Button id="open-delete">Delete project</Button>
+ *   <AlertDialog id="delete">
+ *     <h2 slot="title">Delete project?</h2>
+ *     <p slot="description">This cannot be undone.</p>
+ *     <Fragment slot="footer">
+ *       <form method="dialog"><Button variant="outline">Cancel</Button></form>
+ *       <form method="dialog">
+ *         <Button variant="destructive" value="confirm">Delete</Button>
+ *       </form>
+ *     </Fragment>
+ *   </AlertDialog>
+ *   <!-- app script: getElementById("open-delete") → showModal() -->
+ *
+ * The dialog's `returnValue` receives the submitting button's `value`,
+ * so the app can tell which action dismissed it.
+ *
+ * JavaScript required: Yes — app-level trigger only (`showModal()`); the
+ * component ships zero JS itself.
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   size?: "xs" | "sm" | "md" | "lg";
@@ -38,13 +38,7 @@ export interface Props {
   class?: string;
 }
 
-const {
-  size = "sm",
-  id,
-  ariaLabel,
-  class: className,
-  ...rest
-} = Astro.props;
+const { size = "sm", id, ariaLabel, class: className, ...rest } = Astro.props;
 
 const hasTitle = Astro.slots.has("title");
 const hasDescription = Astro.slots.has("description");

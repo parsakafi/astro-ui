@@ -1,21 +1,21 @@
 ---
 /**
-  * Rating — rating input built on native radios, zero JS.
-  *
-  * A fieldset of radio inputs styled as icons (star, heart, circle, square,
-  * thumb, bar, emoji): arrow keys and form submission come from the
-  * platform; each icon is a real labeled option ("4 out of 5") so screen
-  * readers announce it. `readonly` renders the visual value without inputs.
-  *
-  * `icon` picks a preset shape or "emoji" faces; `iconPath`/`icons` supply
-  * custom 16×16 SVG path data. `colorScale` tints each step with its own
-  * color (red → green satisfaction scales), `labels`/`showLabels` add
-  * semantic anchors under the scale, and `single` highlights only the
-  * selected step (NPS-style) instead of everything up to it.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Rating — rating input built on native radios, zero JS.
+ *
+ * A fieldset of radio inputs styled as icons (star, heart, circle, square,
+ * thumb, bar, emoji): arrow keys and form submission come from the
+ * platform; each icon is a real labeled option ("4 out of 5") so screen
+ * readers announce it. `readonly` renders the visual value without inputs.
+ *
+ * `icon` picks a preset shape or "emoji" faces; `iconPath`/`icons` supply
+ * custom 16×16 SVG path data. `colorScale` tints each step with its own
+ * color (red → green satisfaction scales), `labels`/`showLabels` add
+ * semantic anchors under the scale, and `single` highlights only the
+ * selected step (NPS-style) instead of everything up to it.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Field name for form submission (required unless readonly). */
@@ -77,7 +77,8 @@ const interactive = !readonly && !disabled && name;
 
 /** Per-step colors for colorScale (5-step satisfaction ramp; hue-rotated beyond). */
 const STEP_COLORS = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
-const stepColor = (step: number) => STEP_COLORS[(step - 1) % STEP_COLORS.length];
+const stepColor = (step: number) =>
+  STEP_COLORS[(step - 1) % STEP_COLORS.length];
 
 /** Preset icon paths, all in a 16×16 viewBox. */
 const PRESETS: Record<string, string> = {
@@ -94,14 +95,19 @@ const PRESETS: Record<string, string> = {
 /** Sentiment emoji for the "emoji" preset (tiled cyclically beyond 5 steps). */
 const EMOJI = ["😢", "😕", "😐", "🙂", "😍"];
 
-const pathFor = (step: number) => icons?.[step - 1] ?? iconPath ?? PRESETS[icon] ?? PRESETS.star;
+const pathFor = (step: number) =>
+  icons?.[step - 1] ?? iconPath ?? PRESETS[icon] ?? PRESETS.star;
 const isEmoji = icon === "emoji" && !iconPath && !icons;
-const srLabel = (step: number) =>
-  labels?.[step - 1] ?? `${step} out of ${max}`;
+const srLabel = (step: number) => labels?.[step - 1] ?? `${step} out of ${max}`;
 
 /** Inline style wiring per-step colors for colorScale. */
 const scaleStyle = colorScale
-  ? Object.fromEntries(Array.from({length: max}, (_, i) => [`--aui-rating-step-${i + 1}`, stepColor(i + 1)]))
+  ? Object.fromEntries(
+      Array.from({ length: max }, (_, i) => [
+        `--aui-rating-step-${i + 1}`,
+        stepColor(i + 1),
+      ]),
+    )
   : undefined;
 
 const classes = cn(

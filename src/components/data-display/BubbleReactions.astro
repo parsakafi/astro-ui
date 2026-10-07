@@ -1,22 +1,22 @@
 ---
 /**
-  * BubbleReactions — reaction pill anchored to a Bubble's edge.
-  *
-  * Absolutely positioned inside the Bubble root; top or bottom edge,
-  * start or end horizontal alignment. Content is free: emoji spans for
-  * a static row, or real <button>s for pressable reactions (buttons
-  * get their own hit area and hover).
-  *
-  *   <Bubble>
-  *     <BubbleContent>Deploy finished.</BubbleContent>
-  *     <BubbleReactions side="bottom" align="start" ariaLabel="Reactions">
-  *       <button type="button" aria-pressed="false"><span aria-hidden="true">🎉</span> 2</button>
-  *     </BubbleReactions>
-  *   </Bubble>
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * BubbleReactions — reaction pill anchored to a Bubble's edge.
+ *
+ * Absolutely positioned inside the Bubble root; top or bottom edge,
+ * start or end horizontal alignment. Content is free: emoji spans for
+ * a static row, or real <button>s for pressable reactions (buttons
+ * get their own hit area and hover).
+ *
+ *   <Bubble>
+ *     <BubbleContent>Deploy finished.</BubbleContent>
+ *     <BubbleReactions side="bottom" align="start" ariaLabel="Reactions">
+ *       <button type="button" aria-pressed="false"><span aria-hidden="true">🎉</span> 2</button>
+ *     </BubbleReactions>
+ *   </Bubble>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Anchor edge on the bubble. */

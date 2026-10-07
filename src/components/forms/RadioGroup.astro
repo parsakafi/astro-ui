@@ -1,32 +1,33 @@
 ---
+import { cn } from "../../utils/cn";
 /**
-  * RadioGroup — zero-JS declarative single-choice group.
-  *
-  * Renders a labeled <fieldset> of Radio components from a plain items
-  * array — native radios underneath, so the browser provides the
-  * single-choice semantics and arrow-key navigation for free. The group
-  * centralizes what handwritten fieldsets repeat: `defaultValue` (only
-  * one option carries `checked`), `orientation`, per-option hints and
-  * disabled state, and group-level invalid styling + description wiring.
-  *
-  *   <RadioGroup
-  *     name="plan"
-  *     label="Plan"
-  *     defaultValue="pro"
-  *     items={[
-  *       {value: "free", label: "Free", hint: "For hobbies"},
-  *       {value: "pro", label: "Pro", hint: "For teams"},
-  *     ]}
-  *   />
-  *
-  * Options accept a string (value + label) or {value, label, hint?,
-  * disabled?}. For full custom markup per option, hand-write the
-  * fieldset with Radio components instead.
-  *
-  * JavaScript required: No
-  */
+ * RadioGroup — zero-JS declarative single-choice group.
+ *
+ * Renders a labeled <fieldset> of Radio components from a plain items
+ * array — native radios underneath, so the browser provides the
+ * single-choice semantics and arrow-key navigation for free. The group
+ * centralizes what handwritten fieldsets repeat: `defaultValue` (only
+ * one option carries `checked`), `orientation`, per-option hints and
+ * disabled state, and group-level invalid styling + description wiring.
+ *
+ *   <RadioGroup
+ *     name="plan"
+ *     label="Plan"
+ *     defaultValue="pro"
+ *     items={[
+ *       {value: "free", label: "Free", hint: "For hobbies"},
+ *       {value: "pro", label: "Pro", hint: "For teams"},
+ *     ]}
+ *   />
+ *
+ * Options accept a string (value + label) or {value, label, hint?,
+ * disabled?}. For full custom markup per option, hand-write the
+ * fieldset with Radio components instead.
+ *
+ * JavaScript required: No
+ */
+// biome-ignore lint/correctness/noUnusedImports: used in the Astro template below; biome does not see component usage in .astro markup
 import Radio from "./Radio.astro";
-import {cn} from "../../utils/cn";
 
 export interface RadioGroupOption {
   value: string;
@@ -85,7 +86,7 @@ const {
 } = Astro.props;
 
 const options: RadioGroupOption[] = items.map((item) =>
-  typeof item === "string" ? {value: item, label: item} : item,
+  typeof item === "string" ? { value: item, label: item } : item,
 );
 
 const classes = cn(

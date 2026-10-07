@@ -10,7 +10,7 @@
   *
   * JavaScript required: No
   */
-import {cn} from "../../utils/cn";
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Filled percentage, 0–100. When omitted, renders indeterminate. */
@@ -20,7 +20,15 @@ export interface Props {
   /** Visual size. */
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
   /** Fill color. */
-  color?: "primary" | "secondary" | "success" | "warning" | "error" | "info" | "muted" | "destructive";
+  color?:
+    | "primary"
+    | "secondary"
+    | "success"
+    | "warning"
+    | "error"
+    | "info"
+    | "muted"
+    | "destructive";
   /** Optional label above/beside the track. */
   label?: string;
   /** Optional current value text (e.g. "64%"). Shown when `label` is set. */
@@ -83,28 +91,30 @@ const classes = cn(
 );
 
 const circleSizeMap: Record<string, { size: string; labelFontSize: string }> = {
-  xs: {size: "32px", labelFontSize: "10px"},
-  sm: {size: "40px", labelFontSize: "var(--ui-text-xs)"},
-  md: {size: "48px", labelFontSize: "var(--ui-text-sm)"},
-  lg: {size: "64px", labelFontSize: "var(--ui-text-base)"},
-  xl: {size: "80px", labelFontSize: "var(--ui-text-lg)"},
-  "2xl": {size: "96px", labelFontSize: "var(--ui-text-xl)"},
+  xs: { size: "32px", labelFontSize: "10px" },
+  sm: { size: "40px", labelFontSize: "var(--ui-text-xs)" },
+  md: { size: "48px", labelFontSize: "var(--ui-text-sm)" },
+  lg: { size: "64px", labelFontSize: "var(--ui-text-base)" },
+  xl: { size: "80px", labelFontSize: "var(--ui-text-lg)" },
+  "2xl": { size: "96px", labelFontSize: "var(--ui-text-xl)" },
 };
 
 const barSizeMap: Record<string, { height: string; width: string }> = {
-  xs: {height: "4px", width: "8rem"},
-  sm: {height: "6px", width: "10rem"},
-  md: {height: "8px", width: "12rem"},
-  lg: {height: "12px", width: "16rem"},
-  xl: {height: "16px", width: "20rem"},
-  "2xl": {height: "20px", width: "24rem"},
+  xs: { height: "4px", width: "8rem" },
+  sm: { height: "6px", width: "10rem" },
+  md: { height: "8px", width: "12rem" },
+  lg: { height: "12px", width: "16rem" },
+  xl: { height: "16px", width: "20rem" },
+  "2xl": { height: "20px", width: "24rem" },
 };
 
-const SEGMENT_COUNT = typeof segmented === "number" && segmented > 0
-  ? Math.floor(segmented)
-  : 12;
+const SEGMENT_COUNT =
+  typeof segmented === "number" && segmented > 0 ? Math.floor(segmented) : 12;
 const SEGMENT_GAP = 4;
-const SEGMENT_FILL = Math.min(SEGMENT_COUNT, Math.round((percent / 100) * SEGMENT_COUNT));
+const SEGMENT_FILL = Math.min(
+  SEGMENT_COUNT,
+  Math.round((percent / 100) * SEGMENT_COUNT),
+);
 
 const bar = barSizeMap[size] ?? barSizeMap.md;
 const circle = circleSizeMap[size] ?? circleSizeMap.md;

@@ -1,19 +1,19 @@
 ---
 /**
-  * BubbleGroup — a run of consecutive bubbles from one sender.
-  *
-  * Stacks Bubble children with tight spacing so consecutive turns read
-  * as one sender's collapsed turn. A plain flow container: combine with
-  * `align` on the bubbles; threads usually wrap it with sender metadata.
-  *
-  *   <BubbleGroup ariaLabel="Messages from Ada">
-  *     <Bubble align="end"><BubbleContent>One</BubbleContent></Bubble>
-  *     <Bubble align="end"><BubbleContent>Two</BubbleContent></Bubble>
-  *   </BubbleGroup>
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * BubbleGroup — a run of consecutive bubbles from one sender.
+ *
+ * Stacks Bubble children with tight spacing so consecutive turns read
+ * as one sender's collapsed turn. A plain flow container: combine with
+ * `align` on the bubbles; threads usually wrap it with sender metadata.
+ *
+ *   <BubbleGroup ariaLabel="Messages from Ada">
+ *     <Bubble align="end"><BubbleContent>One</BubbleContent></Bubble>
+ *     <Bubble align="end"><BubbleContent>Two</BubbleContent></Bubble>
+ *   </BubbleGroup>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   class?: string;
@@ -22,7 +22,7 @@ export interface Props {
   ariaLabel?: string;
 }
 
-const {class: className, id, ariaLabel, ...rest} = Astro.props;
+const { class: className, id, ariaLabel, ...rest } = Astro.props;
 
 const classes = cn("aui-bubble-group", className);
 ---

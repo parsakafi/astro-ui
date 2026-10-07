@@ -1,18 +1,18 @@
 ---
 /**
-  * HoverCard — a rich preview card on hover and keyboard focus.
-  *
-  * CSS-only sibling of Popover: content that appears after a short delay
-  * when the user hovers or focuses the trigger. Unlike Tooltip the card
-  * stays interactive (links inside work) and carries an aria-label so
-  * assistive tech can announce it.
-  *
-  * Because it is pointer-driven, never put essential information only in
-  * a HoverCard — the trigger itself must carry the primary content.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * HoverCard — a rich preview card on hover and keyboard focus.
+ *
+ * CSS-only sibling of Popover: content that appears after a short delay
+ * when the user hovers or focuses the trigger. Unlike Tooltip the card
+ * stays interactive (links inside work) and carries an aria-label so
+ * assistive tech can announce it.
+ *
+ * Because it is pointer-driven, never put essential information only in
+ * a HoverCard — the trigger itself must carry the primary content.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Placement of the card relative to the trigger. */

@@ -1,16 +1,16 @@
 ---
 /**
-  * Tooltip — CSS-only tooltip on hover and keyboard focus.
-  *
-  * A wrapper <span> carries the trigger and a bubble positioned above
-  * or below. Shows on :hover and :focus-visible (touch users should
-  * get the same content inline — tooltips never carry essential info).
-  * The bubble is aria-hidden; describe the trigger with aria-label or
-  * aria-describedby pointing at the bubble's id when it has one.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Tooltip — CSS-only tooltip on hover and keyboard focus.
+ *
+ * A wrapper <span> carries the trigger and a bubble positioned above
+ * or below. Shows on :hover and :focus-visible (touch users should
+ * get the same content inline — tooltips never carry essential info).
+ * The bubble is aria-hidden; describe the trigger with aria-label or
+ * aria-describedby pointing at the bubble's id when it has one.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Placement of the bubble relative to the trigger. */

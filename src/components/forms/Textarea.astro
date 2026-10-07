@@ -1,19 +1,19 @@
 ---
 /**
-  * Textarea — multi-line text control with optional progressive extras.
-  *
-  * The core control is a native <textarea> and works without JS. The
-  * optional extras — character counter (showCount / counter), clear
-  * button (clearable), and auto-grow between minRows/maxRows — are
-  * wired by a tiny scoped script and degrade to a plain textarea
-  * without it.
-  *
-  *   <Label for="bio">Bio</Label>
-  *   <Textarea id="bio" name="bio" rows={4} maxlength={280} showCount clearable />
-  *
-  * JavaScript required: Yes
-  */
-import {cn} from "../../utils/cn";
+ * Textarea — multi-line text control with optional progressive extras.
+ *
+ * The core control is a native <textarea> and works without JS. The
+ * optional extras — character counter (showCount / counter), clear
+ * button (clearable), and auto-grow between minRows/maxRows — are
+ * wired by a tiny scoped script and degrade to a plain textarea
+ * without it.
+ *
+ *   <Label for="bio">Bio</Label>
+ *   <Textarea id="bio" name="bio" rows={4} maxlength={280} showCount clearable />
+ *
+ * JavaScript required: Yes
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   name?: string;

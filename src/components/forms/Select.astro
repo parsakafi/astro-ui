@@ -1,25 +1,25 @@
 ---
 /**
-  * Select — zero-JS dropdown control built on the native <select>.
-  *
-  * Deliberately NOT a custom listbox: the native control gives full
-  * keyboard support (arrows, Home/End, type-ahead, Escape), platform
-  * screen-reader behavior, form participation, and SSR safety with no
-  * client JavaScript. A custom listbox would require JS focus management
-  * and is deferred until the interactive-component phase (see ADR-001 D6).
-  *
-  * Compose options as children; preselect server-side with `selected`:
-  *
-  *   <Label for="fruit">Fruit</Label>
-  *   <Select id="fruit" name="fruit" placeholder="Choose a fruit">
-  *     {fruits.map((f) => (
-  *       <option value={f.value} selected={f.value === current}>{f.label}</option>
-  *     ))}
-  *   </Select>
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Select — zero-JS dropdown control built on the native <select>.
+ *
+ * Deliberately NOT a custom listbox: the native control gives full
+ * keyboard support (arrows, Home/End, type-ahead, Escape), platform
+ * screen-reader behavior, form participation, and SSR safety with no
+ * client JavaScript. A custom listbox would require JS focus management
+ * and is deferred until the interactive-component phase (see ADR-001 D6).
+ *
+ * Compose options as children; preselect server-side with `selected`:
+ *
+ *   <Label for="fruit">Fruit</Label>
+ *   <Select id="fruit" name="fruit" placeholder="Choose a fruit">
+ *     {fruits.map((f) => (
+ *       <option value={f.value} selected={f.value === current}>{f.label}</option>
+ *     ))}
+ *   </Select>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   name?: string;
@@ -32,7 +32,15 @@ export interface Props {
   /** Inline styles forwarded to the native <select> control. */
   style?: string;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  variant?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info";
   class?: string;
   id?: string;
   ariaLabel?: string;

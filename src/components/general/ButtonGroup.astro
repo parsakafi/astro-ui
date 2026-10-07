@@ -1,19 +1,19 @@
 ---
 /**
-  * ButtonGroup — zero-JS button container.
-  *
-  * Groups buttons visually by merging borders and adjusting corner radii so
-  * adjacent buttons form one continuous control. Only the outer corners of
-  * the first and last children stay rounded; inner borders overlap and are
-  * hidden by z-index stacking on hover/focus.
-  *
-  * Children should be Button components or other inline interactive elements.
-  * Composes with ButtonGroupText (non-button text) and ButtonGroupSeparator
-  * (a visual divider) for richer toolbars.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * ButtonGroup — zero-JS button container.
+ *
+ * Groups buttons visually by merging borders and adjusting corner radii so
+ * adjacent buttons form one continuous control. Only the outer corners of
+ * the first and last children stay rounded; inner borders overlap and are
+ * hidden by z-index stacking on hover/focus.
+ *
+ * Children should be Button components or other inline interactive elements.
+ * Composes with ButtonGroupText (non-button text) and ButtonGroupSeparator
+ * (a visual divider) for richer toolbars.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Layout direction. */

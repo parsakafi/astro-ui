@@ -1,20 +1,20 @@
 ---
 /**
-  * Checkbox — zero-JS boolean control.
-  *
-  * Native <input type="checkbox"> wrapped in a <label> so the whole row
-  * is clickable with correct semantics. `checked` sets the initial
-  * server-rendered state; toggling is native browser behavior.
-  * `indeterminate` sets aria-checked="mixed" visually (the checkmark
-  * is hidden) — the actual indeterminate state still requires a tiny
-  * bit of client JS if you need it to react to user interaction, but
-  * the visual + a11y foundation is here.
-  *
-  * Compose with Label; group with fieldset/legend.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Checkbox — zero-JS boolean control.
+ *
+ * Native <input type="checkbox"> wrapped in a <label> so the whole row
+ * is clickable with correct semantics. `checked` sets the initial
+ * server-rendered state; toggling is native browser behavior.
+ * `indeterminate` sets aria-checked="mixed" visually (the checkmark
+ * is hidden) — the actual indeterminate state still requires a tiny
+ * bit of client JS if you need it to react to user interaction, but
+ * the visual + a11y foundation is here.
+ *
+ * Compose with Label; group with fieldset/legend.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   name?: string;
@@ -24,7 +24,15 @@ export interface Props {
   disabled?: boolean;
   invalid?: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "inherit";
   shape?: "square" | "rounded";
   orientation?: "horizontal" | "vertical";
   indeterminate?: boolean;

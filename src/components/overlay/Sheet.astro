@@ -1,32 +1,32 @@
 ---
 /**
-  * Sheet — a dialog panel that slides in from a screen edge.
-  *
-  * Built on the same native <dialog> foundation as Dialog: modality,
-  * ::backdrop, Escape-to-close, and focus containment come from the
-  * platform and the component itself ships zero JS. The consuming app
-  * opens it with the same one-line trigger recipe:
-  *
-  *   <Button id="open-menu">Menu</Button>
-  *   <Sheet id="menu" side="left">
-  *     <h2 slot="title">Menu</h2>
-  *     <p>Sheet body…</p>
-  *   </Sheet>
-  *   <!-- app script: getElementById("open-menu") → showModal() on #menu -->
-  *
-  * Closing needs no JS: any <form method="dialog"> button, the optional
-  * built-in close button, Escape, or — by default — a click on the dark
-  * backdrop layer (`closeOnBackdrop={false}` to require an explicit close)
-  * dismisses natively.
-  *
-  * Accessible naming is wired automatically: when `id` is set, the title
-  * slot gets `{id}-title` and the sheet points `aria-labelledby` at it.
-  * Pass `ariaLabel` for an explicitly labelled sheet instead.
-  *
-  * JavaScript required: Yes — app-level trigger only (`showModal()`); the
-  * component ships zero JS itself.
-  */
-import {cn} from "../../utils/cn";
+ * Sheet — a dialog panel that slides in from a screen edge.
+ *
+ * Built on the same native <dialog> foundation as Dialog: modality,
+ * ::backdrop, Escape-to-close, and focus containment come from the
+ * platform and the component itself ships zero JS. The consuming app
+ * opens it with the same one-line trigger recipe:
+ *
+ *   <Button id="open-menu">Menu</Button>
+ *   <Sheet id="menu" side="left">
+ *     <h2 slot="title">Menu</h2>
+ *     <p>Sheet body…</p>
+ *   </Sheet>
+ *   <!-- app script: getElementById("open-menu") → showModal() on #menu -->
+ *
+ * Closing needs no JS: any <form method="dialog"> button, the optional
+ * built-in close button, Escape, or — by default — a click on the dark
+ * backdrop layer (`closeOnBackdrop={false}` to require an explicit close)
+ * dismisses natively.
+ *
+ * Accessible naming is wired automatically: when `id` is set, the title
+ * slot gets `{id}-title` and the sheet points `aria-labelledby` at it.
+ * Pass `ariaLabel` for an explicitly labelled sheet instead.
+ *
+ * JavaScript required: Yes — app-level trigger only (`showModal()`); the
+ * component ships zero JS itself.
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Which screen edge the panel slides in from. */

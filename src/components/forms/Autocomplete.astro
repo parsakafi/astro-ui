@@ -1,28 +1,28 @@
 ---
 /**
-  * Autocomplete — input that suggests options as you type.
-  *
-  * Implements the WAI-ARIA combobox + listbox pattern with a small
-  * scoped script: type to filter, ↑/↓ to move, Enter to commit,
-  * Escape to dismiss, Home/End to jump. The input participates in
-  * forms normally (name + committed value). Options render entirely
-  * server-side; the script only filters, highlights, and manages
-  * focus — with JS disabled the input still works (no suggestions).
-  *
-  * Structure:
-  *
-  *   <Autocomplete name="fruit" items={["Apple", "Banana"]}>
-  *     <Label>Fruit</Label>   <!-- optional, slot="label" -->
-  *   </Autocomplete>
-  *
-  * Pass plain strings, or `{ value, label, hint }` objects for a muted
-  * hint line per option. `groups` renders labelled sections instead.
-  * Filtering is case-insensitive substring match on label/value;
-  * `filter={false}` disables it (async/external filtering).
-  *
-  * JavaScript required: Yes (filter + keyboard listbox navigation)
-  */
-import {cn} from "../../utils/cn";
+ * Autocomplete — input that suggests options as you type.
+ *
+ * Implements the WAI-ARIA combobox + listbox pattern with a small
+ * scoped script: type to filter, ↑/↓ to move, Enter to commit,
+ * Escape to dismiss, Home/End to jump. The input participates in
+ * forms normally (name + committed value). Options render entirely
+ * server-side; the script only filters, highlights, and manages
+ * focus — with JS disabled the input still works (no suggestions).
+ *
+ * Structure:
+ *
+ *   <Autocomplete name="fruit" items={["Apple", "Banana"]}>
+ *     <Label>Fruit</Label>   <!-- optional, slot="label" -->
+ *   </Autocomplete>
+ *
+ * Pass plain strings, or `{ value, label, hint }` objects for a muted
+ * hint line per option. `groups` renders labelled sections instead.
+ * Filtering is case-insensitive substring match on label/value;
+ * `filter={false}` disables it (async/external filtering).
+ *
+ * JavaScript required: Yes (filter + keyboard listbox navigation)
+ */
+import { cn } from "../../utils/cn";
 
 export interface AutocompleteOption {
   value: string;
@@ -53,7 +53,15 @@ export interface Props {
   /** Renders the trigger input matching a control size. */
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   /** Visual variant of the trigger input. */
-  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  variant?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info";
   disabled?: boolean;
   required?: boolean;
   invalid?: boolean;
@@ -99,7 +107,7 @@ interface Norm {
   hint?: string;
 }
 const norm = (o: string | AutocompleteOption): Norm =>
-  typeof o === "string" ? {value: o, label: o} : o;
+  typeof o === "string" ? { value: o, label: o } : o;
 
 /** Everything the scoped script needs, inlined as JSON. */
 const config = {

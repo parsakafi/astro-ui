@@ -1,28 +1,28 @@
 ---
 /**
-  * Attachment — zero-JS file attachment card.
-  *
-  * A composed surface for showing an attached file (icon or image
-  * thumbnail, title, description, actions). Purely presentational:
-  * upload progress, error handling, and removal are wired app-side.
-  * Pairs naturally with a hidden `<input type="file">` + `<label>`
-  * when you need a picker trigger.
-  *
-  * Layout: `orientation` stacks media above the text (vertical) or
-  * keeps them on one row (horizontal). `size` scales the media box
-  * and paddings. `state` drives styling hooks (`data-state`):
-  *  - "idle"        — dashed border (picker placeholder)
-  *  - "uploading"   — in-flight; style via [data-state="uploading"]
-  *  - "processing"  — server-side work; style via [data-state="processing"]
-  *  - "error"       — destructive border + destructive text
-  *  - "done"        — default settled look
-  *
-  * Slots: `media` (icon/image for the media box), `title`,
-  * `description`, `actions` (buttons row).
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Attachment — zero-JS file attachment card.
+ *
+ * A composed surface for showing an attached file (icon or image
+ * thumbnail, title, description, actions). Purely presentational:
+ * upload progress, error handling, and removal are wired app-side.
+ * Pairs naturally with a hidden `<input type="file">` + `<label>`
+ * when you need a picker trigger.
+ *
+ * Layout: `orientation` stacks media above the text (vertical) or
+ * keeps them on one row (horizontal). `size` scales the media box
+ * and paddings. `state` drives styling hooks (`data-state`):
+ *  - "idle"        — dashed border (picker placeholder)
+ *  - "uploading"   — in-flight; style via [data-state="uploading"]
+ *  - "processing"  — server-side work; style via [data-state="processing"]
+ *  - "error"       — destructive border + destructive text
+ *  - "done"        — default settled look
+ *
+ * Slots: `media` (icon/image for the media box), `title`,
+ * `description`, `actions` (buttons row).
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Visual state of the attachment (drives data-state styling hooks). */
@@ -58,7 +58,8 @@ const {
   class: className,
   id,
   ...rest
-} = Astro.props;  const classes = cn(
+} = Astro.props;
+const classes = cn(
   "aui-attachment",
   `aui-attachment--${size}`,
   `aui-attachment--${orientation}`,

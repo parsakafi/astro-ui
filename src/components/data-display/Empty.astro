@@ -1,14 +1,14 @@
 ---
 /**
-  * Empty — zero-JS empty-state placeholder.
-  *
-  * A semantic <div> block for "no data" moments, composing through
-  * slots: media (icon/illustration), title, description, and footer
-  * (actions). Minimal by default; every part is optional.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Empty — zero-JS empty-state placeholder.
+ *
+ * A semantic <div> block for "no data" moments, composing through
+ * slots: media (icon/illustration), title, description, and footer
+ * (actions). Minimal by default; every part is optional.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Scale of the block's spacing and text. */
@@ -19,13 +19,7 @@ export interface Props {
   ariaLabel?: string;
 }
 
-const {
-  size = "md",
-  class: className,
-  id,
-  ariaLabel,
-  ...rest
-} = Astro.props;
+const { size = "md", class: className, id, ariaLabel, ...rest } = Astro.props;
 
 const classes = cn("aui-empty", `aui-empty--${size}`, className);
 

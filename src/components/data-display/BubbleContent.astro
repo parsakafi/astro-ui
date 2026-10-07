@@ -1,18 +1,18 @@
 ---
 /**
-  * BubbleContent — the visible rounded box inside a Bubble.
-  *
-  * Purely presentational div carrying the bubble look (variant colors
-  * resolve from the Bubble root). Compose text, lists, code — anything.
-  * The Bubble root gives a <button>/<a> content an interactive hover.
-  *
-  *   <Bubble align="end">
-  *     <BubbleContent>Hello!</BubbleContent>
-  *   </Bubble>
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * BubbleContent — the visible rounded box inside a Bubble.
+ *
+ * Purely presentational div carrying the bubble look (variant colors
+ * resolve from the Bubble root). Compose text, lists, code — anything.
+ * The Bubble root gives a <button>/<a> content an interactive hover.
+ *
+ *   <Bubble align="end">
+ *     <BubbleContent>Hello!</BubbleContent>
+ *   </Bubble>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   class?: string;
@@ -21,7 +21,7 @@ export interface Props {
   ariaLabel?: string;
 }
 
-const {class: className, id, ariaLabel, ...rest} = Astro.props;
+const { class: className, id, ariaLabel, ...rest } = Astro.props;
 
 const classes = cn("aui-bubble__content", className);
 ---

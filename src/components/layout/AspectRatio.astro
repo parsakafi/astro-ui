@@ -1,18 +1,18 @@
 ---
 /**
-  * AspectRatio — reserves a fixed width/height ratio for media.
-  *
-  * Pure CSS: the wrapper gets `aspect-ratio` and the (single) child is
-  * stretched to fill it. Drop in an
-  * <img>, <video>, or map and it covers the box without layout shift.
-  *
-  *   <AspectRatio ratio="16 / 9">
-  *     <img src="hero.jpg" alt="Hero" />
-  *   </AspectRatio>
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * AspectRatio — reserves a fixed width/height ratio for media.
+ *
+ * Pure CSS: the wrapper gets `aspect-ratio` and the (single) child is
+ * stretched to fill it. Drop in an
+ * <img>, <video>, or map and it covers the box without layout shift.
+ *
+ *   <AspectRatio ratio="16 / 9">
+ *     <img src="hero.jpg" alt="Hero" />
+ *   </AspectRatio>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** CSS aspect-ratio value: number (1.78) or string ("16 / 9"). */
@@ -21,12 +21,7 @@ export interface Props {
   id?: string;
 }
 
-const {
-  ratio = 1,
-  class: className,
-  id,
-  ...rest
-} = Astro.props;
+const { ratio = 1, class: className, id, ...rest } = Astro.props;
 
 const classes = cn("aui-aspect-ratio", className);
 ---

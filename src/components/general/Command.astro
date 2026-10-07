@@ -1,31 +1,31 @@
 ---
 /**
-  * Command — an inline, searchable command palette.
-  *
-  * A framed box with a search input on top and a scrollable list of
-  * grouped, filterable actions. Type to filter (case-insensitive
-  * substring on item text/keywords), move with ↑/↓, run with Enter or
-  * click, dismiss the active row with Escape. Vim-style j/k and
-  * ctrl+n/ctrl+p bindings are opt-in.
-  *
-  *   <Command label="Commands">
-  *     <Fragment slot="items">
-  *       <Command.Item value="calendar" group="Suggestions" /> ...
-  *     </Fragment>
-  *   </Command>
-  *
-  * Declarative data model: pass `groups` — an ordered array of
-  * `{ label, items }` where each item is
-  * `{ value, label, hint?, shortcut?, disabled?, keywords? }`.
-  * Groups render as labeled sections in order; `shortcut` renders a
-  * right-aligned Kbd-style hint (⌘P style); `keywords` extend what the
-  * filter matches. Items are buttons (they run actions, they don't
-  * commit a form value) and emit a bubbling `command:select` event
-  * with `{value}` — listen and dispatch from there.
-  *
-  * JavaScript required: Yes (filter + listbox-style keyboard navigation)
-  */
-import {cn} from "../../utils/cn";
+ * Command — an inline, searchable command palette.
+ *
+ * A framed box with a search input on top and a scrollable list of
+ * grouped, filterable actions. Type to filter (case-insensitive
+ * substring on item text/keywords), move with ↑/↓, run with Enter or
+ * click, dismiss the active row with Escape. Vim-style j/k and
+ * ctrl+n/ctrl+p bindings are opt-in.
+ *
+ *   <Command label="Commands">
+ *     <Fragment slot="items">
+ *       <Command.Item value="calendar" group="Suggestions" /> ...
+ *     </Fragment>
+ *   </Command>
+ *
+ * Declarative data model: pass `groups` — an ordered array of
+ * `{ label, items }` where each item is
+ * `{ value, label, hint?, shortcut?, disabled?, keywords? }`.
+ * Groups render as labeled sections in order; `shortcut` renders a
+ * right-aligned Kbd-style hint (⌘P style); `keywords` extend what the
+ * filter matches. Items are buttons (they run actions, they don't
+ * commit a form value) and emit a bubbling `command:select` event
+ * with `{value}` — listen and dispatch from there.
+ *
+ * JavaScript required: Yes (filter + listbox-style keyboard navigation)
+ */
+import { cn } from "../../utils/cn";
 
 export interface CommandItem {
   /** Stable id emitted in the command:select event detail. */

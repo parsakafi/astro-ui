@@ -1,17 +1,25 @@
 ---
 /** Alert — zero-JS feedback message.
-  *
-  * `role` defaults by variant: "alert" for errors (announced
-  * immediately), "status" otherwise (polite). Override via `role`.
-  * Compose with `title` slot + default slot for description.
-  * Dismiss behavior needs app-level JS — see docs for the recipe.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ *
+ * `role` defaults by variant: "alert" for errors (announced
+ * immediately), "status" otherwise (polite). Override via `role`.
+ * Compose with `title` slot + default slot for description.
+ * Dismiss behavior needs app-level JS — see docs for the recipe.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
-  variant?: "primary" | "destructive" | "success" | "warning" | "info" | "carbon" | "secondary" | "accent";
+  variant?:
+    | "primary"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "carbon"
+    | "secondary"
+    | "accent";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   role?: "alert" | "status" | "none";
   class?: string;

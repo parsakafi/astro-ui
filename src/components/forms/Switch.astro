@@ -1,17 +1,17 @@
 ---
 /**
-  * Switch — zero-JS on/off toggle.
-  *
-  * Native <input type="checkbox" role="switch"> wrapped in a <label> so
-  * the whole row is clickable with correct semantics. Screen readers
-  * announce "On"/"Off"; keyboard support is native Tab/Space; `checked`
-  * sets the initial server-rendered state; toggling is native browser
-  * behavior. Use Switch for settings that take effect immediately, and
-  * Checkbox for multi-select lists or agreements.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Switch — zero-JS on/off toggle.
+ *
+ * Native <input type="checkbox" role="switch"> wrapped in a <label> so
+ * the whole row is clickable with correct semantics. Screen readers
+ * announce "On"/"Off"; keyboard support is native Tab/Space; `checked`
+ * sets the initial server-rendered state; toggling is native browser
+ * behavior. Use Switch for settings that take effect immediately, and
+ * Checkbox for multi-select lists or agreements.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   name?: string;
@@ -21,7 +21,15 @@ export interface Props {
   disabled?: boolean;
   invalid?: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  variant?: "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | "inherit";
   shape?: "rounded" | "square";
   /** Short label rendered after the thumb when no slot content is provided. */
   label?: string;

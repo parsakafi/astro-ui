@@ -1,15 +1,15 @@
 ---
 /**
-  * Button — zero-JS action trigger.
-  *
-  * Renders a semantic <button>, or <a> when `href` is provided.
-  * All interactivity is native (click / submit / navigation); attach
-  * behavior with a framework island or an inline <script> in the
-  * consuming app — never via string props.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Button — zero-JS action trigger.
+ *
+ * Renders a semantic <button>, or <a> when `href` is provided.
+ * All interactivity is native (click / submit / navigation); attach
+ * behavior with a framework island or an inline <script> in the
+ * consuming app — never via string props.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /**
@@ -135,9 +135,9 @@ const resolvedColor =
   (legacySolid
     ? variant
     : resolvedVariant === "solid" ||
-    resolvedVariant === "soft" ||
-    resolvedVariant === "link" ||
-    resolvedVariant === "pure"
+        resolvedVariant === "soft" ||
+        resolvedVariant === "link" ||
+        resolvedVariant === "pure"
       ? "primary"
       : undefined);
 

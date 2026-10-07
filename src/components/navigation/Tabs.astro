@@ -1,42 +1,42 @@
 ---
 /**
-  * Tabs — tabbed content switcher following the WAI-ARIA tabs pattern.
-  *
-  * The tab list renders server-side from the `items` prop with
-  * the initial tab pre-selected, and panel content composes through the
-  * default slot — each child carries `data-tab="<value>"` matching its
-  * tab (children without `data-tab` fall back to item order).
-  * A small scoped inline script wires
-  * click-to-select and arrow-key navigation (automatic activation);
-  * without JS the tab list still renders and every panel stays visible,
-  * so SSR output remains fully meaningful.
-  *
-  *   <Tabs
-  *     id="settings"
-  *     ariaLabel="Settings"
-  *     items={[
-  *       { value: "account", label: "Account" },
-  *       { value: "billing", label: "Billing" },
-  *       { value: "team", label: "Team", disabled: true },
-  *     ]}
-  *     defaultValue="billing"
-  *   >
-  *     <div data-tab="account">Account panel.</div>
-  *     <div data-tab="billing">Billing panel.</div>
-  *     <div data-tab="team">Team panel.</div>
-  *   </Tabs>
-  *
-  * Tab ↔ panel labelling is wired automatically: tabs get
-  * `{id}-tab-{value}` ids and panels `{id}-panel-{value}`, linked via
-  * `aria-controls` / `aria-labelledby`. Pass `id` whenever more than one
-  * tab group lives on the page so the generated ids stay unique.
-  *
-  * JavaScript required: Yes — scoped inline script (click + arrow-key
-  * navigation with automatic activation); the component needs no
-  * hydration directive or framework island.
-  */
-import {cn} from "../../utils/cn";
-import {uid} from "../../utils/uid";
+ * Tabs — tabbed content switcher following the WAI-ARIA tabs pattern.
+ *
+ * The tab list renders server-side from the `items` prop with
+ * the initial tab pre-selected, and panel content composes through the
+ * default slot — each child carries `data-tab="<value>"` matching its
+ * tab (children without `data-tab` fall back to item order).
+ * A small scoped inline script wires
+ * click-to-select and arrow-key navigation (automatic activation);
+ * without JS the tab list still renders and every panel stays visible,
+ * so SSR output remains fully meaningful.
+ *
+ *   <Tabs
+ *     id="settings"
+ *     ariaLabel="Settings"
+ *     items={[
+ *       { value: "account", label: "Account" },
+ *       { value: "billing", label: "Billing" },
+ *       { value: "team", label: "Team", disabled: true },
+ *     ]}
+ *     defaultValue="billing"
+ *   >
+ *     <div data-tab="account">Account panel.</div>
+ *     <div data-tab="billing">Billing panel.</div>
+ *     <div data-tab="team">Team panel.</div>
+ *   </Tabs>
+ *
+ * Tab ↔ panel labelling is wired automatically: tabs get
+ * `{id}-tab-{value}` ids and panels `{id}-panel-{value}`, linked via
+ * `aria-controls` / `aria-labelledby`. Pass `id` whenever more than one
+ * tab group lives on the page so the generated ids stay unique.
+ *
+ * JavaScript required: Yes — scoped inline script (click + arrow-key
+ * navigation with automatic activation); the component needs no
+ * hydration directive or framework island.
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
 
 export interface TabItem {
   /** Stable identifier; matched against panel `data-tab` attributes and `defaultValue`. */
@@ -77,8 +77,10 @@ const {
 } = Astro.props;
 
 const firstEnabled = items.find((item) => !item.disabled);
-const requested = items.find((item) => item.value === defaultValue && !item.disabled);
-const activeValue = requested?.value ?? firstEnabled?.value;	// Unique per-instance fallback so aria-controls/labelledby wiring never
+const requested = items.find(
+  (item) => item.value === defaultValue && !item.disabled,
+);
+const activeValue = requested?.value ?? firstEnabled?.value; // Unique per-instance fallback so aria-controls/labelledby wiring never
 // resolves to another Tabs instance when no explicit id is passed.
 // Unique per-instance fallback so aria-controls/labelledby wiring never
 // resolves to another Tabs instance when no explicit id is passed.

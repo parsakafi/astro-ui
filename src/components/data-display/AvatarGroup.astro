@@ -1,25 +1,25 @@
 ---
 /**
-  * AvatarGroup — stacked avatar cluster with optional trailing count.
-  *
-  * Overlapping avatars with a background-keyed border; slot any number
-  * of Avatar children and (optionally) a trailing count via the `count`
-  * slot — a number ("+3"), an icon, or a Tooltip-wrapped element.
-  * Purely presentational: links/tooltips are composed by the consumer
-  * per avatar.
-  *
-  *   <AvatarGroup>
-  *     <Avatar name="Ada" src={…} />
-  *     <Avatar name="Grace" />
-  *     <Fragment slot="count">+3</Fragment>
-  *   </AvatarGroup>
-  *
-  * `hover` spreads the stack apart on group hover; `ring`-ed avatars
-  * compose naturally (the group adds its own separating border).
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * AvatarGroup — stacked avatar cluster with optional trailing count.
+ *
+ * Overlapping avatars with a background-keyed border; slot any number
+ * of Avatar children and (optionally) a trailing count via the `count`
+ * slot — a number ("+3"), an icon, or a Tooltip-wrapped element.
+ * Purely presentational: links/tooltips are composed by the consumer
+ * per avatar.
+ *
+ *   <AvatarGroup>
+ *     <Avatar name="Ada" src={…} />
+ *     <Avatar name="Grace" />
+ *     <Fragment slot="count">+3</Fragment>
+ *   </AvatarGroup>
+ *
+ * `hover` spreads the stack apart on group hover; `ring`-ed avatars
+ * compose naturally (the group adds its own separating border).
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Negative overlap between stack items. */

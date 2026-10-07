@@ -1,16 +1,16 @@
 ---
 /**
-  * Toggle — a two-state button (pressed / not pressed).
-  *
-  * Renders a semantic <button type="button"> with aria-pressed. State is
-  * intentionally server-
-  * rendered: pass `pressed` for SSR-controlled state (e.g. a filter that
-  * is on for the initial page load). Client apps flip the attribute with
-  * their own one-line script — see the docs recipe.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Toggle — a two-state button (pressed / not pressed).
+ *
+ * Renders a semantic <button type="button"> with aria-pressed. State is
+ * intentionally server-
+ * rendered: pass `pressed` for SSR-controlled state (e.g. a filter that
+ * is on for the initial page load). Client apps flip the attribute with
+ * their own one-line script — see the docs recipe.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** SSR state — maps to aria-pressed and the pressed styling. */

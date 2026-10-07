@@ -1,20 +1,20 @@
 ---
 /**
-  * Input — zero-JS text control.
-  *
-  * Native <input> with token-driven states (focus ring, invalid,
-  * disabled, readonly). Compose with Label + hint/error text; wire them
-  * with `id` / `aria-describedby`:
-  *
-  *   <Label for="email">Email</Label>
-  *   <Input id="email" type="email" aria-describedby="email-hint" />
-  *   <p id="email-hint">We never share your email.</p>
-  *
-  * Validation display is server/form-driven via `invalid` — no JS shipped.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Input — zero-JS text control.
+ *
+ * Native <input> with token-driven states (focus ring, invalid,
+ * disabled, readonly). Compose with Label + hint/error text; wire them
+ * with `id` / `aria-describedby`:
+ *
+ *   <Label for="email">Email</Label>
+ *   <Input id="email" type="email" aria-describedby="email-hint" />
+ *   <p id="email-hint">We never share your email.</p>
+ *
+ * Validation display is server/form-driven via `invalid` — no JS shipped.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /**
@@ -57,7 +57,15 @@ export interface Props {
   readonly?: boolean;
   invalid?: boolean;
   size?: "xs" | "sm" | "md" | "lg" | "xl";
-  variant?: "inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info";
+  variant?:
+    | "inherit"
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info";
   class?: string;
   id?: string;
   ariaLabel?: string;

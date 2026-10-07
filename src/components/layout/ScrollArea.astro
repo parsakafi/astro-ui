@@ -1,15 +1,15 @@
 ---
 /**
-  * ScrollArea — themed thin scrollbars with zero JS.
-  *
-  * A plain overflow container whose scrollbar is recolored from design
-  * tokens (works in Chromium/WebKit via ::-webkit-* and in Firefox via
-  * scrollbar-width/color), so it matches the active theme automatically.
-  * Constrain width/height with a class to get a scrolling region.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * ScrollArea — themed thin scrollbars with zero JS.
+ *
+ * A plain overflow container whose scrollbar is recolored from design
+ * tokens (works in Chromium/WebKit via ::-webkit-* and in Firefox via
+ * scrollbar-width/color), so it matches the active theme automatically.
+ * Constrain width/height with a class to get a scrolling region.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Which axes may scroll. */
@@ -18,14 +18,13 @@ export interface Props {
   id?: string;
 }
 
-const {
-  orientation = "vertical",
-  class: className,
-  id,
-  ...rest
-} = Astro.props;
+const { orientation = "vertical", class: className, id, ...rest } = Astro.props;
 
-const classes = cn("aui-scroll-area", `aui-scroll-area--${orientation}`, className);
+const classes = cn(
+  "aui-scroll-area",
+  `aui-scroll-area--${orientation}`,
+  className,
+);
 ---
 
 <div id={id} class={classes} tabindex="0" {...rest}>

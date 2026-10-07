@@ -1,38 +1,52 @@
 ---
 /**
-  * Bubble — chat / conversational message bubble.
-  *
-  * A rounded message surface composed from three parts:
-  *  - `Bubble` positions the message (start/end alignment + 7 variants)
-  *  - `BubbleContent` is the visible rounded box carrying the look
-  *  - `BubbleReactions` is an absolutely positioned pill (top or bottom)
-  *
-  * BubbleContent is the styled box; Bubble only sets alignment and the
-  * variant context. Anything can live inside the content: text, lists,
-  * code, avatars — or a <button>/<a>, which gets an interactive hover.
-  *
-  *   <Bubble align="end">
-  *     <BubbleContent>Looks great — ship it.</BubbleContent>
-  *   </Bubble>
-  *
-  * Variants: primary (sender), secondary, muted, tinted, outline,
-  * ghost (bare content for headings/lists/code), destructive.
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Bubble — chat / conversational message bubble.
+ *
+ * A rounded message surface composed from three parts:
+ *  - `Bubble` positions the message (start/end alignment + 7 variants)
+ *  - `BubbleContent` is the visible rounded box carrying the look
+ *  - `BubbleReactions` is an absolutely positioned pill (top or bottom)
+ *
+ * BubbleContent is the styled box; Bubble only sets alignment and the
+ * variant context. Anything can live inside the content: text, lists,
+ * code, avatars — or a <button>/<a>, which gets an interactive hover.
+ *
+ *   <Bubble align="end">
+ *     <BubbleContent>Looks great — ship it.</BubbleContent>
+ *   </Bubble>
+ *
+ * Variants: primary (sender), secondary, muted, tinted, outline,
+ * ghost (bare content for headings/lists/code), destructive.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Which side of the thread the message sits on. */
   align?: "start" | "end";
   /** Color scheme of the content box. */
-  variant?: "primary" | "secondary" | "muted" | "tinted" | "outline" | "ghost" | "destructive";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "muted"
+    | "tinted"
+    | "outline"
+    | "ghost"
+    | "destructive";
   class?: string;
   id?: string;
   ariaLabel?: string;
 }
 
-const {align = "start", variant = "primary", class: className, id, ariaLabel, ...rest} = Astro.props as Props;
+const {
+  align = "start",
+  variant = "primary",
+  class: className,
+  id,
+  ariaLabel,
+  ...rest
+} = Astro.props as Props;
 
 const classes = cn(
   "aui-bubble",

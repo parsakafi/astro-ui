@@ -1,20 +1,20 @@
 ---
 /**
-  * Card — zero-JS content container with named-slot composition.
-  *
-  * Prefer composition to title/description/footer props:
-  *
-  *   <Card>
-  *     <h2 slot="header">Title</h2>
-  *     <p>Body</p>
-  *     <div slot="footer">Actions</div>
-  *   </Card>
-  *
-  * Renders a semantic <article> (override with `as="section"` etc.).
-  *
-  * JavaScript required: No
-  */
-import {cn} from "../../utils/cn";
+ * Card — zero-JS content container with named-slot composition.
+ *
+ * Prefer composition to title/description/footer props:
+ *
+ *   <Card>
+ *     <h2 slot="header">Title</h2>
+ *     <p>Body</p>
+ *     <div slot="footer">Actions</div>
+ *   </Card>
+ *
+ * Renders a semantic <article> (override with `as="section"` etc.).
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Semantic wrapper element. */
@@ -35,13 +35,13 @@ export interface Props {
   ariaLabelledby?: string;
   ariaDescribedby?: string;
   /** Forwarded to the header element. */
-  headerProps?: Record<string, any>;
+  headerProps?: Record<string, unknown>;
   /** Forwarded to the footer element. */
-  footerProps?: Record<string, any>;
+  footerProps?: Record<string, unknown>;
   /** Forwarded to the title element. */
-  titleProps?: Record<string, any>;
+  titleProps?: Record<string, unknown>;
   /** Forwarded to the description element. */
-  descriptionProps?: Record<string, any>;
+  descriptionProps?: Record<string, unknown>;
 }
 
 const {
