@@ -4,7 +4,7 @@ Astro-first, zero-JS-by-default, accessible UI components with semantic
 design tokens. Dark mode, Tailwind interop, SSR-safe, tree-shakable, typed.
 
 - Website: https://astroui.ir · Docs: `docs/` · Playground: `../web`
-- Status: `0.1.0` — first public release (pre-1.0)
+- Status: `0.1.0` — first public release
 
 ## Install
 
