@@ -120,6 +120,7 @@
   "files": [
     "src",
     "!src/content",
+    "!src/pages",
     "index.ts"
   ],
   "sideEffects": [
