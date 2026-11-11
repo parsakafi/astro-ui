@@ -68,6 +68,6 @@ export const sheet: ComponentMeta = {
             a: "No — left/right panels are width: min(100%, 100vw) and top/bottom panels cap at max-height: 85vh; the size prop just tunes the base scale.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["dialog", "alert-dialog", "drawer"],
 };

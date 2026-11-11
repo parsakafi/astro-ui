@@ -78,6 +78,6 @@ export const radioGroup: ComponentMeta = {
             a: "RadioGroup options are label + hint text. For rich option content (icons, price tables, cards), hand-write the fieldset with individual Radio components — the native group semantics come from sharing `name`, not from the wrapper.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["radio", "checkbox", "toggle-group", "select"],
 };

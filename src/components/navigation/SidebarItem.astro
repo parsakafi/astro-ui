@@ -1,0 +1,180 @@
+---
+/**
+ * SidebarItem — one navigation row.
+ *
+ * A real `<a>` when `href` is set, otherwise a `<button type="button">`.
+ * The current page is marked with `aria-current="page"` (not a class), so
+ * assistive technology announces it and consumer CSS can target it.
+ *
+ *   <SidebarItem href="/settings" active badge="3">
+ *     <span slot="icon" aria-hidden="true">⚙</span>
+ *     Settings
+ *   </SidebarItem>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Link target. Omit for an action button. */
+  href?: string;
+  /** Marks this row as the current page (`aria-current="page"`). */
+  active?: boolean;
+  /** Not interactive. */
+  disabled?: boolean;
+  /** Trailing count or short label. */
+  badge?: string;
+  /** Indent as a child of another item. */
+  nested?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  href,
+  active = false,
+  disabled = false,
+  badge,
+  nested = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-sidebar__item",
+  active && "aui-sidebar__item--active",
+  nested && "aui-sidebar__item--nested",
+  disabled && "aui-sidebar__item--disabled",
+  className,
+);
+
+const hasIcon = Astro.slots.has("icon");
+---
+
+{
+  href ? (
+    <a
+      id={id}
+      class={classes}
+      href={disabled ? undefined : href}
+      aria-current={active ? "page" : undefined}
+      aria-disabled={disabled ? "true" : undefined}
+      {...rest}
+    >
+      {hasIcon && (
+        <span class="aui-sidebar__icon" aria-hidden="true">
+          <slot name="icon" />
+        </span>
+      )}
+      <span class="aui-sidebar__label">
+        <slot />
+      </span>
+      {badge && <span class="aui-sidebar__badge">{badge}</span>}
+    </a>
+  ) : (
+    <button
+      id={id}
+      type="button"
+      class={classes}
+      aria-current={active ? "page" : undefined}
+      disabled={disabled}
+      {...rest}
+    >
+      {hasIcon && (
+        <span class="aui-sidebar__icon" aria-hidden="true">
+          <slot name="icon" />
+        </span>
+      )}
+      <span class="aui-sidebar__label">
+        <slot />
+      </span>
+      {badge && <span class="aui-sidebar__badge">{badge}</span>}
+    </button>
+  )
+}
+
+<style>
+  .aui-sidebar__item {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    inline-size: 100%;
+    padding: var(--ui-space-2) var(--ui-space-2);
+    font: inherit;
+    font-size: var(--ui-text-sm);
+    text-align: start;
+    text-decoration: none;
+    color: var(--ui-muted-foreground);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast),
+      color var(--ui-transition-fast);
+  }
+
+  .aui-sidebar__item:hover:not(.aui-sidebar__item--disabled) {
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+  }
+
+  .aui-sidebar__item:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-sidebar__item--active,
+  .aui-sidebar__item[aria-current="page"] {
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-medium);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-sidebar__item--nested {
+    padding-inline-start: var(--ui-space-6);
+  }
+
+  .aui-sidebar__item--disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-sidebar__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: 1rem;
+    block-size: 1rem;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+  }
+
+  .aui-sidebar__label {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .aui-sidebar__badge {
+    flex-shrink: 0;
+    min-inline-size: 1.25rem;
+    padding: 0 var(--ui-space-1);
+    font-size: var(--ui-text-2xs);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.25rem;
+    text-align: center;
+    color: var(--ui-muted-foreground);
+    background-color: var(--ui-secondary);
+    border-radius: var(--ui-radius-full);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-sidebar__item {
+      transition: none;
+    }
+  }
+</style>

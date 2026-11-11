@@ -4,12 +4,6 @@ import {
   Breadcrumb,
 } from "astro-ui";
 
-interface Props {
-  /** Prefix for form control ids so multiple instances can coexist. */
-  idPrefix?: string;
-}
-
-const {idPrefix = "bd"} = Astro.props;
 ---
 
 <Breadcrumb separator="chevron" ariaLabel="Team breadcrumb">
@@ -20,7 +14,7 @@ const {idPrefix = "bd"} = Astro.props;
     ].map((person, i) =>
       i < 2 ? (
         <span class="aui-breadcrumb__item">
-          <a class="aui-breadcrumb__link" href="#">
+          <a class="aui-breadcrumb__link" href="/docs/components/breadcrumb">
             <Avatar name={person.name} size="xs"/>
             {person.name}
           </a>

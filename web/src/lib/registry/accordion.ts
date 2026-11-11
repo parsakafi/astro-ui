@@ -66,6 +66,6 @@ export const accordion: ComponentMeta = {
             a: "`animated` animates the native ::details-content pseudo between block-size 0 and auto (interpolate-size: allow-keywords). Browsers without support ignore it and snap instantly — never broken.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["separator", "card", "tabs"],
 };

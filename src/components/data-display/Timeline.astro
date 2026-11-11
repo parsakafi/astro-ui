@@ -1,0 +1,59 @@
+---
+/**
+ * Timeline — zero-JS ordered list of dated events.
+ *
+ * Renders a semantic <ol>; each TimelineItem draws its marker and the
+ * connector rail. Order is real document order, so screen readers and
+ * "list, N items" announcements stay correct without ARIA.
+ *
+ *   <Timeline>
+ *     <TimelineItem variant="success">
+ *       <time slot="time" datetime="2026-10-01">Oct 1</time>
+ *       <span slot="title">Release v2.5</span>
+ *       Shipped Bubbles, Timeline, and Banner.
+ *     </TimelineItem>
+ *   </Timeline>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Marker and gap scale for the whole list. */
+  size?: "sm" | "md";
+  class?: string;
+  id?: string;
+  /** Accessible name for the list (e.g. "Deployment history"). */
+  ariaLabel?: string;
+}
+
+const { size = "md", class: className, id, ariaLabel, ...rest } = Astro.props;
+
+const classes = cn("aui-timeline", `aui-timeline--${size}`, className);
+---
+
+<ol id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  <slot/>
+</ol>
+
+<style>
+  .aui-timeline {
+    --aui-timeline-marker: 0.625rem;
+    --aui-timeline-gap: var(--ui-space-3);
+    --aui-timeline-item-gap: var(--ui-space-6);
+
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--ui-font-sans);
+    color: var(--ui-foreground);
+  }
+
+  .aui-timeline--sm {
+    --aui-timeline-marker: 0.5rem;
+    --aui-timeline-gap: var(--ui-space-2);
+    --aui-timeline-item-gap: var(--ui-space-4);
+  }
+</style>

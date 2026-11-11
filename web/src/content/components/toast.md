@@ -7,7 +7,7 @@ category: feedback
 importPath: "astro-ui/toaster"
 exportName: "Toaster / toast"
 js: true
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["alert", "spinner", "button"]
 features:

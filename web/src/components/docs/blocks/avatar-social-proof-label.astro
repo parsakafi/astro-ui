@@ -4,13 +4,6 @@ import {
   AvatarGroup,
 } from "astro-ui";
 
-interface Props {
-  /** Prefix for form control ids so multiple instances can coexist. */
-  idPrefix?: string;
-}
-
-const {idPrefix = "bd"} = Astro.props;
-
 const avatars = [
   {name: "Ada Lovelace"},
   {name: "Grace Hopper"},
@@ -26,6 +19,7 @@ const avatars = [
         avatars.slice(0, 5).map((a) => (
           <Avatar
             name={a.name}
+            size="sm"
             status={a.name === "Ada Lovelace" ? "online" : undefined}
           />
         ))

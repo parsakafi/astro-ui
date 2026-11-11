@@ -60,7 +60,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
         )}
         {id === "closable" && (
           <div class="docs-demo-block" id={`demo-alert-${id}`}>
-            <h3 class="docs-demo-title">Closable</h3>
+            <h3 class="docs-demo-title">Dismissible</h3>
             <DemoTabs id="dm-alert-closable">
               <Fragment slot="preview">
                 <Alert variant="destructive" closable>

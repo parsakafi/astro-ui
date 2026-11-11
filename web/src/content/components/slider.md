@@ -7,7 +7,7 @@ category: forms
 importPath: "astro-ui"
 exportName: "Slider"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["rating", "progress", "input"]
 features:
@@ -92,7 +92,7 @@ props:
     def: "—"
     description: "Label above the track."
   - name: "variant"
-    type: "\"primary\" | \"success\" | \"warning\" | \"error\" | \"info\""
+    type: "\"primary\" | \"success\" | \"warning\" | \"destructive\" | \"info\""
     def: "\"primary\""
     description: "Accent color."
   - name: "size"

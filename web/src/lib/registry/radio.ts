@@ -41,6 +41,6 @@ export const radio: ComponentMeta = {
             a: "Exactly like HTML: same name across Radios forms the group. The browser handles mutual exclusion and arrow-key navigation.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["checkbox", "switch", "label"],
 };

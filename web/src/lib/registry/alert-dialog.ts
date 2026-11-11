@@ -56,6 +56,6 @@ export const alertDialog: ComponentMeta = {
             a: "No — only the app-level trigger (showModal()) is yours; modality, focus containment, and Escape all come from native <dialog>.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["dialog", "button", "alert"],
 };

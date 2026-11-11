@@ -4,6 +4,6 @@ export const SITE = {
     shortName: "AstroUI",
     description:
         "A zero-first Astro component library — native elements, tokens, and progressive enhancement.",
-    version: "1.0.0",
-    repo: "https://github.com/your-org/astro-ui",
+    version: "0.1.0",
+    repo: "https://github.com/parsakafi/astro-ui-component-library",
 } as const;

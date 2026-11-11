@@ -7,7 +7,7 @@ category: data-display
 importPath: "astro-ui"
 exportName: "Avatar"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["badge", "tooltip", "card"]
 features:
@@ -76,7 +76,7 @@ props:
     def: "per status"
     description: "Accessible label for the status indicator."
   - name: "ring"
-    type: "\"primary\" | \"success\" | \"warning\" | \"error\" | \"info\" | \"background\""
+    type: "\"primary\" | \"success\" | \"warning\" | \"destructive\" | \"info\" | \"background\""
     def: "—"
     description: "Colored ring with background key line."
   - name: "filter"

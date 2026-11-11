@@ -76,7 +76,13 @@ const {
 const interactive = !readonly && !disabled && name;
 
 /** Per-step colors for colorScale (5-step satisfaction ramp; hue-rotated beyond). */
-const STEP_COLORS = ["#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e"];
+const STEP_COLORS = [
+  "var(--ui-rating-1)",
+  "var(--ui-rating-2)",
+  "var(--ui-rating-3)",
+  "var(--ui-rating-4)",
+  "var(--ui-rating-5)",
+];
 const stepColor = (step: number) =>
   STEP_COLORS[(step - 1) % STEP_COLORS.length];
 
@@ -335,8 +341,8 @@ const classes = cn(
 
   /* the checked step itself */
   .aui-rating__item:has(.aui-rating__input:checked) .aui-rating__shape {
-    fill: var(--aui-rating-step-color, var(--ui-rating-color));
-    stroke: var(--aui-rating-step-color, var(--ui-rating-color));
+    fill: var(--aui-rating-step-color, var(--aui-rating-color));
+    stroke: var(--aui-rating-step-color, var(--aui-rating-color));
   }
 
   .aui-rating__item:has(.aui-rating__input:checked) .aui-rating__emoji {
@@ -346,8 +352,8 @@ const classes = cn(
 
   /* all steps BEFORE the checked one (a checked later sibling lights them) */
   .aui-rating__item:has(~ .aui-rating__item .aui-rating__input:checked) .aui-rating__shape {
-    fill: var(--aui-rating-step-color, var(--ui-rating-color));
-    stroke: var(--aui-rating-step-color, var(--ui-rating-color));
+    fill: var(--aui-rating-step-color, var(--aui-rating-color));
+    stroke: var(--aui-rating-step-color, var(--aui-rating-color));
   }
 
   .aui-rating__item:has(~ .aui-rating__item .aui-rating__input:checked) .aui-rating__emoji {
@@ -373,8 +379,8 @@ const classes = cn(
   /* hover: light the hovered step and everything before it */
   .aui-rating:not(.aui-rating--single) .aui-rating__item:hover .aui-rating__shape,
   .aui-rating:not(.aui-rating--single) .aui-rating__item:has(~ .aui-rating__item:hover) .aui-rating__shape {
-    fill: color-mix(in srgb, var(--aui-rating-step-color, var(--ui-rating-color)) 45%, var(--ui-muted));
-    stroke: var(--aui-rating-step-color, var(--ui-rating-color));
+    fill: color-mix(in srgb, var(--aui-rating-step-color, var(--aui-rating-color)) 45%, var(--ui-muted));
+    stroke: var(--aui-rating-step-color, var(--aui-rating-color));
   }
 
   .aui-rating:not(.aui-rating--single) .aui-rating__item:hover .aui-rating__emoji,
@@ -418,11 +424,11 @@ const classes = cn(
   /* --- colors --- */
 
   .aui-rating--warning {
-    --ui-rating-color: var(--ui-warning);
+    --aui-rating-color: var(--ui-warning);
   }
 
   .aui-rating--primary {
-    --ui-rating-color: var(--ui-primary);
+    --aui-rating-color: var(--ui-primary);
   }
 
   /* --- readonly / display --- */
@@ -436,7 +442,7 @@ const classes = cn(
   }
 
   .aui-rating__display .aui-rating__shape--filled {
-    fill: var(--aui-rating-step-color, var(--ui-rating-color));
+    fill: var(--aui-rating-step-color, var(--aui-rating-color));
   }
 
   .aui-rating__display .aui-rating__base .aui-rating__shape {

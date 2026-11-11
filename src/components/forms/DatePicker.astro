@@ -1,0 +1,796 @@
+---
+/**
+ * DatePicker — native date input with a calendar panel.
+ *
+ * The source of truth is a real `<input type="date">`: it submits with the
+ * form, validates, and opens the platform picker on mobile — all without
+ * JavaScript. The panel adds a month grid on top, and can render either a
+ * Gregorian or a Persian (Jalali) calendar; both are produced with
+ * `Intl.DateTimeFormat`, so month names, digits, and weekday order follow
+ * the requested locale instead of a hard-coded table.
+ *
+ * Picking a day writes the ISO value into the input and dispatches native
+ * `input` and `change` events, so listening for `change` (or `input`) works
+ * exactly as it does for the native control.
+ *
+ *   <DatePicker name="start" label="Start date" calendar="persian" locale="fa-IR"/>
+ *
+ * JavaScript required: Yes (the native input works without it)
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
+
+export interface Props {
+  /** Form field name for the native input. */
+  name?: string;
+  /** Initial value as an ISO date (`YYYY-MM-DD`). */
+  value?: string;
+  /** Earliest selectable ISO date. */
+  min?: string;
+  /** Latest selectable ISO date. */
+  max?: string;
+  /** Calendar system for the panel. */
+  calendar?: "gregory" | "persian";
+  /** BCP-47 locale — controls month/weekday names and digits. */
+  locale?: string;
+  /** First day of the week: 0 = Sunday … 6 = Saturday. */
+  firstDayOfWeek?: number;
+  /** Accessible name for the input when there is no visible label. */
+  ariaLabel?: string;
+  /** Required field. */
+  required?: boolean;
+  /** Disabled field. */
+  disabled?: boolean;
+  /** Accessible name for the calendar trigger. */
+  toggleLabel?: string;
+  /** Accessible name for the calendar panel. */
+  panelLabel?: string;
+  /** Open the panel on first paint (client-side, after the grid renders). */
+  open?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  name,
+  value,
+  min,
+  max,
+  calendar = "gregory",
+  locale,
+  firstDayOfWeek,
+  ariaLabel,
+  required = false,
+  disabled = false,
+  toggleLabel = "Open calendar",
+  panelLabel = "Choose date",
+  open = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const base = id ?? uid("aui-datepicker");
+const panelId = `${base}-panel`;
+const resolvedLocale = locale ?? (calendar === "persian" ? "fa-IR" : "en-US");
+const resolvedFirstDay = firstDayOfWeek ?? (calendar === "persian" ? 6 : 0);
+
+const classes = cn("aui-datepicker", `aui-datepicker--${calendar}`, className);
+---
+
+<div
+  id={id}
+  class={classes}
+  data-aui-datepicker
+  data-calendar={calendar}
+  data-locale={resolvedLocale}
+  data-first-day={resolvedFirstDay}
+  data-open-init={open ? "" : undefined}
+  {...rest}
+>
+  <!-- Visible text input: no type="date" so no native browser date chrome -->
+  <input
+    id={`${base}-input`}
+    class="aui-datepicker__input"
+    type="text"
+    inputmode="none"
+    autocomplete="off"
+    placeholder="mm/dd/yyyy"
+    disabled={disabled}
+    aria-label={ariaLabel}
+    aria-haspopup="dialog"
+    aria-controls={panelId}
+    readonly
+    data-aui-datepicker-display
+  />
+  <!-- Hidden date input: owns the form value, validation, and submission -->
+  <input
+    type="date"
+    name={name}
+    value={value}
+    min={min}
+    max={max}
+    required={required}
+    disabled={disabled}
+    aria-hidden="true"
+    tabindex="-1"
+    style="position:absolute;width:0;height:0;opacity:0;pointer-events:none;border:0;padding:0"
+    data-aui-datepicker-input
+  />
+  <button
+    type="button"
+    class="aui-datepicker__toggle"
+    aria-label={toggleLabel}
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    aria-controls={panelId}
+    disabled={disabled}
+    data-aui-datepicker-toggle
+  >
+    <span aria-hidden="true">▦</span>
+  </button>
+  <div
+    id={panelId}
+    class="aui-datepicker__panel"
+    role="dialog"
+    aria-label={panelLabel}
+    data-aui-datepicker-panel
+    hidden
+  >
+    <div class="aui-datepicker__header">
+      <button
+        type="button"
+        class="aui-datepicker__nav"
+        aria-label="Previous month"
+        data-aui-datepicker-prev
+      >
+        <span aria-hidden="true">‹</span>
+      </button>
+      <p class="aui-datepicker__caption" aria-live="polite" data-aui-datepicker-caption></p>
+      <button
+        type="button"
+        class="aui-datepicker__nav"
+        aria-label="Next month"
+        data-aui-datepicker-next
+      >
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+    <div class="aui-datepicker__weekdays" aria-hidden="true" data-aui-datepicker-weekdays></div>
+    <div class="aui-datepicker__grid" role="grid" data-aui-datepicker-grid></div>
+    <div class="aui-datepicker__footer">
+      <button type="button" class="aui-datepicker__action" data-aui-datepicker-today>
+        Today
+      </button>
+      <button type="button" class="aui-datepicker__action" data-aui-datepicker-clear>
+        Clear
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ROOT = "[data-aui-datepicker]";
+
+  const iso = (date: Date): string => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
+  const parseIso = (value: string): Date | null => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    if (!match) return null;
+    const date = new Date(
+      Number(match[1]),
+      Number(match[2]) - 1,
+      Number(match[3]),
+      12,
+    );
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  const addDays = (date: Date, days: number): Date => {
+    const next = new Date(date);
+    next.setDate(next.getDate() + days);
+    return next;
+  };
+
+  function initPicker(root: HTMLElement): void {
+    if (root.dataset.auiDatepickerInit === "true") return;
+    root.dataset.auiDatepickerInit = "true";
+
+    const input = root.querySelector<HTMLInputElement>(
+      "[data-aui-datepicker-input]",
+    );
+    const display = root.querySelector<HTMLInputElement>(
+      "[data-aui-datepicker-display]",
+    );
+    const toggle = root.querySelector<HTMLButtonElement>(
+      "[data-aui-datepicker-toggle]",
+    );
+    const panel = root.querySelector<HTMLElement>(
+      "[data-aui-datepicker-panel]",
+    );
+    const grid = root.querySelector<HTMLElement>("[data-aui-datepicker-grid]");
+    const caption = root.querySelector<HTMLElement>(
+      "[data-aui-datepicker-caption]",
+    );
+    const weekdays = root.querySelector<HTMLElement>(
+      "[data-aui-datepicker-weekdays]",
+    );
+    if (!input || !display || !toggle || !panel || !grid || !caption || !weekdays) return;
+
+    const locale = root.dataset.locale ?? "en-US";
+    const calendar = root.dataset.calendar ?? "gregory";
+    const firstDay = Number(root.dataset.firstDay ?? "0");
+
+    const fmtDay = new Intl.DateTimeFormat(locale, { calendar, day: "numeric" });
+    // Calendar math needs Latin digits: fa-IR formats "۲۹". Display keeps
+    // the locale's own numbering system.
+    const fmtDayValue = new Intl.DateTimeFormat(locale, {
+      calendar,
+      day: "numeric",
+      numberingSystem: "latn",
+    });
+    const fmtMonthYear = new Intl.DateTimeFormat(locale, {
+      calendar,
+      month: "long",
+      year: "numeric",
+    });
+    const fmtWeekday = new Intl.DateTimeFormat(locale, { weekday: "short" });
+
+    /** Format a date for the visible text input using the active locale/calendar. */
+    const fmtDisplay = new Intl.DateTimeFormat(locale, {
+      calendar,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+
+    const syncDisplay = (): void => {
+      const date = parseIso(input.value);
+      display.value = date ? fmtDisplay.format(date) : "";
+    };
+
+    const dayNumber = (date: Date): number => {
+      const parts = fmtDayValue.formatToParts(date);
+      return Number(parts.find((part) => part.type === "day")?.value ?? "0");
+    };
+
+    /** First day of the target-calendar month that contains `date`. */
+    const startOfMonth = (date: Date): Date =>
+      addDays(date, -(dayNumber(date) - 1));
+
+    /** A month's length without a calendar table: walk until the day wraps. */
+    const daysInMonth = (monthStart: Date): number => {
+      let count = 1;
+      let cursor = monthStart;
+      while (dayNumber(addDays(cursor, 1)) !== 1 && count < 32) {
+        cursor = addDays(cursor, 1);
+        count++;
+      }
+      return count;
+    };
+
+    let viewMonth = startOfMonth(parseIso(input.value) ?? new Date());
+
+    const minDate = parseIso(input.min);
+    const maxDate = parseIso(input.max);
+
+    // Compare civil dates, not instants: a DST shift must never disable the
+    // boundary day itself.
+    const dayValue = (date: Date): number =>
+      new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+
+    const isDisabled = (date: Date): boolean =>
+      (minDate !== null && dayValue(date) < dayValue(minDate)) ||
+      (maxDate !== null && dayValue(date) > dayValue(maxDate));
+
+    const renderWeekdays = (): void => {
+      weekdays.replaceChildren();
+      const sunday = new Date(2024, 0, 7, 12); // a Sunday
+      for (let index = 0; index < 7; index++) {
+        const cell = document.createElement("span");
+        cell.className = "aui-datepicker__weekday";
+        cell.textContent = fmtWeekday.format(addDays(sunday, (firstDay + index) % 7));
+        weekdays.append(cell);
+      }
+    };
+
+    const render = (): void => {
+      const monthStart = viewMonth;
+      const monthStamp = fmtMonthYear.format(monthStart);
+      caption.textContent = monthStamp;
+
+      const offset = (monthStart.getDay() - firstDay + 7) % 7;
+      const gridStart = addDays(monthStart, -offset);
+      const selected = input.value;
+      const today = iso(new Date());
+
+      grid.replaceChildren();
+      let row: HTMLElement | null = null;
+      for (let index = 0; index < 42; index++) {
+        if (index % 7 === 0) {
+          row = document.createElement("div");
+          row.className = "aui-datepicker__row";
+          row.setAttribute("role", "row");
+          grid.append(row);
+        }
+        const date = addDays(gridStart, index);
+        const key = iso(date);
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "aui-datepicker__day";
+        button.setAttribute("role", "gridcell");
+        button.dataset.date = key;
+        button.tabIndex = -1;
+        button.textContent = fmtDay.format(date);
+
+        if (fmtMonthYear.format(date) !== monthStamp) {
+          button.dataset.outside = "";
+        }
+        if (key === today) button.dataset.today = "";
+        if (key === selected) {
+          button.dataset.selected = "";
+          button.setAttribute("aria-selected", "true");
+          button.tabIndex = 0;
+        }
+        if (isDisabled(date)) {
+          button.disabled = true;
+          button.dataset.disabled = "";
+        }
+        row?.append(button);
+      }
+
+      // Fall back to the first in-month day when nothing is selected, so
+      // the grid always has exactly one tab stop.
+      if (!grid.querySelector('[tabindex="0"]')) {
+        const first = grid.querySelector<HTMLElement>(
+          `[data-date="${iso(monthStart)}"]`,
+        );
+        if (first) first.tabIndex = 0;
+      }
+    };
+
+    const isOpen = (): boolean =>
+      toggle.getAttribute("aria-expanded") === "true";
+
+    const open = (focus: boolean): void => {
+      viewMonth = startOfMonth(parseIso(input.value) ?? new Date());
+      render();
+      toggle.setAttribute("aria-expanded", "true");
+      panel.removeAttribute("hidden");
+      if (!focus) return;
+      const target =
+        grid.querySelector<HTMLElement>('[data-selected], [tabindex="0"]') ??
+        grid.querySelector<HTMLElement>(".aui-datepicker__day:not([disabled])");
+      target?.focus();
+    };
+
+    const close = (returnFocus: boolean): void => {
+      toggle.setAttribute("aria-expanded", "false");
+      panel.setAttribute("hidden", "");
+      if (returnFocus) toggle.focus();
+    };
+
+    const commit = (date: Date): void => {
+      input.value = iso(date);
+      syncDisplay();
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      close(true);
+    };
+
+    const moveFocus = (target: HTMLElement | null): void => {
+      if (!target) return;
+      grid.querySelectorAll<HTMLElement>(".aui-datepicker__day").forEach((day) => {
+        day.tabIndex = -1;
+      });
+      target.tabIndex = 0;
+      target.focus();
+    };
+
+    toggle.addEventListener("click", () => {
+      if (isOpen()) close(true);
+      else open(true);
+    });
+
+    // Open the custom panel when the text display input is clicked.
+    display.addEventListener("click", () => {
+      if (!isOpen()) open(true);
+    });
+
+    panel.querySelector("[data-aui-datepicker-prev]")?.addEventListener(
+      "click",
+      () => {
+        viewMonth = addDays(startOfMonth(viewMonth), -1);
+        viewMonth = startOfMonth(viewMonth);
+        render();
+      },
+    );
+
+    panel.querySelector("[data-aui-datepicker-next]")?.addEventListener(
+      "click",
+      () => {
+        viewMonth = addDays(startOfMonth(viewMonth), daysInMonth(viewMonth));
+        viewMonth = startOfMonth(viewMonth);
+        render();
+      },
+    );
+
+    panel.querySelector("[data-aui-datepicker-today]")?.addEventListener(
+      "click",
+      () => {
+        const today = new Date();
+        if (!isDisabled(today)) commit(today);
+      },
+    );
+
+    panel.querySelector("[data-aui-datepicker-clear]")?.addEventListener(
+      "click",
+      () => {
+        input.value = "";
+        syncDisplay();
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        close(true);
+      },
+    );
+
+    grid.addEventListener("click", (event: MouseEvent) => {
+      const cell = (event.target as HTMLElement | null)?.closest<HTMLElement>(
+        ".aui-datepicker__day",
+      );
+      const key = cell?.dataset.date;
+      const date = key ? parseIso(key) : null;
+      if (!date || isDisabled(date)) return;
+      commit(date);
+    });
+
+    panel.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        close(true);
+        return;
+      }
+
+      const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(
+        ".aui-datepicker__day",
+      );
+      if (!current) return;
+      const date = parseIso(current.dataset.date ?? "");
+      if (!date) return;
+
+      const shift = (days: number): void => {
+        event.preventDefault();
+        const next = addDays(date, days);
+        if (iso(startOfMonth(next)) !== iso(viewMonth)) {
+          viewMonth = startOfMonth(next);
+          render();
+        }
+        moveFocus(
+          grid.querySelector<HTMLElement>(`[data-date="${iso(next)}"]`),
+        );
+      };
+
+      // Same day-of-month in the neighbouring month, clamped to its length.
+      const shiftMonth = (delta: number): Date => {
+        const monthStart = startOfMonth(date);
+        const target =
+          delta > 0
+            ? addDays(monthStart, daysInMonth(monthStart))
+            : addDays(monthStart, -1);
+        const start = startOfMonth(target);
+        const day = Math.min(dayNumber(date), daysInMonth(start));
+        return addDays(start, day - 1);
+      };
+
+      // Arrow keys follow the reading direction: in RTL, "left" is forward.
+      const rtl = getComputedStyle(panel).direction === "rtl";
+
+      switch (event.key) {
+        case "ArrowLeft":
+          shift(rtl ? 1 : -1);
+          return;
+        case "ArrowRight":
+          shift(rtl ? -1 : 1);
+          return;
+        case "ArrowUp":
+          shift(-7);
+          return;
+        case "ArrowDown":
+          shift(7);
+          return;
+        case "Home":
+          shift(-((date.getDay() - firstDay + 7) % 7));
+          return;
+        case "End":
+          shift(6 - ((date.getDay() - firstDay + 7) % 7));
+          return;
+        case "PageUp":
+        case "PageDown": {
+          event.preventDefault();
+          const next = shiftMonth(event.key === "PageDown" ? 1 : -1);
+          viewMonth = startOfMonth(next);
+          render();
+          moveFocus(grid.querySelector<HTMLElement>(`[data-date="${iso(next)}"]`));
+          return;
+        }
+        default:
+          return;
+      }
+    });
+
+    document.addEventListener("pointerdown", (event: PointerEvent) => {
+      if (!isOpen()) return;
+      if (event.target instanceof Node && root.contains(event.target)) return;
+      close(false);
+    });
+
+    document.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !isOpen()) return;
+      close(true);
+    });
+
+    renderWeekdays();
+    render();
+    syncDisplay();
+    if (root.hasAttribute("data-open-init")) open(false);
+    // Keep the native input and the grid in sync when a form reset
+    // changes the value.
+    input.addEventListener("change", () => {
+      const date = parseIso(input.value);
+      if (date) viewMonth = startOfMonth(date);
+      syncDisplay();
+      render();
+    });
+  }
+
+  function initAll(): void {
+    document.querySelectorAll<HTMLElement>(ROOT).forEach(initPicker);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-datepicker {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+    max-inline-size: 100%;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-datepicker__input {
+    inline-size: 11rem;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font: inherit;
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: var(--ui-border-width) solid var(--ui-input);
+    border-start-start-radius: var(--ui-radius-md);
+    border-end-start-radius: var(--ui-radius-md);
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+    cursor: pointer;
+  }
+
+  .aui-datepicker__input:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+    position: relative;
+    z-index: 1;
+  }
+
+  .aui-datepicker__input:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-datepicker__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.25rem;
+    padding: 0;
+    font: inherit;
+    color: var(--ui-muted-foreground);
+    background-color: var(--ui-background);
+    border: var(--ui-border-width) solid var(--ui-input);
+    border-inline-start: none;
+    border-start-end-radius: var(--ui-radius-md);
+    border-end-end-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-datepicker__toggle:hover:not(:disabled) {
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+  }
+
+  .aui-datepicker__toggle:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-datepicker__toggle:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-datepicker__panel {
+    position: absolute;
+    inset-block-start: calc(100% + var(--ui-space-2));
+    inset-inline-start: 0;
+    z-index: var(--ui-z-popover);
+    inline-size: 17.5rem;
+    padding: var(--ui-space-3);
+    background-color: var(--ui-background);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  .aui-datepicker__panel[hidden] {
+    display: none;
+  }
+
+  .aui-datepicker__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+    margin-block-end: var(--ui-space-2);
+  }
+
+  .aui-datepicker__caption {
+    margin: 0;
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-foreground);
+    text-align: center;
+  }
+
+  .aui-datepicker__nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    padding: 0;
+    font: inherit;
+    font-size: var(--ui-text-base);
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: var(--ui-border-width) solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+  }
+
+  .aui-datepicker__nav:hover {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-datepicker__nav:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-datepicker__weekdays,
+  .aui-datepicker__panel :global(.aui-datepicker__row) {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--ui-space-1);
+  }
+
+  .aui-datepicker__weekdays {
+    margin-block-end: var(--ui-space-1);
+  }
+
+  /* Weekdays, rows, and day cells are created by the script, so they carry
+     no Astro scope attribute. :global() is anchored under the panel, which
+     keeps the rule inside this component's subtree. */
+  .aui-datepicker__panel :global(.aui-datepicker__weekday) {
+    padding-block: var(--ui-space-1);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-medium);
+    text-align: center;
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-datepicker__grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 2rem;
+    padding: 0;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day:hover:not(:disabled)) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day:focus-visible) {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: calc(var(--ui-focus-ring-width) * -1);
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day[data-outside]) {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day[data-today]) {
+    font-weight: var(--ui-font-semibold);
+    box-shadow: inset 0 0 0 var(--ui-border-width) var(--ui-border);
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day[data-selected]) {
+    color: var(--ui-primary-foreground);
+    background-color: var(--ui-primary);
+    font-weight: var(--ui-font-medium);
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day[data-selected]:hover) {
+    background-color: var(--ui-primary-hover);
+  }
+
+  .aui-datepicker__panel :global(.aui-datepicker__day:disabled) {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-datepicker__footer {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+    margin-block-start: var(--ui-space-2);
+    padding-block-start: var(--ui-space-2);
+    border-block-start: var(--ui-border-width) solid var(--ui-border);
+  }
+
+  .aui-datepicker__action {
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font: inherit;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-sm);
+    cursor: pointer;
+  }
+
+  .aui-datepicker__action:hover {
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-datepicker__action:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-datepicker__toggle {
+      transition: none;
+    }
+  }
+</style>

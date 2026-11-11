@@ -1,0 +1,217 @@
+---
+/**
+ * TimelineItem — one event in a Timeline.
+ *
+ * A grid row: a marker column that draws the connector rail, and a body
+ * column with optional time, title, description, and free-form content.
+ * The rail stops at the last item automatically, so no `last` prop is
+ * needed and reordering items stays correct.
+ *
+ * The marker is decorative (`aria-hidden`); the event's meaning must live
+ * in the body text. Pass a custom glyph through the `marker` slot.
+ *
+ * Must be rendered inside Timeline, which supplies the scale variables.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Marker tone. */
+  variant?:
+    | "neutral"
+    | "primary"
+    | "success"
+    | "warning"
+    | "destructive"
+    | "info";
+  /** Emphasize the current/most recent event with a halo ring. */
+  active?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "neutral",
+  active = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-timeline__item",
+  `aui-timeline__item--${variant}`,
+  active && "aui-timeline__item--active",
+  className,
+);
+
+const hasTime = Astro.slots.has("time");
+const hasTitle = Astro.slots.has("title");
+const hasDescription = Astro.slots.has("description");
+const hasBody =
+  hasTime || hasTitle || hasDescription || Astro.slots.has("default");
+---
+
+<li id={id} class={classes} {...rest}>
+  <span class="aui-timeline__marker" aria-hidden="true">
+    {
+      Astro.slots.has("marker") ? (
+        <span class="aui-timeline__glyph">
+          <slot name="marker"/>
+        </span>
+      ) : (
+        <span class="aui-timeline__dot"/>
+      )
+    }
+  </span>
+  <div class={cn("aui-timeline__body", !hasBody && "aui-timeline__body--empty")}>
+    {
+      hasTime && (
+        <p class="aui-timeline__time">
+          <slot name="time"/>
+        </p>
+      )
+    }
+    {
+      hasTitle && (
+        <p class="aui-timeline__title">
+          <slot name="title"/>
+        </p>
+      )
+    }
+    {
+      hasDescription && (
+        <div class="aui-timeline__description">
+          <slot name="description"/>
+        </div>
+      )
+    }
+    <slot/>
+  </div>
+</li>
+
+<style>
+  .aui-timeline__item {
+    --aui-timeline-tone: var(--ui-muted-foreground);
+
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--aui-timeline-marker, 0.625rem) 1fr;
+    column-gap: var(--aui-timeline-gap, var(--ui-space-3));
+    padding-block-end: var(--aui-timeline-item-gap, var(--ui-space-6));
+  }
+
+  .aui-timeline__item--primary {
+    --aui-timeline-tone: var(--ui-primary);
+  }
+
+  .aui-timeline__item--success {
+    --aui-timeline-tone: var(--ui-success);
+  }
+
+  .aui-timeline__item--warning {
+    --aui-timeline-tone: var(--ui-warning);
+  }
+
+  .aui-timeline__item--destructive {
+    --aui-timeline-tone: var(--ui-error);
+  }
+
+  .aui-timeline__item--info {
+    --aui-timeline-tone: var(--ui-info);
+  }
+
+  /* --- marker + rail --- */
+
+  .aui-timeline__marker {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    inline-size: var(--aui-timeline-marker, 0.625rem);
+    /* Keep the dot aligned with the first text line. */
+    padding-block-start: var(--ui-space-1);
+  }
+
+  /* Rail: starts under the dot, ends at the next item's dot. Hidden on the
+     final item so the list never trails a dangling line. */
+  .aui-timeline__marker::before {
+    content: "";
+    position: absolute;
+    inset-block-start: calc(
+      var(--aui-timeline-marker, 0.625rem) + var(--ui-space-2)
+    );
+    inset-block-end: calc(var(--aui-timeline-item-gap, var(--ui-space-6)) * -1);
+    inset-inline-start: 50%;
+    inline-size: var(--ui-border-width);
+    background-color: var(--ui-border);
+  }
+
+  .aui-timeline__item:last-child .aui-timeline__marker::before {
+    display: none;
+  }
+
+  .aui-timeline__dot {
+    inline-size: var(--aui-timeline-marker, 0.625rem);
+    block-size: var(--aui-timeline-marker, 0.625rem);
+    border-radius: var(--ui-radius-full);
+    background-color: var(--aui-timeline-tone);
+  }
+
+  .aui-timeline__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: calc(var(--aui-timeline-marker, 0.625rem) + var(--ui-space-2));
+    block-size: calc(var(--aui-timeline-marker, 0.625rem) + var(--ui-space-2));
+    margin-block-start: calc(var(--ui-space-1) * -1);
+    margin-inline-start: calc(var(--ui-space-1) * -1);
+    font-size: var(--ui-text-xs);
+    line-height: var(--ui-leading-none);
+    color: var(--aui-timeline-tone);
+  }
+
+  .aui-timeline__item--active .aui-timeline__dot {
+    box-shadow: 0 0 0 var(--ui-focus-ring-width) var(--ui-muted),
+      0 0 0 calc(var(--ui-focus-ring-width) * 2) var(--aui-timeline-tone);
+  }
+
+  .aui-timeline__item--active .aui-timeline__glyph {
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+    border-radius: var(--ui-radius-full);
+  }
+
+  /* --- body --- */
+
+  .aui-timeline__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    min-inline-size: 0;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+  }
+
+  .aui-timeline__body--empty {
+    display: none;
+  }
+
+  .aui-timeline__time {
+    margin: 0;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aui-timeline__title {
+    margin: 0;
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-foreground);
+  }
+
+  .aui-timeline__description {
+    color: var(--ui-muted-foreground);
+  }
+</style>

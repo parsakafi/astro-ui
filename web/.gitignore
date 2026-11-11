@@ -1,6 +1,16 @@
 # build output
 dist/
 
+# playwright artifacts (baselines under tests/e2e/*-snapshots/ are committed)
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# playwright failure artifacts next to snapshots
+tests/e2e/**/*-snapshots/*-actual.png
+tests/e2e/**/*-snapshots/*-diff.png
+
 # generated types
 .astro/
 astro-dev.log

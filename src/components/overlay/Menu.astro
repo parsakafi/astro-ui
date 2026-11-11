@@ -1,0 +1,361 @@
+---
+/**
+ * Menu — a click-triggered floating action menu.
+ *
+ * Implements the WAI-ARIA menu-button pattern: the trigger owns
+ * `aria-haspopup="menu"` + `aria-expanded`; the panel is `role="menu"` with
+ * roving focus across MenuItem children. ArrowDown/ArrowUp open on the
+ * first/last item, Home/End jump, letter keys run typeahead, Escape closes
+ * and returns focus to the trigger, and Tab closes without stealing focus
+ * back.
+ *
+ * Submenus are not part of this component: split an oversized menu into
+ * two entry points instead of nesting flyouts.
+ *
+ *   <Menu id="row-actions" triggerLabel="Row actions">
+ *     <MenuItem shortcut="⌘E">Edit</MenuItem>
+ *     <MenuItem shortcut="⌘D">Duplicate</MenuItem>
+ *     <MenuSeparator/>
+ *     <MenuItem variant="destructive" shortcut="⌫">Delete</MenuItem>
+ *   </Menu>
+ *
+ * JavaScript required: Yes
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
+
+export interface Props {
+  /** Which corner of the trigger the panel aligns to. */
+  placement?: "bottom-start" | "bottom-end" | "top-start" | "top-end";
+  /** Render open on first paint (SSR); the script takes over after. */
+  open?: boolean;
+  /** Disables the trigger. */
+  disabled?: boolean;
+  /** Accessible name for the trigger (required when it has no text). */
+  triggerLabel?: string;
+  /** Hide the default trigger box so a slotted trigger keeps its own look. */
+  bareTrigger?: boolean;
+  /** Recommended: stable prefix for trigger/panel ids. */
+  id?: string;
+  class?: string;
+}
+
+const {
+  placement = "bottom-end",
+  open = false,
+  disabled = false,
+  triggerLabel = "Actions",
+  bareTrigger = false,
+  id,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const base = id ?? uid("aui-menu");
+const triggerId = `${base}-trigger`;
+const panelId = `${base}-panel`;
+
+const classes = cn("aui-menu", `aui-menu--${placement}`, className);
+const triggerClasses = cn(
+  "aui-menu__trigger",
+  bareTrigger && "aui-menu__trigger--bare",
+);
+---
+
+<span id={id} class={classes} data-aui-menu={base} data-open={open ? "" : undefined} {...rest}>
+  <button
+    type="button"
+    id={triggerId}
+    class={triggerClasses}
+    aria-haspopup="menu"
+    aria-expanded={open ? "true" : "false"}
+    aria-controls={panelId}
+    aria-label={triggerLabel}
+    disabled={disabled}
+    data-aui-menu-trigger
+  >
+    <slot name="trigger">
+      <span class="aui-menu__glyph" aria-hidden="true">⋯</span>
+    </slot>
+  </button>
+  <div
+    id={panelId}
+    class="aui-menu__panel"
+    role="menu"
+    aria-labelledby={triggerId}
+    data-aui-menu-panel
+    hidden={!open}
+  >
+    <slot/>
+  </div>
+</span>
+
+<script>
+  const ROOT = "[data-aui-menu]";
+
+  function initMenu(root: HTMLElement): void {
+    if (root.dataset.auiMenuInit === "true") return;
+    root.dataset.auiMenuInit = "true";
+
+    const trigger = root.querySelector<HTMLButtonElement>(
+      "[data-aui-menu-trigger]",
+    );
+    const panel = root.querySelector<HTMLElement>("[data-aui-menu-panel]");
+    if (!trigger || !panel) return;
+
+    const items = (): HTMLElement[] =>
+      Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          '[role="menuitem"]:not([aria-disabled="true"])',
+        ),
+      );
+
+    const isOpen = (): boolean => trigger.getAttribute("aria-expanded") === "true";
+
+    // Flip to the other edge when the panel would leave the viewport — a
+    // "⋯" in the last table column would otherwise open off-screen.
+    const flip = (): void => {
+      panel.removeAttribute("data-flip");
+      const rect = panel.getBoundingClientRect();
+      const viewport = document.documentElement.clientWidth;
+      const margin = 8;
+      if (rect.left < margin) {
+        panel.setAttribute("data-flip", "start");
+      } else if (rect.right > viewport - margin) {
+        panel.setAttribute("data-flip", "end");
+      }
+    };
+
+    const open = (edge: "first" | "last" = "first"): void => {
+      trigger.setAttribute("aria-expanded", "true");
+      root.setAttribute("data-open", "");
+      panel.removeAttribute("hidden");
+      flip();
+      const list = items();
+      const target = edge === "last" ? list[list.length - 1] : list[0];
+      target?.focus();
+    };
+
+    const close = (returnFocus: boolean): void => {
+      trigger.setAttribute("aria-expanded", "false");
+      root.removeAttribute("data-open");
+      panel.setAttribute("hidden", "");
+      if (returnFocus) trigger.focus();
+    };
+
+    trigger.addEventListener("click", () => {
+      if (isOpen()) close(false);
+      else open();
+    });
+
+    trigger.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        open(event.key === "ArrowUp" ? "last" : "first");
+      }
+    });
+
+    // Activating an item closes the menu and returns focus to the trigger;
+    // disabled items swallow the click entirely.
+    panel.addEventListener("click", (event: MouseEvent) => {
+      const item = (event.target as HTMLElement | null)?.closest<HTMLElement>(
+        '[role="menuitem"]',
+      );
+      if (!item) return;
+      if (item.getAttribute("aria-disabled") === "true") {
+        event.preventDefault();
+        return;
+      }
+      close(true);
+    });
+
+    let typeBuffer = "";
+    let typeTimer = 0;
+
+    panel.addEventListener("keydown", (event: KeyboardEvent) => {
+      const list = items();
+      const index = list.indexOf(document.activeElement as HTMLElement);
+
+      switch (event.key) {
+        case "ArrowDown":
+          event.preventDefault();
+          list[(index + 1 + list.length) % list.length]?.focus();
+          return;
+        case "ArrowUp":
+          event.preventDefault();
+          list[(index - 1 + list.length) % list.length]?.focus();
+          return;
+        case "Home":
+          event.preventDefault();
+          list[0]?.focus();
+          return;
+        case "End":
+          event.preventDefault();
+          list[list.length - 1]?.focus();
+          return;
+        case "Escape":
+          event.preventDefault();
+          event.stopPropagation();
+          close(true);
+          return;
+        case "Tab":
+          close(false);
+          return;
+        default:
+          break;
+      }
+
+      // Enter/Space activate natively (the items are real buttons/links).
+      // Everything else with length 1 feeds typeahead.
+      if (event.key === " " || event.key.length !== 1) return;
+      typeBuffer += event.key.toLowerCase();
+      window.clearTimeout(typeTimer);
+      typeTimer = window.setTimeout(() => {
+        typeBuffer = "";
+      }, 500);
+      const start = typeBuffer.length === 1 ? index + 1 : index;
+      for (let step = 0; step < list.length; step++) {
+        const candidate = list[(start + step) % list.length];
+        const text = (candidate.textContent ?? "").trim().toLowerCase();
+        if (text.startsWith(typeBuffer)) {
+          candidate.focus();
+          return;
+        }
+      }
+    });
+
+    document.addEventListener("pointerdown", (event: PointerEvent) => {
+      if (!isOpen()) return;
+      if (event.target instanceof Node && root.contains(event.target)) return;
+      close(false);
+    });
+
+    document.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !isOpen()) return;
+      close(true);
+    });
+  }
+
+  function initAll(): void {
+    document.querySelectorAll<HTMLElement>(ROOT).forEach(initMenu);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-menu {
+    position: relative;
+    display: inline-flex;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-menu__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ui-space-2);
+    min-inline-size: 2rem;
+    min-block-size: 2rem;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font: inherit;
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: 1px solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast),
+      border-color var(--ui-transition-fast);
+  }
+
+  .aui-menu__trigger--bare {
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  .aui-menu__trigger:hover:not(:disabled) {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-menu__trigger:disabled {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-menu__trigger:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-menu__trigger[aria-expanded="true"] {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-menu__glyph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: var(--ui-leading-none);
+    letter-spacing: 0.05em;
+  }
+
+  .aui-menu__panel {
+    position: absolute;
+    z-index: var(--ui-z-popover);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    min-inline-size: 12rem;
+    max-inline-size: 20rem;
+    padding: var(--ui-space-1);
+    background-color: var(--ui-background);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  .aui-menu__panel[hidden] {
+    display: none;
+  }
+
+  .aui-menu--bottom-start .aui-menu__panel,
+  .aui-menu--bottom-end .aui-menu__panel {
+    inset-block-start: calc(100% + var(--ui-space-1));
+  }
+
+  .aui-menu--top-start .aui-menu__panel,
+  .aui-menu--top-end .aui-menu__panel {
+    inset-block-end: calc(100% + var(--ui-space-1));
+  }
+
+  .aui-menu--bottom-start .aui-menu__panel,
+  .aui-menu--top-start .aui-menu__panel {
+    inset-inline-start: 0;
+  }
+
+  .aui-menu--bottom-end .aui-menu__panel,
+  .aui-menu--top-end .aui-menu__panel {
+    inset-inline-end: 0;
+  }
+
+  /* Viewport flip (script sets data-flip when the panel would overflow).
+     Declared after the placement rules so equal specificity resolves here. */
+  .aui-menu__panel[data-flip="start"] {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+
+  .aui-menu__panel[data-flip="end"] {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-menu__trigger {
+      transition: none;
+    }
+  }
+</style>

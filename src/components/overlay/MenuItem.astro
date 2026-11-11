@@ -1,0 +1,177 @@
+---
+/**
+ * MenuItem — one action inside Menu.
+ *
+ * Renders a real interactive element: `<a>` when `href` is set, otherwise a
+ * `<button type="button">`. That keeps Enter/Space and middle-click working
+ * without a key handler, while `role="menuitem"` + `tabindex="-1"` opt it
+ * into the menu's roving focus.
+ *
+ * JavaScript required: No (Menu supplies the behavior)
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Color treatment. Destructive items go last, separated by a separator. */
+  variant?: "default" | "destructive";
+  /** Render as a link instead of a button. */
+  href?: string;
+  /** Disable the item: `aria-disabled` + removed from the roving order. */
+  disabled?: boolean;
+  /** Display-only keyboard hint (e.g. "⌘E"). Announced as aria-hidden. */
+  shortcut?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "default",
+  href,
+  disabled = false,
+  shortcut,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-menu__item",
+  `aui-menu__item--${variant}`,
+  disabled && "aui-menu__item--disabled",
+  className,
+);
+
+const hasIcon = Astro.slots.has("icon");
+---
+
+{
+  href ? (
+    <a
+      id={id}
+      class={classes}
+      href={disabled ? undefined : href}
+      role="menuitem"
+      tabindex="-1"
+      aria-disabled={disabled ? "true" : undefined}
+      {...rest}
+    >
+      {hasIcon && (
+        <span class="aui-menu__icon" aria-hidden="true">
+          <slot name="icon" />
+        </span>
+      )}
+      <span class="aui-menu__label">
+        <slot />
+      </span>
+      {shortcut && (
+        <span class="aui-menu__shortcut" aria-hidden="true">
+          {shortcut}
+        </span>
+      )}
+    </a>
+  ) : (
+    <button
+      id={id}
+      type="button"
+      class={classes}
+      role="menuitem"
+      tabindex="-1"
+      aria-disabled={disabled ? "true" : undefined}
+      disabled={disabled}
+      {...rest}
+    >
+      {hasIcon && (
+        <span class="aui-menu__icon" aria-hidden="true">
+          <slot name="icon" />
+        </span>
+      )}
+      <span class="aui-menu__label">
+        <slot />
+      </span>
+      {shortcut && (
+        <span class="aui-menu__shortcut" aria-hidden="true">
+          {shortcut}
+        </span>
+      )}
+    </button>
+  )
+}
+
+<style>
+  .aui-menu__item {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    inline-size: 100%;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font: inherit;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    text-align: start;
+    text-decoration: none;
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast),
+      color var(--ui-transition-fast);
+  }
+
+  .aui-menu__item:hover:not(.aui-menu__item--disabled),
+  .aui-menu__item:focus-visible {
+    background-color: var(--ui-muted);
+    outline: none;
+  }
+
+  .aui-menu__item:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: calc(var(--ui-focus-ring-offset) * -1);
+  }
+
+  .aui-menu__item--destructive {
+    color: var(--ui-error);
+  }
+
+  .aui-menu__item--destructive:hover:not(.aui-menu__item--disabled),
+  .aui-menu__item--destructive:focus-visible {
+    background-color: var(--ui-error-muted);
+  }
+
+  .aui-menu__item--disabled,
+  .aui-menu__item[aria-disabled="true"] {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  .aui-menu__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: 1rem;
+    block-size: 1rem;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-menu__label {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  .aui-menu__shortcut {
+    flex-shrink: 0;
+    font-family: var(--ui-font-mono);
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-menu__item {
+      transition: none;
+    }
+  }
+</style>

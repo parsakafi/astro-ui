@@ -60,6 +60,6 @@ export const stickySurface: ComponentMeta = {
             a: "--ui-z-dropdown, shared with dropdown menus — the surface stays above scrolled page content but below dialogs, popovers, and toasts.",
         },
     ],
-    since: "1.1.0",
+    since: "0.1.0",
     related: ["card", "tabs"],
 };

@@ -77,6 +77,6 @@ export const tabs: ComponentMeta = {
             a: "Give each a unique id — generated tab/panel ids derive from it.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["separator", "card", "button"],
 };

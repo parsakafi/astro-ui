@@ -58,6 +58,6 @@ export const textarea: ComponentMeta = {
             a: "They are aliases — either renders the count readout (\"n / maxlength\" when a cap is set). Pick the name that reads best in your markup.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["input", "label", "button"],
 };

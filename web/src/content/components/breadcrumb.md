@@ -7,7 +7,7 @@ category: navigation
 importPath: "astro-ui"
 exportName: "Breadcrumb"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["pagination", "tabs", "link"]
 features:

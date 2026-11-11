@@ -1,0 +1,86 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {Badge, Button, Navbar} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "app" && (
+          <div class="docs-demo-block" id={`demo-navbar-${id}`}>
+            <h3 class="docs-demo-title">App bar with actions</h3>
+            <DemoTabs id="dm-navbar-app">
+              <Fragment slot="preview">
+                <div class="docs-navbar-frame">
+                  <Navbar ariaLabel="Main">
+                    <a slot="brand" href="#top">Acme</a>
+                    <a href="#docs" aria-current="page">Docs</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="#changelog">Changelog</a>
+                    <Button slot="actions" size="sm">Sign in</Button>
+                    <Fragment slot="mobile">
+                      <a href="#docs">Docs</a>
+                      <a href="#pricing">Pricing</a>
+                      <a href="#changelog">Changelog</a>
+                    </Fragment>
+                  </Navbar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+            <p class="docs-demo-note">
+              Below 48rem the links collapse into the mobile disclosure —
+              resize the window to try it.
+            </p>
+          </div>
+        )}
+        {id === "elevated" && (
+          <div class="docs-demo-block" id={`demo-navbar-${id}`}>
+            <h3 class="docs-demo-title">Sticky, elevated</h3>
+            <DemoTabs id="dm-navbar-elevated">
+              <Fragment slot="preview">
+                <div class="docs-navbar-frame">
+                  <Navbar variant="elevated" ariaLabel="Workspace">
+                    <a slot="brand" href="#top">Astro UI</a>
+                    <a href="#components" aria-current="page">Components</a>
+                    <a href="#blocks">Blocks</a>
+                    <Badge slot="actions" variant="success" size="sm">All systems normal</Badge>
+                  </Navbar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "transparent" && (
+          <div class="docs-demo-block" id={`demo-navbar-${id}`}>
+            <h3 class="docs-demo-title">Transparent over a hero</h3>
+            <DemoTabs id="dm-navbar-transparent">
+              <Fragment slot="preview">
+                <div class="docs-navbar-hero">
+                  <Navbar variant="transparent" ariaLabel="Marketing">
+                    <a slot="brand" href="#top">Astro UI</a>
+                    <a href="#docs">Docs</a>
+                    <a href="#blocks">Blocks</a>
+                    <Button slot="actions" size="sm" variant="secondary">Get started</Button>
+                  </Navbar>
+                  <p class="docs-navbar-hero-copy">Ship accessible interfaces with zero client JavaScript.</p>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>

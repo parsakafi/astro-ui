@@ -64,6 +64,6 @@ export const input: ComponentMeta = {
             a: "Server/form-driven: set invalid and point ariaDescribedby at the message element. No client JS ships or runs.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["label", "textarea", "select"],
 };

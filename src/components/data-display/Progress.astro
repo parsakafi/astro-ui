@@ -25,7 +25,6 @@ export interface Props {
     | "secondary"
     | "success"
     | "warning"
-    | "error"
     | "info"
     | "muted"
     | "destructive";
@@ -273,10 +272,6 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     color: var(--ui-warning-foreground);
   }
 
-  .aui-progress--bar.aui-progress--color-error .aui-progress__value {
-    color: var(--ui-error-foreground);
-  }
-
   .aui-progress--bar.aui-progress--color-info .aui-progress__value {
     color: var(--ui-info-foreground);
   }
@@ -305,7 +300,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     inset: 0;
     background-image: repeating-linear-gradient(
       45deg,
-      rgb(255 255 255 / 0.35) 0 6px,
+      var(--ui-progress-stripe) 0 6px,
       transparent 6px 12px
     );
     background-size: 17px 100%;
@@ -368,14 +363,6 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     --aui-progress-hatch: var(--ui-warning);
   }
 
-  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-error .aui-progress__track {
-    border-color: var(--ui-error);
-  }
-
-  .aui-progress--striped-track.aui-progress--bar.aui-progress--color-error .aui-progress__track::before {
-    --aui-progress-hatch: var(--ui-error);
-  }
-
   .aui-progress--striped-track.aui-progress--bar.aui-progress--color-info .aui-progress__track {
     border-color: var(--ui-info);
   }
@@ -410,10 +397,6 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
 
   .aui-progress--segmented.aui-progress--bar.aui-progress--color-warning .aui-progress__segment[data-on] {
     background-color: var(--ui-warning);
-  }
-
-  .aui-progress--segmented.aui-progress--bar.aui-progress--color-error .aui-progress__segment[data-on] {
-    background-color: var(--ui-error);
   }
 
   .aui-progress--segmented.aui-progress--bar.aui-progress--color-info .aui-progress__segment[data-on] {
@@ -523,11 +506,6 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     background-color: var(--ui-warning);
   }
 
-  .aui-progress--color-error .aui-progress__fill {
-    stroke: var(--ui-error);
-    background-color: var(--ui-error);
-  }
-
   .aui-progress--color-info .aui-progress__fill {
     stroke: var(--ui-info);
     background-color: var(--ui-info);
@@ -557,10 +535,6 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
 
   .aui-progress--color-warning.aui-progress--circle .aui-progress__value {
     color: var(--ui-warning);
-  }
-
-  .aui-progress--color-error.aui-progress--circle .aui-progress__value {
-    color: var(--ui-error);
   }
 
   .aui-progress--color-info.aui-progress--circle .aui-progress__value {

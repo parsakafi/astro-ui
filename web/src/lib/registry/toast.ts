@@ -121,6 +121,6 @@ for (const msg of ["First", "Second", "Third"]) {
             a: "Stacks of 2+ collapse: older cards tuck behind the newest. Hover or focus expands; pass expand: true to pin a stack open.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["alert", "spinner", "button"],
 };

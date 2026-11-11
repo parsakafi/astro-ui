@@ -36,6 +36,14 @@ const sources = new Map<string, string>(
   }),
 );
 
+const tokensCss = readFileSync(
+  join(root, "src", "styles", "tokens.css"),
+  "utf8",
+);
+const definedTokens = new Set(
+  [...tokensCss.matchAll(/(--ui-[\w-]+)\s*:/g)].map((m) => m[1]),
+);
+
 describe("component contracts", () => {
   it("ships the MVP component set", () => {
     expect(files.sort()).toEqual(
@@ -49,6 +57,7 @@ describe("component contracts", () => {
         "AvatarGroup.astro",
         "Avatar.astro",
         "Badge.astro",
+        "Banner.astro",
         "Breadcrumb.astro",
         "Bubble.astro",
         "BubbleContent.astro",
@@ -67,6 +76,7 @@ describe("component contracts", () => {
         "Collapsible.astro",
         "Combobox.astro",
         "Command.astro",
+        "DatePicker.astro",
         "Dialog.astro",
         "Empty.astro",
         "Field.astro",
@@ -78,6 +88,14 @@ describe("component contracts", () => {
         "Lightbox.astro",
         "LightboxItem.astro",
         "Link.astro",
+        "Menu.astro",
+        "MenuGroup.astro",
+        "MenuItem.astro",
+        "MenuSeparator.astro",
+        "Navbar.astro",
+        "NotificationCenter.astro",
+        "NotificationGroup.astro",
+        "NotificationItem.astro",
         "Pagination.astro",
         "Popover.astro",
         "Progress.astro",
@@ -88,6 +106,9 @@ describe("component contracts", () => {
         "Select.astro",
         "Separator.astro",
         "Sheet.astro",
+        "Sidebar.astro",
+        "SidebarGroup.astro",
+        "SidebarItem.astro",
         "Skeleton.astro",
         "Slider.astro",
         "Spinner.astro",
@@ -98,10 +119,15 @@ describe("component contracts", () => {
         "Tabs.astro",
         "Tag.astro",
         "Textarea.astro",
+        "TimePicker.astro",
+        "Timeline.astro",
+        "TimelineItem.astro",
         "Toaster.astro",
         "Toggle.astro",
         "ToggleGroup.astro",
         "Tooltip.astro",
+        "Tree.astro",
+        "TreeItem.astro",
       ].sort(),
     );
   });
@@ -122,9 +148,17 @@ describe("component contracts", () => {
 
         it("uses semantic design tokens, not hard-coded values", () => {
           expect(src).toMatch(/var\(--ui-/);
-          // No hard-coded hex colors in component styles.
+          // No hard-coded color values anywhere in the component file —
+          // every color must resolve through tokens.css.
+          expect(src).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+          expect(src).not.toMatch(/\b(?:rgb|hsl)a?\(/);
+        });
+
+        it("never styles bare :focus instead of :focus-visible", () => {
           const style = src.slice(src.indexOf("<style>"));
-          expect(style).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+          // :focus-within is allowed for composite widgets; bare :focus
+          // paints on mouse clicks and drifts from the keyboard ring.
+          expect(style).not.toMatch(/:focus(?!-visible|-within)/);
         });
 
         it("is SSR-safe (no unguarded browser globals)", () => {
@@ -160,16 +194,21 @@ describe("component contracts", () => {
       "Carousel.astro",
       "Combobox.astro",
       "Command.astro",
+      "DatePicker.astro",
       "AlertDialog.astro",
       "Collapsible.astro",
       "Dialog.astro",
       "Lightbox.astro",
+      "Menu.astro",
+      "NotificationCenter.astro",
       "Popover.astro",
       "Sheet.astro",
       "StickySurface.astro",
       "Tabs.astro",
       "Textarea.astro",
+      "TimePicker.astro",
       "Toaster.astro",
+      "Tree.astro",
     ]);
     for (const [file, src] of sources) {
       if (jsRequired.has(file)) {
@@ -195,6 +234,56 @@ describe("component contracts", () => {
       expect(src).not.toMatch(/\b(theme|styleKind|colorScheme)\?:/);
     }
   });
+  it("references only tokens defined in tokens.css", () => {
+    const missing = new Map<string, Set<string>>();
+    for (const [file, src] of sources) {
+      for (const m of src.matchAll(/var\(\s*(--ui-[\w-]+)/g)) {
+        if (definedTokens.has(m[1])) continue;
+        if (!missing.has(m[1])) missing.set(m[1], new Set());
+        missing.get(m[1])?.add(file);
+      }
+    }
+    expect(
+      [...missing.keys()],
+      `undefined tokens: ${[...missing]
+        .map(([token, files]) => `${token} (${[...files].join(", ")})`)
+        .join("; ")}`,
+    ).toEqual([]);
+  });
+
+  it("does not redeclare global --ui-* tokens inside components", () => {
+    const offenders: string[] = [];
+    for (const [file, src] of sources) {
+      const style = src.slice(src.indexOf("<style>"));
+      for (const m of style.matchAll(/(--ui-[\w-]+)\s*:/g)) {
+        offenders.push(`${file}: ${m[1]}`);
+      }
+    }
+    expect(
+      offenders,
+      `component-private variables must use the --aui-* prefix: ${offenders.join("; ")}`,
+    ).toEqual([]);
+  });
+
+  it("uses destructive, never error, as the semantic red prop value", () => {
+    for (const [file, src] of sources) {
+      expect(src, file).not.toMatch(/variant\s*[:=]\s*["']error["']/);
+      expect(src, file).not.toContain("--variant-error");
+    }
+  });
+
+  it("uses the shared control scale for buttons and text controls", () => {
+    for (const file of [
+      "Button.astro",
+      "Input.astro",
+      "InputGroup.astro",
+      "Select.astro",
+      "Textarea.astro",
+    ]) {
+      expect(sources.get(file), file).toContain("--ui-control-");
+    }
+  });
+
   it("keeps visually-hidden clip recipes display:block-safe on table elements", () => {
     // The 1px + clip sr-only recipe silently leaks on display:table
     // elements: tables treat width as a minimum, so a clipped <table>

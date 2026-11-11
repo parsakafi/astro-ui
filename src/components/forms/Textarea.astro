@@ -253,9 +253,9 @@ const classes = cn(
     color: var(--ui-foreground);
     background-color: var(--ui-background);
     border: 1px solid var(--ui-input);
-    border-radius: var(--ui-radius-md);
+    border-radius: var(--ui-control-radius);
     transition: border-color var(--ui-transition-fast),
-    box-shadow var(--ui-transition-fast);
+    outline-color var(--ui-transition-fast);
   }
 
   .aui-textarea::placeholder {
@@ -265,26 +265,26 @@ const classes = cn(
   /* --- size --- */
 
   .aui-textarea--xs {
-    padding: var(--ui-space-1) var(--ui-space-2);
+    padding: var(--ui-space-1) var(--ui-control-padding-xs);
     font-size: var(--ui-text-2xs);
   }
 
   .aui-textarea--sm {
-    padding: var(--ui-space-2) var(--ui-space-3);
+    padding: var(--ui-space-2) var(--ui-control-padding-sm);
     font-size: var(--ui-text-xs);
   }
 
   .aui-textarea--md {
-    padding: var(--ui-space-2) var(--ui-space-3);
+    padding: var(--ui-space-2) var(--ui-control-padding-md);
   }
 
   .aui-textarea--lg {
-    padding: var(--ui-space-3) var(--ui-space-4);
+    padding: var(--ui-space-3) var(--ui-control-padding-lg);
     font-size: var(--ui-text-base);
   }
 
   .aui-textarea--xl {
-    padding: var(--ui-space-4) var(--ui-space-5);
+    padding: var(--ui-space-4) var(--ui-control-padding-xl);
     font-size: var(--ui-text-lg);
   }
 
@@ -322,22 +322,20 @@ const classes = cn(
     border-color: var(--ui-info);
   }
 
-  .aui-textarea:focus {
-    outline: none;
+  .aui-textarea:focus-visible {
     border-color: var(--ui-ring);
-    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
-    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
   }
 
-  /* Invalid overrides the custom border + focus ring */
+  /* Invalid overrides the border + focus ring */
   .aui-textarea--invalid {
     border-color: var(--ui-error);
   }
 
-  .aui-textarea--invalid:focus {
+  .aui-textarea--invalid:focus-visible {
     border-color: var(--ui-error);
-    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
-    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-error);
+    outline-color: var(--ui-error);
   }
 
   .aui-textarea:disabled {

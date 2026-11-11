@@ -67,7 +67,7 @@ export const progress: ComponentMeta = {
         t("value", "number", "—", "0–100; omit for indeterminate."),
         t("variant", `"bar" | "circle"`, `"bar"`, "Shape."),
         t("size", `"xs" | "sm" | "md" | "lg" | "xl" | "2xl"`, `"md"`, "Scale."),
-        t("color", `"primary" | "secondary" | "success" | "warning" | "error" | "info" | "muted" | "destructive"`, `"primary"`, "Fill color."),
+        t("color", `"primary" | "secondary" | "success" | "warning" | "info" | "muted" | "destructive"`, `"primary"`, "Fill color."),
         t("label", "string", "—", "Text label."),
         t("showValue", "boolean", "false", "Show the percentage."),
         t("stripes", `boolean | "static"`, "false", "Diagonal stripes on the bar fill; true animates them."),
@@ -82,6 +82,6 @@ export const progress: ComponentMeta = {
             a: "When label is set the component exposes a role=\"progressbar\" with aria-valuenow. Without label, treat it as decorative.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["spinner", "skeleton", "badge"],
 };

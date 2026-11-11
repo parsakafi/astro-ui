@@ -1,0 +1,111 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {Label, TimePicker} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {demoIds.map((id) => (
+    <Fragment>
+
+      {id === "slots" && (
+        <div class="docs-demo-block" id={`demo-time-picker-${id}`}>
+          <h3 class="docs-demo-title">30-minute booking slots</h3>
+          <DemoTabs id="dm-timepicker-slots">
+            <Fragment slot="preview">
+              <div class="docs-timepicker-demo">
+                <Label for="tp-slot">Drop-off</Label>
+                <TimePicker id="tp-slot" name="slot" step={30} min="09:00" max="17:00" />
+              </div>
+            </Fragment>
+            <Fragment slot="code">
+              <Fragment set:html={codeHtml.get(id)} />
+            </Fragment>
+          </DemoTabs>
+        </div>
+      )}
+
+      {id === "twelve-hour" && (
+        <div class="docs-demo-block" id={`demo-time-picker-${id}`}>
+          <h3 class="docs-demo-title">12-hour labels</h3>
+          <DemoTabs id="dm-timepicker-12">
+            <Fragment slot="preview">
+              <div class="docs-timepicker-demo">
+                <Label for="tp-12">Reminder</Label>
+                <TimePicker id="tp-12" name="reminder" step={15} hour12 placeholder="Pick a reminder time" />
+              </div>
+            </Fragment>
+            <Fragment slot="code">
+              <Fragment set:html={codeHtml.get(id)} />
+            </Fragment>
+          </DemoTabs>
+        </div>
+      )}
+
+      {id === "native" && (
+        <div class="docs-demo-block" id={`demo-time-picker-${id}`}>
+          <h3 class="docs-demo-title">Native time input</h3>
+          <DemoTabs id="dm-timepicker-native">
+            <Fragment slot="preview">
+              <div class="docs-timepicker-demo">
+                <Label for="tp-native">Starts at</Label>
+                <TimePicker id="tp-native" name="starts" variant="input" step={15} value="09:30" />
+              </div>
+            </Fragment>
+            <Fragment slot="code">
+              <Fragment set:html={codeHtml.get(id)} />
+            </Fragment>
+          </DemoTabs>
+        </div>
+      )}
+
+      {id === "wheel" && (
+        <div class="docs-demo-block" id={`demo-time-picker-${id}`}>
+          <h3 class="docs-demo-title">Wheel (scroll-drum) picker</h3>
+          <DemoTabs id="dm-timepicker-wheel">
+            <Fragment slot="preview">
+              <div class="docs-timepicker-demo" style="gap:2rem;flex-wrap:wrap;align-items:flex-start;">
+                <div style="display:flex;flex-direction:column;gap:.5rem;">
+                  <Label>24-hour wheel</Label>
+                  <TimePicker variant="wheel" name="appt-24" value="14:30" />
+                </div>
+                <div style="display:flex;flex-direction:column;gap:.5rem;">
+                  <Label>12-hour wheel</Label>
+                  <TimePicker variant="wheel" name="appt-12" hour12 value="02:45" />
+                </div>
+              </div>
+            </Fragment>
+            <Fragment slot="code">
+              <Fragment set:html={codeHtml.get(id)} />
+            </Fragment>
+          </DemoTabs>
+        </div>
+      )}
+
+      {id === "clock" && (
+        <div class="docs-demo-block" id={`demo-time-picker-${id}`}>
+          <h3 class="docs-demo-title">Circular clock picker</h3>
+          <DemoTabs id="dm-timepicker-clock">
+            <Fragment slot="preview">
+              <div class="docs-timepicker-demo" style="gap:2rem;flex-wrap:wrap;align-items:flex-start;">
+                <div style="display:flex;flex-direction:column;gap:.5rem;">
+                  <Label>24-hour clock</Label>
+                  <TimePicker variant="clock" name="meeting" value="09:30" />
+                </div>
+                <div style="display:flex;flex-direction:column;gap:.5rem;">
+                  <Label>12-hour clock</Label>
+                  <TimePicker variant="clock" name="meeting-12" hour12 value="09:30" />
+                </div>
+              </div>
+            </Fragment>
+            <Fragment slot="code">
+              <Fragment set:html={codeHtml.get(id)} />
+            </Fragment>
+          </DemoTabs>
+        </div>
+      )}
+
+    </Fragment>
+  ))}
+</div>

@@ -66,6 +66,6 @@ import { Alert } from "astro-ui";
             a: "Destructive alerts use role=alert (assertive, immediate); all other variants use role=status (polite). Mount-time announcements only — toggling content re-announces.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["spinner", "toast", "button"],
 };

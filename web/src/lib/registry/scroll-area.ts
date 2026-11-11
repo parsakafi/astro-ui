@@ -54,6 +54,6 @@ import { ScrollArea } from "astro-ui";
             a: "Native overflow with themed scrollbar styles — no JS scroll simulation, so momentum, keyboard, and touch behaviors all stay native.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["separator", "card", "table"],
 };

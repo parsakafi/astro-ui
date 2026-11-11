@@ -129,47 +129,46 @@ const classes = cn(
     color: inherit;
     background-color: var(--ui-background);
     border: 1px solid var(--ui-input);
-    border-radius: var(--ui-radius-md);
+    border-radius: var(--ui-control-radius);
     padding-inline-end: var(--ui-space-8);
     transition: border-color var(--ui-transition-fast),
-    box-shadow var(--ui-transition-fast);
+    outline-color var(--ui-transition-fast);
   }
 
   .aui-select--xs .aui-select__control {
-    height: 1.75rem;
-    padding-inline-start: var(--ui-space-2);
+    height: var(--ui-control-height-xs);
+    padding-inline-start: var(--ui-control-padding-xs);
     font-size: var(--ui-text-2xs);
   }
 
   .aui-select--sm .aui-select__control {
-    height: 2rem;
-    padding-inline-start: var(--ui-space-3);
+    height: var(--ui-control-height-sm);
+    padding-inline-start: var(--ui-control-padding-sm);
     font-size: var(--ui-text-xs);
   }
 
   .aui-select--md .aui-select__control {
-    height: 2.5rem;
-    padding-inline-start: var(--ui-space-3);
+    height: var(--ui-control-height-md);
+    padding-inline-start: var(--ui-control-padding-md);
     font-size: var(--ui-text-sm);
   }
 
   .aui-select--lg .aui-select__control {
-    height: 2.75rem;
-    padding-inline-start: var(--ui-space-4);
+    height: var(--ui-control-height-lg);
+    padding-inline-start: var(--ui-control-padding-lg);
     font-size: var(--ui-text-base);
   }
 
   .aui-select--xl .aui-select__control {
-    height: 3rem;
-    padding-inline-start: var(--ui-space-5);
+    height: var(--ui-control-height-xl);
+    padding-inline-start: var(--ui-control-padding-xl);
     font-size: var(--ui-text-lg);
   }
 
-  .aui-select__control:focus {
-    outline: none;
+  .aui-select__control:focus-visible {
     border-color: var(--ui-ring);
-    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
-    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
   }
 
   /* --- variant borders (modifier classes live on the wrapper) --- */
@@ -210,10 +209,9 @@ const classes = cn(
     border-color: var(--ui-error);
   }
 
-  .aui-select--invalid .aui-select__control:focus {
+  .aui-select--invalid .aui-select__control:focus-visible {
     border-color: var(--ui-error);
-    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
-    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-error);
+    outline-color: var(--ui-error);
   }
 
   .aui-select--disabled .aui-select__control {

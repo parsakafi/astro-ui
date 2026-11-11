@@ -1,0 +1,130 @@
+---
+/**
+ * Sidebar — zero-JS side navigation shell.
+ *
+ * A `<nav>` landmark with a header slot (brand/workspace switcher), a
+ * scrollable body for SidebarGroup / SidebarItem children, and a footer
+ * slot (user menu). Attached sits flush against the layout edge; floating
+ * stands off it with its own border and radius.
+ *
+ * On small screens, render the same groups inside a `Sheet` and hide this
+ * element — the docs show the recipe. Collapsing to an icon rail is
+ * application state, not a visual variant, so it is intentionally absent.
+ *
+ *   <Sidebar ariaLabel="Project">
+ *     <div slot="header">Acme</div>
+ *     <SidebarGroup label="Workspace">
+ *       <SidebarItem href="/overview" active>Overview</SidebarItem>
+ *     </SidebarGroup>
+ *     <div slot="footer"><UserMenu/></div>
+ *   </Sidebar>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Surface treatment: flush against the edge, or standing off it. */
+  variant?: "attached" | "floating";
+  /** Stick to the viewport while the main content scrolls. */
+  sticky?: boolean;
+  /** Accessible name for the navigation landmark. */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "attached",
+  sticky = false,
+  ariaLabel = "Sidebar",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-sidebar",
+  `aui-sidebar--${variant}`,
+  sticky && "aui-sidebar--sticky",
+  className,
+);
+---
+
+<nav id={id} class={classes} aria-label={ariaLabel} {...rest}>
+  {
+    Astro.slots.has("header") && (
+      <div class="aui-sidebar__header">
+        <slot name="header"/>
+      </div>
+    )
+  }
+  <div class="aui-sidebar__body">
+    <slot/>
+  </div>
+  {
+    Astro.slots.has("footer") && (
+      <div class="aui-sidebar__footer">
+        <slot name="footer"/>
+      </div>
+    )
+  }
+</nav>
+
+<style>
+  .aui-sidebar {
+    display: flex;
+    flex-direction: column;
+    inline-size: 16rem;
+    max-block-size: 100%;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+  }
+
+  .aui-sidebar--attached {
+    border-inline-end: var(--ui-border-width) solid var(--ui-border);
+  }
+
+  .aui-sidebar--floating {
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-sm);
+    overflow: hidden;
+  }
+
+  .aui-sidebar--sticky {
+    position: sticky;
+    inset-block-start: 0;
+    max-block-size: 100vh;
+  }
+
+  .aui-sidebar__header {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-4);
+    flex-shrink: 0;
+  }
+
+  .aui-sidebar__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-4);
+    min-block-size: 0;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    overflow-y: auto;
+    flex: 1 1 auto;
+  }
+
+  .aui-sidebar__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    margin-block-start: auto;
+    padding: var(--ui-space-3) var(--ui-space-4);
+    border-block-start: var(--ui-border-width) solid var(--ui-border);
+    flex-shrink: 0;
+  }
+</style>

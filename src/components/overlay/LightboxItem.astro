@@ -37,6 +37,10 @@ export interface Props {
   allowFullscreen?: boolean;
   /** Poster image for video items. */
   poster?: string;
+  /** WebVTT captions track URL for video items. */
+  captions?: string;
+  /** BCP 47 language tag for the captions track. */
+  captionsLang?: string;
   class?: string;
   id?: string;
 
@@ -51,6 +55,8 @@ const {
   captionDescription,
   allowFullscreen = true,
   poster,
+  captions,
+  captionsLang = "en",
   class: className,
   id,
   ...rest
@@ -107,7 +113,15 @@ const classes = cn(
         controls
         playsinline
         poster={poster}
-      />
+      >
+        <track
+          kind="captions"
+          src={captions}
+          srclang={captionsLang}
+          label="Captions"
+          default={captions ? true : undefined}
+        />
+      </video>
     )
   }
   {

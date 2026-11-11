@@ -55,6 +55,15 @@ import popoverDemo from "./demos/popover.astro";
 import hoverCardDemo from "./demos/hover-card.astro";
 import stickySurfaceDemo from "./demos/sticky-surface.astro";
 import lightboxDemo from "./demos/lightbox.astro";
+import bannerDemo from "./demos/banner.astro";
+import timelineDemo from "./demos/timeline.astro";
+import menuDemo from "./demos/menu.astro";
+import treeDemo from "./demos/tree.astro";
+import navbarDemo from "./demos/navbar.astro";
+import sidebarDemo from "./demos/sidebar.astro";
+import notificationCenterDemo from "./demos/notification-center.astro";
+import datePickerDemo from "./demos/date-picker.astro";
+import timePickerDemo from "./demos/time-picker.astro";
 
 interface Props {
   /** Component slug — keys the per-component demo switch below. */
@@ -140,6 +149,15 @@ const demos: Record<string, any> = {
   "hover-card": hoverCardDemo,
   "sticky-surface": stickySurfaceDemo,
   "lightbox": lightboxDemo,
+  "banner": bannerDemo,
+  "timeline": timelineDemo,
+  "menu": menuDemo,
+  "tree": treeDemo,
+  "navbar": navbarDemo,
+  "sidebar": sidebarDemo,
+  "notification-center": notificationCenterDemo,
+  "date-picker": datePickerDemo,
+  "time-picker": timePickerDemo,
 };
 const Demo = demos[component.slug];
 ---

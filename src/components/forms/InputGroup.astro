@@ -90,31 +90,31 @@ const hasBottom = !!Astro.slots.has("bottom");
     font-family: var(--ui-font-sans);
     background-color: var(--ui-background);
     border: 1px solid var(--ui-input);
-    border-radius: var(--ui-radius-md);
+    border-radius: var(--ui-control-radius);
     transition: border-color var(--ui-transition-fast),
-    box-shadow var(--ui-transition-fast);
+    outline-color var(--ui-transition-fast);
   }
 
   /* --- size (heights mirror Input) --- */
 
   .aui-input-group--xs {
-    min-block-size: 1.75rem;
+    min-block-size: var(--ui-control-height-xs);
   }
 
   .aui-input-group--sm {
-    min-block-size: 2rem;
+    min-block-size: var(--ui-control-height-sm);
   }
 
   .aui-input-group--md {
-    min-block-size: 2.5rem;
+    min-block-size: var(--ui-control-height-md);
   }
 
   .aui-input-group--lg {
-    min-block-size: 2.75rem;
+    min-block-size: var(--ui-control-height-lg);
   }
 
   .aui-input-group--xl {
-    min-block-size: 3rem;
+    min-block-size: var(--ui-control-height-xl);
   }
 
   .aui-input-group--multiline {
@@ -142,9 +142,9 @@ const hasBottom = !!Astro.slots.has("bottom");
     box-shadow: none;
   }
 
-  .aui-input-group :global(.aui-input-group__control > .aui-input:focus),
-  .aui-input-group :global(.aui-input-group__control > .aui-textarea:focus) {
-    box-shadow: none;
+  .aui-input-group :global(.aui-input-group__control > .aui-input:focus-visible),
+  .aui-input-group :global(.aui-input-group__control > .aui-textarea:focus-visible) {
+    outline: none;
   }
 
   /* --- addons --- */
@@ -154,27 +154,27 @@ const hasBottom = !!Astro.slots.has("bottom");
     flex: none;
     align-items: center;
     gap: var(--ui-space-1);
-    padding-inline: var(--ui-space-3);
+    padding-inline: var(--ui-control-padding-md);
     font-size: var(--ui-text-sm);
     color: var(--ui-muted-foreground);
   }
 
   .aui-input-group--xs .aui-input-group__addon {
-    padding-inline: var(--ui-space-2);
+    padding-inline: var(--ui-control-padding-xs);
     font-size: var(--ui-text-2xs);
   }
 
   .aui-input-group--sm .aui-input-group__addon {
-    padding-inline: var(--ui-space-2);
+    padding-inline: var(--ui-control-padding-sm);
     font-size: var(--ui-text-xs);
   }
 
   .aui-input-group--lg .aui-input-group__addon {
-    padding-inline: var(--ui-space-4);
+    padding-inline: var(--ui-control-padding-lg);
   }
 
   .aui-input-group--xl .aui-input-group__addon {
-    padding-inline: var(--ui-space-5);
+    padding-inline: var(--ui-control-padding-xl);
     font-size: var(--ui-text-base);
   }
 
@@ -224,15 +224,19 @@ const hasBottom = !!Astro.slots.has("bottom");
 
   /* --- states --- */
 
-  .aui-input-group:focus-within {
+  .aui-input-group:has(:focus-visible) {
     border-color: var(--ui-ring);
-    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
-    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
   }
 
   .aui-input-group--invalid,
-  .aui-input-group--invalid:focus-within {
+  .aui-input-group--invalid:has(:focus-visible) {
     border-color: var(--ui-error);
+  }
+
+  .aui-input-group--invalid:has(:focus-visible) {
+    outline-color: var(--ui-error);
   }
 
   .aui-input-group--disabled {

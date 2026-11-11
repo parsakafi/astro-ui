@@ -46,6 +46,6 @@ export const tooltip: ComponentMeta = {
             a: "CSS-only tooltips don't trigger on tap by design — never put essential info in one; show it inline instead.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["dialog", "kbd", "button"],
 };

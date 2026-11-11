@@ -1,0 +1,127 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {Avatar, Sidebar, SidebarGroup, SidebarItem} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "default" && (
+          <div class="docs-demo-block" id={`demo-sidebar-${id}`}>
+            <h3 class="docs-demo-title">Workspace sidebar</h3>
+            <DemoTabs id="dm-sidebar-default">
+              <Fragment slot="preview">
+                <div class="docs-sidebar-frame">
+                  <Sidebar ariaLabel="Project">
+                    <div slot="header">
+                      <Avatar size="sm">AC</Avatar>
+                      <span>Acme Inc.</span>
+                    </div>
+                    <SidebarGroup label="Workspace">
+                      <SidebarItem href="#overview" active>
+                        <span slot="icon" aria-hidden="true">◎</span>
+                        Overview
+                      </SidebarItem>
+                      <SidebarItem href="#deploys" badge="3">
+                        <span slot="icon" aria-hidden="true">⇡</span>
+                        Deploys
+                      </SidebarItem>
+                      <SidebarItem href="#settings">
+                        <span slot="icon" aria-hidden="true">⚙</span>
+                        Settings
+                      </SidebarItem>
+                    </SidebarGroup>
+                    <div slot="footer">ada@acme.dev</div>
+                  </Sidebar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "collapsible" && (
+          <div class="docs-demo-block" id={`demo-sidebar-${id}`}>
+            <h3 class="docs-demo-title">Collapsible groups</h3>
+            <DemoTabs id="dm-sidebar-collapsible">
+              <Fragment slot="preview">
+                <div class="docs-sidebar-frame">
+                  <Sidebar ariaLabel="Docs">
+                    <SidebarGroup label="Getting started" collapsible open>
+                      <SidebarItem href="#install">Install</SidebarItem>
+                      <SidebarItem href="#tokens">Tokens</SidebarItem>
+                    </SidebarGroup>
+                    <SidebarGroup label="Components" collapsible>
+                      <SidebarItem href="#button">Button</SidebarItem>
+                      <SidebarItem href="#menu">Menu</SidebarItem>
+                    </SidebarGroup>
+                  </Sidebar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "floating" && (
+          <div class="docs-demo-block" id={`demo-sidebar-${id}`}>
+            <h3 class="docs-demo-title">Floating with nested items</h3>
+            <DemoTabs id="dm-sidebar-floating">
+              <Fragment slot="preview">
+                <div class="docs-sidebar-frame docs-sidebar-frame--padded">
+                  <Sidebar variant="floating" ariaLabel="Files">
+                    <div slot="header">Files</div>
+                    <SidebarGroup label="Source">
+                      <SidebarItem href="#src">src</SidebarItem>
+                      <SidebarItem href="#components" nested>components</SidebarItem>
+                      <SidebarItem href="#styles" nested>styles</SidebarItem>
+                      <SidebarItem href="#locked" disabled>archive (read-only)</SidebarItem>
+                    </SidebarGroup>
+                  </Sidebar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "buttons" && (
+          <div class="docs-demo-block" id={`demo-sidebar-${id}`}>
+            <h3 class="docs-demo-title">Client-routed action rows</h3>
+            <DemoTabs id="dm-sidebar-buttons">
+              <Fragment slot="preview">
+                <div class="docs-sidebar-frame">
+                  <Sidebar ariaLabel="Views">
+                    <SidebarGroup label="Views">
+                      <SidebarItem active>
+                        <span slot="icon" aria-hidden="true">◎</span>
+                        Overview
+                      </SidebarItem>
+                      <SidebarItem>
+                        <span slot="icon" aria-hidden="true">☰</span>
+                        Members
+                      </SidebarItem>
+                      <SidebarItem disabled>Billing (soon)</SidebarItem>
+                    </SidebarGroup>
+                  </Sidebar>
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+            <p class="docs-demo-note">
+              Without an <code>href</code>, SidebarItem renders a real button — use it for client-routed views. <code>active</code> still exposes <code>aria-current="page"</code>.
+            </p>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>

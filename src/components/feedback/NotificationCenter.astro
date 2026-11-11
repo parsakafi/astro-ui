@@ -1,0 +1,337 @@
+---
+/**
+ * NotificationCenter — bell trigger with a grouped notification panel.
+ *
+ * A disclosure, not a modal: the trigger opens a `role="dialog"` panel that
+ * holds NotificationGroup sections of NotificationItem rows. The scoped
+ * script toggles the panel, closes on Escape and outside pointerdown,
+ * focuses the panel on open, and returns focus to the trigger on close.
+ *
+ * The unread count lives in the trigger's accessible name ("Notifications,
+ * 3 unread"), so the visual badge can stay decorative and no number is
+ * announced twice.
+ *
+ *   <NotificationCenter count={3} title="Notifications">
+ *     <NotificationGroup label="Today">
+ *       <NotificationItem unread title="Deploy finished" time="2m">
+ *         Production build 412 is live.
+ *       </NotificationItem>
+ *     </NotificationGroup>
+ *   </NotificationCenter>
+ *
+ * JavaScript required: Yes
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
+
+export interface Props {
+  /** Accessible name for the trigger. */
+  ariaLabel?: string;
+  /** Panel heading. */
+  title?: string;
+  /** Unread count; 0 hides the badge and drops the count from the label. */
+  count?: number;
+  /** Which corner of the trigger the panel aligns to. */
+  placement?: "bottom-end" | "bottom-start";
+  /** Render open on first paint. */
+  open?: boolean;
+  /** Recommended: stable prefix for trigger/panel ids. */
+  id?: string;
+  class?: string;
+}
+
+const {
+  ariaLabel = "Notifications",
+  title = "Notifications",
+  count = 0,
+  placement = "bottom-end",
+  open = false,
+  id,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const base = id ?? uid("aui-notifications");
+const triggerId = `${base}-trigger`;
+const panelId = `${base}-panel`;
+const headingId = `${base}-heading`;
+const badge = count > 99 ? "99+" : String(count);
+
+const classes = cn("aui-notif", `aui-notif--${placement}`, className);
+---
+
+<div id={id} class={classes} data-aui-notif={base} data-open={open ? "" : undefined} {...rest}>
+  <button
+    type="button"
+    id={triggerId}
+    class="aui-notif__trigger"
+    aria-haspopup="dialog"
+    aria-expanded={open ? "true" : "false"}
+    aria-controls={panelId}
+    aria-label={count > 0 ? `${ariaLabel}, ${count} unread` : ariaLabel}
+    data-aui-notif-trigger
+  >
+    <slot name="trigger">
+      <span class="aui-notif__glyph" aria-hidden="true">🔔</span>
+    </slot>
+    {
+      count > 0 && (
+        <span class="aui-notif__count" aria-hidden="true">
+          {badge}
+        </span>
+      )
+    }
+  </button>
+  <div
+    id={panelId}
+    class="aui-notif__panel"
+    role="dialog"
+    aria-labelledby={headingId}
+    tabindex="-1"
+    data-aui-notif-panel
+    hidden={!open}
+  >
+    <header class="aui-notif__header">
+      <h2 id={headingId} class="aui-notif__title">{title}</h2>
+      {
+        Astro.slots.has("actions") && (
+          <div class="aui-notif__actions">
+            <slot name="actions"/>
+          </div>
+        )
+      }
+    </header>
+    <div class="aui-notif__body">
+      <slot/>
+    </div>
+    {
+      Astro.slots.has("footer") && (
+        <footer class="aui-notif__footer">
+          <slot name="footer"/>
+        </footer>
+      )
+    }
+  </div>
+</div>
+
+<script>
+  const ROOT = "[data-aui-notif]";
+
+  function initCenter(root: HTMLElement): void {
+    if (root.dataset.auiNotifInit === "true") return;
+    root.dataset.auiNotifInit = "true";
+
+    const trigger = root.querySelector<HTMLButtonElement>(
+      "[data-aui-notif-trigger]",
+    );
+    const panel = root.querySelector<HTMLElement>("[data-aui-notif-panel]");
+    if (!trigger || !panel) return;
+
+    const isOpen = (): boolean => trigger.getAttribute("aria-expanded") === "true";
+
+    // Keep the panel inside the viewport: a bell near the edge would
+    // otherwise push a 22rem panel off-screen. Flipping beats clamping —
+    // the panel stays anchored to the trigger.
+    const flip = (): void => {
+      panel.removeAttribute("data-flip");
+      const rect = panel.getBoundingClientRect();
+      const viewport = document.documentElement.clientWidth;
+      const margin = 8;
+      if (rect.left < margin) {
+        panel.setAttribute("data-flip", "start");
+      } else if (rect.right > viewport - margin) {
+        panel.setAttribute("data-flip", "end");
+      }
+    };
+
+    const setOpen = (open: boolean, focus: "panel" | "trigger" | null) => {
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        root.setAttribute("data-open", "");
+        panel.removeAttribute("hidden");
+        flip();
+      } else {
+        root.removeAttribute("data-open");
+        panel.setAttribute("hidden", "");
+      }
+      if (focus === "panel") panel.focus();
+      if (focus === "trigger") trigger.focus();
+    };
+
+    trigger.addEventListener("click", () => {
+      setOpen(!isOpen(), isOpen() ? "trigger" : "panel");
+    });
+
+    panel.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      setOpen(false, "trigger");
+    });
+
+    document.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !isOpen()) return;
+      setOpen(false, "trigger");
+    });
+
+    document.addEventListener("pointerdown", (event: PointerEvent) => {
+      if (!isOpen()) return;
+      if (event.target instanceof Node && root.contains(event.target)) return;
+      setOpen(false, null);
+    });
+
+    if (isOpen()) flip();
+  }
+
+  function initAll(): void {
+    document.querySelectorAll<HTMLElement>(ROOT).forEach(initCenter);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-notif {
+    position: relative;
+    display: inline-flex;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-notif__trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    padding: 0;
+    font: inherit;
+    color: var(--ui-foreground);
+    background-color: transparent;
+    border: var(--ui-border-width) solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-notif__trigger:hover {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-notif__trigger:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-notif__trigger[aria-expanded="true"] {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-notif__glyph {
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+  }
+
+  .aui-notif__count {
+    position: absolute;
+    inset-block-start: calc(var(--ui-space-1) * -1);
+    inset-inline-end: calc(var(--ui-space-1) * -1);
+    min-inline-size: 1.125rem;
+    padding: 0 var(--ui-space-1);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.125rem;
+    text-align: center;
+    color: var(--ui-primary-foreground);
+    background-color: var(--ui-primary);
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-notif__panel {
+    position: absolute;
+    z-index: var(--ui-z-popover);
+    display: flex;
+    flex-direction: column;
+    inline-size: min(22rem, calc(100vw - var(--ui-space-8)));
+    max-block-size: 24rem;
+    background-color: var(--ui-background);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+    overflow: hidden;
+  }
+
+  .aui-notif__panel[hidden] {
+    display: none;
+  }
+
+  .aui-notif--bottom-end .aui-notif__panel {
+    inset-block-start: calc(100% + var(--ui-space-2));
+    inset-inline-end: 0;
+  }
+
+  .aui-notif--bottom-start .aui-notif__panel {
+    inset-block-start: calc(100% + var(--ui-space-2));
+    inset-inline-start: 0;
+  }
+
+  /* Viewport flip (script sets data-flip when the panel would overflow).
+     Declared after the placement rules so equal specificity resolves here. */
+  .aui-notif__panel[data-flip="start"] {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+
+  .aui-notif__panel[data-flip="end"] {
+    inset-inline-end: 0;
+    inset-inline-start: auto;
+  }
+
+  .aui-notif__panel:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: calc(var(--ui-focus-ring-width) * -1);
+  }
+
+  .aui-notif__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-3) var(--ui-space-4);
+    border-block-end: var(--ui-border-width) solid var(--ui-border);
+  }
+
+  .aui-notif__title {
+    margin: 0;
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-foreground);
+  }
+
+  .aui-notif__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-notif__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-3);
+    min-block-size: 0;
+    padding: var(--ui-space-3);
+    overflow-y: auto;
+  }
+
+  .aui-notif__footer {
+    padding: var(--ui-space-2) var(--ui-space-3);
+    border-block-start: var(--ui-border-width) solid var(--ui-border);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-notif__trigger {
+      transition: none;
+    }
+  }
+</style>

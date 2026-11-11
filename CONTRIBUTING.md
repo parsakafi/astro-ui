@@ -41,8 +41,9 @@ so library edits show up on refresh.
 - Conventional Commits (`feat:`, `fix:`, `docs:`, …). Breaking changes
   use `feat!:`/`fix!:` + `BREAKING CHANGE:` footer and a CHANGELOG entry
   with migration notes.
-- Since `1.0.0`, prop/markup/token removals and renames are major
-  releases; additive changes are minor; fixes are patch.
+- While the package is pre-1.0 (`0.x`), prop/markup/token removals and
+  renames bump the **minor**; additive changes are minor; fixes are
+  patch. After `1.0.0`, removals and renames bump the major.
 
 ## Security
 

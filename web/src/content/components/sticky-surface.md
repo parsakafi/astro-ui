@@ -7,7 +7,7 @@ category: layout
 importPath: "astro-ui"
 exportName: "StickySurface"
 js: true
-since: "1.1.0"
+since: "0.1.0"
 isNew: false
 related: ["card", "tabs"]
 features:

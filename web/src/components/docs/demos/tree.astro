@@ -1,0 +1,106 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {Tree} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+
+const files = [
+  {
+    id: "src",
+    label: "src",
+    icon: "▸",
+    expanded: true,
+    children: [
+      {id: "app", label: "App.astro"},
+      {id: "lib", label: "lib", children: [{id: "cn", label: "cn.ts"}]},
+    ],
+  },
+  {id: "pkg", label: "package.json"},
+];
+
+const docs = [
+  {
+    id: "components",
+    label: "Components",
+    expanded: true,
+    children: [
+      {
+        id: "general",
+        label: "General",
+        expanded: true,
+        children: [
+          {id: "button", label: "Button", href: "/components/button"},
+          {id: "kbd", label: "Kbd", href: "/components/kbd"},
+        ],
+      },
+      {
+        id: "overlay",
+        label: "Overlay",
+        expanded: true,
+        children: [
+          {id: "menu", label: "Menu", href: "/components/menu"},
+          {id: "sheet", label: "Sheet", href: "/components/sheet"},
+        ],
+      },
+    ],
+  },
+];
+
+const branches = [
+  {
+    id: "main",
+    label: "main",
+    expanded: true,
+    children: [{id: "a", label: "feat/tree"}],
+  },
+  {id: "locked", label: "release/1.0 (locked)", disabled: true},
+];
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "files" && (
+          <div class="docs-demo-block" id={`demo-tree-${id}`}>
+            <h3 class="docs-demo-title">Project files</h3>
+            <DemoTabs id="dm-tree-files">
+              <Fragment slot="preview">
+                <Tree ariaLabel="Project files" items={files} />
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "deep" && (
+          <div class="docs-demo-block" id={`demo-tree-${id}`}>
+            <h3 class="docs-demo-title">Deep hierarchy with links</h3>
+            <DemoTabs id="dm-tree-deep">
+              <Fragment slot="preview">
+                <Tree ariaLabel="Documentation" items={docs} selected="button" />
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "disabled" && (
+          <div class="docs-demo-block" id={`demo-tree-${id}`}>
+            <h3 class="docs-demo-title">Disabled nodes</h3>
+            <DemoTabs id="dm-tree-disabled">
+              <Fragment slot="preview">
+                <Tree ariaLabel="Branches" items={branches} />
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>

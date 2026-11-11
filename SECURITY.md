@@ -2,10 +2,10 @@
 
 ## Supported versions
 
-| Version                                   | Supported                           |
-|-------------------------------------------|-------------------------------------|
-| `1.0.x`                                   | ✅ (latest stable line)             |
-| `< 1.0` (old template / pre-release code) | ❌ unsupported — migrate to `1.0.0` |
+| Version        | Supported                            |
+|----------------|--------------------------------------|
+| `0.1.x`        | ✅ (current release line)            |
+| anything else  | ❌ unsupported — upgrade to `0.1.x`  |
 
 ## Reporting a vulnerability
 

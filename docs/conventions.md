@@ -16,14 +16,21 @@ Single source of truth for naming. Enforced partly by
 | Concept   | Prop name                       | Values / notes                              |
 |-----------|---------------------------------|---------------------------------------------|
 | Style     | `variant`                       | per-component union, e.g. Button variants   |
-| Scale     | `size`                          | `sm \| md \| lg` (+ `icon`, `xl` where apt) |
+| Color     | `color`                         | `primary \| secondary \| destructive \| success \| warning \| info \| carbon \| accent` |
+| Scale     | `size`                          | `xs \| sm \| md \| lg \| xl` (+ `icon`, `2xl` where apt) |
+| Shape     | `shape`                         | `rounded \| square \| circle \| pill`       |
 | Disabled  | `disabled`                      | boolean (never `isDisabled`)                |
 | Loading   | `loading`                       | boolean + `aria-busy`                       |
-| Invalid   | `invalid`                       | boolean → `aria-invalid` (forms)            |
+| Invalid   | `invalid`                       | boolean → visual state + `aria-invalid` where the role supports it |
 | Override  | `class`                         | merged last via `cn()`, never discarded     |
 | Identity  | `id`                            | forwarded as-is                             |
 | Label     | `ariaLabel` / `ariaDescribedby` | camelCase mirrors of aria attrs             |
 | Label for | `for`                           | Label's `for` (matches control `id`)        |
+
+Red is `destructive`, never `error`. The `--ui-error*` token names are
+unchanged; only prop values use the semantic word. Lifecycle values such
+as `toast({ type: "error" })` and `state="error"` are not color variants
+and keep their names.
 
 Never introduce `theme`, `style`, `colorScheme`, `isDisabled`, or string
 event-handler props (`onclick="..."`). Behavior attaches via native DOM
@@ -43,6 +50,21 @@ events in the consuming app — see `docs/events.md`.
 - Components use `var(--ui-*)`; never define global `--ui-*` names.
 - Component-private variables (if ever needed): `--aui-<comp>-*`,
   scoped to the component selector.
+- Every `--ui-*` reference must exist in `tokens.css` — enforced by the
+  contract test, so typos fail the build instead of silently falling back.
+- Color values live in tokens only. Component files may not contain raw
+  `#hex`, `rgb()`, or `hsl()` values.
+- Buttons and text controls read the shared `--ui-control-*` scale
+  rather than re-declaring heights and paddings locally.
+
+## Focus
+
+- Style keyboard focus with `:focus-visible` and the shared ring tokens
+  (`--ui-focus-ring-width`, `--ui-focus-ring-offset`, `--ui-ring`).
+- Composite widgets (InputGroup, Slider dial, hover surfaces) may use
+  `:focus-within` or `:has(:focus-visible)` on the wrapper.
+- Bare `:focus` is not allowed: it paints on mouse clicks and drifts
+  from the keyboard ring.
 
 ## Scoped styles vs slots (Astro gotcha)
 
@@ -72,5 +94,6 @@ rule stays scoped to this component's subtree.
 
 - Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`,
   `chore:`). Breaking changes (`feat!:` / `BREAKING CHANGE:`) follow
-  SemVer: removed/renamed props, changed markup, removed variants or
-  tokens → major bump (stable since `1.0.0`).
+  SemVer. While the package is pre-1.0 (`0.x`), removed/renamed props,
+  changed markup, and removed variants or tokens bump the **minor**;
+  after `1.0.0` they bump the major.

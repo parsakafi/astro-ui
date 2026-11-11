@@ -7,7 +7,7 @@ category: overlay
 importPath: "astro-ui"
 exportName: "Tooltip"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["dialog", "kbd", "button"]
 features:

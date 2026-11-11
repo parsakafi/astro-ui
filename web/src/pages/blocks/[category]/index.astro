@@ -8,7 +8,7 @@
 import DocsLayout from "../../../layouts/DocsLayout.astro";
 import BlockTabs from "../../../components/docs/BlockTabs.astro";
 import BlockRecipe from "../../../components/docs/BlockRecipe.astro";
-import {blockCategories, categoryHref, blocksIndexHref} from "../../../lib/blocks";
+import {blockCategories, blocksIndexHref} from "../../../lib/blocks";
 
 export function getStaticPaths() {
   return blockCategories.map((category) => ({

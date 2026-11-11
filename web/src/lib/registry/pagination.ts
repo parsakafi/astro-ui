@@ -53,6 +53,6 @@ export const pagination: ComponentMeta = {
             a: "Pagination navigates — real anchors keep it functional without JS, shareable, and indexable. SPA-style paging can layer on top app-side.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["breadcrumb", "button", "tabs"],
 };

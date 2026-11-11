@@ -35,9 +35,13 @@
 }
 .docs-nav-links .docs-mega .docs-mega-panel {
   position: absolute;
-  inset-inline-start: 50%;
+  /* Align to the trigger's inline start. Centering the panel on the
+     trigger pushed the wide Components panel past the left edge on
+     laptop widths (1280–1440). Start alignment keeps it on-screen and
+     keeps the panel adjacent to the trigger for the hover bridge. */
+  inset-inline-start: 0;
   inset-block-start: 100%;
-  translate: -50% var(--ui-space-2);
+  translate: 0 var(--ui-space-2);
   z-index: 30;
   opacity: 0;
   visibility: hidden;
@@ -65,7 +69,7 @@
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
-  translate: -50% 0;
+  translate: 0 0;
   transition-delay: 0s;
 }
 .docs-nav-links .docs-mega:hover .docs-mega-chevron, .docs-nav-links .docs-mega:focus-within .docs-mega-chevron {
@@ -1067,8 +1071,16 @@
   align-items: center;
 }
 
+.docs-block-pill-btn__label {
+  margin-inline-start: var(--ui-space-2);
+}
+
 .docs-block-avatar-hover-tooltip {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-block: var(--ui-space-2);
 }
 
 .docs-block-empty-avatar {
@@ -2511,6 +2523,22 @@
     display: none;
   }
 }
+/* Below 48rem a start-aligned Components panel (34rem wide) would run
+   past the inline-end edge, so every panel becomes a full-bleed fixed
+   dropdown pinned under the header. */
+@media (max-width: 48rem) {
+  /* Match the base rule's 0-3-0 specificity so the override wins. */
+  .docs-nav-links .docs-mega .docs-mega-panel,
+  .docs-nav-links .docs-mega:hover .docs-mega-panel,
+  .docs-nav-links .docs-mega:focus-within .docs-mega-panel,
+  .docs-nav-links .docs-mega:focus-visible .docs-mega-panel {
+    position: fixed;
+    inset-inline: var(--ui-space-3); /* full-bleed: left+right pin */
+    inset-block-start: auto;
+    translate: 0 var(--ui-space-2);
+    top: 3.5rem;
+  }
+}
 @media (max-width: 40rem) {
   /* GitHub and theme toggle collapse to icon-only to save header space. */
   .docs-github-link .docs-github-label,
@@ -2526,24 +2554,14 @@
     width: 100%;
     overflow-x: auto;
   }
-  /* Mega panels center on their trigger, which overflows a 390px viewport.
-     Pin them to the header's content box instead — full-bleed dropdowns. */
+  /* Mega panels align to their trigger, which still overflows a 390px
+     viewport. Pin them to the header's content box instead — full-bleed
+     dropdowns. */
   .docs-header {
     overflow-x: clip;
   }
   .docs-nav {
     position: relative;
-  }
-  /* Match the base rule's 0-3-0 specificity so the override wins. */
-  .docs-nav-links .docs-mega .docs-mega-panel,
-  .docs-nav-links .docs-mega:hover .docs-mega-panel,
-  .docs-nav-links .docs-mega:focus-within .docs-mega-panel,
-  .docs-nav-links .docs-mega:focus-visible .docs-mega-panel {
-    position: fixed;
-    inset-inline: var(--ui-space-3); /* full-bleed: left+right pin */
-    inset-block-start: auto;
-    translate: 0 var(--ui-space-2); /* kill the desktop -50% centering shift */
-    top: 3.5rem;
   }
   /* Kill the desktop min-widths/multi-column grids so panels fit 390px. */
   .docs-mega[data-mega=components] .docs-mega-panel .docs-mega-grid,
@@ -2666,11 +2684,11 @@
   display: none;
 }
 
-:global(html[data-kbd="mac"]) .docs-search-kbd-mac {
+html[data-kbd=mac] .docs-search-kbd-mac {
   display: inline;
 }
 
-:global(html[data-kbd="mac"]) .docs-search-kbd-pc {
+html[data-kbd=mac] .docs-search-kbd-pc {
   display: none;
 }
 
@@ -3069,4 +3087,54 @@
 
 .car-v-h {
   block-size: 14rem;
+}
+
+/* --- Navbar / Sidebar demo frames ------------------------------------- */
+.docs-navbar-frame {
+  overflow: hidden;
+  border: var(--ui-border-width) solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+}
+
+.docs-navbar-hero {
+  padding: var(--ui-space-2);
+  border-radius: var(--ui-radius-lg);
+  background: radial-gradient(120% 140% at 10% 0%, color-mix(in oklab, var(--ui-primary) 22%, transparent), transparent 60%), var(--ui-muted);
+}
+
+.docs-navbar-hero-copy {
+  margin: 0;
+  padding: var(--ui-space-6) var(--ui-space-4);
+  font-size: var(--ui-text-lg);
+  font-weight: var(--ui-font-semibold);
+  color: var(--ui-foreground);
+}
+
+.docs-sidebar-frame {
+  display: flex;
+  block-size: 24rem;
+  overflow: hidden;
+  border: var(--ui-border-width) solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-background);
+}
+
+.docs-sidebar-frame--padded {
+  padding: var(--ui-space-4);
+  background: var(--ui-muted);
+}
+
+.docs-datepicker-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ui-space-2);
+  min-block-size: 6.5rem;
+}
+
+.docs-timepicker-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-2);
+  align-items: flex-start;
 }

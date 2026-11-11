@@ -7,7 +7,7 @@ category: general
 importPath: "astro-ui"
 exportName: "Command"
 js: true
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["combobox", "autocomplete", "kbd"]
 features:

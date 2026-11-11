@@ -53,6 +53,6 @@ export const switchComponent: ComponentMeta = {
             a: "Switch = immediate effect (settings toggle). Checkbox = submit-time selection. They're built on the same native input, so either submits identically.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["checkbox", "radio", "label"],
 };

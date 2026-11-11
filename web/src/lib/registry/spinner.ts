@@ -55,6 +55,6 @@ import { Spinner } from "astro-ui";
             a: "Button has built-in loading that swaps its label for a spinner. Use standalone Spinner for page regions and inline waits.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["skeleton", "progress", "button"],
 };

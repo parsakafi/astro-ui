@@ -71,6 +71,6 @@ export const card: ComponentMeta = {
             a: "Slots — they keep your heading hierarchy and allow rich content. title/description exist only for trivial text-only cards.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["button", "separator", "table"],
 };

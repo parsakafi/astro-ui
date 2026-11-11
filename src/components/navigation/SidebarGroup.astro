@@ -1,0 +1,133 @@
+---
+/**
+ * SidebarGroup — a labeled section of SidebarItem links.
+ *
+ * Static by default (`role="group"` labelled by its heading). With
+ * `collapsible`, it renders a native `<details>` so the section opens and
+ * closes with zero JavaScript and keeps state across bfcache restores.
+ *
+ *   <SidebarGroup label="Workspace" collapsible open>
+ *     <SidebarItem href="/overview" active>Overview</SidebarItem>
+ *   </SidebarGroup>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
+
+export interface Props {
+  /** Visible section heading. */
+  label: string;
+  /** Render the section as a `<details>` disclosure. */
+  collapsible?: boolean;
+  /** Start expanded (only meaningful with `collapsible`). */
+  open?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  label,
+  collapsible = false,
+  open = true,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const labelId = uid("aui-sidebar-group");
+const classes = cn(
+  "aui-sidebar__group",
+  collapsible && "aui-sidebar__group--collapsible",
+  className,
+);
+---
+
+{
+  collapsible ? (
+    <details id={id} class={classes} open={open} {...rest}>
+      <summary class="aui-sidebar__group-label">
+        <span class="aui-sidebar__group-chevron" aria-hidden="true">
+          ▸
+        </span>
+        {label}
+      </summary>
+      <div class="aui-sidebar__group-body">
+        <slot />
+      </div>
+    </details>
+  ) : (
+    <div id={id} class={classes} role="group" aria-labelledby={labelId} {...rest}>
+      <p id={labelId} class="aui-sidebar__group-label">
+        {label}
+      </p>
+      <div class="aui-sidebar__group-body">
+        <slot />
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .aui-sidebar__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-sidebar__group-label {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    margin: 0;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-sidebar__group--collapsible > .aui-sidebar__group-label {
+    cursor: pointer;
+    list-style: none;
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-sidebar__group--collapsible > .aui-sidebar__group-label::-webkit-details-marker {
+    display: none;
+  }
+
+  .aui-sidebar__group--collapsible > .aui-sidebar__group-label:hover {
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-sidebar__group--collapsible > .aui-sidebar__group-label:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-sidebar__group-chevron {
+    display: inline-block;
+    font-size: var(--ui-text-2xs);
+    line-height: var(--ui-leading-none);
+    transition: transform var(--ui-transition-fast);
+  }
+
+  .aui-sidebar__group[open] > .aui-sidebar__group-label > .aui-sidebar__group-chevron {
+    transform: rotate(90deg);
+  }
+
+  .aui-sidebar__group-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-sidebar__group-chevron {
+      transition: none;
+    }
+  }
+</style>

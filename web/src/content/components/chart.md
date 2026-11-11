@@ -7,7 +7,7 @@ category: data-display
 importPath: "astro-ui"
 exportName: "Chart"
 js: false
-since: "1.1.0"
+since: "0.1.0"
 isNew: false
 related: ["progress", "table", "card"]
 features:

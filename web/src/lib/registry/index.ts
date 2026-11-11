@@ -53,6 +53,15 @@ import {
 	hoverCard,
 	stickySurface,
 	lightbox,
+	banner,
+	timeline,
+	menu,
+	tree,
+	navbar,
+	sidebar,
+	notificationCenter,
+	datePicker,
+	timePicker,
 } from "./entries";
 import {type ComponentMeta} from "./types";
 
@@ -114,6 +123,15 @@ export const components: ComponentMeta[] = [
 	hoverCard,
 	stickySurface,
 	lightbox,
+	banner,
+	timeline,
+	menu,
+	tree,
+	navbar,
+	sidebar,
+	notificationCenter,
+	datePicker,
+	timePicker,
 ];
 
 export function bySlug(slug: string): ComponentMeta | undefined {

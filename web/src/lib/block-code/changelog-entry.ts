@@ -4,8 +4,8 @@ import { Card, Badge, Kbd } from "astro-ui";
 ---
 
 <Card>
-  <h3 slot="header" class="block-version">v1.1.0 <Badge variant="success" size="sm">Latest</Badge></h3>
-  <p class="block-hint">Released Sep 24, 2026</p>
+  <h3 slot="header" class="block-version">v0.1.0 <Badge variant="success" size="sm">Latest</Badge></h3>
+  <p class="block-hint">Released Nov 11, 2026</p>
   <ul class="block-features">
     <li><Badge variant="success" size="sm">Added</Badge> Rating scale modes and predefined icons</li>
     <li><Badge variant="info" size="sm">Changed</Badge> Slider tooltip follows logical properties in RTL</li>

@@ -40,6 +40,6 @@ export const empty: ComponentMeta = {
         {name: "footer", description: "Action row (buttons)."},
     ],
     faq: [],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["skeleton", "spinner", "card"],
 };

@@ -190,6 +190,7 @@ const contentClasses = cn(
   <div class="aui-carousel__stage">
     <div
       class={contentClasses}
+      role="group"
       tabindex="0"
       style={[
         slideBasis && `--aui-carousel-basis:${slideBasis}`,
@@ -344,7 +345,6 @@ const contentClasses = cn(
     // --- autoplay machinery (hoisted so control clicks can stop it) ---
     let autoplayStop: (() => void) | null = null;
     let userPaused = false;
-    let userInteracted = false;
     // True once autoplay is gone for good (interaction stop, toggle
     // off, reduced motion) — parks the progress ring at zero.
     let autoplayHalted = false;
@@ -362,7 +362,6 @@ const contentClasses = cn(
       if (autoplayStop && cfg.autoplayStopsOnInteraction !== false) {
         autoplayStop();
         autoplayStop = null;
-        userInteracted = true;
         autoplayHalted = true;
       }
     };
@@ -629,7 +628,7 @@ const contentClasses = cn(
     backdrop-filter: blur(4px);
     border: 0;
     border-radius: var(--ui-radius-full);
-    box-shadow: var(--ui-shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08));
+    box-shadow: var(--ui-shadow-sm);
     cursor: pointer;
   }
 
@@ -701,7 +700,7 @@ const contentClasses = cn(
     pointer-events: auto;
     background: color-mix(in srgb, var(--ui-background) 82%, transparent);
     backdrop-filter: blur(4px);
-    box-shadow: var(--ui-shadow-sm, 0 1px 2px rgb(0 0 0 / 0.08));
+    box-shadow: var(--ui-shadow-sm);
   }
 
   /* --- indicators --- */

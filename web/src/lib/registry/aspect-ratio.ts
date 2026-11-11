@@ -64,6 +64,6 @@ import { AspectRatio } from "astro-ui";
             a: "The child is stretched to 100%×100% — add object-cover (or object-contain) on the img so it fills without distortion.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["card", "avatar", "scroll-area"],
 };

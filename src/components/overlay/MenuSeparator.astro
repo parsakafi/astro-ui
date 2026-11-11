@@ -1,0 +1,31 @@
+---
+/**
+ * MenuSeparator — a divider between MenuItem groups.
+ *
+ * A presentational `<hr>` inside the menu. Its implicit `separator` role is
+ * already correct, so no ARIA is added, and the menu's arrow-key navigation
+ * skips it because it is not a menuitem.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  class?: string;
+  id?: string;
+}
+
+const { class: className, id, ...rest } = Astro.props;
+
+const classes = cn("aui-menu__separator", className);
+---
+
+<hr id={id} class={classes} {...rest} />
+
+<style>
+  .aui-menu__separator {
+    margin: var(--ui-space-1) 0;
+    border: none;
+    border-block-start: var(--ui-border-width) solid var(--ui-border);
+  }
+</style>

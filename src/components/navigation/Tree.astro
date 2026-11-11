@@ -1,0 +1,260 @@
+---
+/**
+ * Tree — a keyboard-navigable file/folder hierarchy.
+ *
+ * Data-driven: pass `items` and the component renders the nested
+ * `role="tree"` / `role="treeitem"` structure itself. Leaf nodes with an
+ * `href` are real links, so middle-click and copy-link work; nodes with
+ * children toggle `aria-expanded`.
+ *
+ * Keyboard model (WAI-ARIA tree view): ArrowDown/ArrowUp walk the visible
+ * items, ArrowRight expands or steps into a node, ArrowLeft collapses or
+ * steps out to the parent, Home/End jump to the ends, letter keys run
+ * typeahead, and Enter activates a leaf link or toggles a branch.
+ *
+ *   <Tree
+ *     ariaLabel="Project files"
+ *     items={[
+ *       {id: "src", label: "src", expanded: true, children: [
+ *         {id: "app", label: "App.astro"},
+ *         {id: "lib", label: "lib", children: [{id: "cn", label: "cn.ts"}]},
+ *       ]},
+ *       {id: "pkg", label: "package.json"},
+ *     ]}
+ *   />
+ *
+ * JavaScript required: Yes
+ */
+import { cn } from "../../utils/cn";
+// Rendered inside the template below, which Biome's Astro pass does not read.
+// biome-ignore lint/correctness/noUnusedImports: used as <TreeItem/> in the template
+import TreeItem from "./TreeItem.astro";
+
+export interface TreeNode {
+  /** Stable identifier used for state keys and `aria-*` wiring. */
+  id: string;
+  /** Visible label text. */
+  label: string;
+  /** Decorative leading glyph (folder/file icon). */
+  icon?: string;
+  /** Link target — renders the node as a link. Implies a leaf. */
+  href?: string;
+  /** Nested nodes. The key's presence marks a branch, even when empty. */
+  children?: TreeNode[];
+  /** Render expanded on first paint. */
+  expanded?: boolean;
+  /** Not focusable or activatable. */
+  disabled?: boolean;
+}
+
+export interface Props {
+  /** The hierarchy to render. */
+  items: TreeNode[];
+  /** Accessible name for the tree (required — it is a composite widget). */
+  ariaLabel: string;
+  /** Node id to expose as `aria-selected="true"` (the current page/item). */
+  selected?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  items,
+  ariaLabel,
+  selected,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+/** Id of the first reachable node — the tree's single tab stop. */
+const firstTabstop = (nodes: TreeNode[]): string | null =>
+  nodes.find((node) => !node.disabled)?.id ?? null;
+
+const tabstop = firstTabstop(items);
+const classes = cn("aui-tree", className);
+---
+
+<ul
+  id={id}
+  class={classes}
+  role="tree"
+  aria-label={ariaLabel}
+  data-aui-tree
+  {...rest}
+>
+  {    items.map((node) => (
+      <TreeItem node={node} level={1} tabstop={tabstop} selected={selected} />
+    ))  
+  }
+</ul>
+
+<script>
+  const TREES = "[data-aui-tree]";
+
+  function initTree(tree: HTMLElement): void {
+    if (tree.dataset.auiTreeInit === "true") return;
+    tree.dataset.auiTreeInit = "true";
+
+    const allItems = (): HTMLElement[] =>
+      Array.from(tree.querySelectorAll<HTMLElement>('[role="treeitem"]'));
+
+    const items = (): HTMLElement[] =>
+      allItems().filter((el) => el.getClientRects().length > 0);
+
+    const groupOf = (item: HTMLElement): HTMLElement | null =>
+      item.querySelector<HTMLElement>(':scope > [role="group"]');
+
+    const parentOf = (item: HTMLElement): HTMLElement | null =>
+      item.parentElement?.closest<HTMLElement>('[role="treeitem"]') ?? null;
+
+    const labelOf = (item: HTMLElement): string =>
+      (item.querySelector(".aui-tree__label")?.textContent ?? "")
+        .trim()
+        .toLowerCase();
+
+    const setTabstop = (item: HTMLElement): void => {
+      for (const el of allItems()) el.tabIndex = -1;
+      item.tabIndex = 0;
+    };
+
+    const focusItem = (item: HTMLElement | null | undefined): void => {
+      if (!item) return;
+      setTabstop(item);
+      item.focus();
+    };
+
+    const setExpanded = (item: HTMLElement, open: boolean): void => {
+      const group = groupOf(item);
+      if (!group) return;
+      item.setAttribute("aria-expanded", open ? "true" : "false");
+      group.hidden = !open;
+    };
+
+    const isExpanded = (item: HTMLElement): boolean =>
+      item.getAttribute("aria-expanded") === "true";
+
+    const isDisabled = (item: HTMLElement): boolean =>
+      item.getAttribute("aria-disabled") === "true";
+
+    // Clicking a branch row toggles it and moves the roving tab stop there,
+    // so arrow keys keep working after a pointer click. Leaf links keep
+    // their native navigation and focus behavior.
+    tree.addEventListener("click", (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null;
+      const item = target?.closest<HTMLElement>('[role="treeitem"]');
+      if (!item || !tree.contains(item)) return;
+      if (isDisabled(item)) {
+        event.preventDefault();
+        return;
+      }
+      if (target?.closest("a")) return;
+      if (groupOf(item)) setExpanded(item, !isExpanded(item));
+      setTabstop(item);
+      item.focus();
+    });
+
+    let typeBuffer = "";
+    let typeTimer = 0;
+
+    tree.addEventListener("keydown", (event: KeyboardEvent) => {
+      const visible = items();
+      const current = (event.target as HTMLElement | null)?.closest<HTMLElement>(
+        '[role="treeitem"]',
+      );
+      if (!current) return;
+      const index = visible.indexOf(current);
+
+      switch (event.key) {
+        case "ArrowDown":
+          event.preventDefault();
+          focusItem(visible[Math.min(index + 1, visible.length - 1)]);
+          return;
+        case "ArrowUp":
+          event.preventDefault();
+          focusItem(visible[Math.max(index - 1, 0)]);
+          return;
+        case "Home":
+          event.preventDefault();
+          focusItem(visible[0]);
+          return;
+        case "End":
+          event.preventDefault();
+          focusItem(visible[visible.length - 1]);
+          return;
+        case "ArrowRight": {
+          event.preventDefault();
+          const group = groupOf(current);
+          if (!group) return;
+          if (!isExpanded(current)) {
+            setExpanded(current, true);
+            return;
+          }
+          focusItem(group.querySelector<HTMLElement>('[role="treeitem"]'));
+          return;
+        }
+        case "ArrowLeft": {
+          event.preventDefault();
+          if (groupOf(current) && isExpanded(current)) {
+            setExpanded(current, false);
+            return;
+          }
+          focusItem(parentOf(current));
+          return;
+        }
+        case "Enter":
+        case " ": {
+          const group = groupOf(current);
+          if (group) {
+            event.preventDefault();
+            setExpanded(current, !isExpanded(current));
+            return;
+          }
+          const link = current.querySelector<HTMLAnchorElement>("a[href]");
+          if (link) {
+            event.preventDefault();
+            link.click();
+          }
+          return;
+        }
+        default:
+          break;
+      }
+
+      if (event.key.length !== 1 || event.key === " ") return;
+      typeBuffer += event.key.toLowerCase();
+      window.clearTimeout(typeTimer);
+      typeTimer = window.setTimeout(() => {
+        typeBuffer = "";
+      }, 500);
+      const start = typeBuffer.length === 1 ? index + 1 : index;
+      for (let step = 0; step < visible.length; step++) {
+        const candidate = visible[(start + step) % visible.length];
+        if (labelOf(candidate).startsWith(typeBuffer)) {
+          focusItem(candidate);
+          return;
+        }
+      }
+    });
+  }
+
+  function initAll(): void {
+    document.querySelectorAll<HTMLElement>(TREES).forEach(initTree);
+  }
+
+  document.addEventListener("astro:after-swap", initAll);
+  initAll();
+</script>
+
+<style>
+  .aui-tree {
+    --aui-tree-indent: var(--ui-space-4);
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    color: var(--ui-foreground);
+  }
+</style>

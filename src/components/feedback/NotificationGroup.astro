@@ -1,0 +1,59 @@
+---
+/**
+ * NotificationGroup — a labeled day/section of notifications.
+ *
+ * A `<section>` labelled by its heading, wrapping a `<ul>` of
+ * NotificationItem rows. Group by day ("Today", "Yesterday") or by source —
+ * the label is what a screen reader announces when the list is entered.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
+
+export interface Props {
+  /** Section heading, e.g. "Today". */
+  label: string;
+  class?: string;
+  id?: string;
+}
+
+const { label, class: className, id, ...rest } = Astro.props;
+
+const headingId = uid("aui-notif-group");
+const classes = cn("aui-notif__group", className);
+---
+
+<section id={id} class={classes} aria-labelledby={headingId} {...rest}>
+  <h3 id={headingId} class="aui-notif__group-label">{label}</h3>
+  <ul class="aui-notif__list">
+    <slot/>
+  </ul>
+</section>
+
+<style>
+  .aui-notif__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-notif__group-label {
+    margin: 0;
+    padding-inline: var(--ui-space-2);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-notif__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

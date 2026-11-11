@@ -1,0 +1,227 @@
+---
+/**
+ * NotificationItem — one notification row inside a NotificationGroup.
+ *
+ * An `<li>` holding an avatar/icon slot, a title, a description, and a
+ * timestamp. Rows with `href` become a single link covering the whole row
+ * (so the hit target is large and pointer navigation is one click); rows
+ * without it are static. Unread rows carry a dot and a weight change, not
+ * just colour.
+ *
+ *   <NotificationItem unread title="Deploy finished" time="2m ago">
+ *     Production build 412 is live.
+ *   </NotificationItem>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Bold first line. */
+  title: string;
+  /** Short timestamp or relative time. */
+  time?: string;
+  /** Machine-readable timestamp for the `time` element (ISO 8601). */
+  datetime?: string;
+  /** Unread styling (dot + medium weight). */
+  unread?: boolean;
+  /** Make the whole row a link to this target. */
+  href?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  title,
+  time,
+  datetime,
+  unread = false,
+  href,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-notif__item",
+  unread && "aui-notif__item--unread",
+  className,
+);
+
+const hasMedia = Astro.slots.has("media");
+const hasDescription = Astro.slots.has("description");
+const hasClock = Boolean(time);
+---
+
+<li id={id} class={classes} {...rest}>
+  {
+    href ? (
+      <a class="aui-notif__link" href={href}>
+        {hasMedia && (
+          <span class="aui-notif__media" aria-hidden="true">
+            <slot name="media" />
+          </span>
+        )}
+        <span class="aui-notif__content">
+          <span class="aui-notif__row">
+            <span class="aui-notif__item-title">{title}</span>
+            {unread && (
+              <span class="aui-notif__dot">
+                <span class="aui-notif__sr">Unread</span>
+              </span>
+            )}
+          </span>
+          {hasDescription && (
+            <span class="aui-notif__description">
+              <slot name="description" />
+            </span>
+          )}
+          {hasClock && (
+            <time class="aui-notif__time" datetime={datetime}>
+              {time}
+            </time>
+          )}
+        </span>
+      </a>
+    ) : (
+      <>
+        {hasMedia && (
+          <span class="aui-notif__media" aria-hidden="true">
+            <slot name="media" />
+          </span>
+        )}
+        <div class="aui-notif__content">
+          <div class="aui-notif__row">
+            <p class="aui-notif__item-title">{title}</p>
+            {unread && (
+              <span class="aui-notif__dot">
+                <span class="aui-notif__sr">Unread</span>
+              </span>
+            )}
+          </div>
+          {hasDescription && (
+            <div class="aui-notif__description">
+              <slot name="description" />
+            </div>
+          )}
+          {hasClock && (
+            <time class="aui-notif__time" datetime={datetime}>
+              {time}
+            </time>
+          )}
+        </div>
+      </>
+    )
+  }
+</li>
+
+<style>
+  .aui-notif__item {
+    border-radius: var(--ui-radius-md);
+    transition: background-color var(--ui-transition-fast);
+  }
+
+  .aui-notif__item:hover {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-notif__link {
+    display: flex;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-2);
+    color: inherit;
+    text-decoration: none;
+    border-radius: inherit;
+  }
+
+  .aui-notif__link:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: calc(var(--ui-focus-ring-width) * -1);
+  }
+
+  .aui-notif__item:not(:has(.aui-notif__link)) {
+    display: flex;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-2);
+  }
+
+  .aui-notif__media {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+    color: var(--ui-muted-foreground);
+    background-color: var(--ui-secondary);
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-notif__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    min-inline-size: 0;
+    flex: 1 1 auto;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+  }
+
+  .aui-notif__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ui-space-2);
+  }
+
+  .aui-notif__item-title {
+    margin: 0;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-foreground);
+  }
+
+  .aui-notif__item--unread .aui-notif__item-title {
+    font-weight: var(--ui-font-semibold);
+  }
+
+  .aui-notif__dot {
+    flex-shrink: 0;
+    inline-size: 0.4375rem;
+    block-size: 0.4375rem;
+    margin-block-start: 0.4375rem;
+    background-color: var(--ui-primary);
+    border-radius: var(--ui-radius-full);
+  }
+
+  .aui-notif__description {
+    color: var(--ui-muted-foreground);
+  }
+
+  /* Unread is color-independent: the dot plus a text fallback for AT. */
+  .aui-notif__sr {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .aui-notif__time {
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-notif__item {
+      transition: none;
+    }
+  }
+</style>

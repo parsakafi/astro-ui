@@ -82,6 +82,6 @@ export const combobox: ComponentMeta = {
             a: "The trigger renders server-side with the committed value and posts it with the form via a hidden input. Opening the popup, searching, and keyboard selection need the small scoped script that ships with the component.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["autocomplete", "select", "input"],
 };

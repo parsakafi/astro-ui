@@ -7,7 +7,7 @@ category: data-display
 importPath: "astro-ui"
 exportName: "Badge"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["button", "avatar", "card"]
 features:
@@ -31,7 +31,7 @@ usage: |-
 demoIds: ["variants", "sizes", "icon", "dot", "avatar", "flag", "dismiss", "overlay"]
 props:
   - name: "variant"
-    type: "\"primary\" | \"secondary\" | \"outline\" | \"ghost\" | \"soft\" | \"success\" | \"warning\" | \"error\" | \"info\" | \"muted\" | \"destructive\""
+    type: "\"primary\" | \"secondary\" | \"outline\" | \"ghost\" | \"soft\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"destructive\""
     def: "\"primary\""
     description: "Color scheme."
   - name: "size"

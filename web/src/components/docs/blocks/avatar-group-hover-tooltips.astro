@@ -5,13 +5,6 @@ import {
 } from "astro-ui";
 import {Tooltip} from "astro-ui";
 
-interface Props {
-  /** Prefix for form control ids so multiple instances can coexist. */
-  idPrefix?: string;
-}
-
-const {idPrefix = "bd"} = Astro.props;
-
 const avatars = [
   {name: "Ada Lovelace"},
   {name: "Grace Hopper"},
@@ -21,14 +14,16 @@ const avatars = [
 ];
 ---
 
-<AvatarGroup hover>
-    {
-      avatars.slice(0, 4).map((a) => (
-        <Tooltip ariaLabel={a.name} placement="top">
-          <Fragment slot="content">{a.name}</Fragment>
-          <Avatar name={a.name}/>
-        </Tooltip>
-      ))
-    }
-    <Fragment slot="count">+2</Fragment>
-  </AvatarGroup>
+<div class="docs-block-avatar-hover-tooltip">
+    <AvatarGroup hover>
+      {
+        avatars.slice(0, 4).map((a) => (
+          <Tooltip ariaLabel={a.name} placement="top">
+            <Fragment slot="content">{a.name}</Fragment>
+            <Avatar name={a.name}/>
+          </Tooltip>
+        ))
+      }
+      <Fragment slot="count">+1</Fragment>
+    </AvatarGroup>
+  </div>

@@ -1,0 +1,101 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {Badge, Timeline, TimelineItem} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "deploy" && (
+          <div class="docs-demo-block" id={`demo-timeline-${id}`}>
+            <h3 class="docs-demo-title">Deployment history</h3>
+            <DemoTabs id="dm-timeline-deploy">
+              <Fragment slot="preview">
+                <Timeline ariaLabel="Deployment history">
+                  <TimelineItem variant="success" active>
+                    <time slot="time" datetime="2026-10-14T09:12Z">Oct 14 · 09:12</time>
+                    <span slot="title">Deploy v2.5.0</span>
+                    <span slot="description">Production · 42 files changed · 1m 32s</span>
+                  </TimelineItem>
+                  <TimelineItem variant="info">
+                    <time slot="time" datetime="2026-10-13T17:40Z">Oct 13 · 17:40</time>
+                    <span slot="title">Deploy v2.4.3</span>
+                    <span slot="description">Hotfix for the billing webhook retry loop.</span>
+                  </TimelineItem>
+                  <TimelineItem variant="destructive">
+                    <time slot="time" datetime="2026-10-13T15:02Z">Oct 13 · 15:02</time>
+                    <span slot="title">Rollback v2.4.2</span>
+                    <span slot="description">Reverted after a spike in 500s on /api/invoices.</span>
+                  </TimelineItem>
+                </Timeline>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "activity" && (
+          <div class="docs-demo-block" id={`demo-timeline-${id}`}>
+            <h3 class="docs-demo-title">Activity feed with custom markers</h3>
+            <DemoTabs id="dm-timeline-activity">
+              <Fragment slot="preview">
+                <Timeline size="sm">
+                  <TimelineItem variant="primary">
+                    <span slot="marker" aria-hidden="true">✓</span>
+                    <time slot="time" datetime="2026-10-14T08:02Z">08:02</time>
+                    <span slot="title">Ada approved the pull request</span>
+                    <span slot="description">Review took 12 minutes.</span>
+                  </TimelineItem>
+                  <TimelineItem variant="warning">
+                    <span slot="marker" aria-hidden="true">!</span>
+                    <time slot="time" datetime="2026-10-14T07:55Z">07:55</time>
+                    <span slot="title">CI flagged a flaky test</span>
+                    <span slot="description">auth.session.spec.ts failed twice in a row.</span>
+                  </TimelineItem>
+                  <TimelineItem>
+                    <time slot="time" datetime="2026-10-14T07:41Z">07:41</time>
+                    <span slot="title">Grace opened the pull request</span>
+                  </TimelineItem>
+                </Timeline>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "rich" && (
+          <div class="docs-demo-block" id={`demo-timeline-${id}`}>
+            <h3 class="docs-demo-title">Rich item content</h3>
+            <DemoTabs id="dm-timeline-rich">
+              <Fragment slot="preview">
+                <Timeline ariaLabel="Release timeline">
+                  <TimelineItem variant="success">
+                    <time slot="time" datetime="2026-10-20">Oct 20, 2026</time>
+                    <span slot="title">v0.1.0 — First public release</span>
+                    <div slot="description">
+                      <p>63 components across 7 categories, with tokens, base styles, and docs.</p>
+                      <Badge variant="success" size="sm">Stable</Badge>
+                    </div>
+                  </TimelineItem>
+                  <TimelineItem variant="primary">
+                    <time slot="time" datetime="2026-11-10">Nov 10, 2026</time>
+                    <span slot="title">v0.2.0 — Planned</span>
+                    <span slot="description">File upload, a dual-thumb range slider, and a sortable data grid.</span>
+                  </TimelineItem>
+                </Timeline>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>

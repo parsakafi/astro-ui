@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "stop": "astro dev stop",
     "css": "sass src/styles:src/styles --no-source-map",
     "css:watch": "sass --watch src/styles:src/styles --no-source-map",
     "build": "npm run css && astro check && astro build",
@@ -13,7 +14,10 @@
     "audit:render": "npx tsx scripts/audit-render.ts",
     "check": "astro check",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:visual": "playwright test tests/e2e/visual.spec.ts --project=chromium",
+    "test:visual:update": "playwright test tests/e2e/visual.spec.ts --project=chromium --update-snapshots"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",
@@ -22,6 +26,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.2",
     "sass": "^1.105.0",

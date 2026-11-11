@@ -1,0 +1,77 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {DatePicker, Label} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "gregorian" && (
+          <div class="docs-demo-block" id={`demo-date-picker-${id}`}>
+            <h3 class="docs-demo-title">Gregorian date</h3>
+            <DemoTabs id="dm-datepicker-gregorian">
+              <Fragment slot="preview">
+                <div class="docs-datepicker-demo">
+                  <Label for="dp-start-input">Start date</Label>
+                  <DatePicker id="dp-start" name="start" />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+            <p class="docs-demo-note">
+              Type a date, or press the calendar button to open the grid.
+            </p>
+          </div>
+        )}
+        {id === "persian" && (
+          <div class="docs-demo-block" id={`demo-date-picker-${id}`}>
+            <h3 class="docs-demo-title">Persian (Jalali) calendar</h3>
+            <DemoTabs id="dm-datepicker-persian">
+              <Fragment slot="preview">
+                <div class="docs-datepicker-demo" dir="rtl">
+                  <Label for="dp-jalali-input">تاریخ شروع</Label>
+                  <DatePicker
+                    id="dp-jalali"
+                    name="start"
+                    calendar="persian"
+                    locale="fa-IR"
+                    value="2026-10-20"
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "range" && (
+          <div class="docs-demo-block" id={`demo-date-picker-${id}`}>
+            <h3 class="docs-demo-title">Bounded to a booking window</h3>
+            <DemoTabs id="dm-datepicker-range">
+              <Fragment slot="preview">
+                <div class="docs-datepicker-demo">
+                  <Label for="dp-bounded-input">Visit date</Label>
+                  <DatePicker
+                    id="dp-bounded"
+                    name="visit"
+                    min="2026-10-20"
+                    max="2026-11-20"
+                  />
+                </div>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>

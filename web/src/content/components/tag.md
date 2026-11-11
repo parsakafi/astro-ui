@@ -7,7 +7,7 @@ category: data-display
 importPath: "astro-ui"
 exportName: "Tag"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["badge", "button", "kbd"]
 features:
@@ -29,7 +29,7 @@ usage: |-
 demoIds: ["basic"]
 props:
   - name: "variant"
-    type: "\"primary\" | \"secondary\" | \"outline\" | \"soft\" | \"success\" | \"warning\" | \"error\" | \"info\" | \"muted\""
+    type: "\"primary\" | \"secondary\" | \"outline\" | \"soft\" | \"success\" | \"warning\" | \"destructive\" | \"info\" | \"muted\""
     def: "\"primary\""
     description: "Color scheme."
   - name: "size"

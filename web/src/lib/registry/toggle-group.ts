@@ -44,6 +44,6 @@ export const toggleGroup: ComponentMeta = {
             a: "On click, set aria-pressed=false (and drop aui-toggle--pressed) on every sibling — same one-line script pattern as Toggle; the group itself stays zero-JS.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["toggle", "button-group", "segmented-control"],
 };

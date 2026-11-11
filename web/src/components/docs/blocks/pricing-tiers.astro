@@ -5,13 +5,6 @@ import {
   Card,
 } from "astro-ui";
 
-interface Props {
-  /** Prefix for form control ids so multiple instances can coexist. */
-  idPrefix?: string;
-}
-
-const {idPrefix = "bd"} = Astro.props;
-
 /** Pricing tiers — tiered comparison layout (3–4 options max, popular
  tier highlighted, features scannable, CTAs in the same place). */
 const pricingPlans = [
@@ -20,7 +13,7 @@ const pricingPlans = [
     price: "$0",
     note: "forever",
     blurb: "Everything you need to evaluate the library.",
-    features: ["43 components", "Tokens & base CSS", "Community support"],
+    features: ["63 components", "Tokens & base CSS", "Community support"],
     cta: "Start free",
     variant: "outline" as const,
   },

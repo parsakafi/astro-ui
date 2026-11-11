@@ -68,6 +68,6 @@ export const table: ComponentMeta = {
             a: "The wrapper scopes styles; cells belong to your markup, so applying aui-table__cell / aui-table__head-cell opts them into the theme.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["badge", "card", "progress"],
 };

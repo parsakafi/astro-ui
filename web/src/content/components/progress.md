@@ -7,7 +7,7 @@ category: data-display
 importPath: "astro-ui"
 exportName: "Progress"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["spinner", "skeleton", "badge"]
 features:
@@ -43,7 +43,7 @@ props:
     def: "\"md\""
     description: "Scale."
   - name: "color"
-    type: "\"primary\" | \"secondary\" | \"success\" | \"warning\" | \"error\" | \"info\" | \"muted\" | \"destructive\""
+    type: "\"primary\" | \"secondary\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"destructive\""
     def: "\"primary\""
     description: "Fill color."
   - name: "label"

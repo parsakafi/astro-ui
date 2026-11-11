@@ -7,7 +7,7 @@ category: feedback
 importPath: "astro-ui"
 exportName: "Alert"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["spinner", "toast", "button"]
 features:

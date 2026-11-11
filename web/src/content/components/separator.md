@@ -7,7 +7,7 @@ category: layout
 importPath: "astro-ui"
 exportName: "Separator"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["card", "scroll-area", "aspect-ratio"]
 features:

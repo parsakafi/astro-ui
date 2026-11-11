@@ -58,7 +58,7 @@ or per-subtree: `<div dir="rtl">…</div>`.
 
 ## Migration status
 
-All 20 components audited for physical directional properties; all
+All 63 components audited for physical directional properties; all
 reading-direction-dependent rules converted (Alert, Badge, Dialog, Select,
 Progress, Toaster/toast.scss). `base.css` and `tokens.css` contain no
 directional rules.

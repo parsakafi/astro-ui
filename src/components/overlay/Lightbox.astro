@@ -4,7 +4,6 @@
  *
  * A full-screen overlay for displaying images, videos, and iframes with
  * gallery navigation (prev/next, keyboard arrows), counter, and indicators.
- * Inspired by UIkit Lightbox (https://getuikit.com/v2/docs/lightbox.html).
  *
  * Built on the native `<dialog>` element — zero-JS closed state; opening
  * needs one app-level `showModal()` call (see docs/components/lightbox.md).
@@ -142,7 +141,13 @@ const classes = cn("aui-lightbox", className);
     }
 
     <div class="aui-lightbox__stage">
-      <div class="aui-lightbox__content" data-lightbox-content tabindex="0">
+      <div
+        class="aui-lightbox__content"
+        data-lightbox-content
+        role="region"
+        aria-label="Media"
+        tabindex="0"
+      >
         <slot />
       </div>
 
@@ -289,7 +294,6 @@ const classes = cn("aui-lightbox", className);
       }
       const target = list[clamped];
       if (target) {
-        const horizontal = true;
         // Use scrollTo on the snap container so ancestors do not scroll.
         const left = target.offsetLeft - content.offsetLeft;
         content.scrollTo({left, behavior: "smooth"});
@@ -478,7 +482,7 @@ const classes = cn("aui-lightbox", className);
   .aui-lightbox__backdrop {
     position: absolute;
     inset: 0;
-    background-color: rgb(0 0 0 / 0.85);
+    background-color: var(--ui-backdrop-strong);
   }
 
   .aui-lightbox__panel {

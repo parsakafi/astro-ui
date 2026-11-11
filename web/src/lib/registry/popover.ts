@@ -52,6 +52,6 @@ export const popover: ComponentMeta = {
             a: "Popover = click-triggered, dismissible, focus-managed — use for interactive content (forms, links). HoverCard = pointer/focus preview — use for passive rich previews.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["hover-card", "tooltip", "dialog"],
 };

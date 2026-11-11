@@ -4,7 +4,7 @@ import { Badge, Button } from "astro-ui";
 ---
 
 <div class="block-cta">
-  <Badge variant="muted">v1.0 — stable</Badge>
+  <Badge variant="muted">v0.1 — first release</Badge>
   <h2>Ship your next Astro site faster</h2>
   <p>Install once, import tokens, compose pages from blocks like this one.</p>
   <div class="block-cta-actions">

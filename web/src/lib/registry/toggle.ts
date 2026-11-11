@@ -52,6 +52,6 @@ export const toggle: ComponentMeta = {
             a: "Nowhere — Toggle is SSR-only. Flip aria-pressed (and toggle the aui-toggle--pressed class) in a one-line app script; see the usage example.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["toggle-group", "switch", "button"],
 };

@@ -1,0 +1,213 @@
+---
+/**
+ * TreeItem — one node (and its subtree) inside Tree.
+ *
+ * Recursive: it renders itself through `Astro.self` for every child, so the
+ * markup nests to any depth while `aria-level` stays accurate. Branches
+ * carry `aria-expanded` + a `role="group"` child list; leaves with an `href`
+ * render as real links.
+ *
+ * Rendered for you by Tree — not usually authored directly.
+ *
+ * JavaScript required: No (Tree supplies the behavior)
+ */
+import { cn } from "../../utils/cn";
+import type { TreeNode } from "./Tree.astro";
+
+export interface Props {
+  /** Node data. */
+  node: TreeNode;
+  /** Depth, 1-based (feeds `aria-level`). */
+  level?: number;
+  /** Id of the tree's single tab stop. */
+  tabstop?: string | null;
+  /** Id of the node marked `aria-selected="true"`. */
+  selected?: string;
+  class?: string;
+}
+
+const {
+  node,
+  level = 1,
+  tabstop = null,
+  selected,
+  class: className,
+} = Astro.props;
+
+const isBranch = Array.isArray(node.children);
+const expanded = node.expanded ?? false;
+const tab = !node.disabled && node.id === tabstop;
+
+const classes = cn(
+  "aui-tree__item",
+  isBranch && "aui-tree__item--branch",
+  node.disabled && "aui-tree__item--disabled",
+  className,
+);
+---
+
+<li
+  class={classes}
+  role="treeitem"
+  aria-level={level}
+  aria-expanded={isBranch ? (expanded ? "true" : "false") : undefined}
+  aria-selected={node.id === selected ? "true" : "false"}
+  aria-disabled={node.disabled ? "true" : undefined}
+  tabindex={node.disabled ? -1 : tab ? 0 : -1}
+  data-tree-node={node.id}
+>
+  <div class="aui-tree__row">
+    <span class="aui-tree__twisty" aria-hidden="true">
+      {isBranch && <span class="aui-tree__chevron">▸</span>}
+    </span>
+    {
+      node.icon && (
+        <span class="aui-tree__icon" aria-hidden="true">
+          {node.icon}
+        </span>
+      )
+    }
+    {
+      node.href && !node.disabled ? (
+        <a class="aui-tree__label" href={node.href}>
+          {node.label}
+        </a>
+      ) : (
+        <span class="aui-tree__label">{node.label}</span>
+      )
+    }
+  </div>
+  {
+    isBranch && (
+      <ul class="aui-tree__group" role="group" hidden={!expanded}>
+        {(node.children ?? []).map((child) => (
+          <Astro.self
+            node={child}
+            level={level + 1}
+            tabstop={tabstop}
+            selected={selected}
+          />
+        ))}
+      </ul>
+    )
+  }
+</li>
+
+<style>
+  .aui-tree__item {
+    position: relative;
+  }
+
+  .aui-tree__row {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    min-block-size: 2rem;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    border-radius: var(--ui-radius-md);
+    cursor: default;
+  }
+
+  .aui-tree__row:hover {
+    background-color: var(--ui-muted);
+  }
+
+  .aui-tree__item:focus-visible {
+    outline: none;
+  }
+
+  .aui-tree__item:focus-visible > .aui-tree__row {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: calc(var(--ui-focus-ring-offset) * -1);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-tree__item--branch > .aui-tree__row {
+    cursor: pointer;
+  }
+
+  .aui-tree__item--disabled > .aui-tree__row {
+    opacity: var(--ui-disabled-opacity);
+    cursor: not-allowed;
+  }
+
+  /* --- twisty --- */
+
+  .aui-tree__twisty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex-shrink: 0;
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-tree__chevron {
+    display: inline-block;
+    font-size: var(--ui-text-2xs);
+    line-height: var(--ui-leading-none);
+    transition: transform var(--ui-transition-fast);
+  }
+
+  .aui-tree__item[aria-expanded="true"] > .aui-tree__row > .aui-tree__twisty > .aui-tree__chevron {
+    transform: rotate(90deg);
+  }
+
+  .aui-tree__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: 1rem;
+    block-size: 1rem;
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-none);
+    color: var(--ui-muted-foreground);
+  }
+
+  /* --- label --- */
+
+  .aui-tree__label {
+    min-inline-size: 0;
+    overflow: hidden;
+    color: inherit;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  a.aui-tree__label:hover {
+    text-decoration: underline;
+  }
+
+  .aui-tree__item[aria-expanded="true"] > .aui-tree__row > .aui-tree__label {
+    font-weight: var(--ui-font-medium);
+  }
+
+  .aui-tree__item[aria-selected="true"] > .aui-tree__row {
+    background-color: var(--ui-muted);
+    font-weight: var(--ui-font-medium);
+  }
+
+  /* --- nested group: guide line + indent --- */
+
+  .aui-tree__group {
+    margin: 0;
+    margin-inline-start: calc(var(--aui-tree-indent, var(--ui-space-4)) + 0.25rem);
+    padding: 0;
+    padding-inline-start: var(--ui-space-2);
+    list-style: none;
+    border-inline-start: var(--ui-border-width) solid var(--ui-border);
+  }
+
+  .aui-tree__group[hidden] {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-tree__chevron {
+      transition: none;
+    }
+  }
+</style>

@@ -21,6 +21,13 @@ export default [
     plugins: {"@typescript-eslint": tsPlugin},
     rules: {
       "@typescript-eslint/no-unused-vars": "error",
+      // Focusable scroll/composite containers (scroll areas, carousel
+      // stages, hover-card surfaces) are legitimately tabbable even
+      // though their roles are not "interactive".
+      "astro/jsx-a11y/no-noninteractive-tabindex": [
+        "error",
+        {roles: ["region", "group", "note"]},
+      ],
     },
   },
 ];

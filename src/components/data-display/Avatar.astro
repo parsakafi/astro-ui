@@ -51,7 +51,13 @@ export interface Props {
   /** Accessible label for the status indicator (defaults per status). */
   statusLabel?: string;
   /** Ring color: primary, success, warning, error, info, or background. */
-  ring?: "primary" | "success" | "warning" | "error" | "info" | "background";
+  ring?:
+    | "primary"
+    | "success"
+    | "warning"
+    | "destructive"
+    | "info"
+    | "background";
   /** Image filter treatment. */
   filter?: "none" | "grayscale";
   /** Restores color on hover when filter="grayscale". */
@@ -383,7 +389,7 @@ const inlineStyle = [
     0 0 0 4px var(--ui-warning);
   }
 
-  .aui-avatar--ring-error {
+  .aui-avatar--ring-destructive {
     box-shadow: 0 0 0 2px var(--ui-background),
     0 0 0 4px var(--ui-error);
   }

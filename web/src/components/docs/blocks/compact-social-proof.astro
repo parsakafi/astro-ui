@@ -3,12 +3,6 @@ import {
   Avatar,
 } from "astro-ui";
 
-interface Props {
-  /** Prefix for form control ids so multiple instances can coexist. */
-  idPrefix?: string;
-}
-
-const {idPrefix = "bd"} = Astro.props;
 ---
 
 <div class="docs-block-social-proof">
@@ -19,6 +13,6 @@ const {idPrefix = "bd"} = Astro.props;
       <Avatar name="Edsger Dijkstra" size="xs" variant="primary"/>
       <Avatar name="Barbara Liskov" size="xs"/>
     </div>
-    <p class="docs-block-social-proof__label">Trusted by engineers at</p>
-    <p class="docs-block-social-proof__name">Ada Lovelace, Grace Hopper, Alan Turing, and 247 more</p>
+    <p class="docs-block-social-proof__label">Trusted by 2,400+ engineers</p>
+    <p class="docs-block-social-proof__name">Ada Lovelace, Grace Hopper &amp; 2,400 more</p>
   </div>

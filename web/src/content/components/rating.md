@@ -7,7 +7,7 @@ category: forms
 importPath: "astro-ui"
 exportName: "Rating"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["slider", "switch", "progress"]
 features:

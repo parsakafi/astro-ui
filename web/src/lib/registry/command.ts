@@ -67,6 +67,6 @@ export const command: ComponentMeta = {
             a: "Yes — place Command inside Dialog content and open the dialog from a keyboard shortcut or button. The palette is inline by design, so composition stays explicit.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["combobox", "autocomplete", "kbd"],
 };

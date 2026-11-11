@@ -502,6 +502,6 @@ export const chart: ComponentMeta = {
             a: "Three ways: the svg has role=img with a summary aria-label, a visually hidden table mirrors every value, and each mark has a <title>.",
         },
     ],
-    since: "1.1.0",
+    since: "0.1.0",
     related: ["progress", "table", "card"],
 };

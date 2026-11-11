@@ -7,7 +7,7 @@ category: general
 importPath: "astro-ui"
 exportName: "Kbd"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["clipboard", "tooltip", "button"]
 features:

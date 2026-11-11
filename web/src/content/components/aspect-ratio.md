@@ -7,7 +7,7 @@ category: layout
 importPath: "astro-ui"
 exportName: "AspectRatio"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["card", "avatar", "scroll-area"]
 features:

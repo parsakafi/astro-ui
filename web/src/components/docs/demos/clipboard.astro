@@ -117,7 +117,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
         )}
         {id === "manual" && (
           <div class="docs-demo-block" id={`demo-clipboard-${id}`}>
-            <h3 class="docs-demo-title">Manual wiring (zero JS shipped by the component)</h3>
+            <h3 class="docs-demo-title">Manual wiring (zero JS)</h3>
             <DemoTabs id="dm-clipboard-manual">
               <Fragment slot="preview">
                 <Clipboard value="npx astro add"/>

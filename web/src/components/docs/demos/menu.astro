@@ -1,0 +1,98 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {Menu, MenuGroup, MenuItem, MenuSeparator} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "row-actions" && (
+          <div class="docs-demo-block" id={`demo-menu-${id}`}>
+            <h3 class="docs-demo-title">Row actions</h3>
+            <DemoTabs id="dm-menu-row-actions">
+              <Fragment slot="preview">
+                <Menu id="dm-menu-row" triggerLabel="Row actions">
+                  <MenuItem shortcut="⌘E">Edit</MenuItem>
+                  <MenuItem shortcut="⌘D">Duplicate</MenuItem>
+                  <MenuSeparator />
+                  <MenuItem variant="destructive" shortcut="⌫">Delete</MenuItem>
+                </Menu>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "groups" && (
+          <div class="docs-demo-block" id={`demo-menu-${id}`}>
+            <h3 class="docs-demo-title">Grouped actions with icons</h3>
+            <DemoTabs id="dm-menu-groups">
+              <Fragment slot="preview">
+                <Menu id="dm-menu-groups" triggerLabel="Project actions">
+                  <MenuGroup label="Project">
+                    <MenuItem>
+                      <span slot="icon" aria-hidden="true">✎</span>
+                      Rename project
+                    </MenuItem>
+                    <MenuItem>
+                      <span slot="icon" aria-hidden="true">⧉</span>
+                      Duplicate
+                    </MenuItem>
+                  </MenuGroup>
+                  <MenuSeparator />
+                  <MenuGroup label="Danger zone">
+                    <MenuItem variant="destructive" disabled>Transfer ownership</MenuItem>
+                    <MenuItem variant="destructive">Delete project</MenuItem>
+                  </MenuGroup>
+                </Menu>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "links" && (
+          <div class="docs-demo-block" id={`demo-menu-${id}`}>
+            <h3 class="docs-demo-title">Link items</h3>
+            <DemoTabs id="dm-menu-links">
+              <Fragment slot="preview">
+                <Menu id="dm-menu-links" triggerLabel="Open in" placement="bottom-start">
+                  <MenuItem href="https://astro.build" shortcut="↗">Astro docs</MenuItem>
+                  <MenuItem href="https://github.com/parsakafi/astro-ui" shortcut="↗">GitHub source</MenuItem>
+                  <MenuSeparator />
+                  <MenuItem href="/docs/components/menu" shortcut="↵">Component page</MenuItem>
+                </Menu>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "open" && (
+          <div class="docs-demo-block" id={`demo-menu-${id}`}>
+            <h3 class="docs-demo-title">Panel open on first paint</h3>
+            <DemoTabs id="dm-menu-open">
+              <Fragment slot="preview">
+                <Menu id="dm-menu-open" triggerLabel="Filters" open placement="bottom-start">
+                  <MenuItem>Newest first</MenuItem>
+                  <MenuItem>Most reactions</MenuItem>
+                  <MenuSeparator />
+                  <MenuItem>Only my drafts</MenuItem>
+                </Menu>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>

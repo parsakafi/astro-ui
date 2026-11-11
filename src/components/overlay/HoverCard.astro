@@ -35,7 +35,7 @@ const classes = cn("aui-hover-card", `aui-hover-card--${placement}`, className);
 ---
 
 <span id={id} class={classes} {...rest}>
-	<span class="aui-hover-card__trigger" tabindex="0">
+	<span class="aui-hover-card__trigger" role="group" tabindex="0">
 		<slot/>
 	</span>
 	<div

@@ -75,6 +75,6 @@ export const link: ComponentMeta = {
             a: "No — deliberately. They render data-* attributes so a router, an Astro island, or a small script can adopt them. The component itself ships zero JavaScript.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["button", "breadcrumb", "pagination"],
 };

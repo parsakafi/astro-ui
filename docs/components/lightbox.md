@@ -1,7 +1,6 @@
 # Lightbox
 
-Accessible image/video/iframe gallery overlay, inspired by [UIkit
-Lightbox](https://getuikit.com/v2/docs/lightbox.html). Built on the native
+Accessible image/video/iframe gallery overlay built on the native
 `<dialog>` element for modality, focus containment, and Escape-to-close.
 Gallery navigation — prev/next, keyboard arrows, indicator dots, and an
 optional counter — is handled by one scoped inline script that ships with
@@ -60,7 +59,7 @@ import { Button, Lightbox, LightboxItem } from "astro-ui";
 ## Gallery groups
 
 Assign the same `group` string to several lightboxes to sync their active
-index across instances, mirroring UIkit's `{group:'my-group'}` option:
+index across instances:
 
 ```astro
 <Lightbox id="lb-a" group="tour"> … </Lightbox>

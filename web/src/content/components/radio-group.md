@@ -7,7 +7,7 @@ category: forms
 importPath: "astro-ui"
 exportName: "RadioGroup"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["radio", "checkbox", "toggle-group", "select"]
 features:

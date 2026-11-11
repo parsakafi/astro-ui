@@ -85,6 +85,6 @@ export const buttonGroup: ComponentMeta = {
             a: "Focused and hovered children get position: relative with elevated z-index, so their full border appears above siblings. This prevents border clipping.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["button", "separator", "pagination"],
 };

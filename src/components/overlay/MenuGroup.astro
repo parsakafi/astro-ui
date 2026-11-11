@@ -1,0 +1,47 @@
+---
+/**
+ * MenuGroup — a labeled run of MenuItems.
+ *
+ * `role="group"` with `aria-labelledby` pointing at the visible label, so
+ * screen readers announce the group name when focus enters it. The label
+ * itself is not a menuitem, so arrow keys skip past it.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+import { uid } from "../../utils/uid";
+
+export interface Props {
+  /** Visible group heading. */
+  label: string;
+  class?: string;
+  id?: string;
+}
+
+const { label, class: className, id, ...rest } = Astro.props;
+
+const labelId = uid("aui-menu-group");
+const classes = cn("aui-menu__group", className);
+---
+
+<div id={id} class={classes} role="group" aria-labelledby={labelId} {...rest}>
+  <div id={labelId} class="aui-menu__group-label">{label}</div>
+  <slot/>
+</div>
+
+<style>
+  .aui-menu__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-menu__group-label {
+    padding: var(--ui-space-1) var(--ui-space-3);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ui-muted-foreground);
+  }
+</style>

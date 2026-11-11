@@ -1,0 +1,108 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {
+  Empty,
+  Menu,
+  MenuItem,
+  MenuSeparator,
+  NotificationCenter,
+  NotificationGroup,
+  NotificationItem,
+} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "inbox" && (
+          <div class="docs-demo-block" id={`demo-notification-center-${id}`}>
+            <h3 class="docs-demo-title">Notification panel</h3>
+            <DemoTabs id="dm-notif-inbox-tabs">
+              <Fragment slot="preview">
+                <NotificationCenter
+                  count={2}
+                  title="Notifications"
+                  placement="bottom-start"
+                  id="dm-notif-inbox"
+                >
+                  <NotificationGroup label="Today">
+                    <NotificationItem unread title="Deploy finished" time="2m ago" href="#deploys">
+                      Production build 412 is live.
+                    </NotificationItem>
+                    <NotificationItem unread title="Ada left a comment" time="1h ago">
+                      On the sidebar pull request.
+                    </NotificationItem>
+                  </NotificationGroup>
+                  <NotificationGroup label="Yesterday">
+                    <NotificationItem title="Weekly digest" time="Yesterday" href="#digest">
+                      12 components shipped, 3 blocks updated.
+                    </NotificationItem>
+                  </NotificationGroup>
+                </NotificationCenter>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "actions" && (
+          <div class="docs-demo-block" id={`demo-notification-center-${id}`}>
+            <h3 class="docs-demo-title">Header action and footer</h3>
+            <DemoTabs id="dm-notif-actions-tabs">
+              <Fragment slot="preview">
+                <NotificationCenter
+                  count={12}
+                  title="Activity"
+                  placement="bottom-start"
+                  id="dm-notif-actions"
+                >
+                  <Menu slot="actions" triggerLabel="Notification settings" bareTrigger>
+                    <MenuItem>Mark all read</MenuItem>
+                    <MenuItem>Mute for 1 hour</MenuItem>
+                    <MenuSeparator />
+                    <MenuItem>Notification settings</MenuItem>
+                  </Menu>
+                  <NotificationGroup label="Today">
+                    <NotificationItem unread title="Build 412 passed" time="3m ago" />
+                  </NotificationGroup>
+                  <a slot="footer" href="#notifications">View all notifications</a>
+                </NotificationCenter>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "empty" && (
+          <div class="docs-demo-block" id={`demo-notification-center-${id}`}>
+            <h3 class="docs-demo-title">Empty state</h3>
+            <DemoTabs id="dm-notif-empty-tabs">
+              <Fragment slot="preview">
+                <NotificationCenter
+                  count={0}
+                  title="Notifications"
+                  placement="bottom-start"
+                  id="dm-notif-empty"
+                >
+                  <Empty size="sm">
+                    <span slot="media" aria-hidden="true">🔔</span>
+                    <span slot="title">You are all caught up</span>
+                    <span slot="description">New activity will show up here.</span>
+                  </Empty>
+                </NotificationCenter>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>

@@ -57,6 +57,6 @@ export const checkbox: ComponentMeta = {
             a: "No — it's purely visual (like the platform). The form value follows the underlying checked state only.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["radio", "switch", "label"],
 };

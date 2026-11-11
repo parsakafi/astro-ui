@@ -50,7 +50,7 @@ export interface Props {
   /** Renders a value bubble above the thumb (appears on hover/drag/focus). */
   tooltip?: boolean;
   /** Visual color. */
-  variant?: "primary" | "success" | "warning" | "error" | "info";
+  variant?: "primary" | "success" | "warning" | "destructive" | "info";
   /** Scale of the control. */
   size?: "sm" | "md" | "lg";
   /** Disables the slider. */
@@ -473,8 +473,8 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
 
   .aui-slider__input {
     --aui-slider-track: var(--ui-muted);
-    --aui-slider-fill: var(--ui-slider-color);
-    --aui-slider-thumb: var(--ui-slider-color);
+    --aui-slider-fill: var(--aui-slider-color);
+    --aui-slider-thumb: var(--aui-slider-color);
 
     appearance: none;
     width: 100%;
@@ -543,24 +543,23 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
   /* --- colors --- */
 
   .aui-slider--primary {
-    --ui-slider-color: var(--ui-primary);
+    --aui-slider-color: var(--ui-primary);
   }
 
   .aui-slider--success {
-    --ui-slider-color: var(--ui-success);
+    --aui-slider-color: var(--ui-success);
   }
 
   .aui-slider--warning {
-    --ui-slider-color: var(--ui-warning);
+    --aui-slider-color: var(--ui-warning);
   }
 
-  .aui-slider--error,
   .aui-slider--destructive {
-    --ui-slider-color: var(--ui-error);
+    --aui-slider-color: var(--ui-error);
   }
 
   .aui-slider--info {
-    --ui-slider-color: var(--ui-info);
+    --aui-slider-color: var(--ui-info);
   }
 
   /* --- disabled --- */
@@ -606,7 +605,7 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
     inline-size: var(--aui-slider-fill-size, 0%);
     /* The --aui-slider-* vars live on the input; the fill is a sibling,
        so it reads the themed color from the root scope. */
-    background: var(--ui-slider-color);
+    background: var(--aui-slider-color);
     border-radius: var(--ui-radius-full);
     pointer-events: none;
   }
@@ -735,7 +734,7 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
   }
 
   .aui-slider__dial-fill {
-    stroke: var(--ui-slider-color);
+    stroke: var(--aui-slider-color);
     stroke-linecap: round;
   }
 

@@ -60,6 +60,6 @@ export const field: ComponentMeta = {
             a: "Give Field an id and the control the matching id=\"{id}-control\", plus aria-describedby=\"{id}-error\" when invalid — Input/Textarea's invalid prop already sets aria-invalid.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["label", "input", "textarea"],
 };

@@ -7,7 +7,7 @@ category: layout
 importPath: "astro-ui"
 exportName: "ScrollArea"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["separator", "card", "table"]
 features:

@@ -45,6 +45,6 @@ rule is enforced. New components should read this alongside
   `src/components/<category>/` as flat files with a single root
   `index.ts` plus `package.json` subpath exports — one import style
   to learn, tree-shakable by construction.
-- **Own naming, not shadcn-aligned.** Classes use the `aui-` prefix
+- **Own naming.** Classes use the `aui-` prefix
   and props follow `docs/conventions.md` (`variant`, `size`,
   `ariaLabel`) rather than mirroring any external registry.

@@ -14,11 +14,19 @@ import { cn } from "../../utils/cn";
 export interface Props {
   /** Which axes may scroll. */
   orientation?: "vertical" | "horizontal" | "both";
+  /** Accessible name for the focusable scroll region. */
+  ariaLabel?: string;
   class?: string;
   id?: string;
 }
 
-const { orientation = "vertical", class: className, id, ...rest } = Astro.props;
+const {
+  orientation = "vertical",
+  ariaLabel = "Scrollable content",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
 
 const classes = cn(
   "aui-scroll-area",
@@ -27,7 +35,14 @@ const classes = cn(
 );
 ---
 
-<div id={id} class={classes} tabindex="0" {...rest}>
+<div
+  id={id}
+  class={classes}
+  role="region"
+  aria-label={ariaLabel}
+  tabindex="0"
+  {...rest}
+>
   <slot/>
 </div>
 

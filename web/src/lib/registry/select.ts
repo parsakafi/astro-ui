@@ -57,6 +57,6 @@ export const select: ComponentMeta = {
             a: "Native selects keep keyboard nav, screen-reader semantics, and mobile pickers for free — that's the astro-ui philosophy: platform first.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["label", "input", "checkbox"],
 };

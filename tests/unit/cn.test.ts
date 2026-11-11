@@ -1,5 +1,5 @@
-import {describe, expect, it} from "vitest";
-import {cn} from "../../src/utils/cn";
+import { describe, expect, it } from "vitest";
+import { cn } from "../../src/utils/cn";
 
 describe("cn", () => {
   it("joins truthy strings", () => {
@@ -11,7 +11,7 @@ describe("cn", () => {
   });
 
   it("supports conditional maps", () => {
-    expect(cn("base", {active: true, hidden: false, shown: undefined})).toBe(
+    expect(cn("base", { active: true, hidden: false, shown: undefined })).toBe(
       "base active",
     );
   });

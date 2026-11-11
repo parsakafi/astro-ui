@@ -4,7 +4,7 @@ Astro-first, zero-JS-by-default, accessible UI components with semantic
 design tokens. Dark mode, Tailwind interop, SSR-safe, tree-shakable, typed.
 
 - Website: https://astroui.ir · Docs: `docs/` · Playground: `../web`
-- Status: `1.0.0` stable
+- Status: `0.1.0` — first public release (pre-1.0)
 
 ## Install
 
@@ -29,25 +29,27 @@ Individual entry points also work (better tree-shaking signals):
 import Button from "astro-ui/button";
 ```
 
-## Components (MVP — all zero-JS)
+## Components
 
-| Component                                               | Import                                  | Docs                                  |
-|---------------------------------------------------------|-----------------------------------------|---------------------------------------|
-|                                                         | Link                                    | `astro-ui/link`                       | `docs/components/link.md` |
-|                                                         | Button                                  | `astro-ui` / `astro-ui/button`        | `docs/components/button.md` |
-| Badge                                                   | `astro-ui/badge`                        | `docs/components/badge.md`            |
-| Card                                                    | `astro-ui/card`                         | `docs/components/card.md`             |
-| Avatar                                                  | `astro-ui/avatar`                       | `docs/components/avatar.md`           |
-| Alert                                                   | `astro-ui/alert`                        | `docs/components/alert.md`            |
-| Spinner, Skeleton                                       | `astro-ui/spinner`, `astro-ui/skeleton` | `docs/components/spinner-skeleton.md` |
-| Separator                                               | `astro-ui/separator`                    | `docs/components/separator.md`        |
-| Label, Input, Textarea, Checkbox, Radio, Select, Switch | `astro-ui/label` …                      | `docs/components/forms.md`            |
-| Dialog                                                  | `astro-ui/dialog`                       | `docs/components/dialog.md`           |
+63 catalog components across 7 categories (80 `.astro` files including
+sub-components). 43 render pure server-side HTML; 20 add a small scoped
+script. Browse the catalog at https://astroui.ir/components/.
+
+| Category     | Components                                                                                                                              |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| General      | Button, ButtonGroup, Command, Carousel, Clipboard, Kbd, Link                                                                            |
+| Data display | Badge, Avatar, Attachment, Table, Progress, Bubble, Chart, Empty, Tag, Timeline                                                         |
+| Layout       | Card, AspectRatio, ScrollArea, Separator, Accordion, Collapsible, StickySurface                                                         |
+| Feedback     | Alert, Spinner, Skeleton, Toast, Banner, NotificationCenter                                                                             |
+| Forms        | Autocomplete, Combobox, Label, Field, Input, InputGroup, Textarea, Select, Checkbox, Radio, Switch, Toggle, ToggleGroup, RadioGroup, Rating, Slider, DatePicker, TimePicker |
+| Navigation   | Tabs, Breadcrumb, Pagination, Stepper, Tree, Navbar, Sidebar                                                                            |
+| Overlay      | Dialog, AlertDialog, Sheet, Tooltip, Popover, HoverCard, Lightbox, Menu                                                                 |
 
 Consistent API: `variant · size · disabled · loading · invalid · class · id`.
 Composition over props (`Card` slots, icon children, dialog title/footer slots).
-Every doc page states its JavaScript requirement — Dialog is the first **Yes** (app-level `showModal()` trigger only;
-the component ships zero JS).
+Every doc page states its JavaScript requirement: 43 components are zero-JS;
+the rest ship a small scoped script or an app-level recipe (for example
+Dialog's `showModal()` trigger — the component itself ships no JS).
 
 ## Theming
 
@@ -60,9 +62,9 @@ see `docs/theming.md`. Tailwind composes via `class` — see
 
 ```bash
 npm install
-npm run check   # astro typecheck
-npm run lint    # biome
-npm test        # 134 unit + contract tests
+npm run check   # astro typecheck (library + docs site)
+npm run lint    # biome + eslint
+npm test        # Vitest unit, contract, and docs tests
 ```
 
 Playground: `../web` (`npm run dev`). Full guide: `CONTRIBUTING.md`.

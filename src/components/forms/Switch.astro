@@ -171,7 +171,7 @@ const classes = cn(
     box-shadow: var(--ui-shadow-sm);
     transition: transform var(--ui-transition-fast);
     /* Small offset so thumb is never flush against the track edge. */
-    transform: translateX(var(--ui-switch-thumb-offset, 0));
+    transform: translateX(var(--aui-switch-thumb-offset, 0));
   }
 
   .aui-switch--square .aui-switch__thumb {
@@ -242,44 +242,44 @@ const classes = cn(
   .aui-switch__input:checked ~ .aui-switch__track .aui-switch__thumb {
     transform: translateX(
       calc(
-        var(--ui-switch-track-width) - var(--ui-switch-thumb-size) - var(--ui-switch-padding-x) * 2 - var(--ui-switch-thumb-offset, 0)
+        var(--aui-switch-track-width) - var(--aui-switch-thumb-size) - var(--aui-switch-padding-x) * 2 - var(--aui-switch-thumb-offset, 0)
       )
     );
   }
 
   .aui-switch--xs {
-    --ui-switch-track-width: 1.75rem;
-    --ui-switch-thumb-size: 0.625rem;
-    --ui-switch-padding-x: 0.125rem;
-    --ui-switch-thumb-offset: 0.125rem;
+    --aui-switch-track-width: 1.75rem;
+    --aui-switch-thumb-size: 0.625rem;
+    --aui-switch-padding-x: 0.125rem;
+    --aui-switch-thumb-offset: 0.125rem;
   }
 
   .aui-switch--sm {
-    --ui-switch-track-width: 2rem;
-    --ui-switch-thumb-size: 0.875rem;
-    --ui-switch-padding-x: 0.125rem;
-    --ui-switch-thumb-offset: 0.125rem;
+    --aui-switch-track-width: 2rem;
+    --aui-switch-thumb-size: 0.875rem;
+    --aui-switch-padding-x: 0.125rem;
+    --aui-switch-thumb-offset: 0.125rem;
   }
 
   .aui-switch--md {
-    --ui-switch-track-width: 2.5rem;
-    --ui-switch-thumb-size: 1.125rem;
-    --ui-switch-padding-x: var(--ui-space-1);
-    --ui-switch-thumb-offset: 0.125rem;
+    --aui-switch-track-width: 2.5rem;
+    --aui-switch-thumb-size: 1.125rem;
+    --aui-switch-padding-x: var(--ui-space-1);
+    --aui-switch-thumb-offset: 0.125rem;
   }
 
   .aui-switch--lg {
-    --ui-switch-track-width: 2.75rem;
-    --ui-switch-thumb-size: 1.25rem;
-    --ui-switch-padding-x: var(--ui-space-1);
-    --ui-switch-thumb-offset: 0.125rem;
+    --aui-switch-track-width: 2.75rem;
+    --aui-switch-thumb-size: 1.25rem;
+    --aui-switch-padding-x: var(--ui-space-1);
+    --aui-switch-thumb-offset: 0.125rem;
   }
 
   .aui-switch--xl {
-    --ui-switch-track-width: 3rem;
-    --ui-switch-thumb-size: 1.5rem;
-    --ui-switch-padding-x: var(--ui-space-1);
-    --ui-switch-thumb-offset: 0.125rem;
+    --aui-switch-track-width: 3rem;
+    --aui-switch-thumb-size: 1.5rem;
+    --aui-switch-padding-x: var(--ui-space-1);
+    --aui-switch-thumb-offset: 0.125rem;
   }
 
   /* --- focus ring --- */

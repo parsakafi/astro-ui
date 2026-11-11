@@ -11,9 +11,9 @@ We needed a coherent system: consistent APIs, theming, accessibility,
 SSR safety, zero-JS defaults, and a path to future framework adapters —
 without over-engineering a v0.1.
 
-Research inputs (in `/resource`): shadcn (composition + source-distribution
-model), Radix/base-ui (a11y behavior ownership), daisyUI (semantic tokens +
-`data-theme`), Tailwind (utility interop), Biome (lint/format).
+Research inputs (in `/resource`): composition and source-distribution
+patterns, accessible behavior ownership, semantic tokens with `data-theme`,
+utility-CSS interop, and lint/format tooling.
 
 ## Decisions
 
@@ -25,8 +25,8 @@ The npm package publishes `src/**/*.astro` + plain CSS directly. Rationale:
   add a runtime and break Astro slot/hydration semantics.
 - Tree-shaking falls out naturally: named ESM re-exports in `index.ts`
   plus per-component subpath exports (`astro-ui/button`).
-- Keeps the door open for a future shadcn-style CLI (`add button` copies
-  the same source files) with zero rewrite.
+- Keeps the door open for a future source-distribution CLI (`add button`
+  copies the same source files) with zero rewrite.
 
 ### 2. Zero-JS by default; app owns hydration (D2)
 
@@ -70,8 +70,8 @@ For the static MVP set, accessibility = semantic HTML + correct ARIA roles (aler
 aria-invalid/disabled/busy) + focus-visible +
 reduced-motion. Interactive components (Dialog, Tabs, …) each implement
 keyboard support, focus management, and Playwright keyboard tests per
-`docs/accessibility.md`. Radix/base-ui remain reference
-implementations, not dependencies.
+`docs/accessibility.md`. Accessibility behavior is implemented in-house;
+there is no headless dependency.
 
 ### 7. Tooling: Biome + Vitest + astro check (D7)
 
@@ -89,8 +89,8 @@ implementations, not dependencies.
   import degrades to unstyled but functional markup).
 - `type` prop on Input is a constrained union, not free `string` — valid
   HTML only, by design.
-- Version follows SemVer from `1.0.0` (first stable release covering
-  every component; § Versioning).
+- Version follows SemVer from `0.1.0` (first public release; while
+  pre-1.0, breaking changes bump the minor; § Versioning).
 
 ## Future packages (not now)
 

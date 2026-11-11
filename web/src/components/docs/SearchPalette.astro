@@ -69,6 +69,7 @@ const totalCount = searchEntries.length;
                 <a
                   class="docs-search-item"
                   role="option"
+                  aria-selected="false"
                   href={entry.href}
                   data-search-text={`${entry.title} ${entry.hint} ${entry.keywords ?? ""}`.toLowerCase()}
                 >

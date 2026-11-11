@@ -37,6 +37,6 @@ export const label: ComponentMeta = {
             a: "Wrapping works, but explicit for/id keeps the association when the control isn't a direct child (grids, portals) and is what this component enforces.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["input", "select", "checkbox"],
 };

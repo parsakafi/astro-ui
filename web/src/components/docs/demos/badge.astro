@@ -22,7 +22,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Badge variant="outline">Outline</Badge>
                 <Badge variant="success">Active</Badge>
                 <Badge variant="warning">Pending</Badge>
-                <Badge variant="error">Failed</Badge>
+                <Badge variant="destructive">Failed</Badge>
                 <Badge variant="info">New</Badge>
               </Fragment>
               <Fragment slot="code">
@@ -88,7 +88,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <div class="demo-row">
                   <Badge variant="success" dot>Operational</Badge>
                   <Badge variant="warning" dot>Degraded</Badge>
-                  <Badge variant="error" dot>Outage</Badge>
+                  <Badge variant="destructive" dot>Outage</Badge>
                 </div>
                 <p class="docs-demo-hint">The dot inherits the variant's text color — set it and forget it.</p>
               </Fragment>

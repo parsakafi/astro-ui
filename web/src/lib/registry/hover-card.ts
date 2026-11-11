@@ -48,6 +48,6 @@ export const hoverCard: ComponentMeta = {
             a: "No — it's pointer-driven and dismissible. The trigger must carry the primary content; the card is an enhancement (same rule as Tooltip).",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["popover", "tooltip", "card"],
 };

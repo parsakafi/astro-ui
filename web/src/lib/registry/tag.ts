@@ -30,7 +30,7 @@ export const tag: ComponentMeta = {
         },
     ],
     props: [
-        t("variant", `"primary" | "secondary" | "outline" | "soft" | "success" | "warning" | "error" | "info" | "muted"`, `"primary"`, "Color scheme."),
+        t("variant", `"primary" | "secondary" | "outline" | "soft" | "success" | "warning" | "destructive" | "info" | "muted"`, `"primary"`, "Color scheme."),
         t("size", `"sm" | "md" | "lg"`, `"md"`, "Scale."),
         t("shape", `"rounded" | "square" | "pill"`, `"rounded"`, "Corner shape."),
         t("content", "string", "—", "Text when no slot content."),
@@ -44,6 +44,6 @@ export const tag: ComponentMeta = {
             a: "Tag = membership in a set (filter chips, keywords). Badge = status or count attached to something else.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["badge", "button", "kbd"],
 };

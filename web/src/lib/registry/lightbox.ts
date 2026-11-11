@@ -5,7 +5,7 @@ export const lightbox: ComponentMeta = {
     name: "Lightbox",
     description: "Accessible image/video/iframe gallery overlay with arrows, counter, and indicators.",
     overview:
-        "Lightbox is an accessible image, video, and iframe gallery overlay inspired by UIkit Lightbox. It is built on the native &lt;dialog&gt; element, so modality, focus containment, Escape, and focus return all come from the platform, while one scoped inline script ships with the component to drive the gallery: prev/next arrows, keyboard arrows, indicator dots, a live counter, and cross-instance group sync. Opening needs a single app-level showModal() call; items are LightboxItem children whose media type (image, video, iframe) is inferred from the source URL and overridable per item.",
+        "Lightbox is an accessible image, video, and iframe gallery overlay. It is built on the native &lt;dialog&gt; element, so modality, focus containment, Escape, and focus return all come from the platform, while one scoped inline script ships with the component to drive the gallery: prev/next arrows, keyboard arrows, indicator dots, a live counter, and cross-instance group sync. Opening needs a single app-level showModal() call; items are LightboxItem children whose media type (image, video, iframe) is inferred from the source URL and overridable per item.",
     importPath: "astro-ui",
     exportName: "Lightbox",
     category: "overlay",
@@ -136,6 +136,6 @@ export const lightbox: ComponentMeta = {
             a: "Yes — give them the same group name; advancing one updates the other's active index, useful for thumbnail + main-view layouts.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["dialog", "carousel", "attachment"],
 };

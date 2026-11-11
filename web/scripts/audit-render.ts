@@ -29,7 +29,9 @@ for (const c of components) {
         continue;
     }
     const html = readFileSync(file, "utf8");
-    const titles = [...html.matchAll(/<h3 class="docs-demo-title">([^<]+)</g)].map((m) =>
+    // Astro adds scoped-style attributes (data-astro-cid-…) to demo files that ship a
+    // <style> block, so the opening tag cannot be matched exactly.
+    const titles = [...html.matchAll(/<h3 class="docs-demo-title"[^>]*>([^<]+)</g)].map((m) =>
         decode(m[1]),
     );
     const want = c.demos.map((d) => d.title);

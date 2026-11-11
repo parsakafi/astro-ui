@@ -7,7 +7,7 @@ category: data-display
 importPath: "astro-ui"
 exportName: "Attachment"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["empty", "tag", "button-group"]
 features:

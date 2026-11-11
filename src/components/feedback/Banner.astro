@@ -1,0 +1,272 @@
+---
+/**
+ * Banner — zero-JS full-width announcement strip.
+ *
+ * A page-level sibling of Alert: it spans the container's full width and
+ * carries one message, an optional leading icon, and an action row. Use it
+ * for release notes, trial notices, or maintenance windows — anything that
+ * belongs above the page content rather than inside a card.
+ *
+ * The container is a named `region` landmark by default so assistive
+ * technology can jump straight to the announcement; pass `role="none"` to
+ * drop the landmark when several banners stack on one page.
+ *
+ *   <Banner variant="info" closable>
+ *     <span slot="icon" aria-hidden="true">✦</span>
+ *     <strong>v2.5 is out.</strong> Bubbles, Timeline, and Banner are here.
+ *     <Button slot="actions" size="sm" variant="outline">Read notes</Button>
+ *   </Banner>
+ *
+ * Dismissal has no built-in behavior: the close button is rendered with a
+ * `data-banner-close` hook so the app decides whether to hide, persist, or
+ * navigate. Recipe in the docs.
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Color treatment of the strip. */
+  variant?:
+    | "primary"
+    | "info"
+    | "success"
+    | "warning"
+    | "destructive"
+    | "neutral";
+  /** Stick to the top of the scroll container while the page scrolls. */
+  sticky?: boolean;
+  /** Render a close button (`data-banner-close`); the app wires hiding. */
+  closable?: boolean;
+  /** Accessible name for the close button. */
+  closeLabel?: string;
+  /** Landmark role. Use "none" when stacking several banners. */
+  role?: "region" | "status" | "alert" | "none";
+  /** Accessible name for the landmark (defaults to "Announcement"). */
+  ariaLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "primary",
+  sticky = false,
+  closable = false,
+  closeLabel = "Dismiss announcement",
+  role = "region",
+  ariaLabel = "Announcement",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const classes = cn(
+  "aui-banner",
+  `aui-banner--${variant}`,
+  sticky && "aui-banner--sticky",
+  className,
+);
+---
+
+<div
+  id={id}
+  class={classes}
+  role={role === "none" ? undefined : role}
+  aria-label={role === "none" ? undefined : ariaLabel}
+  {...rest}
+>
+  {
+    Astro.slots.has("icon") && (
+      <span class="aui-banner__icon" aria-hidden="true">
+        <slot name="icon"/>
+      </span>
+    )
+  }
+  <div class="aui-banner__body">
+    {
+      Astro.slots.has("title") && (
+        <p class="aui-banner__title">
+          <slot name="title"/>
+        </p>
+      )
+    }
+    <div class="aui-banner__message">
+      <slot/>
+    </div>
+  </div>
+  {
+    Astro.slots.has("actions") && (
+      <div class="aui-banner__actions">
+        <slot name="actions"/>
+      </div>
+    )
+  }
+  {
+    closable && (
+      <button
+        type="button"
+        class="aui-banner__close"
+        aria-label={closeLabel}
+        data-banner-close
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    )
+  }
+</div>
+
+<style>
+  .aui-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-3);
+    inline-size: 100%;
+    padding: var(--ui-space-3) var(--ui-space-4);
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    line-height: var(--ui-leading-normal);
+    border-block-end: var(--ui-border-width) solid transparent;
+  }
+
+  .aui-banner--sticky {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--ui-z-dropdown);
+  }
+
+  /* --- color --- */
+
+  .aui-banner--primary {
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+    border-block-end-color: var(--ui-primary-hover);
+  }
+
+  .aui-banner--info {
+    background-color: var(--ui-info);
+    color: var(--ui-info-foreground);
+    border-block-end-color: var(--ui-info);
+  }
+
+  .aui-banner--success {
+    background-color: var(--ui-success);
+    color: var(--ui-success-foreground);
+    border-block-end-color: var(--ui-success);
+  }
+
+  .aui-banner--warning {
+    background-color: var(--ui-warning);
+    color: var(--ui-warning-foreground);
+    border-block-end-color: var(--ui-warning);
+  }
+
+  .aui-banner--destructive {
+    background-color: var(--ui-error);
+    color: var(--ui-error-foreground);
+    border-block-end-color: var(--ui-error);
+  }
+
+  .aui-banner--neutral {
+    background-color: var(--ui-secondary);
+    color: var(--ui-secondary-foreground);
+    border-block-end-color: var(--ui-border);
+  }
+
+  /* --- parts --- */
+
+  .aui-banner__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: var(--ui-text-base);
+    line-height: var(--ui-leading-none);
+  }
+
+  .aui-banner__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+    min-inline-size: 0;
+    flex: 1 1 auto;
+  }
+
+  .aui-banner__title {
+    margin: 0;
+    font-weight: var(--ui-font-semibold);
+  }
+
+  .aui-banner__message {
+    min-inline-size: 0;
+  }
+
+  .aui-banner__message > :global(:first-child) {
+    margin-block-start: 0;
+  }
+
+  .aui-banner__message > :global(:last-child) {
+    margin-block-end: 0;
+  }
+
+  .aui-banner__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ui-space-2);
+    flex-shrink: 0;
+  }
+
+  .aui-banner__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    padding: 0;
+    font: inherit;
+    font-size: var(--ui-text-lg);
+    line-height: var(--ui-leading-none);
+    color: inherit;
+    background: transparent;
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity var(--ui-transition-fast),
+      background-color var(--ui-transition-fast);
+  }
+
+  .aui-banner__close:hover {
+    opacity: 1;
+  }
+
+  .aui-banner__close:focus-visible {
+    outline: var(--ui-focus-ring-width) solid currentcolor;
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  /* --- mobile: stack actions under the message --- */
+
+  @media (max-width: 40rem) {
+    .aui-banner {
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .aui-banner__body {
+      flex-basis: calc(100% - 4.5rem);
+    }
+
+    .aui-banner__actions {
+      inline-size: 100%;
+      padding-inline-start: calc(var(--ui-space-3) + 1rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-banner__close {
+      transition: none;
+    }
+  }
+</style>

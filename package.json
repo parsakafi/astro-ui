@@ -4,10 +4,16 @@
   "homepage": "https://astroui.ir",
   "repository": {
     "type": "git",
-    "url": "https://github.com/parsakafi/astro-ui"
+    "url": "https://github.com/parsakafi/astro-ui-component-library.git"
   },
-  "version": "1.0.0",
+  "bugs": {
+    "url": "https://github.com/parsakafi/astro-ui-component-library/issues"
+  },
+  "version": "0.1.0",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "packageManager": "npm@10.9.8",
   "workspaces": [
@@ -24,6 +30,8 @@
     "./attachment": "./src/components/data-display/Attachment.astro",
     "./autocomplete": "./src/components/forms/Autocomplete.astro",
     "./combobox": "./src/components/forms/Combobox.astro",
+    "./date-picker": "./src/components/forms/DatePicker.astro",
+    "./time-picker": "./src/components/forms/TimePicker.astro",
     "./breadcrumb": "./src/components/navigation/Breadcrumb.astro",
     "./clipboard": "./src/components/general/Clipboard.astro",
     "./command": "./src/components/general/Command.astro",
@@ -33,12 +41,22 @@
     "./hover-card": "./src/components/overlay/HoverCard.astro",
     "./kbd": "./src/components/general/Kbd.astro",
     "./pagination": "./src/components/navigation/Pagination.astro",
+    "./navbar": "./src/components/navigation/Navbar.astro",
+    "./sidebar": "./src/components/navigation/Sidebar.astro",
+    "./sidebar-group": "./src/components/navigation/SidebarGroup.astro",
+    "./sidebar-item": "./src/components/navigation/SidebarItem.astro",
     "./popover": "./src/components/overlay/Popover.astro",
+    "./menu": "./src/components/overlay/Menu.astro",
+    "./menu-item": "./src/components/overlay/MenuItem.astro",
+    "./menu-group": "./src/components/overlay/MenuGroup.astro",
+    "./menu-separator": "./src/components/overlay/MenuSeparator.astro",
     "./rating": "./src/components/forms/Rating.astro",
     "./scroll-area": "./src/components/layout/ScrollArea.astro",
     "./slider": "./src/components/forms/Slider.astro",
     "./sheet": "./src/components/overlay/Sheet.astro",
     "./stepper": "./src/components/navigation/Stepper.astro",
+    "./tree": "./src/components/navigation/Tree.astro",
+    "./tree-item": "./src/components/navigation/TreeItem.astro",
     "./sticky-surface": "./src/components/layout/StickySurface.astro",
     "./tag": "./src/components/data-display/Tag.astro",
     "./lightbox": "./src/components/overlay/Lightbox.astro",
@@ -60,6 +78,12 @@
     "./bubble-group": "./src/components/data-display/BubbleGroup.astro",
     "./bubble-reactions": "./src/components/data-display/BubbleReactions.astro",
     "./alert": "./src/components/feedback/Alert.astro",
+    "./banner": "./src/components/feedback/Banner.astro",
+    "./notification-center": "./src/components/feedback/NotificationCenter.astro",
+    "./notification-group": "./src/components/feedback/NotificationGroup.astro",
+    "./notification-item": "./src/components/feedback/NotificationItem.astro",
+    "./timeline": "./src/components/data-display/Timeline.astro",
+    "./timeline-item": "./src/components/data-display/TimelineItem.astro",
     "./spinner": "./src/components/feedback/Spinner.astro",
     "./skeleton": "./src/components/feedback/Skeleton.astro",
     "./separator": "./src/components/layout/Separator.astro",
@@ -91,6 +115,7 @@
   },
   "files": [
     "src",
+    "!src/content",
     "index.ts"
   ],
   "sideEffects": [

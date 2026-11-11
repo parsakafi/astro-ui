@@ -59,6 +59,6 @@ import { Skeleton } from "astro-ui";
             a: "Skeletons are aria-hidden decoration. Put aria-busy=true on the loading region and swap it out when content arrives.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["spinner", "avatar", "progress"],
 };

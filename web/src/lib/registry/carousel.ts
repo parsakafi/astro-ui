@@ -103,6 +103,6 @@ export const carousel: ComponentMeta = {
             a: "Dispatch carousel:set on the root with {index: 2} or {action: 'next'}. Listen for carousel:change to sync external UI like dot indicators.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["button", "card", "scroll-area"],
 };

@@ -24,7 +24,6 @@ export interface Props {
     | "soft"
     | "success"
     | "warning"
-    | "error"
     | "info"
     | "muted"
     | "destructive";
@@ -217,12 +216,6 @@ const classes = cn(
     background-color: var(--ui-warning-muted);
     color: color-mix(in srgb, var(--ui-warning) 78%, var(--ui-foreground));
     border-color: var(--ui-warning);
-  }
-
-  .aui-badge--error {
-    background-color: var(--ui-error-muted);
-    color: color-mix(in srgb, var(--ui-error) 80%, var(--ui-foreground));
-    border-color: var(--ui-error);
   }
 
   .aui-badge--info {
@@ -522,15 +515,6 @@ const classes = cn(
     background-color: var(--ui-warning-muted);
     color: var(--ui-warning);
     border-color: var(--ui-warning);
-  }
-
-  .aui-badge--position-top-right.aui-badge--error .aui-badge__bubble,
-  .aui-badge--position-top-left.aui-badge--error .aui-badge__bubble,
-  .aui-badge--position-bottom-right.aui-badge--error .aui-badge__bubble,
-  .aui-badge--position-bottom-left.aui-badge--error .aui-badge__bubble {
-    background-color: var(--ui-error-muted);
-    color: var(--ui-error);
-    border-color: var(--ui-error);
   }
 
   .aui-badge--position-top-right.aui-badge--info .aui-badge__bubble,

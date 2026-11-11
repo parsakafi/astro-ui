@@ -7,7 +7,7 @@ category: general
 importPath: "astro-ui"
 exportName: "Link"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["button", "breadcrumb", "pagination"]
 features:

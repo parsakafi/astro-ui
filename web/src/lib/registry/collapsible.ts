@@ -70,6 +70,6 @@ export const collapsible: ComponentMeta = {
             a: "Yes. Closed panels use hidden=\"until-found\", so Ctrl/Cmd+F, #hash links, and :~:text= fragments match collapsed content and the browser reveals it (firing beforematch — the component keeps aria-expanded in sync). Native <details> accordions get the same behavior from the platform. Falls back to display: none where unsupported.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["accordion", "disclosure", "tabs"],
 };

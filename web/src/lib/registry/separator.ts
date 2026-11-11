@@ -67,6 +67,6 @@ import { Separator } from "astro-ui";
             a: "Semantic <hr> by default — it announces a thematic break. Pass decorative when the rule is purely visual spacing.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["card", "scroll-area", "aspect-ratio"],
 };

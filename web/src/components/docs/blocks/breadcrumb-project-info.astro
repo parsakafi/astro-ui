@@ -5,23 +5,17 @@ import {
   Breadcrumb,
 } from "astro-ui";
 
-interface Props {
-  /** Prefix for form control ids so multiple instances can coexist. */
-  idPrefix?: string;
-}
-
-const {idPrefix = "bd"} = Astro.props;
 ---
 
 <Breadcrumb ariaLabel="Project breadcrumb">
     <span class="aui-breadcrumb__item">
-      <a class="aui-breadcrumb__link" href="#">
+      <a class="aui-breadcrumb__link" href="/docs/components/breadcrumb">
         <Avatar name="Acme Design" size="xs" variant="primary"/>
         Acme Design
       </a>
     </span>
     <span class="aui-breadcrumb__item">
-      <a class="aui-breadcrumb__link" href="#">
+      <a class="aui-breadcrumb__link" href="/docs/components/breadcrumb">
         <Avatar name="Ada Lovelace" size="xs" status="online"/>
         Ada Lovelace
       </a>

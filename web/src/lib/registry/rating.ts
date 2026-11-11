@@ -91,6 +91,6 @@ export const rating: ComponentMeta = {
             a: "Pass iconPath (one icon for every step) or icons (one path per step) with SVG path data drawn in a 16×16 viewBox. Paths render as-is — keep them simple, filled shapes.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["slider", "switch", "progress"],
 };

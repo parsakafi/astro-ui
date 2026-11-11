@@ -20,7 +20,7 @@ export interface Props {
     | "soft"
     | "success"
     | "warning"
-    | "error"
+    | "destructive"
     | "info"
     | "muted";
   /** Scale of the tag. */
@@ -161,7 +161,7 @@ const classes = cn(
     color: var(--ui-warning);
   }
 
-  .aui-tag--error {
+  .aui-tag--destructive {
     background-color: var(--ui-error-muted);
     color: var(--ui-error);
   }

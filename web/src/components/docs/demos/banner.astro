@@ -1,0 +1,92 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import {Banner, Button} from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+  {
+    demoIds.map((id) => (
+      <Fragment>
+        {id === "release" && (
+          <div class="docs-demo-block" id={`demo-banner-${id}`}>
+            <h3 class="docs-demo-title">Release announcement</h3>
+            <DemoTabs id="dm-banner-release">
+              <Fragment slot="preview">
+                <Banner variant="info">
+                  <span slot="icon" aria-hidden="true">✦</span>
+                  <strong>v2.5 is out.</strong> Timeline, Banner, and Menu are here.
+                  <Button slot="actions" size="sm" variant="outline">Read the notes</Button>
+                </Banner>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dismissible" && (
+          <div class="docs-demo-block" id={`demo-banner-${id}`}>
+            <h3 class="docs-demo-title">Dismissible trial notice</h3>
+            <DemoTabs id="dm-banner-dismissible">
+              <Fragment slot="preview">
+                <Banner variant="primary" closable>
+                  <strong>14 days left in your trial.</strong> Add a payment method to keep your projects online.
+                  <Button slot="actions" size="sm" variant="secondary">Choose a plan</Button>
+                </Banner>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "sticky" && (
+          <div class="docs-demo-block" id={`demo-banner-${id}`}>
+            <h3 class="docs-demo-title">Sticky maintenance strip</h3>
+            <DemoTabs id="dm-banner-sticky">
+              <Fragment slot="preview">
+                <Banner variant="warning" sticky closable closeLabel="Dismiss maintenance notice">
+                  <span slot="icon" aria-hidden="true">⏳</span>
+                  Scheduled maintenance on Oct 24, 02:00–04:00 UTC. Deploys will queue.
+                </Banner>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "neutral" && (
+          <div class="docs-demo-block" id={`demo-banner-${id}`}>
+            <h3 class="docs-demo-title">Neutral sub-header note</h3>
+            <DemoTabs id="dm-banner-neutral">
+              <Fragment slot="preview">
+                <Banner variant="neutral" role="none">
+                  <span slot="icon" aria-hidden="true">ℹ</span>
+                  You are viewing the staging environment. Changes are not public.
+                </Banner>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get(id)} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))
+  }
+</div>
+
+<script>
+  // Banner ships no dismissal logic — this is the recipe the docs describe:
+  // listen for the hook, then hide or persist however the app wants.
+  document.addEventListener("click", (event) => {
+    const hook = (event.target as HTMLElement | null)?.closest(
+      "[data-banner-close]",
+    );
+    if (!hook) return;
+    hook.closest(".aui-banner")?.remove();
+  });
+</script>

@@ -85,6 +85,6 @@ export const bubble: ComponentMeta = {
             a: "When one sender sends several turns in a row: group them so spacing tightens and the run reads as a single message block. Give each group an ariaLabel naming the sender.",
         },
     ],
-    since: "1.1.0",
+    since: "0.1.0",
     related: ["avatar", "collapsible", "attachment"],
 };

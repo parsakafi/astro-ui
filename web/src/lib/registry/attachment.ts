@@ -54,7 +54,7 @@ export const attachment: ComponentMeta = {
         },
         {
             id: "vertical",
-            title: "Vertical",
+            title: "Vertical with image",
             code: `<Attachment orientation="vertical" title="cover.png" description="PNG · 480 KB">
   <img slot="media" src="/cover.png" alt="" />
 </Attachment>`,
@@ -88,6 +88,6 @@ export const attachment: ComponentMeta = {
             a: "Put a button in the actions slot with an explicit aria-label — icon-only actions need a name. Wire the click handler or a form submit in your app; the component ships zero JS.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["empty", "tag", "button-group"],
 };

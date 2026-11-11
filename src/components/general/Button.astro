@@ -70,8 +70,8 @@ export interface Props {
   rel?: string;
   /** Rendered as target on <a>; ignored on <button>. */
   target?: string;
-  /** Corner shape: automatic (default radius), fully rounded, sharp, or circular. */
-  shape?: "auto" | "rounded" | "square" | "circle";
+  /** Corner shape: default token radius, pill, sharp, or circular. */
+  shape?: "rounded" | "square" | "circle" | "pill";
   /** Box shadow: none, or sm/md/lg tokens. */
   shadow?: "none" | "sm" | "md" | "lg";
   /** When true, the button fits its content width instead of being inline-flex. */
@@ -113,7 +113,7 @@ const {
   ariaLabel,
   rel,
   target,
-  shape = "auto",
+  shape = "rounded",
   shadow = "none",
   fitContent = false,
   style,
@@ -167,7 +167,6 @@ const isCenterLoading = loading && loadingPosition === "center";
     aria-label={ariaLabel}
     aria-disabled={isDisabled || undefined}
     aria-busy={loading || undefined}
-    aria-invalid={invalid || undefined}
     rel={rel}
     target={target}
     style={style}
@@ -209,7 +208,6 @@ const isCenterLoading = loading && loadingPosition === "center";
     disabled={isDisabled}
     aria-label={ariaLabel}
     aria-busy={loading || undefined}
-    aria-invalid={invalid || undefined}
     style={style}
     data-color={resolvedColor}
     data-normal={isDisabled ? undefined : ""}
@@ -248,7 +246,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     font-size: var(--ui-text-sm);
     line-height: var(--ui-leading-none);
     border: 1px solid transparent;
-    border-radius: var(--ui-radius-md);
+    border-radius: var(--ui-control-radius);
     cursor: pointer;
     text-decoration: none;
     white-space: nowrap;
@@ -257,34 +255,39 @@ const isCenterLoading = loading && loadingPosition === "center";
     border-color var(--ui-transition-fast);
   }
 
+  .aui-btn:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
   /* --- size --- */
 
   .aui-btn--xs {
-    height: 1.75rem;
-    padding: 0 var(--ui-space-2);
+    height: var(--ui-control-height-xs);
+    padding: 0 var(--ui-control-padding-xs);
     font-size: var(--ui-text-2xs);
   }
 
   .aui-btn--sm {
-    height: 2rem;
-    padding: 0 var(--ui-space-3);
+    height: var(--ui-control-height-sm);
+    padding: 0 var(--ui-control-padding-sm);
     font-size: var(--ui-text-xs);
   }
 
   .aui-btn--md {
-    height: 2.5rem;
-    padding: 0 var(--ui-space-4);
+    height: var(--ui-control-height-md);
+    padding: 0 var(--ui-control-padding-md);
   }
 
   .aui-btn--lg {
-    height: 2.75rem;
-    padding: 0 var(--ui-space-6);
+    height: var(--ui-control-height-lg);
+    padding: 0 var(--ui-control-padding-lg);
     font-size: var(--ui-text-base);
   }
 
   .aui-btn--xl {
-    height: 3rem;
-    padding: 0 var(--ui-space-8);
+    height: var(--ui-control-height-xl);
+    padding: 0 var(--ui-control-padding-xl);
     font-size: var(--ui-text-lg);
   }
 
@@ -295,19 +298,19 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--icon {
-    height: 2.5rem;
-    width: 2.5rem;
+    height: var(--ui-control-height-md);
+    width: var(--ui-control-height-md);
     padding: 0;
   }
 
   .aui-btn--icon.aui-btn--xs {
-    height: 1.75rem;
-    width: 1.75rem;
+    height: var(--ui-control-height-xs);
+    width: var(--ui-control-height-xs);
   }
 
   .aui-btn--icon.aui-btn--xl {
-    height: 3rem;
-    width: 3rem;
+    height: var(--ui-control-height-xl);
+    width: var(--ui-control-height-xl);
   }
 
   .aui-btn--icon.aui-btn--2xl {
@@ -318,13 +321,14 @@ const isCenterLoading = loading && loadingPosition === "center";
   /* --- shape --- */
 
   .aui-btn--shape-rounded {
-    border-radius: var(--ui-radius-full);
+    border-radius: var(--ui-control-radius);
   }
 
   .aui-btn--shape-square {
     border-radius: 0;
   }
 
+  .aui-btn--shape-pill,
   .aui-btn--shape-circle {
     border-radius: var(--ui-radius-full);
   }

@@ -7,7 +7,7 @@ category: layout
 importPath: "astro-ui"
 exportName: "Collapsible"
 js: true
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["accordion", "disclosure", "tabs"]
 features:

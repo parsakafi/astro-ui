@@ -67,7 +67,7 @@ export const autocomplete: ComponentMeta = {
         },
         {
             id: "clearable",
-            title: "Clearable",
+            title: "Clearable + open on focus",
             code: `<Autocomplete name="search" clearable openOnFocus items={["One", "Two", "Three"]} />`,
         },
     ],
@@ -98,6 +98,6 @@ export const autocomplete: ComponentMeta = {
             a: "Yes — set filter={false} so the script doesn't filter client-side, then listen for input events and render your own options into the listbox panel (or re-render the whole component server-side per request).",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["select", "input", "field"],
 };

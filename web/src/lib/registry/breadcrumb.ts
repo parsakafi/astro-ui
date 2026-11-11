@@ -110,6 +110,6 @@ export const breadcrumb: ComponentMeta = {
             a: "Set ellipsis: true on a middle item to render a presentational …, or compose a Popover trigger inside an item so users can open the hidden segments from the ellipsis.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["pagination", "tabs", "link"],
 };

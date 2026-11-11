@@ -91,6 +91,6 @@ export const clipboard: ComponentMeta = {
             a: "Yes — it renders a real button whose aria-label defaults to Copy <value> (override with ariaLabel), and copy success is announced via the live region.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["button", "kbd", "code"],
 };

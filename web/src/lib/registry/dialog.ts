@@ -68,6 +68,6 @@ document.getElementById("prefs")?.showModal());
             a: "Yes — recipe: dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); }).",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["button", "alert", "card"],
 };

@@ -7,7 +7,7 @@ category: data-display
 importPath: "astro-ui"
 exportName: "Bubble"
 js: false
-since: "1.1.0"
+since: "0.1.0"
 isNew: false
 related: ["avatar", "collapsible", "attachment"]
 features:

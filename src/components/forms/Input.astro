@@ -149,9 +149,9 @@ const classes = cn(
     color: var(--ui-foreground);
     background-color: var(--ui-background);
     border: 1px solid var(--ui-input);
-    border-radius: var(--ui-radius-md);
+    border-radius: var(--ui-control-radius);
     transition: border-color var(--ui-transition-fast),
-    box-shadow var(--ui-transition-fast);
+    outline-color var(--ui-transition-fast);
   }
 
   .aui-input::placeholder {
@@ -161,31 +161,31 @@ const classes = cn(
   /* --- size --- */
 
   .aui-input--xs {
-    height: 1.75rem;
-    padding: 0 var(--ui-space-2);
+    height: var(--ui-control-height-xs);
+    padding: 0 var(--ui-control-padding-xs);
     font-size: var(--ui-text-2xs);
   }
 
   .aui-input--sm {
-    height: 2rem;
-    padding: 0 var(--ui-space-3);
+    height: var(--ui-control-height-sm);
+    padding: 0 var(--ui-control-padding-sm);
     font-size: var(--ui-text-xs);
   }
 
   .aui-input--md {
-    height: 2.5rem;
-    padding: 0 var(--ui-space-3);
+    height: var(--ui-control-height-md);
+    padding: 0 var(--ui-control-padding-md);
   }
 
   .aui-input--lg {
-    height: 2.75rem;
-    padding: 0 var(--ui-space-4);
+    height: var(--ui-control-height-lg);
+    padding: 0 var(--ui-control-padding-lg);
     font-size: var(--ui-text-base);
   }
 
   .aui-input--xl {
-    height: 3rem;
-    padding: 0 var(--ui-space-5);
+    height: var(--ui-control-height-xl);
+    padding: 0 var(--ui-control-padding-xl);
     font-size: var(--ui-text-lg);
   }
 
@@ -223,22 +223,20 @@ const classes = cn(
     border-color: var(--ui-info);
   }
 
-  .aui-input:focus {
-    outline: none;
+  .aui-input:focus-visible {
     border-color: var(--ui-ring);
-    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
-    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-ring);
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
   }
 
-  /* Invalid overrides the custom border + focus ring */
+  /* Invalid overrides the border + focus ring */
   .aui-input--invalid {
     border-color: var(--ui-error);
   }
 
-  .aui-input--invalid:focus {
+  .aui-input--invalid:focus-visible {
     border-color: var(--ui-error);
-    box-shadow: 0 0 0 var(--ui-focus-ring-offset) var(--ui-background),
-    0 0 0 calc(var(--ui-focus-ring-offset) + var(--ui-focus-ring-width)) var(--ui-error);
+    outline-color: var(--ui-error);
   }
 
   .aui-input:disabled {

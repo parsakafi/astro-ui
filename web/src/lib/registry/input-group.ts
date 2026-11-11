@@ -70,6 +70,6 @@ export const inputGroup: ComponentMeta = {
             a: "Fully. Addons are static markup and focus styling is CSS :focus-within — nothing ships or runs client-side.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["input", "textarea", "button", "label"],
 };

@@ -1,0 +1,1039 @@
+---
+/**
+ * TimePicker — time field with four distinct interaction patterns.
+ *
+ * variant="select"  — native <select> of generated slots; zero JS.
+ * variant="input"   — <input type="time">; opens the platform picker.
+ * variant="wheel"   — three scroll-snap columns (H · M · period); JS required.
+ * variant="clock"   — circular clock face (tap hour → tap minute); JS required.
+ *
+ * All four write the same `HH:mm` value into a hidden form input, so the
+ * form contract never changes regardless of which variant is active.
+ *
+ *   <TimePicker name="appt" variant="wheel" hour12 />
+ *   <TimePicker name="start" variant="clock" value="09:30" />
+ *
+ * JavaScript required: Yes (wheel and clock variants; select and input are zero-JS)
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Interaction pattern. */
+  variant?: "select" | "input" | "wheel" | "clock";
+  /** Form field name. */
+  name?: string;
+  /** Initial value (`HH:mm`). */
+  value?: string;
+  /** Earliest time (`HH:mm`) — select/wheel variants. */
+  min?: string;
+  /** Latest time (`HH:mm`) — select/wheel variants. */
+  max?: string;
+  /** Slot interval in minutes (select/wheel variants). */
+  step?: number;
+  /** Use 12-hour display (wheel/clock/select variants). */
+  hour12?: boolean;
+  /** BCP-47 locale for slot labels. */
+  locale?: string;
+  /** Placeholder option (select variant). */
+  placeholder?: string;
+  /** Accessible name. */
+  ariaLabel?: string;
+  /** Size (select/input/wheel variants). */
+  size?: "sm" | "md" | "lg";
+  required?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "select",
+  name,
+  value,
+  min,
+  max,
+  step = 1,
+  hour12 = false,
+  locale = "en-US",
+  placeholder = "Select a time",
+  ariaLabel,
+  size = "md",
+  required = false,
+  disabled = false,
+  invalid = false,
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+/** `HH:mm` → minutes since midnight. */
+const toMinutes = (time: string): number | null => {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours > 23 || minutes > 59) return null;
+  return hours * 60 + minutes;
+};
+
+/** Minutes since midnight → `HH:mm`. */
+const toTime = (total: number): string => {
+  const hours = Math.floor(total / 60) % 24;
+  const minutes = total % 60;
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+};
+
+const fmt = new Intl.DateTimeFormat(locale, {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12,
+});
+
+const labelFor = (minutesSinceMidnight: number): string => {
+  const date = new Date(
+    2000,
+    0,
+    1,
+    Math.floor(minutesSinceMidnight / 60),
+    minutesSinceMidnight % 60,
+    0,
+    0,
+  );
+  return fmt.format(date);
+};
+
+const interval = Math.max(1, Math.min(step, 24 * 60));
+const from = toMinutes(min ?? "") ?? 0;
+const to = toMinutes(max ?? "") ?? 24 * 60 - 1;
+
+const slots: { value: string; label: string }[] = [];
+if (variant === "select") {
+  const start = Math.ceil(from / interval) * interval;
+  for (let minute = start; minute <= to; minute += interval) {
+    slots.push({ value: toTime(minute), label: labelFor(minute) });
+  }
+}
+
+const classes = cn(
+  "aui-timepicker",
+  `aui-timepicker--${size}`,
+  invalid && "aui-timepicker--invalid",
+  className,
+);
+---
+
+{variant === "select" && (
+  <select
+    id={id}
+    class={classes}
+    name={name}
+    aria-label={ariaLabel}
+    aria-invalid={invalid ? "true" : undefined}
+    required={required}
+    disabled={disabled}
+    data-aui-timepicker
+    {...rest}
+  >
+    <option value="" selected={!value} disabled={required}>{placeholder}</option>
+    {slots.map((slot) => (
+      <option value={slot.value} selected={slot.value === value}>{slot.label}</option>
+    ))}
+  </select>
+)}
+
+{variant === "input" && (
+  <input
+    id={id}
+    class={classes}
+    type="time"
+    name={name}
+    value={value}
+    min={min}
+    max={max}
+    step={interval * 60}
+    aria-label={ariaLabel}
+    aria-invalid={invalid ? "true" : undefined}
+    required={required}
+    disabled={disabled}
+    data-aui-timepicker
+    {...rest}
+  />
+)}
+
+{variant === "wheel" && (
+  <div
+    id={id}
+    class={cn("aui-tp-wheel", invalid && "aui-tp-wheel--invalid", className)}
+    data-aui-tp-wheel
+    data-hour12={hour12 ? "" : undefined}
+    data-value={value ?? ""}
+    aria-label={ariaLabel ?? "Time picker"}
+    {...rest}
+  >
+    <!-- Hidden form input carries the actual HH:mm value -->
+    <input
+      type="hidden"
+      name={name}
+      required={required}
+      disabled={disabled}
+      data-aui-tp-wheel-input
+    />
+    <div class="aui-tp-wheel__drums" aria-hidden="true">
+      <!-- Hour drum -->
+      <div class="aui-tp-wheel__drum" data-aui-tp-wheel-drum="hour">
+        <div class="aui-tp-wheel__track" data-aui-tp-wheel-track="hour"></div>
+      </div>
+      <!-- Separator -->
+      <span class="aui-tp-wheel__sep">:</span>
+      <!-- Minute drum -->
+      <div class="aui-tp-wheel__drum" data-aui-tp-wheel-drum="minute">
+        <div class="aui-tp-wheel__track" data-aui-tp-wheel-track="minute"></div>
+      </div>
+      <!-- AM/PM drum (shown only when hour12) -->
+      {hour12 && (
+        <div class="aui-tp-wheel__drum aui-tp-wheel__drum--period" data-aui-tp-wheel-drum="period">
+          <div class="aui-tp-wheel__track" data-aui-tp-wheel-track="period"></div>
+        </div>
+      )}
+    </div>
+    <!-- Selection highlight -->
+    <div class="aui-tp-wheel__highlight" aria-hidden="true"></div>
+    <!-- Accessible live region -->
+    <p class="aui-tp-wheel__live" aria-live="polite" aria-atomic="true" data-aui-tp-wheel-live></p>
+  </div>
+)}
+
+{variant === "clock" && (
+  <div
+    id={id}
+    class={cn("aui-tp-clock", invalid && "aui-tp-clock--invalid", className)}
+    data-aui-tp-clock
+    data-hour12={hour12 ? "" : undefined}
+    data-value={value ?? ""}
+    aria-label={ariaLabel ?? "Time picker"}
+    {...rest}
+  >
+    <!-- Hidden form input -->
+    <input
+      type="hidden"
+      name={name}
+      required={required}
+      disabled={disabled}
+      data-aui-tp-clock-input
+    />
+    <!-- Display bar -->
+    <div class="aui-tp-clock__display" aria-live="polite" aria-atomic="true">
+      <button type="button" class="aui-tp-clock__display-part" data-aui-tp-clock-hour-btn aria-pressed="true">
+        <span data-aui-tp-clock-hh>--</span>
+      </button>
+      <span class="aui-tp-clock__display-sep">:</span>
+      <button type="button" class="aui-tp-clock__display-part" data-aui-tp-clock-min-btn aria-pressed="false">
+        <span data-aui-tp-clock-mm>--</span>
+      </button>
+      {hour12 && (
+        <div class="aui-tp-clock__display-period">
+          <button type="button" class="aui-tp-clock__period-btn" data-aui-tp-clock-am>AM</button>
+          <button type="button" class="aui-tp-clock__period-btn" data-aui-tp-clock-pm>PM</button>
+        </div>
+      )}
+    </div>
+    <!-- SVG clock face -->
+    <svg
+      class="aui-tp-clock__face"
+      viewBox="0 0 220 220"
+      aria-hidden="true"
+      data-aui-tp-clock-svg
+    >
+      <!-- Background -->
+      <circle cx="110" cy="110" r="108" class="aui-tp-clock__bg" />
+      <!-- Hand -->
+      <line
+        x1="110" y1="110"
+        x2="110" y2="30"
+        class="aui-tp-clock__hand"
+        data-aui-tp-clock-hand
+        stroke-linecap="round"
+      />
+      <!-- Center dot -->
+      <circle cx="110" cy="110" r="4" class="aui-tp-clock__center" />
+      <!-- Number cells injected by JS -->
+      <g data-aui-tp-clock-numbers></g>
+    </svg>
+  </div>
+)}
+
+<script>
+  /* ─────────────────────────────────────────────
+     WHEEL VARIANT
+  ───────────────────────────────────────────── */
+  (function initWheels() {
+    function buildWheel(root: HTMLElement) {
+      if (root.dataset.auiTpWheelInit) return;
+      root.dataset.auiTpWheelInit = "1";
+
+      const hiddenInput = root.querySelector<HTMLInputElement>("[data-aui-tp-wheel-input]")!;
+      const liveEl = root.querySelector<HTMLElement>("[data-aui-tp-wheel-live]")!;
+      const hour12 = root.hasAttribute("data-hour12");
+
+      /* Build item lists */
+      const hourItems: number[] = [];
+      if (hour12) {
+        for (let h = 1; h <= 12; h++) hourItems.push(h);
+      } else {
+        for (let h = 0; h < 24; h++) hourItems.push(h);
+      }
+      const minuteItems: number[] = [];
+      for (let m = 0; m < 60; m++) minuteItems.push(m);
+      const periodItems = ["AM", "PM"];
+
+      /* Parse initial value */
+      const initVal = root.dataset.value ?? "";
+      let initH = 0, initM = 0, initPeriod = 0;
+      const valMatch = /^(\d{1,2}):(\d{2})$/.exec(initVal);
+      if (valMatch) {
+        const h24 = Number(valMatch[1]);
+        const m = Number(valMatch[2]);
+        initM = m;
+        if (hour12) {
+          initPeriod = h24 >= 12 ? 1 : 0;
+          const h = h24 % 12 || 12;
+          initH = hourItems.indexOf(h);
+        } else {
+          initH = h24;
+        }
+      }
+
+      /* ── Build a drum ── */
+      function buildDrum(
+        track: HTMLElement,
+        items: (number | string)[],
+        initIndex: number,
+        fmt: (v: number | string) => string,
+        onChange: (index: number) => void,
+      ) {
+        const ITEM_H = 44; // px, must match CSS
+
+        /* Populate track with 3× items for infinite wrapping feel */
+        const total = items.length;
+        track.innerHTML = "";
+        // prepend a clone set, real set, append a clone set
+        for (let rep = 0; rep < 3; rep++) {
+          for (const item of items) {
+            const el = document.createElement("div");
+            el.className = "aui-tp-wheel__item";
+            el.textContent = fmt(item);
+            track.appendChild(el);
+          }
+        }
+
+        let currentIndex = initIndex;
+        // Start at the middle repetition
+        let scrollTop = (total + initIndex) * ITEM_H;
+        track.style.transform = `translateY(${-scrollTop + ITEM_H}px)`;
+
+        function snapTo(index: number, animated = true) {
+          currentIndex = ((index % total) + total) % total;
+          const target = (total + currentIndex) * ITEM_H;
+          if (animated) {
+            track.style.transition = "transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)";
+          } else {
+            track.style.transition = "none";
+          }
+          track.style.transform = `translateY(${-target + ITEM_H}px)`;
+          scrollTop = target;
+          // highlight
+          track.querySelectorAll<HTMLElement>(".aui-tp-wheel__item").forEach((el, i) => {
+            el.classList.toggle("is-selected", i % total === currentIndex);
+          });
+          onChange(currentIndex);
+        }
+
+        snapTo(initIndex, false);
+
+        /* Pointer drag */
+        let dragStart = 0;
+        let dragScrollStart = 0;
+        let isDragging = false;
+        let velocity = 0;
+        let lastY = 0;
+        let lastTime = 0;
+        let rafId = 0;
+
+        track.parentElement!.addEventListener("pointerdown", (e: PointerEvent) => {
+          e.preventDefault();
+          (track.parentElement as HTMLElement).setPointerCapture(e.pointerId);
+          isDragging = true;
+          dragStart = e.clientY;
+          dragScrollStart = scrollTop;
+          velocity = 0;
+          lastY = e.clientY;
+          lastTime = e.timeStamp;
+          track.style.transition = "none";
+          cancelAnimationFrame(rafId);
+        });
+
+        track.parentElement!.addEventListener("pointermove", (e: PointerEvent) => {
+          if (!isDragging) return;
+          const dy = dragStart - e.clientY;
+          const raw = dragScrollStart + dy;
+          // Keep within [total*ITEM_H, total*2*ITEM_H] for smooth infinite feel
+          scrollTop = raw;
+          track.style.transform = `translateY(${-scrollTop + ITEM_H}px)`;
+          velocity = (e.clientY - lastY) / (e.timeStamp - lastTime + 0.001);
+          lastY = e.clientY;
+          lastTime = e.timeStamp;
+        });
+
+        track.parentElement!.addEventListener("pointerup", () => {
+          if (!isDragging) return;
+          isDragging = false;
+          // Momentum
+          let v = -velocity * 200;
+          const decay = 0.85;
+          function momentum() {
+            if (Math.abs(v) < 0.5) {
+              // Snap to nearest
+              const nearest = Math.round((scrollTop - ITEM_H) / ITEM_H);
+              snapTo(((nearest % total) + total) % total);
+              return;
+            }
+            scrollTop += v;
+            track.style.transform = `translateY(${-scrollTop + ITEM_H}px)`;
+            v *= decay;
+            rafId = requestAnimationFrame(momentum);
+          }
+          rafId = requestAnimationFrame(momentum);
+        });
+
+        /* Wheel / scroll */
+        track.parentElement!.addEventListener("wheel", (e: WheelEvent) => {
+          e.preventDefault();
+          const delta = Math.sign(e.deltaY);
+          snapTo(currentIndex + delta);
+        }, {passive: false});
+
+        /* Click on item */
+        track.addEventListener("click", (e: MouseEvent) => {
+          const el = (e.target as HTMLElement).closest<HTMLElement>(".aui-tp-wheel__item");
+          if (!el) return;
+          const allItems = [...track.querySelectorAll<HTMLElement>(".aui-tp-wheel__item")];
+          const clickedRaw = allItems.indexOf(el);
+          const clickedInSet = clickedRaw % total;
+          snapTo(clickedInSet);
+        });
+
+        return {
+          getIndex: () => currentIndex,
+          getValue: () => items[currentIndex],
+          snapTo,
+        };
+      }
+
+      const hourTrack = root.querySelector<HTMLElement>("[data-aui-tp-wheel-track='hour']")!;
+      const minTrack = root.querySelector<HTMLElement>("[data-aui-tp-wheel-track='minute']")!;
+      const periodTrack = root.querySelector<HTMLElement>("[data-aui-tp-wheel-track='period']");
+
+      const pad = (n: number) => String(n).padStart(2, "0");
+
+      let selectedHourIdx = initH;
+      let selectedMinIdx = initM;
+      let selectedPeriodIdx = initPeriod;
+
+      function commit() {
+        const rawHour = hour12
+          ? (Number(hourItems[selectedHourIdx]) % 12) + (selectedPeriodIdx === 1 ? 12 : 0)
+          : selectedHourIdx;
+        const hh = String(rawHour).padStart(2, "0");
+        const mm = pad(selectedMinIdx);
+        hiddenInput.value = `${hh}:${mm}`;
+        hiddenInput.dispatchEvent(new Event("input", {bubbles: true}));
+        hiddenInput.dispatchEvent(new Event("change", {bubbles: true}));
+        const displayH = hour12 ? (Number(hourItems[selectedHourIdx])) : rawHour;
+        const period = hour12 ? (selectedPeriodIdx === 0 ? " AM" : " PM") : "";
+        liveEl.textContent = `${pad(displayH)}:${mm}${period}`;
+      }
+
+      buildDrum(hourTrack, hourItems, initH, (v) => pad(Number(v)), (idx) => {
+        selectedHourIdx = idx;
+        commit();
+      });
+      buildDrum(minTrack, minuteItems, initM, (v) => pad(Number(v)), (idx) => {
+        selectedMinIdx = idx;
+        commit();
+      });
+      if (hour12 && periodTrack) {
+        buildDrum(periodTrack, periodItems, initPeriod, (v) => String(v), (idx) => {
+          selectedPeriodIdx = idx;
+          commit();
+        });
+      }
+
+      commit();
+    }
+
+    document.querySelectorAll<HTMLElement>("[data-aui-tp-wheel]").forEach(buildWheel);
+    document.addEventListener("astro:after-swap", () => {
+      document.querySelectorAll<HTMLElement>("[data-aui-tp-wheel]").forEach(buildWheel);
+    });
+  })();
+
+  /* ─────────────────────────────────────────────
+     CLOCK VARIANT
+  ───────────────────────────────────────────── */
+  (function initClocks() {
+    const RAD = Math.PI / 180;
+    const CX = 110, CY = 110;
+    const INNER_R = 62; // inner ring radius for 13-24 in 24h mode
+    const OUTER_R = 84; // outer ring radius for numbers
+
+    function buildClock(root: HTMLElement) {
+      if (root.dataset.auiTpClockInit) return;
+      root.dataset.auiTpClockInit = "1";
+
+      const hiddenInput = root.querySelector<HTMLInputElement>("[data-aui-tp-clock-input]")!;
+      const svg = root.querySelector<SVGSVGElement>("[data-aui-tp-clock-svg]")!;
+      const numbersGroup = root.querySelector<SVGGElement>("[data-aui-tp-clock-numbers]")!;
+      const hand = root.querySelector<SVGLineElement>("[data-aui-tp-clock-hand]")!;
+      const hhEl = root.querySelector<HTMLElement>("[data-aui-tp-clock-hh]")!;
+      const mmEl = root.querySelector<HTMLElement>("[data-aui-tp-clock-mm]")!;
+      const hourBtn = root.querySelector<HTMLButtonElement>("[data-aui-tp-clock-hour-btn]")!;
+      const minBtn = root.querySelector<HTMLButtonElement>("[data-aui-tp-clock-min-btn]")!;
+      const hour12 = root.hasAttribute("data-hour12");
+      const amBtn = root.querySelector<HTMLButtonElement>("[data-aui-tp-clock-am]");
+      const pmBtn = root.querySelector<HTMLButtonElement>("[data-aui-tp-clock-pm]");
+
+      /* State */
+      let mode: "hour" | "minute" = "hour";
+      let selHour = 0; // 0-23
+      let selMin = 0;  // 0-59
+      let isPM = false;
+
+      /* Parse initial value */
+      const initVal = root.dataset.value ?? "";
+      const vm = /^(\d{1,2}):(\d{2})$/.exec(initVal);
+      if (vm) {
+        selHour = Number(vm[1]);
+        selMin = Number(vm[2]);
+        isPM = selHour >= 12;
+      }
+
+      function pad(n: number) { return String(n).padStart(2, "0"); }
+
+      function commit() {
+        hiddenInput.value = `${pad(selHour)}:${pad(selMin)}`;
+        hiddenInput.dispatchEvent(new Event("input", {bubbles: true}));
+        hiddenInput.dispatchEvent(new Event("change", {bubbles: true}));
+        if (hour12) {
+          const h12 = selHour % 12 || 12;
+          hhEl.textContent = pad(h12);
+          if (amBtn && pmBtn) {
+            amBtn.classList.toggle("is-active", !isPM);
+            pmBtn.classList.toggle("is-active", isPM);
+          }
+        } else {
+          hhEl.textContent = pad(selHour);
+        }
+        mmEl.textContent = pad(selMin);
+      }
+
+      /* ── Render numbers ── */
+      function renderHours() {
+        numbersGroup.innerHTML = "";
+        if (hour12) {
+          // 12-hour: 1-12 on outer ring
+          for (let i = 1; i <= 12; i++) {
+            const angle = (i * 30 - 90) * RAD;
+            const x = CX + OUTER_R * Math.cos(angle);
+            const y = CY + OUTER_R * Math.sin(angle);
+            const num = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            num.setAttribute("x", String(x));
+            num.setAttribute("y", String(y));
+            num.setAttribute("text-anchor", "middle");
+            num.setAttribute("dominant-baseline", "central");
+            num.setAttribute("class", "aui-tp-clock__num");
+            num.setAttribute("data-val", String(i));
+            num.textContent = String(i);
+            numbersGroup.appendChild(num);
+          }
+        } else {
+          // 24-hour: 0-11 outer ring, 12-23 inner ring
+          for (let i = 0; i < 12; i++) {
+            const angle = (i * 30 - 90) * RAD;
+            const xo = CX + OUTER_R * Math.cos(angle);
+            const yo = CY + OUTER_R * Math.sin(angle);
+            const xi = CX + INNER_R * Math.cos(angle);
+            const yi = CY + INNER_R * Math.sin(angle);
+            const outer = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            outer.setAttribute("x", String(xo));
+            outer.setAttribute("y", String(yo));
+            outer.setAttribute("text-anchor", "middle");
+            outer.setAttribute("dominant-baseline", "central");
+            outer.setAttribute("class", "aui-tp-clock__num");
+            outer.setAttribute("data-val", String(i));
+            outer.textContent = String(i);
+            numbersGroup.appendChild(outer);
+            const inner = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            inner.setAttribute("x", String(xi));
+            inner.setAttribute("y", String(yi));
+            inner.setAttribute("text-anchor", "middle");
+            inner.setAttribute("dominant-baseline", "central");
+            inner.setAttribute("class", "aui-tp-clock__num aui-tp-clock__num--inner");
+            inner.setAttribute("data-val", String(i + 12));
+            inner.textContent = String(i + 12);
+            numbersGroup.appendChild(inner);
+          }
+        }
+        highlightHour();
+      }
+
+      function renderMinutes() {
+        numbersGroup.innerHTML = "";
+        for (let i = 0; i < 12; i++) {
+          const val = i * 5;
+          const angle = (i * 30 - 90) * RAD;
+          const x = CX + OUTER_R * Math.cos(angle);
+          const y = CY + OUTER_R * Math.sin(angle);
+          const num = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          num.setAttribute("x", String(x));
+          num.setAttribute("y", String(y));
+          num.setAttribute("text-anchor", "middle");
+          num.setAttribute("dominant-baseline", "central");
+          num.setAttribute("class", "aui-tp-clock__num");
+          num.setAttribute("data-val", String(val));
+          num.textContent = pad(val);
+          numbersGroup.appendChild(num);
+        }
+        highlightMinute();
+      }
+
+      function setHandAngle(angleDeg: number, useInner = false) {
+        const r = useInner ? INNER_R : OUTER_R;
+        const a = (angleDeg - 90) * RAD;
+        const x2 = CX + r * Math.cos(a);
+        const y2 = CY + r * Math.sin(a);
+        hand.setAttribute("x2", String(x2));
+        hand.setAttribute("y2", String(y2));
+      }
+
+      function highlightHour() {
+        numbersGroup.querySelectorAll<SVGTextElement>(".aui-tp-clock__num").forEach(el => {
+          el.classList.toggle("is-selected", Number(el.dataset.val) === selHour);
+        });
+        if (hour12) {
+          const h12 = selHour % 12 || 12;
+          setHandAngle(h12 * 30);
+        } else {
+          const isInner = selHour >= 12;
+          const val = selHour % 12;
+          setHandAngle(val * 30, isInner);
+        }
+      }
+
+      function highlightMinute() {
+        numbersGroup.querySelectorAll<SVGTextElement>(".aui-tp-clock__num").forEach(el => {
+          const val = Number(el.dataset.val);
+          // Highlight exact match or closest 5-multiple
+          el.classList.toggle("is-selected", val === Math.round(selMin / 5) * 5 % 60);
+        });
+        setHandAngle(selMin * 6);
+      }
+
+      /* ── Pointer interaction on SVG ── */
+      function angleFromPointer(e: PointerEvent): number {
+        const rect = svg.getBoundingClientRect();
+        const px = e.clientX - rect.left;
+        const py = e.clientY - rect.top;
+        const scaleX = 220 / rect.width;
+        const scaleY = 220 / rect.height;
+        const dx = px * scaleX - CX;
+        const dy = py * scaleY - CY;
+        let angle = Math.atan2(dy, dx) / RAD + 90;
+        if (angle < 0) angle += 360;
+        return angle;
+      }
+
+      function distFromCenter(e: PointerEvent): number {
+        const rect = svg.getBoundingClientRect();
+        const px = e.clientX - rect.left;
+        const py = e.clientY - rect.top;
+        const scaleX = 220 / rect.width;
+        const scaleY = 220 / rect.height;
+        const dx = px * scaleX - CX;
+        const dy = py * scaleY - CY;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      let isPointerDown = false;
+
+      svg.addEventListener("pointerdown", (e: PointerEvent) => {
+        e.preventDefault();
+        svg.setPointerCapture(e.pointerId);
+        isPointerDown = true;
+        handlePointer(e);
+      });
+
+      svg.addEventListener("pointermove", (e: PointerEvent) => {
+        if (!isPointerDown) return;
+        handlePointer(e);
+      });
+
+      svg.addEventListener("pointerup", () => {
+        isPointerDown = false;
+        if (mode === "hour") {
+          // Auto-switch to minute picking
+          mode = "minute";
+          hourBtn.setAttribute("aria-pressed", "false");
+          minBtn.setAttribute("aria-pressed", "true");
+          renderMinutes();
+        }
+        commit();
+      });
+
+      function handlePointer(e: PointerEvent) {
+        const angle = angleFromPointer(e);
+        const dist = distFromCenter(e);
+        if (mode === "hour") {
+          if (hour12) {
+            // 12 positions
+            const raw = Math.round(angle / 30) % 12 || 12;
+            selHour = isPM ? (raw === 12 ? 12 : raw + 12) : (raw === 12 ? 0 : raw);
+          } else {
+            // 24 positions — inner ring for 12-23
+            const raw = Math.round(angle / 30) % 12;
+            selHour = dist < (INNER_R + (OUTER_R - INNER_R) / 2) * (220 / svg.getBoundingClientRect().width) + 10
+              ? raw + 12
+              : raw;
+          }
+          highlightHour();
+        } else {
+          selMin = Math.round(angle / 6) % 60;
+          highlightMinute();
+        }
+        commit();
+      }
+
+      /* ── Display buttons ── */
+      hourBtn.addEventListener("click", () => {
+        mode = "hour";
+        hourBtn.setAttribute("aria-pressed", "true");
+        minBtn.setAttribute("aria-pressed", "false");
+        renderHours();
+      });
+
+      minBtn.addEventListener("click", () => {
+        mode = "minute";
+        hourBtn.setAttribute("aria-pressed", "false");
+        minBtn.setAttribute("aria-pressed", "true");
+        renderMinutes();
+      });
+
+      if (hour12 && amBtn && pmBtn) {
+        amBtn.addEventListener("click", () => {
+          if (isPM) { selHour -= 12; isPM = false; }
+          commit();
+        });
+        pmBtn.addEventListener("click", () => {
+          if (!isPM) { selHour += 12; isPM = true; }
+          commit();
+        });
+      }
+
+      /* Init */
+      renderHours();
+      commit();
+    }
+
+    document.querySelectorAll<HTMLElement>("[data-aui-tp-clock]").forEach(buildClock);
+    document.addEventListener("astro:after-swap", () => {
+      document.querySelectorAll<HTMLElement>("[data-aui-tp-clock]").forEach(buildClock);
+    });
+  })();
+</script>
+
+<style>
+  /* ─── Shared: select + input variants ─────────────────────────── */
+  .aui-timepicker {
+    inline-size: 100%;
+    max-inline-size: 12rem;
+    font-family: var(--ui-font-sans);
+    font-size: var(--ui-text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--ui-foreground);
+    background-color: var(--ui-background);
+    border: var(--ui-border-width) solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: border-color var(--ui-transition-fast);
+  }
+
+  .aui-timepicker--sm { padding: var(--ui-space-1) var(--ui-space-2); font-size: var(--ui-text-xs); }
+  .aui-timepicker--md { padding: var(--ui-space-2) var(--ui-space-3); }
+  .aui-timepicker--lg { padding: var(--ui-space-3) var(--ui-space-4); font-size: var(--ui-text-base); }
+
+  .aui-timepicker:hover:not(:disabled) { border-color: var(--ui-muted-foreground); }
+  .aui-timepicker:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+  .aui-timepicker:disabled { opacity: var(--ui-disabled-opacity); cursor: not-allowed; }
+  .aui-timepicker--invalid, .aui-timepicker[aria-invalid="true"] { border-color: var(--ui-error); }
+  .aui-timepicker--invalid:focus-visible, .aui-timepicker[aria-invalid="true"]:focus-visible { outline-color: var(--ui-error); }
+
+  select.aui-timepicker {
+    appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, currentcolor 50%),
+      linear-gradient(135deg, currentcolor 50%, transparent 50%);
+    background-position: calc(100% - 14px) calc(50% + 1px), calc(100% - 9px) calc(50% + 1px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-inline-end: var(--ui-space-8);
+  }
+
+  /* ─── Wheel variant ─────────────────────────────────────────────── */
+  .aui-tp-wheel {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: fit-content;
+    block-size: calc(44px * 5); /* 5 visible rows */
+    overflow: hidden;
+    border: var(--ui-border-width) solid var(--ui-input);
+    border-radius: var(--ui-radius-lg);
+    background: var(--ui-background);
+    font-family: var(--ui-font-sans);
+    user-select: none;
+    touch-action: none;
+  }
+
+  .aui-tp-wheel--invalid { border-color: var(--ui-error); }
+
+  .aui-tp-wheel__drums {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    block-size: 100%;
+  }
+
+  .aui-tp-wheel__drum {
+    position: relative;
+    inline-size: 3.5rem;
+    block-size: 100%;
+    overflow: hidden;
+    cursor: ns-resize;
+  }
+
+  .aui-tp-wheel__drum--period {
+    inline-size: 3rem;
+  }
+
+  .aui-tp-wheel__track {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    will-change: transform;
+  }
+
+  .aui-tp-wheel :global(.aui-tp-wheel__item) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 44px;
+    font-size: var(--ui-text-lg);
+    font-variant-numeric: tabular-nums;
+    color: var(--ui-muted-foreground);
+    transition: color 0.15s, font-size 0.15s;
+    cursor: pointer;
+  }
+
+  .aui-tp-wheel :global(.aui-tp-wheel__item.is-selected) {
+    color: var(--ui-foreground);
+    font-size: var(--ui-text-xl);
+    font-weight: var(--ui-font-semibold);
+  }
+
+  .aui-tp-wheel__sep {
+    font-size: var(--ui-text-xl);
+    font-weight: var(--ui-font-bold);
+    color: var(--ui-foreground);
+    padding-inline: 2px;
+    pointer-events: none;
+  }
+
+  /* Fade-out top/bottom gradient masks */
+  .aui-tp-wheel::before,
+  .aui-tp-wheel::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    block-size: 40%;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .aui-tp-wheel::before {
+    inset-block-start: 0;
+    background: linear-gradient(to bottom, var(--ui-background), transparent);
+  }
+  .aui-tp-wheel::after {
+    inset-block-end: 0;
+    background: linear-gradient(to top, var(--ui-background), transparent);
+  }
+
+  /* Center highlight band */
+  .aui-tp-wheel__highlight {
+    position: absolute;
+    inset-inline: 0;
+    block-size: 44px;
+    top: 50%;
+    translate: 0 -50%;
+    border-block: 1px solid var(--ui-border);
+    background: color-mix(in srgb, var(--ui-primary) 6%, transparent);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: var(--ui-radius-sm);
+  }
+
+  .aui-tp-wheel__live {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+  }
+
+  /* ─── Clock variant ─────────────────────────────────────────────── */
+  .aui-tp-clock {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ui-space-3);
+    font-family: var(--ui-font-sans);
+    padding: var(--ui-space-3);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-xl);
+    background: var(--ui-background);
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  .aui-tp-clock--invalid { border-color: var(--ui-error); }
+
+  /* Display row */
+  .aui-tp-clock__display {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-tp-clock__display-part {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 3rem;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    font-size: var(--ui-text-3xl);
+    font-weight: var(--ui-font-semibold);
+    font-variant-numeric: tabular-nums;
+    color: var(--ui-muted-foreground);
+    background: var(--ui-muted);
+    border: none;
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    transition: background var(--ui-transition-fast), color var(--ui-transition-fast);
+  }
+
+  .aui-tp-clock__display-part[aria-pressed="true"] {
+    color: var(--ui-primary-foreground);
+    background: var(--ui-primary);
+  }
+
+  .aui-tp-clock__display-sep {
+    font-size: var(--ui-text-3xl);
+    font-weight: var(--ui-font-bold);
+    color: var(--ui-foreground);
+    line-height: 1;
+  }
+
+  .aui-tp-clock__display-period {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-inline-start: var(--ui-space-1);
+  }
+
+  .aui-tp-clock__period-btn {
+    padding: 2px var(--ui-space-2);
+    font: inherit;
+    font-size: var(--ui-text-xs);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-muted-foreground);
+    background: transparent;
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-sm);
+    cursor: pointer;
+    transition: background var(--ui-transition-fast), color var(--ui-transition-fast);
+  }
+
+  .aui-tp-clock__period-btn.is-active {
+    color: var(--ui-primary-foreground);
+    background: var(--ui-primary);
+    border-color: var(--ui-primary);
+  }
+
+  /* SVG face */
+  .aui-tp-clock__face {
+    inline-size: 220px;
+    block-size: 220px;
+    touch-action: none;
+    cursor: pointer;
+  }
+
+  .aui-tp-clock__bg {
+    fill: var(--ui-muted);
+    stroke: var(--ui-border);
+    stroke-width: 1;
+  }
+
+  .aui-tp-clock__hand {
+    stroke: var(--ui-primary);
+    stroke-width: 2;
+    transition: x2 0.15s, y2 0.15s;
+  }
+
+  .aui-tp-clock__center {
+    fill: var(--ui-primary);
+  }
+
+  .aui-tp-clock :global(.aui-tp-clock__num) {
+    font-family: var(--ui-font-sans);
+    font-size: 13px;
+    fill: var(--ui-muted-foreground);
+    cursor: pointer;
+    transition: fill 0.1s;
+  }
+
+  .aui-tp-clock :global(.aui-tp-clock__num--inner) {
+    font-size: 11px;
+    fill: color-mix(in srgb, var(--ui-muted-foreground) 70%, transparent);
+  }
+
+  .aui-tp-clock :global(.aui-tp-clock__num.is-selected) {
+    fill: var(--ui-primary-foreground);
+  }
+
+  /* Selected number gets a circle background — injected via JS won't work
+     with SVG fill on text, so we use a filter instead */
+  .aui-tp-clock :global(.aui-tp-clock__num.is-selected) {
+    font-weight: 700;
+    fill: var(--ui-primary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-timepicker,
+    .aui-tp-clock__hand,
+    .aui-tp-clock__display-part,
+    .aui-tp-clock__period-btn { transition: none; }
+    .aui-tp-wheel :global(.aui-tp-wheel__item) { transition: none; }
+  }
+</style>

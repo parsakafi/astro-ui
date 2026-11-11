@@ -1,0 +1,305 @@
+---
+/**
+ * Navbar — zero-JS top app bar.
+ *
+ * A `<header>` with a brand slot, a `<nav>` landmark for the desktop links,
+ * an actions slot, and a native `<details>` disclosure for small screens.
+ * Because the mobile menu is a real `<details>`, it opens and closes with no
+ * script, works before hydration, and keeps its state through back/forward
+ * cache restores.
+ *
+ * Pages usually render it once, above the layout's main content.
+ *
+ *   <Navbar sticky ariaLabel="Main">
+ *     <a slot="brand" href="/">Astro UI</a>
+ *     <a href="/docs" aria-current="page">Docs</a>
+ *     <a href="/blocks">Blocks</a>
+ *     <Button slot="actions" size="sm">Sign in</Button>
+ *     <Fragment slot="mobile">
+ *       <a href="/docs">Docs</a>
+ *       <a href="/blocks">Blocks</a>
+ *     </Fragment>
+ *   </Navbar>
+ *
+ * JavaScript required: No
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Surface treatment. */
+  variant?: "bordered" | "elevated" | "transparent";
+  /** Stick to the top of the scroll container. */
+  sticky?: boolean;
+  /** Accessible name for the navigation landmark. */
+  ariaLabel?: string;
+  /** Accessible name for the mobile disclosure summary. */
+  mobileLabel?: string;
+  class?: string;
+  id?: string;
+}
+
+const {
+  variant = "bordered",
+  sticky = false,
+  ariaLabel = "Main",
+  mobileLabel = "Menu",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const hasMobile = Astro.slots.has("mobile");
+const classes = cn(
+  "aui-navbar",
+  `aui-navbar--${variant}`,
+  sticky && "aui-navbar--sticky",
+  className,
+);
+---
+
+<header id={id} class={classes} {...rest}>
+  <div class="aui-navbar__inner">
+    {
+      Astro.slots.has("brand") && (
+        <div class="aui-navbar__brand">
+          <slot name="brand"/>
+        </div>
+      )
+    }
+    <nav class="aui-navbar__nav" aria-label={ariaLabel}>
+      <slot/>
+    </nav>
+    {
+      Astro.slots.has("actions") && (
+        <div class="aui-navbar__actions">
+          <slot name="actions"/>
+        </div>
+      )
+    }
+    {
+      hasMobile && (
+        <details class="aui-navbar__mobile">
+          <summary class="aui-navbar__summary" aria-label={mobileLabel}>
+            <span class="aui-navbar__summary-glyph" aria-hidden="true">
+              <span/>
+              <span/>
+              <span/>
+            </span>
+          </summary>
+          <div class="aui-navbar__panel">
+            <nav aria-label={ariaLabel}>
+              <slot name="mobile"/>
+            </nav>
+          </div>
+        </details>
+      )
+    }
+  </div>
+</header>
+
+<style>
+  .aui-navbar {
+    --aui-navbar-height: 3.5rem;
+
+    inline-size: 100%;
+    font-family: var(--ui-font-sans);
+    background-color: var(--ui-background);
+    color: var(--ui-foreground);
+  }
+
+  .aui-navbar--bordered {
+    border-block-end: var(--ui-border-width) solid var(--ui-border);
+  }
+
+  .aui-navbar--elevated {
+    border-block-end: var(--ui-border-width) solid transparent;
+    box-shadow: var(--ui-shadow-sm);
+  }
+
+  .aui-navbar--transparent {
+    background-color: transparent;
+    border-block-end-color: transparent;
+  }
+
+  .aui-navbar--sticky {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--ui-z-dropdown);
+  }
+
+  .aui-navbar__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-4);
+    min-block-size: var(--aui-navbar-height);
+    max-inline-size: 80rem;
+    margin-inline: auto;
+    padding-inline: var(--ui-space-4);
+  }
+
+  .aui-navbar__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    flex-shrink: 0;
+    font-size: var(--ui-text-base);
+    font-weight: var(--ui-font-semibold);
+    color: var(--ui-foreground);
+  }
+
+  .aui-navbar__brand > :global(a) {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .aui-navbar__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-1);
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    font-size: var(--ui-text-sm);
+  }
+
+  .aui-navbar__nav > :global(a) {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    color: var(--ui-muted-foreground);
+    text-decoration: none;
+    border-radius: var(--ui-radius-md);
+    transition: background-color var(--ui-transition-fast),
+      color var(--ui-transition-fast);
+  }
+
+  .aui-navbar__nav > :global(a:hover) {
+    background-color: var(--ui-muted);
+    color: var(--ui-foreground);
+  }
+
+  .aui-navbar__nav > :global(a[aria-current]) {
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-medium);
+    background-color: var(--ui-muted);
+  }
+
+  .aui-navbar__nav > :global(a:focus-visible) {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-navbar__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    flex-shrink: 0;
+    margin-inline-start: auto;
+  }
+
+  /* --- mobile disclosure --- */
+
+  .aui-navbar__mobile {
+    display: none;
+    position: relative;
+    margin-inline-start: auto;
+  }
+
+  .aui-navbar__summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border: var(--ui-border-width) solid var(--ui-input);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .aui-navbar__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .aui-navbar__summary:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  .aui-navbar__summary-glyph {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1875rem;
+    inline-size: 1rem;
+  }
+
+  .aui-navbar__summary-glyph > span {
+    display: block;
+    block-size: var(--ui-border-width);
+    background-color: currentcolor;
+  }
+
+  .aui-navbar__summary-glyph > span:nth-child(1) {
+    inline-size: 100%;
+  }
+
+  .aui-navbar__summary-glyph > span:nth-child(2) {
+    inline-size: 70%;
+  }
+
+  .aui-navbar__summary-glyph > span:nth-child(3) {
+    inline-size: 85%;
+  }
+
+  .aui-navbar__panel {
+    position: absolute;
+    inset-block-start: calc(100% + var(--ui-space-2));
+    inset-inline-end: 0;
+    z-index: var(--ui-z-popover);
+    inline-size: min(18rem, calc(100vw - var(--ui-space-8)));
+    padding: var(--ui-space-2);
+    background-color: var(--ui-background);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-lg);
+  }
+
+  .aui-navbar__panel :global(nav) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-1);
+  }
+
+  .aui-navbar__panel :global(a) {
+    display: block;
+    padding: var(--ui-space-2) var(--ui-space-3);
+    color: var(--ui-foreground);
+    text-decoration: none;
+    border-radius: var(--ui-radius-md);
+  }
+
+  .aui-navbar__panel :global(a:hover),
+  .aui-navbar__panel :global(a[aria-current]) {
+    background-color: var(--ui-muted);
+  }
+
+  @media (max-width: 48rem) {
+    .aui-navbar__nav {
+      display: none;
+    }
+
+    .aui-navbar__mobile {
+      display: block;
+    }
+
+    .aui-navbar__actions {
+      margin-inline-start: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-navbar__nav > :global(a) {
+      transition: none;
+    }
+  }
+</style>

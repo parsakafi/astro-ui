@@ -7,7 +7,7 @@ category: general
 importPath: "astro-ui"
 exportName: "Button"
 js: false
-since: "1.0.0"
+since: "0.1.0"
 isNew: false
 related: ["badge", "card", "dialog"]
 features:
@@ -18,7 +18,7 @@ features:
   - "Invalid state: error border + red focus ring + aria-invalid"
   - "Anchor mode via href — links keep rel/target support"
   - "Native form participation: form, formAction, formMethod='dialog'…"
-  - "shape (rounded/square/circle) and shadow (sm/md/lg) controls"
+  - "shape (rounded/square/circle/pill) and shadow (sm/md/lg) controls"
   - "leading / trailing icon slots"
   - "TypeScript-typed, zero JS, token-themed"
 a11y:
@@ -81,8 +81,8 @@ props:
     def: "\"ring\""
     description: "Spinner visual style."
   - name: "shape"
-    type: "\"auto\" | \"rounded\" | \"square\" | \"circle\""
-    def: "\"auto\""
+    type: "\"rounded\" | \"square\" | \"circle\" | \"pill\""
+    def: "\"rounded\""
     description: "Corner shape."
   - name: "shadow"
     type: "\"none\" | \"sm\" | \"md\" | \"lg\""

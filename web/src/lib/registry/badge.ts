@@ -33,7 +33,7 @@ export const badge: ComponentMeta = {
 <Badge variant="outline">Outline</Badge>
 <Badge variant="success">Active</Badge>
 <Badge variant="warning">Pending</Badge>
-<Badge variant="error">Failed</Badge>
+<Badge variant="destructive">Failed</Badge>
 <Badge variant="info">New</Badge>`,
         },
         {
@@ -66,7 +66,7 @@ export const badge: ComponentMeta = {
             title: "Badge with status dot",
             code: `<Badge variant="success" dot>Operational</Badge>
 <Badge variant="warning" dot>Degraded</Badge>
-<Badge variant="error" dot>Outage</Badge>`,
+<Badge variant="destructive" dot>Outage</Badge>`,
         },
         {
             id: "avatar",
@@ -109,7 +109,7 @@ export const badge: ComponentMeta = {
         },
     ],
     props: [
-        t("variant", `"primary" | "secondary" | "outline" | "ghost" | "soft" | "success" | "warning" | "error" | "info" | "muted" | "destructive"`, `"primary"`, "Color scheme."),
+        t("variant", `"primary" | "secondary" | "outline" | "ghost" | "soft" | "success" | "warning" | "info" | "muted" | "destructive"`, `"primary"`, "Color scheme."),
         t("size", `"sm" | "md" | "lg" | "xl" | "2xl"`, `"md"`, "Font/padding scale."),
         t("content", "string", "—", "Count/content when no default slot is provided."),
         t("position", `"top-right" | "top-left" | "bottom-right" | "bottom-left"`, "—", "Overlay bubble corner (logical start/end — mirrors in RTL)."),
@@ -133,6 +133,6 @@ export const badge: ComponentMeta = {
             a: "Anything in the icon slot is boxed at --aui-badge-icon (default 0.875em) and scales with the badge. Set the variable inline, e.g. style=\"--aui-badge-icon: 1rem\", for a 16px flag.",
         },
     ],
-    since: "1.0.0",
+    since: "0.1.0",
     related: ["button", "avatar", "card"],
 };

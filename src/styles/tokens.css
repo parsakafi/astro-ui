@@ -38,7 +38,8 @@
   --ui-border: #e4e4e7;
   --ui-border-width: 1px;
   --ui-input: #e4e4e7;
-  --ui-ring: #2563eb;
+  /* Focus ring follows the brand primary in every theme. */
+  --ui-ring: #881abd;
 
   --ui-success: #16a34a;
   --ui-success-foreground: #ffffff;
@@ -61,6 +62,20 @@
   --ui-info: #0284c7;
   --ui-info-foreground: #ffffff;
   --ui-info-muted: #e0f2fe;
+
+  /* Surfaces & overlays */
+  --ui-card: var(--ui-background);
+  --ui-backdrop: rgb(0 0 0 / 0.5);
+  --ui-backdrop-strong: rgb(0 0 0 / 0.85);
+  --ui-progress-stripe: rgb(255 255 255 / 0.35);
+  --ui-shadow-color: rgb(0 0 0 / 0.18);
+
+  /* Satisfaction ramp used by Rating `colorScale` (1 = lowest). */
+  --ui-rating-1: #ef4444;
+  --ui-rating-2: #f97316;
+  --ui-rating-3: #eab308;
+  --ui-rating-4: #84cc16;
+  --ui-rating-5: #22c55e;
 
   /* Categorical chart palette — vivid, hue-spread series colors in
      the manner of neon dashboard themes. Charts read --ui-chart-1..6
@@ -89,6 +104,7 @@
   --ui-text-lg: 1.125rem;
   --ui-text-xl: 1.25rem;
   --ui-text-2xl: 1.5rem;
+  --ui-text-3xl: 1.875rem;
 
   --ui-font-normal: 400;
   --ui-font-medium: 500;
@@ -101,12 +117,14 @@
 
   /* ---------- Spacing scale ---------- */
   --ui-space-0: 0;
+  --ui-space-0-5: 0.125rem;
   --ui-space-1: 0.25rem;
   --ui-space-2: 0.5rem;
   --ui-space-3: 0.75rem;
   --ui-space-4: 1rem;
   --ui-space-5: 1.25rem;
   --ui-space-6: 1.5rem;
+  --ui-space-7: 1.75rem;
   --ui-space-8: 2rem;
   --ui-space-10: 2.5rem;
   --ui-space-12: 3rem;
@@ -118,6 +136,24 @@
   --ui-radius-lg: 0.5rem;
   --ui-radius-xl: 0.75rem;
   --ui-radius-full: 9999px;
+
+  /* ---------- Control scale ----------
+     Shared metrics for buttons and form controls so every interactive
+     element lines up on the same row: same height, padding and radius
+     per size name. Components must read these instead of re-declaring
+     heights locally. */
+  --ui-control-height-xs: 1.75rem;
+  --ui-control-height-sm: 2rem;
+  --ui-control-height-md: 2.5rem;
+  --ui-control-height-lg: 2.75rem;
+  --ui-control-height-xl: 3rem;
+  --ui-control-padding-xs: var(--ui-space-2);
+  --ui-control-padding-sm: var(--ui-space-3);
+  --ui-control-padding-md: var(--ui-space-3);
+  --ui-control-padding-lg: var(--ui-space-4);
+  --ui-control-padding-xl: var(--ui-space-5);
+  --ui-control-radius: var(--ui-radius-md);
+
   /* Corner shape for every rounded element (browser applies it where
      supported and only where a border-radius is set). "squircle" for
      continuous corners, "round" for classic arcs. */
@@ -136,6 +172,8 @@
   --ui-transition-fast: 150ms ease;
   --ui-transition-normal: 250ms ease;
   --ui-transition-slow: 350ms ease;
+  /* Delay before hover-triggered surfaces (HoverCard) open. */
+  --ui-transition-delay: 300ms;
 
   /* ---------- Z-index ---------- */
   --ui-z-dropdown: 50;
@@ -156,9 +194,9 @@
   --ui-background: #09090b;
   --ui-foreground: #fafafa;
 
-  --ui-primary: #3b82f6;
+  --ui-primary: #b845ed;
   --ui-primary-foreground: #ffffff;
-  --ui-primary-hover: #60a5fa;
+  --ui-primary-hover: #d06cf5;
 
   --ui-secondary: #27272a;
   --ui-secondary-foreground: #fafafa;
@@ -170,17 +208,28 @@
   --ui-border: #27272a;
   --ui-border-width: 1px;
   --ui-input: #3f3f46;
-  --ui-ring: #3b82f6;
+  --ui-ring: #b845ed;
 
   --ui-success-muted: #052e16;
   --ui-warning-muted: #451a03;
   --ui-error-muted: #450a0a;
   --ui-info-muted: #0c2d48;
 
+  --ui-card: var(--ui-background);
+  --ui-backdrop: rgb(0 0 0 / 0.7);
+  --ui-backdrop-strong: rgb(0 0 0 / 0.9);
+  --ui-shadow-color: rgb(0 0 0 / 0.5);
+
+  --ui-rating-1: #f87171;
+  --ui-rating-2: #fb923c;
+  --ui-rating-3: #facc15;
+  --ui-rating-4: #a3e635;
+  --ui-rating-5: #4ade80;
+
   --ui-carbon: #8b949e;
   --ui-carbon-foreground: #fafafa;
 
-  --ui-accent: #8b5cf6;
+  --ui-accent: #a78bfa;
   --ui-accent-foreground: #ffffff;
 
   --ui-chart-1: #fb7185;
@@ -207,9 +256,9 @@
     --ui-background: #09090b;
     --ui-foreground: #fafafa;
 
-    --ui-primary: #3b82f6;
+    --ui-primary: #b845ed;
     --ui-primary-foreground: #ffffff;
-    --ui-primary-hover: #60a5fa;
+    --ui-primary-hover: #d06cf5;
 
     --ui-secondary: #27272a;
     --ui-secondary-foreground: #fafafa;
@@ -220,12 +269,23 @@
 
     --ui-border: #27272a;
     --ui-input: #3f3f46;
-    --ui-ring: #3b82f6;
+    --ui-ring: #b845ed;
 
     --ui-success-muted: #052e16;
     --ui-warning-muted: #451a03;
     --ui-error-muted: #450a0a;
     --ui-info-muted: #0c2d48;
+
+    --ui-card: var(--ui-background);
+    --ui-backdrop: rgb(0 0 0 / 0.7);
+    --ui-backdrop-strong: rgb(0 0 0 / 0.9);
+    --ui-shadow-color: rgb(0 0 0 / 0.5);
+
+    --ui-rating-1: #f87171;
+    --ui-rating-2: #fb923c;
+    --ui-rating-3: #facc15;
+    --ui-rating-4: #a3e635;
+    --ui-rating-5: #4ade80;
 
     --ui-chart-1: #fb7185;
     --ui-chart-2: #38bdf8;
