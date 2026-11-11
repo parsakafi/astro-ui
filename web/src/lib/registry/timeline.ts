@@ -6,12 +6,12 @@ export const timeline: ComponentMeta = {
     description: "Ordered event list with markers, connector rails, and time stamps.",
     overview:
         "Timeline is a semantic `<ol>` of events; TimelineItem draws the marker, the connector rail, and the body. Because it is real document order, \"list, 4 items\" announcements and keyboard reading stay correct without any ARIA scaffolding. The rail is drawn by each item and stops at the last one automatically, so reordering or filtering items never leaves a dangling line.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Timeline",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Timeline, TimelineItem } from "astro-ui";\n---\n\n<Timeline ariaLabel="Deployment history">\n  <TimelineItem variant="success">\n    <time slot="time" datetime="2026-10-14T09:12Z">Oct 14 · 09:12</time>\n    <span slot="title">Deploy v2.5.0</span>\n    <span slot="description">Shipped by Ada — 42 files changed.</span>\n  </TimelineItem>\n</Timeline>`,
+        `---\nimport { Timeline, TimelineItem } from "@parsakafi/astro-ui";\n---\n\n<Timeline ariaLabel="Deployment history">\n  <TimelineItem variant="success">\n    <time slot="time" datetime="2026-10-14T09:12Z">Oct 14 · 09:12</time>\n    <span slot="title">Deploy v2.5.0</span>\n    <span slot="description">Shipped by Ada — 42 files changed.</span>\n  </TimelineItem>\n</Timeline>`,
     features: [
         "Semantic `<ol>` / `<li>` — no list role needed",
         "Marker variants: neutral, primary, success, warning, error, info",

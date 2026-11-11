@@ -9,7 +9,7 @@ import {
   Badge,
   Button,
   Input,
-} from "astro-ui";
+} from "@parsakafi/astro-ui";
 ---
 
 <div class="chat">

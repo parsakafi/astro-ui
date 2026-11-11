@@ -165,7 +165,7 @@ const Demo = demos[component.slug];
 ---
 
 <script>
-  import {toast} from "astro-ui/toast";
+  import {toast} from "@parsakafi/astro-ui/toast";
 
   const wire = (id: string, fn: () => void) =>
     document.getElementById(id)?.addEventListener("click", fn);

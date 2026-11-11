@@ -1,6 +1,6 @@
 /** cta-band block — copy-paste-ready Astro markup. */
 export const codeCtaBand = `---
-import { Badge, Button } from "astro-ui";
+import { Badge, Button } from "@parsakafi/astro-ui";
 ---
 
 <div class="block-cta">

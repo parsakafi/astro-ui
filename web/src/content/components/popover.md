@@ -4,7 +4,7 @@ name: "Popover"
 description: >-
   Click-triggered anchored panel for interactive content.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Popover"
 js: true
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "Panel is `role=\"dialog\"`; Escape closes and focus returns to the trigger"
 usage: |-
   ---
-  import { Popover } from "astro-ui";
+  import { Popover } from "@parsakafi/astro-ui";
   ---
   
   <Popover id="share">

@@ -4,7 +4,7 @@ name: "BeforeAfter"
 description: >-
   Draggable image comparison — two images, one split, native range control.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "BeforeAfter"
 js: true
 since: "0.1.0"
@@ -27,7 +27,7 @@ a11y:
   - "Focus is shown on the handle with `:focus-visible` and the shared ring tokens"
 usage: |-
   ---
-  import { BeforeAfter } from "astro-ui";
+  import { BeforeAfter } from "@parsakafi/astro-ui";
   ---
   
   <BeforeAfter

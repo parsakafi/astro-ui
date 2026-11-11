@@ -1,6 +1,6 @@
 /** avatar-social-proof-label block — copy-paste-ready Astro markup. */
 export const codeAvatarSocialProofLabel = `---
-import { Avatar, AvatarGroup } from "astro-ui";
+import { Avatar, AvatarGroup } from "@parsakafi/astro-ui";
 ---
 
 <div class="block-social-proof-label">

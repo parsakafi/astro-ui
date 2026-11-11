@@ -6,7 +6,7 @@ which is always merged (never replaced) via `cn()`.
 
 ```astro
 ---
-import { Button, Card } from "astro-ui";
+import { Button, Card } from "@parsakafi/astro-ui";
 ---
 <Button class="w-full md:w-auto">Continue</Button>
 <Card class="max-w-md shadow-xl">…</Card>
@@ -16,10 +16,10 @@ import { Button, Card } from "astro-ui";
 
 1. Install + configure Tailwind normally in your Astro app (the `web/` playground shows `@astrojs/tailwind` v3 wiring).
 2. Import library tokens once in your layout:
-   `import "astro-ui/tokens.css";`
+   `import "@parsakafi/astro-ui/tokens.css";`
 3. Include the package in Tailwind's `content` globs only if you use
    `aui-*` classes in `@apply` (not otherwise needed):
-   `content: ["./src/**/*.{astro,ts}", "../astro-ui/src/**/*.{astro,ts}"]`
+   `content: ["./src/**/*.{astro,ts}", "./node_modules/@parsakafi/astro-ui/src/**/*.{astro,ts}"]`
 
 ## Notes & limits
 

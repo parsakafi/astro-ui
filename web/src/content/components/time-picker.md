@@ -4,7 +4,7 @@ name: "TimePicker"
 description: >-
   Time field with four interaction patterns: slot list, native input, scroll-drum wheel, and circular clock.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "TimePicker"
 js: true
 since: "0.1.0"
@@ -28,7 +28,7 @@ a11y:
   - "Give the control a `<Label for>` or `ariaLabel`"
 usage: |-
   ---
-  import { TimePicker, Label } from "astro-ui";
+  import { TimePicker, Label } from "@parsakafi/astro-ui";
   ---
   
   <Label for="slot">Drop-off</Label>

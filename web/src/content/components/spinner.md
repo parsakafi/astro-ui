@@ -4,7 +4,7 @@ name: "Spinner"
 description: >-
   Loading indicator in 4 animation styles and 6 sizes.
 category: feedback
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Spinner"
 js: false
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "Animation disabled under prefers-reduced-motion (static glyph)"
 usage: |-
   ---
-  import { Spinner } from "astro-ui";
+  import { Spinner } from "@parsakafi/astro-ui";
   ---
   
   <Spinner />

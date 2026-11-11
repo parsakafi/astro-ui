@@ -1,6 +1,6 @@
 /** team-members block — copy-paste-ready Astro markup. */
 export const codeTeamMembers = `---
-import { Card, Avatar, Badge, Button } from "astro-ui";
+import { Card, Avatar, Badge, Button } from "@parsakafi/astro-ui";
 ---
 
 <Card>

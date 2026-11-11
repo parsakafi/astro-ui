@@ -4,7 +4,7 @@ name: "Sheet"
 description: >-
   Dialog panel that slides in from a screen edge.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Sheet"
 js: true
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "Built-in close button is a real button with `closeLabel`"
 usage: |-
   ---
-  import { Button, Sheet } from "astro-ui";
+  import { Button, Sheet } from "@parsakafi/astro-ui";
   ---
   
   <Button id="open-menu">Menu</Button>

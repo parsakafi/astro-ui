@@ -1,6 +1,6 @@
 /** settings-panel block — copy-paste-ready Astro markup. */
 export const codeSettingsPanel = `---
-import { Card, Switch, Input, Tag, Button } from "astro-ui";
+import { Card, Switch, Input, Tag, Button } from "@parsakafi/astro-ui";
 ---
 
 <div class="block-canvas-grid">

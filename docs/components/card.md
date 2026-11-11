@@ -5,7 +5,7 @@ no `title`/`footer` props by design.
 
 ```astro
 ---
-import { Card } from "astro-ui";
+import { Card } from "@parsakafi/astro-ui";
 ---
 <Card>
   <h2 slot="header">Title</h2>

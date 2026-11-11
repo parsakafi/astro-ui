@@ -6,12 +6,12 @@ export const field: ComponentMeta = {
     description: "Label + control + hint + error wiring in one wrapper.",
     overview:
         "Field composes a form control with its chrome: the default slot carries the control (Input, Select, Textarea…), the named slots carry label, hint, and error text. When id is set the wiring is automatic — the label points at {id}-control, hint and error get stable ids, and the wrapper exposes data-invalid so themes can recolor the chrome.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Field",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Field, Input } from "astro-ui";\n---\n\n<Field id="email" required>\n  <span slot="label">Email</span>\n  <Input id="email-control" type="email" invalid ariaDescribedby="email-error" />\n  <span slot="hint">We never share it.</span>\n  <span slot="error">Enter a valid email.</span>\n</Field>`,
+        `---\nimport { Field, Input } from "@parsakafi/astro-ui";\n---\n\n<Field id="email" required>\n  <span slot="label">Email</span>\n  <Input id="email-control" type="email" invalid ariaDescribedby="email-error" />\n  <span slot="hint">We never share it.</span>\n  <span slot="error">Enter a valid email.</span>\n</Field>`,
     features: [
         "Composition: control in the default slot, chrome in named slots",
         "Automatic for/id wiring ({id}-control) when id is set",

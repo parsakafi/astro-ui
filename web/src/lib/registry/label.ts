@@ -6,12 +6,12 @@ export const label: ComponentMeta = {
     description: "Form label with required/disabled states and two sizes.",
     overview:
         "Label renders a semantic &lt;label&gt; tied to a control via for. Required adds a visual marker; disabled dims the text to match a disabled control.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Label",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Label, Input } from "astro-ui";\n---\n\n<Label for="email" required>Email</Label>\n<Input id="email" type="email" />`,
+        `---\nimport { Label, Input } from "@parsakafi/astro-ui";\n---\n\n<Label for="email" required>Email</Label>\n<Input id="email" type="email" />`,
     features: ["Native <label> association via for", "required marker", "disabled state matches disabled inputs", "2 sizes"],
     a11y: [
         "Native `<label>` association; `aria-required` support for required fields",

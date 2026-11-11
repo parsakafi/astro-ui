@@ -6,12 +6,12 @@ export const pagination: ComponentMeta = {
     description: "Zero-JS linked page navigation with truncation ellipsis.",
     overview:
         "Pagination renders fully server-rendered page links — every page is a real &lt;a&gt;, so it works without JS and is crawlable. Pages outside the sibling window collapse into ellipsis; prev/next disable at the ends.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Pagination",
     category: "navigation",
     js: false,
     usage:
-        `---\nimport { Pagination } from "astro-ui";\n---\n\n<Pagination\n  page={2}\n  total={9}\n  pageHref={(p) => \`/blog?page=\${p}\`}\n/>`,
+        `---\nimport { Pagination } from "@parsakafi/astro-ui";\n---\n\n<Pagination\n  page={2}\n  total={9}\n  pageHref={(p) => \`/blog?page=\${p}\`}\n/>`,
     features: [
         "Real links — crawlable, zero JS",
         "Ellipsis truncation with siblingCount control",

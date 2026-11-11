@@ -4,7 +4,7 @@ name: "Toggle"
 description: >-
   Two-state button with aria-pressed — SSR-controlled.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Toggle"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "`:focus-visible` ring"
 usage: |-
   ---
-  import { Toggle } from "astro-ui";
+  import { Toggle } from "@parsakafi/astro-ui";
   ---
   
   <Toggle ariaLabel="Bold"><strong>B</strong></Toggle>

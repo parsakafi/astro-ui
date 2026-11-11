@@ -6,12 +6,12 @@ export const collapsible: ComponentMeta = {
     description: "Expand/collapse region with a dedicated trigger button.",
     overview:
         "Collapsible is an expand/collapse region whose trigger is a separate button that can live anywhere in the markup, and whose panel is arbitrary composed content — unlike Accordion, which uses native &lt;details&gt; with content authored as data. The scoped script toggles hidden + aria-expanded and closes on Escape. Closed panels use hidden=\"until-found\": find-in-page, #hash deep links, and :~:text= fragments can still match and reveal collapsed content (the browser fires beforematch and removes the attribute; aria-expanded stays in sync). Multiple collapsibles on one page are supported — each root is wired independently by its data attribute.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Collapsible",
     category: "layout",
     js: true,
     usage:
-        `---\nimport { Collapsible } from "astro-ui";\n---\n\n<Collapsible id="filters" open>\n  <span slot="trigger">Filters</span>\n  <p>Any composed content…</p>\n</Collapsible>`,
+        `---\nimport { Collapsible } from "@parsakafi/astro-ui";\n---\n\n<Collapsible id="filters" open>\n  <span slot="trigger">Filters</span>\n  <p>Any composed content…</p>\n</Collapsible>`,
     features: [
         "Trigger button with aria-expanded / aria-controls + rotating chevron",
         "Arbitrary composed panel content (slot, not data)",

@@ -4,7 +4,7 @@ name: "AlertDialog"
 description: >-
   role=alertdialog modal that interrupts for a decision.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "AlertDialog"
 js: true
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "Focus is contained while open; Escape closes via the platform"
 usage: |-
   ---
-  import { Button, AlertDialog } from "astro-ui";
+  import { Button, AlertDialog } from "@parsakafi/astro-ui";
   ---
   
   <Button id="open-delete">Delete project</Button>

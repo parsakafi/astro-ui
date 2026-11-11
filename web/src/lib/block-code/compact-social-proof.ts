@@ -1,6 +1,6 @@
 /** compact-social-proof block — copy-paste-ready Astro markup. */
 export const codeCompactSocialProof = `---
-import { Avatar } from "astro-ui";
+import { Avatar } from "@parsakafi/astro-ui";
 ---
 
 <div class="block-social-proof">

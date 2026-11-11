@@ -4,7 +4,7 @@ name: "Badge"
 description: >-
   Status/count label — inline or overlay bubble with icon, dot, avatar, and dismiss.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Badge"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "Purely presentational by default — no extra semantics to announce"
 usage: |-
   ---
-  import { Badge } from "astro-ui";
+  import { Badge } from "@parsakafi/astro-ui";
   ---
   
   <Badge variant="success">Active</Badge>

@@ -6,12 +6,12 @@ export const slider: ComponentMeta = {
     description: "Native range input themed with tokens — drag, keys, form value.",
     overview:
         "Slider wraps &lt;input type=\"range\"&gt; with token styling: the platform owns dragging, arrow keys, Home/End, and form submission. Three presentations share one API — horizontal, vertical (min at the bottom), and a radial dial — plus a two-thumb range mode. Optional tick marks, a value readout, and a tooltip bubble that rides the thumb complete it. The track fills from the minimum and mirrors in RTL.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Slider",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Slider } from "astro-ui";\n---\n\n<Slider name="volume" label="Volume" value={70} showValue />\n<Slider name="temp" min={16} max={30} marks={["Cold", "Warm", "Hot"]} />`,
+        `---\nimport { Slider } from "@parsakafi/astro-ui";\n---\n\n<Slider name="volume" label="Volume" value={70} showValue />\n<Slider name="temp" min={16} max={30} marks={["Cold", "Warm", "Hot"]} />`,
     features: [
         "Native range input — platform drag, keys, form value",
         "Horizontal + vertical orientations",

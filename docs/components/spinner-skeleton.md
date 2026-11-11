@@ -4,7 +4,7 @@ Zero-JS loading indicators (pure CSS animation; reduced-motion safe).
 
 ```astro
 ---
-import { Spinner, Skeleton } from "astro-ui";
+import { Spinner, Skeleton } from "@parsakafi/astro-ui";
 ---
 <Spinner label="Loading results" />
 

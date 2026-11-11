@@ -6,12 +6,12 @@ export const table: ComponentMeta = {
     description: "Semantic table with bordered/striped styles, sizes, and scroll.",
     overview:
         "Table styles a real &lt;table&gt; — head/body/footer compose through slots so you keep full control of rows and cells. Bordered, striped, aligned, and scrollable modes; caption prop for the accessible name.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Table",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Table } from "astro-ui";\n---\n\n<Table caption="Team members">\n  <tr slot="head"><th class="aui-table__head-cell">Name</th></tr>\n  <tr><td class="aui-table__cell">Ada</td></tr>\n</Table>`,
+        `---\nimport { Table } from "@parsakafi/astro-ui";\n---\n\n<Table caption="Team members">\n  <tr slot="head"><th class="aui-table__head-cell">Name</th></tr>\n  <tr><td class="aui-table__cell">Ada</td></tr>\n</Table>`,
     features: [
         "Named slots: head / default body / footer",
         "bordered + striped combinations",

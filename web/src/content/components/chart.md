@@ -4,7 +4,7 @@ name: "Chart"
 description: >-
   Zero-JS SVG charts: bar, line, area, pie, donut, scatter, horizontal bars.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Chart"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "A visually hidden <table> mirrors the data for screen readers"
 usage: |-
   ---
-  import { Chart } from "astro-ui";
+  import { Chart } from "@parsakafi/astro-ui";
   ---
   
   <Chart

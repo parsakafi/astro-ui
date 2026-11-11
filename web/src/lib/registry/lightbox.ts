@@ -6,12 +6,12 @@ export const lightbox: ComponentMeta = {
     description: "Accessible image/video/iframe gallery overlay with arrows, counter, and indicators.",
     overview:
         "Lightbox is an accessible image, video, and iframe gallery overlay. It is built on the native &lt;dialog&gt; element, so modality, focus containment, Escape, and focus return all come from the platform, while one scoped inline script ships with the component to drive the gallery: prev/next arrows, keyboard arrows, indicator dots, a live counter, and cross-instance group sync. Opening needs a single app-level showModal() call; items are LightboxItem children whose media type (image, video, iframe) is inferred from the source URL and overridable per item.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Lightbox",
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Button, Lightbox, LightboxItem } from "astro-ui";\n---\n\n<Button id="open-gallery">View gallery</Button>\n<Lightbox id="gallery" showCounter indicators>\n  <LightboxItem src="/img/a.jpg" alt="Sunset" caption="Beach sunset" />\n  <LightboxItem src="/img/b.jpg" alt="Trail" caption="Summit view" />\n  <h2 slot="title">Photo gallery</h2>\n  <p slot="description">Use ← → arrows or swipe to navigate.</p>\n</Lightbox>\n<script>\n  document.getElementById("open-gallery")?.addEventListener("click", () =>\n    document.getElementById("aui-lightbox-gallery")?.showModal());\n</script>`,
+        `---\nimport { Button, Lightbox, LightboxItem } from "@parsakafi/astro-ui";\n---\n\n<Button id="open-gallery">View gallery</Button>\n<Lightbox id="gallery" showCounter indicators>\n  <LightboxItem src="/img/a.jpg" alt="Sunset" caption="Beach sunset" />\n  <LightboxItem src="/img/b.jpg" alt="Trail" caption="Summit view" />\n  <h2 slot="title">Photo gallery</h2>\n  <p slot="description">Use ← → arrows or swipe to navigate.</p>\n</Lightbox>\n<script>\n  document.getElementById("open-gallery")?.addEventListener("click", () =>\n    document.getElementById("aui-lightbox-gallery")?.showModal());\n</script>`,
     features: [
         "Native <dialog>: focus containment, Escape, focus return",
         "Prev/next arrows, keyboard arrows, indicator dots",

@@ -6,7 +6,7 @@ sets the initial server-rendered state; toggling is native browser behavior.
 
 ```astro
 ---
-import { Switch, Label } from "astro-ui";
+import { Switch, Label } from "@parsakafi/astro-ui";
 ---
 <Switch name="wifi" variant="primary" checked>Wi-Fi</Switch>
 <Switch name="bluetooth" variant="secondary">Bluetooth</Switch>

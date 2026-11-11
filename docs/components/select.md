@@ -6,7 +6,7 @@ SSR safety with no client JavaScript.
 
 ```astro
 ---
-import { Select, Label } from "astro-ui";
+import { Select, Label } from "@parsakafi/astro-ui";
 ---
 <Label for="fruit">Favorite fruit</Label>
 <Select id="fruit" name="fruit" placeholder="Choose a fruit" aria-describedby="fruit-hint" required>

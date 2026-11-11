@@ -4,7 +4,7 @@ name: "ButtonGroup"
 description: >-
   Zero-JS container that visually groups buttons by merging borders and rounding outer corners only.
 category: general
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "ButtonGroup"
 js: false
 since: "0.1.0"
@@ -25,7 +25,7 @@ a11y:
   - "Roving `:focus-visible` ring keeps focus clear across joined controls"
 usage: |-
   ---
-  import { Button, ButtonGroup } from "astro-ui";
+  import { Button, ButtonGroup } from "@parsakafi/astro-ui";
   ---
   
   <ButtonGroup>

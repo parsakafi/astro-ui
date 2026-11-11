@@ -10,7 +10,7 @@ platform instead of a headless runtime.
 
 ```astro
 ---
-import { Button, Dialog } from "astro-ui";
+import { Button, Dialog } from "@parsakafi/astro-ui";
 ---
 <Button id="open-prefs">Preferences</Button>
 

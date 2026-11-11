@@ -6,13 +6,13 @@ export const skeleton: ComponentMeta = {
     description: "Pulsing placeholder blocks for loading layouts.",
     overview:
         "Skeleton reserves layout space with a pulsing neutral block while content loads — text lines, circles, rectangles — so the final content swaps in without reflow.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Skeleton",
     category: "feedback",
     js: false,
     usage:
         `---
-import { Skeleton } from "astro-ui";
+import { Skeleton } from "@parsakafi/astro-ui";
 ---
 
 <Skeleton style="width:100%;height:1rem" />

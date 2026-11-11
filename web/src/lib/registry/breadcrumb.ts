@@ -6,12 +6,12 @@ export const breadcrumb: ComponentMeta = {
     description: "Semantic breadcrumb trail — CSS separators, icons, ellipsis, pill, composed items.",
     overview:
         "Breadcrumb renders a &lt;nav aria-label&gt; of links \u2014 a flat flex container, no list markup. The current page is a non-link span with aria-current=\"page\"; separators are drawn in CSS pseudo-elements. Pass `items` for data-driven trails (with optional icon and ellipsis fields) or omit items and author composed &lt;span&gt; children for badges, avatars, dropdown triggers, and buttons.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Breadcrumb",
     category: "navigation",
     js: false,
     usage:
-        `---\nimport { Breadcrumb } from "astro-ui";\n---\n\n<Breadcrumb\n  ariaLabel="Breadcrumb"\n  items={[\n    { href: "/", label: "Home" },\n    { href: "/components/", label: "Components" },\n    { label: "Button" },\n  ]}\n/>`,
+        `---\nimport { Breadcrumb } from "@parsakafi/astro-ui";\n---\n\n<Breadcrumb\n  ariaLabel="Breadcrumb"\n  items={[\n    { href: "/", label: "Home" },\n    { href: "/components/", label: "Components" },\n    { label: "Button" },\n  ]}\n/>`,
     features: [
         "Semantic nav structure, flat span items — no list markup",
         "aria-current=\"page\" on the current item",

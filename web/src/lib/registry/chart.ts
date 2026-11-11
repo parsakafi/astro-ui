@@ -8,12 +8,12 @@ export const chart: ComponentMeta = {
     description: "Zero-JS SVG charts: bar, line, area, pie, donut, scatter, horizontal bars.",
     overview:
         "Chart renders pure SVG at build time from a data prop — no chart library, no client JS. Seven types share one API: cartesian charts (bar, line, area, scatter) take labels + series; pie/donut take a single series; hbar renders labeled horizontal progress rows. Colors read --ui-chart-1..6 tokens so charts follow the theme, and a visually hidden data table carries the values for screen readers.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Chart",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Chart } from "astro-ui";\n---\n\n<Chart\n  type="bar"\n  title="Revenue by month"\n  labels={["Jan", "Feb", "Mar"]}\n  series={[{ name: "Revenue", data: [12, 30, 24] }]}\n/>`,
+        `---\nimport { Chart } from "@parsakafi/astro-ui";\n---\n\n<Chart\n  type="bar"\n  title="Revenue by month"\n  labels={["Jan", "Feb", "Mar"]}\n  series={[{ name: "Revenue", data: [12, 30, 24] }]}\n/>`,
     features: [
         "26 types: bar, line, area, pie, donut, pie3d, treemap, funnel, rose, histogram, waffle, bullet, dumbbell, scatter, hbar, combo, gauge, radar, radial, sankey, waterfall, heatmap, cohort, terrain, map, boxplot",
         "Pure build-time SVG — zero JS, zero chart library",

@@ -4,7 +4,7 @@ name: "Tag"
 description: >-
   Categorization label with shapes and optional close affordance.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Tag"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "Decorative shapes `aria-hidden`"
 usage: |-
   ---
-  import { Tag } from "astro-ui";
+  import { Tag } from "@parsakafi/astro-ui";
   ---
   
   <Tag>astro</Tag>

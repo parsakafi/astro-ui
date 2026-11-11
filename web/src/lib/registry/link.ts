@@ -6,12 +6,12 @@ export const link: ComponentMeta = {
     description: "Semantic anchor with external/rel smarts, icons, colors, and a disabled state.",
     overview:
         "Link renders a styled &lt;a&gt; with smart defaults: external or target=\"_blank\" links automatically get rel=\"noopener noreferrer\" (opt out with noRel or a custom rel). Disabled links drop their href and mute out. Icons are currentColor CSS masks — no JS, no icon dependency. Navigation hints like prefetch, replace, and viewTransition only render data-* attributes for your router or islands to adopt.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Link",
     category: "general",
     js: false,
     usage:
-        `---\nimport { Link } from "astro-ui";\n---\n\n<Link href="https://astro.build" external icon="external">Astro</Link>`,
+        `---\nimport { Link } from "@parsakafi/astro-ui";\n---\n\n<Link href="https://astro.build" external icon="external">Astro</Link>`,
     features: [
         "Auto rel=\"noopener noreferrer\" for external/_blank",
         "7 colors, 3 sizes, optional underline",

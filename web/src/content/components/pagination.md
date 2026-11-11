@@ -4,7 +4,7 @@ name: "Pagination"
 description: >-
   Zero-JS linked page navigation with truncation ellipsis.
 category: navigation
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Pagination"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "`aria-current=\"page\"` announces the current page; page arrows are labeled buttons with `aria-hidden` glyphs"
 usage: |-
   ---
-  import { Pagination } from "astro-ui";
+  import { Pagination } from "@parsakafi/astro-ui";
   ---
   
   <Pagination

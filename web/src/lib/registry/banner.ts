@@ -6,12 +6,12 @@ export const banner: ComponentMeta = {
     description: "Full-width announcement strip with icon, actions, and dismissal hook.",
     overview:
         "Banner is the page-level sibling of Alert: a strip that spans its container instead of sitting inside a card. Use it for release notes, trial notices, or maintenance windows that belong above the content. It renders as a named `region` landmark by default, so the announcement is reachable from a screen reader's landmark list; pass `role=\"none\"` when several banners stack on one page.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Banner",
     category: "feedback",
     js: false,
     usage:
-        `---\nimport { Banner, Button } from "astro-ui";\n---\n\n<Banner variant="info" closable>\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline and Banner have landed.\n  <Button slot="actions" size="sm" variant="outline">Read the notes</Button>\n</Banner>`,
+        `---\nimport { Banner, Button } from "@parsakafi/astro-ui";\n---\n\n<Banner variant="info" closable>\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline and Banner have landed.\n  <Button slot="actions" size="sm" variant="outline">Read the notes</Button>\n</Banner>`,
     features: [
         "6 variants: primary, info, success, warning, error, neutral",
         "Slots for icon, title, message, and an action row",

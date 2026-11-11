@@ -1,6 +1,6 @@
 /** avatar-empty-state block — copy-paste-ready Astro markup. */
 export const codeAvatarEmptyState = `---
-import { Empty, Avatar, Button } from "astro-ui";
+import { Empty, Avatar, Button } from "@parsakafi/astro-ui";
 ---
 
 <Empty size="lg" ariaLabel="No team members yet">

@@ -5,7 +5,7 @@ Zero-JS progress indicator. Bar (linear) or circle (circular) variant, determina
 
 ```astro
 ---
-import { Progress } from "astro-ui";
+import { Progress } from "@parsakafi/astro-ui";
 ---
 <!-- Determinate bar -->
 <Progress value={0} label="0%" showValue />

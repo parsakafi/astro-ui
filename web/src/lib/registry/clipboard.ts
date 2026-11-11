@@ -6,12 +6,12 @@ export const clipboard: ComponentMeta = {
     description: "Icon-first copy-to-clipboard trigger with copied-state check.",
     overview:
         "Clipboard renders an icon-first trigger button carrying its value in data-aui-clipboard. On success the copy icon swaps to a green check and a polite live region confirms. Ships zero JS by default — wire it app-side, or set auto to opt into a ~10-line built-in handler using the async Clipboard API. onlyIcon renders a square icon-only trigger for code blocks.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Clipboard",
     category: "general",
     js: true,
     usage:
-        `---\nimport { Clipboard } from "astro-ui";\n---\n\n<Clipboard value="npm install astro-ui" auto />\n\n<!-- or wire it yourself -->\n<Clipboard value="npx astro add" />\n<script>\n  // read data-aui-clipboard and call the async clipboard API\n</script>`,
+        `---\nimport { Clipboard } from "@parsakafi/astro-ui";\n---\n\n<Clipboard value="npm install @parsakafi/astro-ui" auto />\n\n<!-- or wire it yourself -->\n<Clipboard value="npx astro add" />\n<script>\n  // read data-aui-clipboard and call the async clipboard API\n</script>`,
     features: [
         "Copy icon swaps to a green check when copied",
         "onlyIcon square trigger for code blocks and toolbars",
@@ -28,7 +28,7 @@ export const clipboard: ComponentMeta = {
         {
             id: "basic",
             title: "Icon trigger",
-            code: `<Clipboard value="npm install astro-ui" auto />\n\n<!-- icon=false falls back to a text-only trigger -->\n<Clipboard value="npm install astro-ui" auto icon={false} />`,
+            code: `<Clipboard value="npm install @parsakafi/astro-ui" auto />\n\n<!-- icon=false falls back to a text-only trigger -->\n<Clipboard value="npm install @parsakafi/astro-ui" auto icon={false} />`,
         },
         {
             id: "only-icon",
@@ -48,7 +48,7 @@ export const clipboard: ComponentMeta = {
         {
             id: "feedback",
             title: "Custom feedback",
-            code: `<Clipboard\n  value="pnpm add astro-ui"\n  auto\n  feedback="Install command copied"\n/>\n\n<!-- feedback={null} hides the live-region text entirely —\n     the icon swap alone carries the confirmation -->\n<Clipboard value="pnpm add astro-ui" auto feedback={null} />`,
+            code: `<Clipboard\n  value="pnpm add @parsakafi/astro-ui"\n  auto\n  feedback="Install command copied"\n/>\n\n<!-- feedback={null} hides the live-region text entirely —\n     the icon swap alone carries the confirmation -->\n<Clipboard value="pnpm add @parsakafi/astro-ui" auto feedback={null} />`,
         },
         {
             id: "disabled",
@@ -63,7 +63,7 @@ export const clipboard: ComponentMeta = {
         {
             id: "code-block",
             title: "In a code block",
-            code: `<div class="aui-code-pill">\n  <code>npm install astro-ui</code>\n  <Clipboard value="npm install astro-ui" auto onlyIcon variant="ghost" size="sm" />\n</div>\n\n<style>\n  .aui-code-pill {\n    display: inline-flex; align-items: center; gap: 0.5rem;\n    padding: 0.375rem 0.375rem 0.375rem 0.75rem;\n    background: var(--ui-muted); border-radius: var(--ui-radius-md);\n    font-family: var(--ui-font-mono); font-size: var(--ui-text-sm);\n  }\n</style>`,
+            code: `<div class="aui-code-pill">\n  <code>npm install @parsakafi/astro-ui</code>\n  <Clipboard value="npm install @parsakafi/astro-ui" auto onlyIcon variant="ghost" size="sm" />\n</div>\n\n<style>\n  .aui-code-pill {\n    display: inline-flex; align-items: center; gap: 0.5rem;\n    padding: 0.375rem 0.375rem 0.375rem 0.75rem;\n    background: var(--ui-muted); border-radius: var(--ui-radius-md);\n    font-family: var(--ui-font-mono); font-size: var(--ui-text-sm);\n  }\n</style>`,
         },
     ],
     props: [

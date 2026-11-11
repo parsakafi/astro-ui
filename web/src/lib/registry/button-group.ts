@@ -6,12 +6,12 @@ export const buttonGroup: ComponentMeta = {
     description: "Zero-JS container that visually groups buttons by merging borders and rounding outer corners only.",
     overview:
         "ButtonGroup is a zero-JS layout container that visually groups buttons or other inline interactive elements by merging their borders and rounding only the outer corners. Children remain fully independent — the group is purely presentational. Horizontal and vertical orientations, plus proper focus/hover z-index handling, make it the foundation for toolbars, pagination controls, and segmented button sets.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "ButtonGroup",
     category: "general",
     js: false,
     usage:
-        `---\nimport { Button, ButtonGroup } from "astro-ui";\n---\n\n<ButtonGroup>\n  <Button variant="outline">Previous</Button>\n  <Button variant="outline">Next</Button>\n</ButtonGroup>\n\n<ButtonGroup orientation="vertical">\n  <Button variant="outline">Copy</Button>\n  <Button variant="outline">Paste</Button>\n  <Button variant="outline">Delete</Button>\n</ButtonGroup>`,
+        `---\nimport { Button, ButtonGroup } from "@parsakafi/astro-ui";\n---\n\n<ButtonGroup>\n  <Button variant="outline">Previous</Button>\n  <Button variant="outline">Next</Button>\n</ButtonGroup>\n\n<ButtonGroup orientation="vertical">\n  <Button variant="outline">Copy</Button>\n  <Button variant="outline">Paste</Button>\n  <Button variant="outline">Delete</Button>\n</ButtonGroup>`,
     features: [
         "Horizontal and vertical orientations",
         "Automatic border merging between adjacent children",

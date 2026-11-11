@@ -6,12 +6,12 @@ export const accordion: ComponentMeta = {
     description: "Collapsible sections built on native details/summary — zero JS.",
     overview:
         "Accordion provides collapsible content sections on native &lt;details&gt;/&lt;summary&gt;: expand/collapse, keyboard (Space/Enter), and announcements come from the platform. A bordered variant and chevron indicator round out the presentation.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Accordion",
     category: "layout",
     js: false,
     usage:
-        `---\nimport { Accordion } from "astro-ui";\n---\n\n<Accordion\n  id="faq"\n  items={[\n    { value: "q1", title: "What is astro-ui?", content: "A zero-JS Astro component library." },\n    { value: "q2", title: "Does it need JavaScript?", content: "Not for the accordion — it's native details." },\n  ]}\n/>`,
+        `---\nimport { Accordion } from "@parsakafi/astro-ui";\n---\n\n<Accordion\n  id="faq"\n  items={[\n    { value: "q1", title: "What is astro-ui?", content: "A zero-JS Astro component library." },\n    { value: "q2", title: "Does it need JavaScript?", content: "Not for the accordion — it's native details." },\n  ]}\n/>`,
     features: [
         "Native <details>/<summary> — keyboard and AT for free",
         "single mode via the native name attribute (Chrome 120+)",

@@ -4,7 +4,7 @@ name: "Navbar"
 description: >-
   Top app bar with brand, nav links, actions, and a zero-JS mobile menu.
 category: navigation
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Navbar"
 js: false
 since: "0.1.0"
@@ -24,7 +24,7 @@ a11y:
   - "Summary carries an `aria-label` (default \"Menu\") because the glyph is decorative"
 usage: |-
   ---
-  import { Navbar, Button } from "astro-ui";
+  import { Navbar, Button } from "@parsakafi/astro-ui";
   ---
   
   <Navbar sticky ariaLabel="Main">

@@ -6,12 +6,12 @@ export const tabs: ComponentMeta = {
     description: "WAI-ARIA tab switcher — line, pill, and card variants.",
     overview:
         "Tabs implements the WAI-ARIA tabs pattern: SSR renders the list with the initial tab pre-selected, panels hide via the hidden attribute, and a small inline script wires click + arrow-key navigation with automatic activation. Without JS everything stays visible and meaningful.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Tabs",
     category: "navigation",
     js: true,
     usage:
-        `---\nimport { Tabs } from "astro-ui";\n---\n\n<Tabs id="settings" ariaLabel="Settings" defaultValue="billing"\n  items={[\n    { value: "account", label: "Account" },\n    { value: "billing", label: "Billing" },\n  ]}>\n  <div data-tab="account">Account panel.</div>\n  <div data-tab="billing">Billing panel.</div>\n</Tabs>`,
+        `---\nimport { Tabs } from "@parsakafi/astro-ui";\n---\n\n<Tabs id="settings" ariaLabel="Settings" defaultValue="billing"\n  items={[\n    { value: "account", label: "Account" },\n    { value: "billing", label: "Billing" },\n  ]}>\n  <div data-tab="account">Account panel.</div>\n  <div data-tab="billing">Billing panel.</div>\n</Tabs>`,
     features: [
         "WAI-ARIA tabs pattern: roving tabindex, automatic activation",
         "Arrow keys, Home/End navigation; RTL-aware",

@@ -6,12 +6,12 @@ export const badge: ComponentMeta = {
     description: "Status/count label — inline or overlay bubble with icon, dot, avatar, and dismiss.",
     overview:
         "Badge is a zero-JS status and count label. Inline it next to text, or use it as an overlay bubble pinned to another element's corner with content + position. Inline badges compose: an icon slot (or any image, e.g. a flag) sized via --aui-badge-icon, a variant-tinted status dot, optically aligned avatars, and a labeled dismiss button. Counts stay real text so screen readers announce them.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Badge",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Badge } from "astro-ui";\n---\n\n<Badge variant="success">Active</Badge>\n<Badge content="3" position="top-right" variant="error" ariaLabel="3 notifications" />\n  Inbox`,
+        `---\nimport { Badge } from "@parsakafi/astro-ui";\n---\n\n<Badge variant="success">Active</Badge>\n<Badge content="3" position="top-right" variant="error" ariaLabel="3 notifications" />\n  Inbox`,
     features: [
         "11 variants incl. soft, muted, error",
         "5 sizes: xs → 2xl",

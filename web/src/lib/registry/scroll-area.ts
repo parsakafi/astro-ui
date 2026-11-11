@@ -6,13 +6,13 @@ export const scrollArea: ComponentMeta = {
     description: "Token-themed scrollable region with styled scrollbar.",
     overview:
         "ScrollArea wraps any content in a fixed-size region with a custom-styled, token-themed scrollbar — consistent across platforms where the native scrollbar clashes with the design.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "ScrollArea",
     category: "layout",
     js: false,
     usage:
         `---
-import { ScrollArea } from "astro-ui";
+import { ScrollArea } from "@parsakafi/astro-ui";
 ---
 
 <ScrollArea height="12rem">

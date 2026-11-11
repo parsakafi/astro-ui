@@ -4,7 +4,7 @@ name: "Input"
 description: >-
   Every native input type with token styling and validation states.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Input"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "`aria-invalid` for validation state"
 usage: |-
   ---
-  import { Input, Label } from "astro-ui";
+  import { Input, Label } from "@parsakafi/astro-ui";
   ---
   
   <Label for="email" required>Email</Label>

@@ -1,14 +1,14 @@
 ---
 /**
  * Toaster — stacked notification toasts, one fixed stack per screen
- * corner. Styling is NOT bundled: import "astro-ui/toast.css" once
+ * corner. Styling is NOT bundled: import "@parsakafi/astro-ui/toast.css" once
  * alongside <Toaster /> (see package exports) so apps that fully
  * restyle toasts can skip it. Toast nodes are created at runtime by
  * the script below, which is why the CSS must stay a global
  * stylesheet — Astro `<style>` scoping would never match them.
  * A toast appears at the corner given by its `position` option
  * (default: bottom-right); import the `toast` function from
- * "astro-ui/toast" to trigger toasts from anywhere.
+ * "@parsakafi/astro-ui/toast" to trigger toasts from anywhere.
  *
  * JavaScript required: Yes
  */
@@ -39,7 +39,7 @@
 </section>
 
 <script>
-  import type {Toast, ToastAction} from "astro-ui/toast";
+  import type {Toast, ToastAction} from "@parsakafi/astro-ui/toast";
 
   // Inline icons to avoid cross-module import path issues at runtime
   const ICONS: Record<string, string> = {
@@ -53,7 +53,7 @@
   const CLOSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
 
   (async () => {
-    const toast = (await import("astro-ui/toast")).toast;
+    const toast = (await import("@parsakafi/astro-ui/toast")).toast;
 
     // One fixed stack per screen corner; each toast routes to the stack
     // matching its `position` option (default: bottom-right).

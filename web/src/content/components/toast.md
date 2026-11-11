@@ -4,7 +4,7 @@ name: "Toast"
 description: >-
   Notification toasts with actions, positions, and expand.
 category: feedback
-importPath: "astro-ui/toaster"
+importPath: "@parsakafi/astro-ui/toaster"
 exportName: "Toaster / toast"
 js: true
 since: "0.1.0"
@@ -24,14 +24,14 @@ a11y:
   - "Role by type (status/alert) with per-type override via the `role` option"
 usage: |-
   ---
-  import { Toaster } from "astro-ui";
-  import "astro-ui/toast.css";
+  import { Toaster } from "@parsakafi/astro-ui";
+  import "@parsakafi/astro-ui/toast.css";
   ---
   <body>
     <Toaster />
   </body>
   <script>
-    import { toast } from "astro-ui/toast";
+    import { toast } from "@parsakafi/astro-ui/toast";
     toast.success("Saved!");
     toast("Event has been created", {
       action: { label: "Undo", onClick: () => console.log("Undo") },

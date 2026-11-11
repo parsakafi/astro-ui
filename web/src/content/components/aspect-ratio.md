@@ -4,7 +4,7 @@ name: "AspectRatio"
 description: >-
   Reserves a fixed width/height ratio for media — no layout shift.
 category: layout
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "AspectRatio"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "No role or label of its own; nothing extra for assistive tech"
 usage: |-
   ---
-  import { AspectRatio } from "astro-ui";
+  import { AspectRatio } from "@parsakafi/astro-ui";
   ---
   
   <AspectRatio ratio="16 / 9">

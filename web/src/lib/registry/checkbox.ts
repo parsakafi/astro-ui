@@ -6,12 +6,12 @@ export const checkbox: ComponentMeta = {
     description: "Native checkbox with custom visual, indeterminate state, and label.",
     overview:
         "Checkbox styles the native input inside a label wrapper — square or rounded indicator, indeterminate support, and full native keyboard/announcement behavior.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Checkbox",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Checkbox } from "astro-ui";\n---\n\n<Checkbox name="news" checked>Email me news</Checkbox>`,
+        `---\nimport { Checkbox } from "@parsakafi/astro-ui";\n---\n\n<Checkbox name="news" checked>Email me news</Checkbox>`,
     features: [
         "Native input + custom visual (real form value)",
         "square / rounded indicator shapes",

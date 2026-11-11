@@ -4,7 +4,7 @@ name: "Tree"
 description: >-
   Keyboard-navigable file/folder hierarchy with guide lines.
 category: navigation
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Tree"
 js: true
 since: "0.1.0"
@@ -26,7 +26,7 @@ a11y:
   - "`selected` marks the current item with `aria-selected=\"true\"`"
 usage: |-
   ---
-  import { Tree } from "astro-ui";
+  import { Tree } from "@parsakafi/astro-ui";
   ---
   
   <Tree

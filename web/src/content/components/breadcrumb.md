@@ -4,7 +4,7 @@ name: "Breadcrumb"
 description: >-
   Semantic breadcrumb trail — CSS separators, icons, ellipsis, pill, composed items.
 category: navigation
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Breadcrumb"
 js: false
 since: "0.1.0"
@@ -24,7 +24,7 @@ a11y:
   - "Separators are CSS pseudo-elements — never read by screen readers"
 usage: |-
   ---
-  import { Breadcrumb } from "astro-ui";
+  import { Breadcrumb } from "@parsakafi/astro-ui";
   ---
   
   <Breadcrumb

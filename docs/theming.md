@@ -8,8 +8,8 @@ theme — no per-component dark-mode code exists (or should be added).
 
 ```astro
 ---
-import "astro-ui/tokens.css"; // required: variables
-import "astro-ui/base.css";   // optional: body bg, focus rings, sr-only, reduced motion
+import "@parsakafi/astro-ui/tokens.css"; // required: variables
+import "@parsakafi/astro-ui/base.css";   // optional: body bg, focus rings, sr-only, reduced motion
 ---
 ```
 

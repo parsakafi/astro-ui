@@ -4,7 +4,7 @@ name: "Attachment"
 description: >-
   File attachment card with media, state hooks, and action slots.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Attachment"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Decorative media and the paperclip fallback icon are aria-hidden"
 usage: |-
   ---
-  import { Attachment, Button } from "astro-ui";
+  import { Attachment, Button } from "@parsakafi/astro-ui";
   ---
   
   <Attachment

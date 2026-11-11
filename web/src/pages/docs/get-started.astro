@@ -4,7 +4,7 @@
   */
 import DocsLayout from "../../layouts/DocsLayout.astro";
 import CodeBlock from "../../components/docs/CodeBlock.astro";
-import {Button, Badge, Tabs} from "astro-ui";
+import {Button, Badge, Tabs} from "@parsakafi/astro-ui";
 
 const toc = [
   {id: "install", label: "Install"},
@@ -44,16 +44,16 @@ const toc = [
         ]}
       >
         <div data-tab="npm">
-          <CodeBlock code="npm install astro-ui" lang="bash"/>
+          <CodeBlock code="npm install @parsakafi/astro-ui" lang="bash"/>
         </div>
         <div data-tab="pnpm">
-          <CodeBlock code="pnpm add astro-ui" lang="bash"/>
+          <CodeBlock code="pnpm add @parsakafi/astro-ui" lang="bash"/>
         </div>
         <div data-tab="yarn">
-          <CodeBlock code="yarn add astro-ui" lang="bash"/>
+          <CodeBlock code="yarn add @parsakafi/astro-ui" lang="bash"/>
         </div>
         <div data-tab="bun">
-          <CodeBlock code="bun add astro-ui" lang="bash"/>
+          <CodeBlock code="bun add @parsakafi/astro-ui" lang="bash"/>
         </div>
       </Tabs>
     </section>
@@ -87,7 +87,7 @@ const toc = [
       </p>
       <CodeBlock
         code={`---
-import { Button, Badge } from "astro-ui";
+import { Button, Badge } from "@parsakafi/astro-ui";
 ---
 <Button variant="primary">Save changes</Button>
 <Badge variant="success">Deployed</Badge>`}

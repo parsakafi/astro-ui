@@ -1,6 +1,6 @@
 /** capital-inflows block — copy-paste-ready Astro markup. */
 export const codeCapitalInflows = `---
-import { Card, Chart, Badge, Button, Avatar } from "astro-ui";
+import { Card, Chart, Badge, Button, Avatar } from "@parsakafi/astro-ui";
 ---
 
 <div class="capital">

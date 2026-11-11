@@ -24,7 +24,7 @@ The npm package publishes `src/**/*.astro` + plain CSS directly. Rationale:
 - Astro consumes `.astro` source natively; compiling to JS components would
   add a runtime and break Astro slot/hydration semantics.
 - Tree-shaking falls out naturally: named ESM re-exports in `index.ts`
-  plus per-component subpath exports (`astro-ui/button`).
+  plus per-component subpath exports (`@parsakafi/astro-ui/button`).
 - Keeps the door open for a future source-distribution CLI (`add button`
   copies the same source files) with zero rewrite.
 
@@ -85,7 +85,7 @@ there is no headless dependency.
 
 ## Consequences
 
-- Consumers must import `astro-ui/tokens.css` once (documented; missing
+- Consumers must import `@parsakafi/astro-ui/tokens.css` once (documented; missing
   import degrades to unstyled but functional markup).
 - `type` prop on Input is a constrained union, not free `string` — valid
   HTML only, by design.

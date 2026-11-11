@@ -1,6 +1,6 @@
 /** breadcrumb-avatars block — copy-paste-ready Astro markup. */
 export const codeBreadcrumbAvatars = `---
-import { Breadcrumb, Avatar } from "astro-ui";
+import { Breadcrumb, Avatar } from "@parsakafi/astro-ui";
 ---
 
 <Breadcrumb separator="chevron" ariaLabel="Team breadcrumb">

@@ -9,7 +9,7 @@ navigation (automatic activation) come from a small scoped inline script.
 
 ```astro
 ---
-import { Tabs } from "astro-ui";
+import { Tabs } from "@parsakafi/astro-ui";
 ---
 
 <Tabs

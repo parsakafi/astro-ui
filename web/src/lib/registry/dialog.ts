@@ -6,12 +6,12 @@ export const dialog: ComponentMeta = {
     description: "Native <dialog> modal — platform focus trap, Esc, and backdrop.",
     overview:
         "Dialog is the first JS-required component — and deliberately so: it's a thin styled wrapper over native &lt;dialog&gt;, so modality, backdrop, focus containment, Escape, and focus return all come from the platform. The component ships zero JS; your app calls showModal().",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Dialog",
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Dialog, Button } from "astro-ui";\n---\n\n<Button id="open">Open</Button>\n<Dialog id="prefs">\n  <h2 slot="title">Preferences</h2>\n  <p slot="description">Device-only settings.</p>\n  <form method="dialog"><Button>Close</Button></form>\n</Dialog>\n<script>\n  document.getElementById("open")?.addEventListener("click", () =>\n    document.getElementById("prefs")?.showModal());\n</script>`,
+        `---\nimport { Dialog, Button } from "@parsakafi/astro-ui";\n---\n\n<Button id="open">Open</Button>\n<Dialog id="prefs">\n  <h2 slot="title">Preferences</h2>\n  <p slot="description">Device-only settings.</p>\n  <form method="dialog"><Button>Close</Button></form>\n</Dialog>\n<script>\n  document.getElementById("open")?.addEventListener("click", () =>\n    document.getElementById("prefs")?.showModal());\n</script>`,
     features: [
         "Native <dialog>: focus trap + return, Esc, backdrop",
         "title/description/footer slots with automatic aria wiring",

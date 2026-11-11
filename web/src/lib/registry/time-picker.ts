@@ -6,12 +6,12 @@ export const timePicker: ComponentMeta = {
     description: "Time field with four interaction patterns: slot list, native input, scroll-drum wheel, and circular clock.",
     overview:
         "TimePicker covers every time-entry scenario with a single component. `variant=\"select\"` builds a slot list from `step` — the shape appointment forms need. `variant=\"input\"` hands off to the platform picker. `variant=\"wheel\"` renders a scroll-snap column drum — the mobile-native feel on desktop. `variant=\"clock\"` renders a circular clock face where you tap the hour hand, then the minute hand. All four write the same `HH:mm` value into a hidden form input, so the form contract never changes.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "TimePicker",
     category: "forms",
     js: true,
     usage:
-        `---\nimport { TimePicker, Label } from "astro-ui";\n---\n\n<Label for="slot">Drop-off</Label>\n<TimePicker id="slot" name="slot" step={30} min="09:00" max="17:00"/>\n\n<!-- Wheel -->\n<TimePicker name="appt" variant="wheel" hour12 />\n\n<!-- Clock -->\n<TimePicker name="start" variant="clock" value="09:30" />`,
+        `---\nimport { TimePicker, Label } from "@parsakafi/astro-ui";\n---\n\n<Label for="slot">Drop-off</Label>\n<TimePicker id="slot" name="slot" step={30} min="09:00" max="17:00"/>\n\n<!-- Wheel -->\n<TimePicker name="appt" variant="wheel" hour12 />\n\n<!-- Clock -->\n<TimePicker name="start" variant="clock" value="09:30" />`,
     features: [
         "Four variants: `select` slots, native `input`, scroll `wheel`, circular `clock`",
         "Wheel: infinite-scroll snap drums with pointer drag, momentum, and mouse wheel",

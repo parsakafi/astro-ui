@@ -6,12 +6,12 @@ export const radio: ComponentMeta = {
     description: "Native radio button with custom circle — group via shared name.",
     overview:
         "Radio mirrors Checkbox with a circle-and-dot indicator. Group behavior comes from the native shared name attribute — zero JS, perfect announcements.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Radio",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Radio } from "astro-ui";\n---\n\n<Radio name="plan" value="free" checked>Free</Radio>\n<Radio name="plan" value="pro">Pro</Radio>`,
+        `---\nimport { Radio } from "@parsakafi/astro-ui";\n---\n\n<Radio name="plan" value="free" checked>Free</Radio>\n<Radio name="plan" value="pro">Pro</Radio>`,
     features: ["Native group behavior via shared name", "Circle + dot visual", "5 sizes, 9 color variants", "Disabled/invalid states"],
     a11y: [
         "Native `<fieldset>` + `<legend>` name the group; `<input type=\"radio\">` handles selection",

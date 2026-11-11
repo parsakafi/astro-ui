@@ -4,7 +4,7 @@ name: "Link"
 description: >-
   Semantic anchor with external/rel smarts, icons, colors, and a disabled state.
 category: general
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Link"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "`:focus-visible` ring"
 usage: |-
   ---
-  import { Link } from "astro-ui";
+  import { Link } from "@parsakafi/astro-ui";
   ---
   
   <Link href="https://astro.build" external icon="external">Astro</Link>

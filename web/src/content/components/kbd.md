@@ -4,7 +4,7 @@ name: "Kbd"
 description: >-
   Keyboard key cap for documenting shortcuts.
 category: general
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Kbd"
 js: false
 since: "0.1.0"
@@ -19,7 +19,7 @@ a11y:
   - "Semantic `<kbd>` elements — key sequences are announced as keyboard input"
 usage: |-
   ---
-  import { Kbd } from "astro-ui";
+  import { Kbd } from "@parsakafi/astro-ui";
   ---
   
   <p>Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to search.</p>

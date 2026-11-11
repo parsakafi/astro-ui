@@ -6,12 +6,12 @@ export const attachment: ComponentMeta = {
     description: "File attachment card with media, state hooks, and action slots.",
     overview:
         "Attachment shows an attached file as a composed card: a media box (icon or image thumbnail), a title and description line, and an actions area. It is purely presentational — upload progress, errors, and removal are wired app-side. Five `state` values render as `data-state` attributes (idle is dashed; error is red) that you can target from your own CSS, and `orientation` stacks the card vertically (image-first) or in a row.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Attachment",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Attachment, Button } from "astro-ui";\n---\n\n<Attachment\n  state="done"\n  title="quarterly-report.pdf"\n  description="PDF · 2.4 MB"\n>\n  <Button variant="ghost" size="icon" slot="actions" aria-label="Remove file">✕</Button>\n</Attachment>`,
+        `---\nimport { Attachment, Button } from "@parsakafi/astro-ui";\n---\n\n<Attachment\n  state="done"\n  title="quarterly-report.pdf"\n  description="PDF · 2.4 MB"\n>\n  <Button variant="ghost" size="icon" slot="actions" aria-label="Remove file">✕</Button>\n</Attachment>`,
     features: [
         "Five state hooks: idle (dashed), uploading, processing, error, done — via data-state",
         "Media variants: icon (paperclip) or image thumbnail, or your own media slot",

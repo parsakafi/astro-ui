@@ -8,7 +8,7 @@ or inline scripts when needed (e.g. `history.replaceState` for `replace`).
 
 ```astro
 ---
-import { Link } from "astro-ui";
+import { Link } from "@parsakafi/astro-ui";
 ---
 <Link href="/docs">Read the docs</Link>
 <Link href="https://example.com" external>External site</Link>

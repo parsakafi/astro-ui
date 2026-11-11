@@ -6,12 +6,12 @@ export const avatar: ComponentMeta = {
     description: "User image with initials fallback, status badges, rings, groups, and loading state.",
     overview:
         "Avatar renders an <img> when src is provided, otherwise initials derived from name. Beyond the base surface it composes the extras design systems need: an online status badge (four states, four corners), colored rings, radius overrides, custom explicit sizes, a grayscale filter (with hover-to-restore), a loading spinner veil, and a badge slot for counts or checkmarks. AvatarGroup stacks avatars with overlap and an optional trailing count chip (numeric or icon) with an optional hover-spread.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Avatar",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Avatar, AvatarGroup } from "astro-ui";\n---\n\n<Avatar name="Ada Lovelace" src="/ada.jpg" />\n<Avatar name="Grace" status="online" />\n<Avatar name="Alan" ring="primary" size="lg" />\n\n<AvatarGroup hover>\n  <Avatar name="Ada" /><Avatar name="Grace" />\n  <Fragment slot="count">+3</Fragment>\n</AvatarGroup>`,
+        `---\nimport { Avatar, AvatarGroup } from "@parsakafi/astro-ui";\n---\n\n<Avatar name="Ada Lovelace" src="/ada.jpg" />\n<Avatar name="Grace" status="online" />\n<Avatar name="Alan" ring="primary" size="lg" />\n\n<AvatarGroup hover>\n  <Avatar name="Ada" /><Avatar name="Grace" />\n  <Fragment slot="count">+3</Fragment>\n</AvatarGroup>`,
     features: [
         "Status badges: online/away/busy/offline on any corner, with accessible labels",
         "Rings in five token colors plus the background key line",

@@ -4,7 +4,7 @@ name: "Banner"
 description: >-
   Full-width announcement strip with icon, actions, and dismissal hook.
 category: feedback
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Banner"
 js: false
 since: "0.1.0"
@@ -24,7 +24,7 @@ a11y:
   - "Focus ring uses currentColor so it stays visible on every variant"
 usage: |-
   ---
-  import { Banner, Button } from "astro-ui";
+  import { Banner, Button } from "@parsakafi/astro-ui";
   ---
   
   <Banner variant="info" closable>

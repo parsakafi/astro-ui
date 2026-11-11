@@ -6,12 +6,12 @@ export const bubble: ComponentMeta = {
     description: "Chat message bubble — 7 variants, start/end align, reactions, groups.",
     overview:
         "Bubble composes a conversational message from three parts: Bubble sets alignment (start/end) and variant context, BubbleContent is the visible rounded box, and BubbleReactions anchors a reaction pill to an edge. BubbleGroup stacks consecutive same-sender turns with tight spacing. Ghost renders bare content for headings, lists, and code.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Bubble",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Bubble, BubbleContent, BubbleReactions } from "astro-ui";\n---\n\n<Bubble align="end" variant="primary">\n  <BubbleContent>Looks great — ship it.</BubbleContent>\n  <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">\n    <span aria-hidden="true">🎉</span>\n  </BubbleReactions>\n</Bubble>`,
+        `---\nimport { Bubble, BubbleContent, BubbleReactions } from "@parsakafi/astro-ui";\n---\n\n<Bubble align="end" variant="primary">\n  <BubbleContent>Looks great — ship it.</BubbleContent>\n  <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">\n    <span aria-hidden="true">🎉</span>\n  </BubbleReactions>\n</Bubble>`,
     features: [
         "7 variants: primary, secondary, muted, tinted, outline, ghost, error",
         "start/end alignment for two-sided threads",
@@ -49,7 +49,7 @@ export const bubble: ComponentMeta = {
         {
             id: "ghost-rich",
             title: "Ghost bubble with rich content",
-            code: `<div class="docs-bubble-thread">\n  <Bubble align="start" variant="ghost">\n    <BubbleContent>\n      <h4>What changed in v2.5</h4>\n      <ul>\n        <li><strong>Bubble</strong> components for conversational UIs</li>\n        <li>Logical-property separators in <code>Breadcrumb</code></li>\n        <li><em>40% faster</em> docs generation</li>\n      </ul>\n      <p>Upgrade with <code>npm install astro-ui@latest</code>.</p>\n    </BubbleContent>\n  </Bubble>\n</div>`,
+            code: `<div class="docs-bubble-thread">\n  <Bubble align="start" variant="ghost">\n    <BubbleContent>\n      <h4>What changed in v2.5</h4>\n      <ul>\n        <li><strong>Bubble</strong> components for conversational UIs</li>\n        <li>Logical-property separators in <code>Breadcrumb</code></li>\n        <li><em>40% faster</em> docs generation</li>\n      </ul>\n      <p>Upgrade with <code>npm install @parsakafi/astro-ui@latest</code>.</p>\n    </BubbleContent>\n  </Bubble>\n</div>`,
         },
         {
             id: "collapsible-answer",

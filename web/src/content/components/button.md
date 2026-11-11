@@ -4,7 +4,7 @@ name: "Button"
 description: >-
   Action trigger with variants, sizes, loading states, and anchor mode.
 category: general
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Button"
 js: false
 since: "0.1.0"
@@ -27,7 +27,7 @@ a11y:
   - "Loading spinner is `aria-hidden` with `:focus-visible` ring"
 usage: |-
   ---
-  import { Button } from "astro-ui";
+  import { Button } from "@parsakafi/astro-ui";
   ---
   
   <Button>Primary</Button>

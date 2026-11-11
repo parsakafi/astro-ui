@@ -4,7 +4,7 @@ name: "Tooltip"
 description: >-
   CSS-only hover/focus tooltip on a trigger wrapper.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Tooltip"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "Revealed on keyboard `:focus-visible`, not only hover; content `aria-hidden` from the trigger's name"
 usage: |-
   ---
-  import { Tooltip, Button } from "astro-ui";
+  import { Tooltip, Button } from "@parsakafi/astro-ui";
   ---
   
   <Tooltip ariaLabel="Delete item">

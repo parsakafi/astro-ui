@@ -4,7 +4,7 @@ name: "Autocomplete"
 description: >-
   Input that suggests options as you type — ARIA combobox pattern.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Autocomplete"
 js: true
 since: "0.1.0"
@@ -25,7 +25,7 @@ a11y:
   - "Empty state is announced via the listbox content itself"
 usage: |-
   ---
-  import { Autocomplete } from "astro-ui";
+  import { Autocomplete } from "@parsakafi/astro-ui";
   ---
   
   <Autocomplete

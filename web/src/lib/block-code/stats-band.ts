@@ -1,6 +1,6 @@
 /** stats-band block — copy-paste-ready Astro markup. */
 export const codeStatsBand = `---
-import { Card, Badge, Progress } from "astro-ui";
+import { Card, Badge, Progress } from "@parsakafi/astro-ui";
 ---
 
 <div class="block-canvas-grid">

@@ -6,12 +6,12 @@ export const beforeAfter: ComponentMeta = {
     description: "Draggable image comparison — two images, one split, native range control.",
     overview:
         "BeforeAfter stacks two images in one frame and clips the \u201cbefore\u201d layer at the split position, revealing the \u201cafter\u201d layer underneath. The split is driven by a real `<input type=\"range\">` stretched across the frame, so pointer drag, touch, and keyboard (Arrow keys, Home, End, Page Up/Down) work natively \u2014 the scoped script only mirrors the input value into a CSS custom property. `value` sets the initial position, `aspectRatio` shapes the frame, and `labels` adds Before/After chips. Clipping uses logical properties plus `:dir()` so the reveal starts on the reading side in RTL. Every move emits a bubbling `before-after:change` event with `detail.value` (0\u2013100).",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "BeforeAfter",
     category: "data-display",
     js: true,
     usage:
-        `---\nimport { BeforeAfter } from "astro-ui";\n---\n\n<BeforeAfter\n  before={{ src: "/before.jpg", alt: "Empty room" }}\n  after={{ src: "/after.jpg", alt: "Furnished room" }}\n/>`,
+        `---\nimport { BeforeAfter } from "@parsakafi/astro-ui";\n---\n\n<BeforeAfter\n  before={{ src: "/before.jpg", alt: "Empty room" }}\n  after={{ src: "/after.jpg", alt: "Furnished room" }}\n/>`,
     features: [
         "Native range input drives the split \u2014 pointer, touch, and keyboard all work",
         "Independent src + alt for each image",

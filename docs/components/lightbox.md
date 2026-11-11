@@ -10,7 +10,7 @@ the component; opening needs one app-level `showModal()` call.
 
 ```astro
 ---
-import { Button, Lightbox, LightboxItem } from "astro-ui";
+import { Button, Lightbox, LightboxItem } from "@parsakafi/astro-ui";
 ---
 <Button id="open-gallery">View gallery</Button>
 

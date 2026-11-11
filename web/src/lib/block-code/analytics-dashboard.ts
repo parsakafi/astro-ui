@@ -1,6 +1,6 @@
 /** analytics-dashboard block — copy-paste-ready Astro markup. */
 export const codeAnalyticsDashboard = `---
-import { Card, Chart, Badge, Button, Tabs } from "astro-ui";
+import { Card, Chart, Badge, Button, Tabs } from "@parsakafi/astro-ui";
 ---
 
 <div class="dash">

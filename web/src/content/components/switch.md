@@ -4,7 +4,7 @@ name: "Switch"
 description: >-
   On/off toggle built on a native checkbox with role=switch.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Switch"
 js: false
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "Space toggles; `aria-invalid` + `aria-describedby` for validation"
 usage: |-
   ---
-  import { Switch } from "astro-ui";
+  import { Switch } from "@parsakafi/astro-ui";
   ---
   
   <Switch name="wifi" checked>Wi-Fi</Switch>

@@ -4,7 +4,7 @@ name: "Label"
 description: >-
   Form label with required/disabled states and two sizes.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Label"
 js: false
 since: "0.1.0"
@@ -19,7 +19,7 @@ a11y:
   - "Native `<label>` association; `aria-required` support for required fields"
 usage: |-
   ---
-  import { Label, Input } from "astro-ui";
+  import { Label, Input } from "@parsakafi/astro-ui";
   ---
   
   <Label for="email" required>Email</Label>

@@ -4,7 +4,7 @@ name: "ToggleGroup"
 description: >-
   Connected row of Toggles — segmented control styling.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "ToggleGroup"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "Roving `:focus-visible` ring"
 usage: |-
   ---
-  import { ToggleGroup, Toggle } from "astro-ui";
+  import { ToggleGroup, Toggle } from "@parsakafi/astro-ui";
   ---
   
   <ToggleGroup ariaLabel="Text align">

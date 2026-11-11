@@ -6,12 +6,12 @@ export const switchComponent: ComponentMeta = {
     description: "On/off toggle built on a native checkbox with role=\"switch\".",
     overview:
         "Switch is an on/off toggle built on a native checkbox carrying role=\"switch\" — screen readers announce On/Off, Tab and Space work natively, and the form value is a real checkbox value.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Switch",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Switch } from "astro-ui";\n---\n\n<Switch name="wifi" checked>Wi-Fi</Switch>`,
+        `---\nimport { Switch } from "@parsakafi/astro-ui";\n---\n\n<Switch name="wifi" checked>Wi-Fi</Switch>`,
     features: [
         "role=\"switch\" with On/Off announcements",
         "rounded (default) or square track",

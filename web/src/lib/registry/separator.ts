@@ -6,13 +6,13 @@ export const separator: ComponentMeta = {
     description: "Horizontal/vertical divider with solid, dashed, and dotted styles.",
     overview:
         "Separator renders a themed rule between sections — semantic hr (or a decorated span when purely visual), with orientation, style, and label support.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Separator",
     category: "layout",
     js: false,
     usage:
         `---
-import { Separator } from "astro-ui";
+import { Separator } from "@parsakafi/astro-ui";
 ---
 
 <Separator />

@@ -4,7 +4,7 @@ name: "Slider"
 description: >-
   Native range input themed with tokens — drag, keys, form value.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Slider"
 js: false
 since: "0.1.0"
@@ -24,7 +24,7 @@ a11y:
   - "Tooltip bubble is an `<output for>` — value changes are announced, and it's pointer-events: none"
 usage: |-
   ---
-  import { Slider } from "astro-ui";
+  import { Slider } from "@parsakafi/astro-ui";
   ---
   
   <Slider name="volume" label="Volume" value={70} showValue />

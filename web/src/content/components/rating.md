@@ -4,7 +4,7 @@ name: "Rating"
 description: >-
   Rating input on native radios — icon presets, emoji, and satisfaction scales, zero JS.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Rating"
 js: false
 since: "0.1.0"
@@ -25,7 +25,7 @@ a11y:
   - "`colorScale`/emoji states remain announced through their radio labels"
 usage: |-
   ---
-  import { Rating } from "astro-ui";
+  import { Rating } from "@parsakafi/astro-ui";
   ---
   
   <Rating name="score" value={4} />

@@ -6,12 +6,12 @@ export const sheet: ComponentMeta = {
     description: "Dialog panel that slides in from a screen edge.",
     overview:
         "Sheet is a dialog panel that slides in from a screen edge — built on the same native &lt;dialog&gt; foundation as Dialog: modality, ::backdrop, Escape-to-close, and focus containment come from the platform and the component ships zero JS. Closing needs no JS: any &lt;form method=\"dialog\"&gt; button, the optional built-in close button, or Escape dismisses natively. When id is set, the title slot gets {id}-title and the sheet points aria-labelledby at it.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Sheet",
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Button, Sheet } from "astro-ui";\n---\n\n<Button id="open-menu">Menu</Button>\n<Sheet id="menu" side="left">\n  <h2 slot="title">Menu</h2>\n  <p>Sheet body…</p>\n</Sheet>\n\n<script>\n  document.getElementById("open-menu")?.addEventListener("click", () => {\n    document.getElementById("menu")?.showModal();\n  });\n</script>`,
+        `---\nimport { Button, Sheet } from "@parsakafi/astro-ui";\n---\n\n<Button id="open-menu">Menu</Button>\n<Sheet id="menu" side="left">\n  <h2 slot="title">Menu</h2>\n  <p>Sheet body…</p>\n</Sheet>\n\n<script>\n  document.getElementById("open-menu")?.addEventListener("click", () => {\n    document.getElementById("menu")?.showModal();\n  });\n</script>`,
     features: [
         "Slides from any edge: left / right / top / bottom",
         "Native <dialog> modality, backdrop, Escape — zero JS in the component",

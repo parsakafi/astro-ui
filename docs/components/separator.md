@@ -5,7 +5,7 @@ Zero-JS thematic break. Horizontal renders `<hr>`; vertical renders
 
 ```astro
 ---
-import { Separator } from "astro-ui";
+import { Separator } from "@parsakafi/astro-ui";
 ---
 <Separator />
 <Separator orientation="vertical" label="Separates filters from results" />

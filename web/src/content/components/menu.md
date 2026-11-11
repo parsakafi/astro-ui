@@ -4,7 +4,7 @@ name: "Menu"
 description: >-
   Floating action menu with the WAI-ARIA menu-button keyboard model.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Menu"
 js: true
 since: "0.1.0"
@@ -27,7 +27,7 @@ a11y:
   - "Shortcut hints are `aria-hidden` — they mirror platform bindings, not app state"
 usage: |-
   ---
-  import { Menu, MenuItem, MenuSeparator } from "astro-ui";
+  import { Menu, MenuItem, MenuSeparator } from "@parsakafi/astro-ui";
   ---
   
   <Menu id="row-actions" triggerLabel="Row actions">

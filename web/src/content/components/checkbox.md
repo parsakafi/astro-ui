@@ -4,7 +4,7 @@ name: "Checkbox"
 description: >-
   Native checkbox with custom visual, indeterminate state, and label.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Checkbox"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Decorative marks are `aria-hidden`; `:focus-visible` ring"
 usage: |-
   ---
-  import { Checkbox } from "astro-ui";
+  import { Checkbox } from "@parsakafi/astro-ui";
   ---
   
   <Checkbox name="news" checked>Email me news</Checkbox>

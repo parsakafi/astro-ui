@@ -6,12 +6,12 @@ export const inputGroup: ComponentMeta = {
     description: "Input with attached addons — icons, text prefixes, and buttons around the control.",
     overview:
         "InputGroup composes a text control with addons on either side: a leading icon, an `https://` prefix, a trailing button, or anything else you slot in. The wrapper owns the border, focus ring, and height (mirroring Input sizes) while the inner control renders bare — focus styling is CSS :focus-within, so no JavaScript ships. Works with Input and Textarea alike; use multiline for a Textarea so addons stretch the full height.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "InputGroup",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { InputGroup, Input } from "astro-ui";\n---\n\n<InputGroup>\n  <svg slot="start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>\n  <Input name="search" placeholder="Search…" />\n</InputGroup>`,
+        `---\nimport { InputGroup, Input } from "@parsakafi/astro-ui";\n---\n\n<InputGroup>\n  <svg slot="start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>\n  <Input name="search" placeholder="Search…" />\n</InputGroup>`,
     features: [
         "Named start/end addon slots plus any control in the default slot",
         "Wrapper owns border + focus ring via :focus-within — zero JS",

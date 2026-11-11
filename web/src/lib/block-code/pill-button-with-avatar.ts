@@ -1,6 +1,6 @@
 /** pill-button-with-avatar block — copy-paste-ready Astro markup. */
 export const codePillButtonWithAvatar = `---
-import { Button, Avatar } from "astro-ui";
+import { Button, Avatar } from "@parsakafi/astro-ui";
 ---
 
 <div class="block-pill-buttons">

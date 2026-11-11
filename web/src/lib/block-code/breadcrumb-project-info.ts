@@ -1,6 +1,6 @@
 /** breadcrumb-project-info block — copy-paste-ready Astro markup. */
 export const codeBreadcrumbProjectInfo = `---
-import { Breadcrumb, Avatar, Badge } from "astro-ui";
+import { Breadcrumb, Avatar, Badge } from "@parsakafi/astro-ui";
 ---
 
 <Breadcrumb ariaLabel="Project breadcrumb">

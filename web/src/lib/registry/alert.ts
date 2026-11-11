@@ -6,13 +6,13 @@ export const alert: ComponentMeta = {
     description: "Feedback message with 8 variants and accessible dismissal.",
     overview:
         "Alert shows a persistent inline message with a variant-colored surface, built-in variant glyph, and an optional dismiss button. Smart semantics: error alerts render role=alert (announced immediately); the others render role=status (polite).",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Alert",
     category: "feedback",
     js: false,
     usage:
         `---
-import { Alert } from "astro-ui";
+import { Alert } from "@parsakafi/astro-ui";
 ---
 
 <Alert variant="info" title="Heads up">Scheduled maintenance Sunday.</Alert>

@@ -5,7 +5,7 @@ Zero-JS feedback message. Role is automatic: `alert` for errors,
 
 ```astro
 ---
-import { Alert } from "astro-ui";
+import { Alert } from "@parsakafi/astro-ui";
 ---
 <Alert variant="success">
   <Fragment slot="title">Saved</Fragment>

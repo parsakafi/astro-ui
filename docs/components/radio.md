@@ -6,7 +6,7 @@ native browser behavior (arrows move within the group, Tab enters it).
 
 ```astro
 ---
-import { Radio, Label } from "astro-ui";
+import { Radio, Label } from "@parsakafi/astro-ui";
 ---
 <fieldset>
   <legend>Plan</legend>

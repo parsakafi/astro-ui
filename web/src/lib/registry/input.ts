@@ -6,12 +6,12 @@ export const input: ComponentMeta = {
     description: "Every native input type with token styling and validation states.",
     overview:
         "Input covers all 16 native types — text, email, password, date, color, range, file and friends — with token styling, size/variant control, and invalid state for server-driven validation. Numeric/date bounds forward via rest attributes.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Input",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Input, Label } from "astro-ui";\n---\n\n<Label for="email" required>Email</Label>\n<Input id="email" name="email" type="email" placeholder="ada@example.com" />`,
+        `---\nimport { Input, Label } from "@parsakafi/astro-ui";\n---\n\n<Label for="email" required>Email</Label>\n<Input id="email" name="email" type="email" placeholder="ada@example.com" />`,
     features: [
         "All 16 native input types, fully typed",
         "8 border variants incl. success/error",

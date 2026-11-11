@@ -4,7 +4,7 @@ name: "Timeline"
 description: >-
   Ordered event list with markers, connector rails, and time stamps.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Timeline"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Optional `aria-label` names the list (e.g. \"Deployment history\")"
 usage: |-
   ---
-  import { Timeline, TimelineItem } from "astro-ui";
+  import { Timeline, TimelineItem } from "@parsakafi/astro-ui";
   ---
   
   <Timeline ariaLabel="Deployment history">

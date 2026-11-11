@@ -4,7 +4,7 @@ name: "Table"
 description: >-
   Semantic table with bordered/striped styles, sizes, and scroll.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Table"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "Scroll wrapper is `role=\"region\"` with `aria-label` and `aria-describedby`"
 usage: |-
   ---
-  import { Table } from "astro-ui";
+  import { Table } from "@parsakafi/astro-ui";
   ---
   
   <Table caption="Team members">

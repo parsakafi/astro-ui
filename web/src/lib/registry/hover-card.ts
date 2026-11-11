@@ -6,12 +6,12 @@ export const hoverCard: ComponentMeta = {
     description: "Rich preview card on hover and keyboard focus — CSS-only.",
     overview:
         "HoverCard is the CSS-only sibling of Popover: content that appears after a short delay when the user hovers or focuses the trigger. Unlike Tooltip the card stays interactive (links inside work) and carries an aria-label so assistive tech can announce it. Because it is pointer-driven, never put essential information only in a HoverCard — the trigger itself must carry the primary content.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "HoverCard",
     category: "overlay",
     js: false,
     usage:
-        `---\nimport { HoverCard } from "astro-ui";\n---\n\n<HoverCard ariaLabel="Profile preview">\n  <a href="/users/ada">@ada</a>\n  <div slot="content">\n    <strong>Ada Lovelace</strong>\n    <p>Notes on the Analytical Engine.</p>\n  </div>\n</HoverCard>`,
+        `---\nimport { HoverCard } from "@parsakafi/astro-ui";\n---\n\n<HoverCard ariaLabel="Profile preview">\n  <a href="/users/ada">@ada</a>\n  <div slot="content">\n    <strong>Ada Lovelace</strong>\n    <p>Notes on the Analytical Engine.</p>\n  </div>\n</HoverCard>`,
     features: [
         "Zero JS — pure CSS :hover / :focus-within with an open delay",
         "Interactive content: links inside the card work",

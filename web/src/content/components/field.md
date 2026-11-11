@@ -4,7 +4,7 @@ name: "Field"
 description: >-
   Label + control + hint + error wiring in one wrapper.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Field"
 js: false
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "Errors announce with `role=\"alert\"`; `aria-invalid` marks the control"
 usage: |-
   ---
-  import { Field, Input } from "astro-ui";
+  import { Field, Input } from "@parsakafi/astro-ui";
   ---
   
   <Field id="email" required>

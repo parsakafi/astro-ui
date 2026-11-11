@@ -6,12 +6,12 @@ export const command: ComponentMeta = {
     description: "Inline searchable command palette — grouped actions, keyboard-first.",
     overview:
         "Command renders a framed palette with a search input on top of a scrollable, grouped action list. Type to filter (case-insensitive substring on labels and keywords), move with ↑/↓, run with Enter or click. Items are declarative: pass ordered `groups` of `{ value, label, hint?, shortcut?, disabled?, keywords? }` — shortcuts render Kbd-style on the right, hints as a muted second line. Selection emits a bubbling `command:select` event with the item's value; run your action from a listener. loop wraps highlighting, vimBindings adds j/k and ctrl+n/ctrl+p, and shouldFilter={false} hands filtering to you for async sources.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Command",
     category: "general",
     js: true,
     usage:
-        `---\nimport { Command } from "astro-ui";\n---\n\n<Command\n  label="Commands"\n  groups={[\n    { label: "Suggestions", items: [\n      { value: "calendar", label: "Calendar" },\n      { value: "calculator", label: "Calculator", disabled: true },\n    ]},\n    { label: "Settings", items: [\n      { value: "profile", label: "Profile", shortcut: "\u2318P" },\n    ]},\n  ]}\n/>\n\n<script>\n  document.addEventListener("command:select", (e) => {\n    console.log(e.detail.value);\n  });\n<\/script>`,
+        `---\nimport { Command } from "@parsakafi/astro-ui";\n---\n\n<Command\n  label="Commands"\n  groups={[\n    { label: "Suggestions", items: [\n      { value: "calendar", label: "Calendar" },\n      { value: "calculator", label: "Calculator", disabled: true },\n    ]},\n    { label: "Settings", items: [\n      { value: "profile", label: "Profile", shortcut: "\u2318P" },\n    ]},\n  ]}\n/>\n\n<script>\n  document.addEventListener("command:select", (e) => {\n    console.log(e.detail.value);\n  });\n<\/script>`,
     features: [
         "Grouped, ordered sections with uppercase group headings",
         "Case-insensitive filter across labels + keywords; per-item disabled state",

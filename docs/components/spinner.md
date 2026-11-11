@@ -5,7 +5,7 @@ standalone for page-level or region-level loading states.
 
 ```astro
 ---
-import { Spinner } from "astro-ui";
+import { Spinner } from "@parsakafi/astro-ui";
 ---
 <!-- Default -->
 <Spinner />

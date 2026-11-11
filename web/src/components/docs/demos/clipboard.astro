@@ -2,7 +2,7 @@
 import DemoTabs from "../DemoTabs.astro";
 import {
   Clipboard,
-} from "astro-ui";
+} from "@parsakafi/astro-ui";
 
 const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
 ---
@@ -16,8 +16,8 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <DemoTabs id="dm-clipboard-basic">
               <Fragment slot="preview">
                 <div class="demo-stack">
-                  <Clipboard value="npm install astro-ui" auto/>
-                  <Clipboard value="npm install astro-ui" auto icon={false}/>
+                  <Clipboard value="npm install @parsakafi/astro-ui" auto/>
+                  <Clipboard value="npm install @parsakafi/astro-ui" auto icon={false}/>
                 </div>
                 <p class="docs-demo-hint">Click either — the copy icon swaps to a green check for 1.5s.</p>
               </Fragment>
@@ -87,8 +87,8 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <DemoTabs id="dm-clipboard-feedback">
               <Fragment slot="preview">
                 <div class="demo-stack">
-                  <Clipboard value="pnpm add astro-ui" auto feedback="Install command copied"/>
-                  <Clipboard value="pnpm add astro-ui" auto feedback={null}/>
+                  <Clipboard value="pnpm add @parsakafi/astro-ui" auto feedback="Install command copied"/>
+                  <Clipboard value="pnpm add @parsakafi/astro-ui" auto feedback={null}/>
                 </div>
                 <p class="docs-demo-hint"><code>feedback={null}</code> skips the text entirely — the check icon alone
                   confirms.</p>
@@ -138,8 +138,8 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <DemoTabs id="dm-clipboard-code-block">
               <Fragment slot="preview">
                 <div class="docs-clipboard-code-pill">
-                  <code>npm install astro-ui</code>
-                  <Clipboard value="npm install astro-ui" auto onlyIcon variant="ghost" size="sm"/>
+                  <code>npm install @parsakafi/astro-ui</code>
+                  <Clipboard value="npm install @parsakafi/astro-ui" auto onlyIcon variant="ghost" size="sm"/>
                 </div>
               </Fragment>
               <Fragment slot="code">

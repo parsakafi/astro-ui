@@ -4,7 +4,7 @@ name: "Separator"
 description: >-
   Horizontal/vertical divider with solid, dashed, and dotted styles.
 category: layout
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Separator"
 js: false
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "Optional label is read by screen readers (\"or\" between form actions)"
 usage: |-
   ---
-  import { Separator } from "astro-ui";
+  import { Separator } from "@parsakafi/astro-ui";
   ---
   
   <Separator />

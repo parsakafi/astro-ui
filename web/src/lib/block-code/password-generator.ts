@@ -1,6 +1,6 @@
 /** password-generator block — copy-paste-ready Astro markup. */
 export const codePasswordGenerator = `---
-import { Card, Slider, Switch, Button } from "astro-ui";
+import { Card, Slider, Switch, Button } from "@parsakafi/astro-ui";
 ---
 
 <div class="passgen">

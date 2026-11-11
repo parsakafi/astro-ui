@@ -22,7 +22,7 @@ export interface ComponentMeta {
     description: string;
     /** Longer overview paragraph for the detail page hero. */
     overview: string;
-    /** Import path, e.g. `astro-ui` (root) or `astro-ui/button`. */
+    /** Import path, e.g. `@parsakafi/astro-ui` (root) or `@parsakafi/astro-ui/button`. */
     importPath: string;
     /** Named export when importing from the root package. */
     exportName: string;

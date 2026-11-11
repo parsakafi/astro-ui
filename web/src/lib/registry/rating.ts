@@ -6,12 +6,12 @@ export const rating: ComponentMeta = {
     description: "Rating input on native radios — icon presets, emoji, and satisfaction scales, zero JS.",
     overview:
         "Rating is a fieldset of radio inputs styled as rating icons: arrow keys, form submission, and per-step labels (\"3 out of 5\") come from the platform. Pick an icon preset (star, heart, circle, square, bar, thumb) or emoji faces, supply custom SVG paths, tint each step with colorScale for satisfaction scales, or highlight only the selected step with single for NPS-style questions. readonly renders a fractional display-only value.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Rating",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Rating } from "astro-ui";\n---\n\n<Rating name="score" value={4} />\n<Rating name="mood" value={4} icon="emoji" />\n<Rating\n  name="satisfaction"\n  colorScale\n  showLabels\n  labels={["Very bad", "Bad", "OK", "Good", "Excellent"]}\n/>\n<Rating value={3.5} readonly />`,
+        `---\nimport { Rating } from "@parsakafi/astro-ui";\n---\n\n<Rating name="score" value={4} />\n<Rating name="mood" value={4} icon="emoji" />\n<Rating\n  name="satisfaction"\n  colorScale\n  showLabels\n  labels={["Very bad", "Bad", "OK", "Good", "Excellent"]}\n/>\n<Rating value={3.5} readonly />`,
     features: [
         "Native radios: keyboard + form value",
         "Per-step screen-reader labels",

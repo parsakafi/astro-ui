@@ -6,12 +6,12 @@ export const notificationCenter: ComponentMeta = {
     description: "Bell trigger with an unread badge and a grouped notification panel.",
     overview:
         "NotificationCenter owns the bell, the unread count, and the panel that opens from it. Groups keep rows scannable by day or source, NotificationItem renders the row (optionally as a link), and the badge stays decorative because the count is already part of the trigger's accessible name. It is a disclosure rather than a modal: Escape and outside clicks close it, and focus returns to the bell.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "NotificationCenter",
     category: "feedback",
     js: true,
     usage:
-        `---\nimport {\n  NotificationCenter,\n  NotificationGroup,\n  NotificationItem,\n} from "astro-ui";\n---\n\n<NotificationCenter count={2} title="Notifications">\n  <NotificationGroup label="Today">\n    <NotificationItem unread title="Deploy finished" time="2m ago" href="/deploys/412">\n      Production build 412 is live.\n    </NotificationItem>\n    <NotificationItem title="Ada left a comment" time="1h ago">\n      On the sidebar PR.\n    </NotificationItem>\n  </NotificationGroup>\n</NotificationCenter>`,
+        `---\nimport {\n  NotificationCenter,\n  NotificationGroup,\n  NotificationItem,\n} from "@parsakafi/astro-ui";\n---\n\n<NotificationCenter count={2} title="Notifications">\n  <NotificationGroup label="Today">\n    <NotificationItem unread title="Deploy finished" time="2m ago" href="/deploys/412">\n      Production build 412 is live.\n    </NotificationItem>\n    <NotificationItem title="Ada left a comment" time="1h ago">\n      On the sidebar PR.\n    </NotificationItem>\n  </NotificationGroup>\n</NotificationCenter>`,
     features: [
         "Unread badge with 99+ cap, mirrored into the trigger's accessible name",
         "Grouped sections with day/source headings",

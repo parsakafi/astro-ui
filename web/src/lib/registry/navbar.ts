@@ -6,12 +6,12 @@ export const navbar: ComponentMeta = {
     description: "Top app bar with brand, nav links, actions, and a zero-JS mobile menu.",
     overview:
         "Navbar is the top-level app bar: a `<header>` with a brand slot, a `<nav>` landmark for the desktop links, an actions slot for the right edge, and a `<details>` disclosure that replaces the links under 48rem. Because the mobile menu is a native disclosure, it works with zero JavaScript, before hydration, and through back/forward cache restores.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Navbar",
     category: "navigation",
     js: false,
     usage:
-        `---\nimport { Navbar, Button } from "astro-ui";\n---\n\n<Navbar sticky ariaLabel="Main">\n  <a slot="brand" href="/">Acme</a>\n  <a href="/docs" aria-current="page">Docs</a>\n  <a href="/pricing">Pricing</a>\n  <Button slot="actions" size="sm">Sign in</Button>\n  <Fragment slot="mobile">\n    <a href="/docs">Docs</a>\n    <a href="/pricing">Pricing</a>\n  </Fragment>\n</Navbar>`,
+        `---\nimport { Navbar, Button } from "@parsakafi/astro-ui";\n---\n\n<Navbar sticky ariaLabel="Main">\n  <a slot="brand" href="/">Acme</a>\n  <a href="/docs" aria-current="page">Docs</a>\n  <a href="/pricing">Pricing</a>\n  <Button slot="actions" size="sm">Sign in</Button>\n  <Fragment slot="mobile">\n    <a href="/docs">Docs</a>\n    <a href="/pricing">Pricing</a>\n  </Fragment>\n</Navbar>`,
     features: [
         "3 surfaces: bordered, elevated, transparent",
         "Optional sticky placement",

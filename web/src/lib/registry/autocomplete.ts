@@ -6,12 +6,12 @@ export const autocomplete: ComponentMeta = {
     description: "Input that suggests options as you type — ARIA combobox pattern.",
     overview:
         "Autocomplete pairs a text input with a filtered suggestion list using the WAI-ARIA combobox + listbox pattern. Type to filter (case-insensitive substring on label/value), move with ↑/↓, commit with Enter, dismiss with Escape, jump with Home/End. Options render server-side; a small scoped script handles filtering and focus. The committed value posts with the form under the field's `name` — a native input underneath, so forms and autofill behave.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Autocomplete",
     category: "forms",
     js: true,
     usage:
-        `---\nimport { Autocomplete } from "astro-ui";\n---\n\n<Autocomplete\n  name="framework"\n  placeholder="Pick a framework…"\n  items={["Astro", "Next.js", "Nuxt", "SvelteKit"]}\n  clearable\n/>`,
+        `---\nimport { Autocomplete } from "@parsakafi/astro-ui";\n---\n\n<Autocomplete\n  name="framework"\n  placeholder="Pick a framework…"\n  items={["Astro", "Next.js", "Nuxt", "SvelteKit"]}\n  clearable\n/>`,
     features: [
         "Full keyboard support: ↑/↓ navigate, Enter commits, Escape closes, Home/End jump",
         "Case-insensitive substring filtering; filter={false} for async/external results",

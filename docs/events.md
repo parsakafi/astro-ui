@@ -34,7 +34,7 @@ hydration.
 
 ```astro
 ---
-import { Button } from "astro-ui";
+import { Button } from "@parsakafi/astro-ui";
 import Counter from "../islands/Counter.jsx";
 ---
 <Button variant="outline">Static action</Button>

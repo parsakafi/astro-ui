@@ -6,13 +6,13 @@ export const aspectRatio: ComponentMeta = {
     description: "Reserves a fixed width/height ratio for media — no layout shift.",
     overview:
         "AspectRatio wraps a single child (img, video, iframe, or div) in a box with a fixed CSS aspect-ratio and stretches the child to fill it. Drop media in and it covers the box without layout shift — object-fit stays in your hands.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "AspectRatio",
     category: "layout",
     js: false,
     usage:
         `---
-import { AspectRatio } from "astro-ui";
+import { AspectRatio } from "@parsakafi/astro-ui";
 ---
 
 <AspectRatio ratio="16 / 9">

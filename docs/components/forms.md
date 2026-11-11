@@ -5,7 +5,7 @@ is server/form-driven via `invalid` — no JS shipped.
 
 ```astro
 ---
-import { Label, Input, Textarea, Select, Switch, Checkbox, Radio } from "astro-ui";
+import { Label, Input, Textarea, Select, Switch, Checkbox, Radio } from "@parsakafi/astro-ui";
 ---
 <Label for="email" required>Email</Label>
 <Input id="email" name="email" type="email" ariaDescribedby="email-hint" required />

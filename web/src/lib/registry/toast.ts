@@ -6,12 +6,12 @@ export const toast: ComponentMeta = {
     description: "Notification toasts with actions, positions, and expand.",
     overview:
         "Toaster renders stacked notification toasts. Import the toast function, place &lt;Toaster /&gt; once in your layout, and fire from anywhere: six semantic helpers, action buttons, per-toast positions, durations, expand/collapse stacks, and swipe-free dismiss. The store is a tiny module — no framework island.",
-    importPath: "astro-ui/toaster",
+    importPath: "@parsakafi/astro-ui/toaster",
     exportName: "Toaster / toast",
     category: "feedback",
     js: true,
     usage:
-        `---\nimport { Toaster } from "astro-ui";\nimport "astro-ui/toast.css";\n---\n<body>\n  <Toaster />\n</body>\n<script>\n  import { toast } from "astro-ui/toast";\n  toast.success("Saved!");\n  toast("Event has been created", {\n    action: { label: "Undo", onClick: () => console.log("Undo") },\n  });\n</script>`,
+        `---\nimport { Toaster } from "@parsakafi/astro-ui";\nimport "@parsakafi/astro-ui/toast.css";\n---\n<body>\n  <Toaster />\n</body>\n<script>\n  import { toast } from "@parsakafi/astro-ui/toast";\n  toast.success("Saved!");\n  toast("Event has been created", {\n    action: { label: "Undo", onClick: () => console.log("Undo") },\n  });\n</script>`,
     features: [
         "6 helpers: toast, success, error, warning, info, loading",
         "action: { label, onClick } — dismisses after it runs",
@@ -30,7 +30,7 @@ export const toast: ComponentMeta = {
         {
             id: "basic",
             title: "Basic variants",
-            code: `import { toast } from "astro-ui/toast";
+            code: `import { toast } from "@parsakafi/astro-ui/toast";
 
 toast("Event has been created");
 toast.success("Saved!");
@@ -39,7 +39,7 @@ toast.error("Something broke");`,
         {
             id: "modes",
             title: "All modes",
-            code: `import { toast } from "astro-ui/toast";
+            code: `import { toast } from "@parsakafi/astro-ui/toast";
 
 toast("Event has been created");            // default (neutral)
 toast.success("Changes saved");

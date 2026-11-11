@@ -4,7 +4,7 @@ name: "Stepper"
 description: >-
   Ordered progress indicator with complete/current/upcoming states.
 category: navigation
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Stepper"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "Per-step links remain real anchors"
 usage: |-
   ---
-  import { Stepper } from "astro-ui";
+  import { Stepper } from "@parsakafi/astro-ui";
   ---
   
   <Stepper

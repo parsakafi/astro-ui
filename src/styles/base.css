@@ -1,8 +1,8 @@
 /**
  * AstroUI base styles — optional companion to tokens.css.
  *
- *   import "astro-ui/tokens.css";  (required: variables only)
- *   import "astro-ui/base.css";     (optional: sensible defaults)
+ *   import "@parsakafi/astro-ui/tokens.css";  (required: variables only)
+ *   import "@parsakafi/astro-ui/base.css";     (optional: sensible defaults)
  *
  * Keep this file free of component-specific rules so consumers who
  * only want tokens (e.g. Tailwind-driven projects) can skip it.

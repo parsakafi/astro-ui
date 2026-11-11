@@ -1,6 +1,6 @@
 /** signup block — copy-paste-ready Astro markup. */
 export const codeSignup = `---
-import { Card, Input, Checkbox, Button } from "astro-ui";
+import { Card, Input, Checkbox, Button } from "@parsakafi/astro-ui";
 ---
 
 <Card class="block-auth">

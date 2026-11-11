@@ -8,7 +8,7 @@ import DocsLayout from "../../../../layouts/DocsLayout.astro";
 import BlockTabs from "../../../../components/docs/BlockTabs.astro";
 import BlockRecipe from "../../../../components/docs/BlockRecipe.astro";
 import {blockCategories, findBlock, blockHref, categoryHref} from "../../../../lib/blocks";
-import Badge from "astro-ui/badge";
+import Badge from "@parsakafi/astro-ui/badge";
 
 export function getStaticPaths() {
   return blockCategories.flatMap((category) =>

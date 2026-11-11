@@ -6,12 +6,12 @@ export const tag: ComponentMeta = {
     description: "Categorization label with shapes and optional close affordance.",
     overview:
         "Tag marks membership in a set — categories, filters, keywords. Unlike Badge (status/count), Tag is for grouping. Optional closable renders an accessible × button that stays zero-JS.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Tag",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Tag } from "astro-ui";\n---\n\n<Tag>astro</Tag>\n<Tag variant="soft" shape="pill">design</Tag>\n<Tag variant="outline" closable closeLabel="Remove astro">astro</Tag>`,
+        `---\nimport { Tag } from "@parsakafi/astro-ui";\n---\n\n<Tag>astro</Tag>\n<Tag variant="soft" shape="pill">design</Tag>\n<Tag variant="outline" closable closeLabel="Remove astro">astro</Tag>`,
     features: [
         "9 color variants",
         "3 shapes: rounded, square, pill",

@@ -4,7 +4,7 @@ name: "Empty"
 description: >-
   Empty-state placeholder with media/title/description/footer slots.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Empty"
 js: false
 since: "0.1.0"
@@ -19,7 +19,7 @@ a11y:
   - "Decorative media slot is `aria-hidden`"
 usage: |-
   ---
-  import { Empty, Button } from "astro-ui";
+  import { Empty, Button } from "@parsakafi/astro-ui";
   ---
   
   <Empty>

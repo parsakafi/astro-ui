@@ -6,12 +6,12 @@ export const empty: ComponentMeta = {
     description: "Empty-state placeholder with media/title/description/footer slots.",
     overview:
         "Empty marks the 'no data' moment: an icon or illustration slot, a title, a description, and an action footer. Every part is optional — compose what the state needs.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Empty",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Empty, Button } from "astro-ui";\n---\n\n<Empty>\n  <span slot="media" aria-hidden="true">⌀</span>\n  <span slot="title">No results</span>\n  <span slot="description">Try adjusting your filters.</span>\n  <Button slot="footer" size="sm" variant="outline">Clear filters</Button>\n</Empty>`,
+        `---\nimport { Empty, Button } from "@parsakafi/astro-ui";\n---\n\n<Empty>\n  <span slot="media" aria-hidden="true">⌀</span>\n  <span slot="title">No results</span>\n  <span slot="description">Try adjusting your filters.</span>\n  <Button slot="footer" size="sm" variant="outline">Clear filters</Button>\n</Empty>`,
     features: [
         "Slot composition: media, title, description, footer",
         "3 sizes",

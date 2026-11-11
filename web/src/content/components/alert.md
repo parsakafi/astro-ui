@@ -4,7 +4,7 @@ name: "Alert"
 description: >-
   Feedback message with 8 variants and accessible dismissal.
 category: feedback
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Alert"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "Dismiss button carries an aria-label"
 usage: |-
   ---
-  import { Alert } from "astro-ui";
+  import { Alert } from "@parsakafi/astro-ui";
   ---
   
   <Alert variant="info" title="Heads up">Scheduled maintenance Sunday.</Alert>

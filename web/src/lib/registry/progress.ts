@@ -6,12 +6,12 @@ export const progress: ComponentMeta = {
     description: "Determinate/indeterminate progress bar and circle.",
     overview:
         "Progress shows task completion as a bar or circle. Omit value for indeterminate. `stripes` overlays diagonal stripes on the bar fill (optionally animated), `stripedTrack` hatches the empty remainder, `segmented` renders discrete blocks, and `squared` separates fill and track with a gap. The circle uses an SVG ring with stroke-dashoffset math.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Progress",
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Progress } from "astro-ui";\n---\n\n<Progress value={64} label="Uploading" showValue />\n<Progress variant="circle" value={80} showValue />`,
+        `---\nimport { Progress } from "@parsakafi/astro-ui";\n---\n\n<Progress value={64} label="Uploading" showValue />\n<Progress variant="circle" value={80} showValue />`,
     features: [
         "Bar and circle variants",
         "Determinate (value) or indeterminate",

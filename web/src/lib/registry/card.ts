@@ -6,12 +6,12 @@ export const card: ComponentMeta = {
     description: "Content container with named-slot header/content/footer composition.",
     overview:
         "Card composes through named slots — header, default content, footer — and renders a semantic &lt;article&gt;. Four variants, six sizes, optional split dividers and a scrollable body. Prefer slots over title/description props.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Card",
     category: "layout",
     js: false,
     usage:
-        `---\nimport { Card, Button } from "astro-ui";\n---\n\n<Card>\n  <h3 slot="header">Title</h3>\n  <p>Body content.</p>\n  <div slot="footer"><Button size="sm">Action</Button></div>\n</Card>`,
+        `---\nimport { Card, Button } from "@parsakafi/astro-ui";\n---\n\n<Card>\n  <h3 slot="header">Title</h3>\n  <p>Body content.</p>\n  <div slot="footer"><Button size="sm">Action</Button></div>\n</Card>`,
     features: [
         "Named-slot composition: header / default / footer",
         "4 variants: default, outline, ghost, bordered",

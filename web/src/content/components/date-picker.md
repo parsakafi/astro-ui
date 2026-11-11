@@ -4,7 +4,7 @@ name: "DatePicker"
 description: >-
   Native date input with a Gregorian or Persian calendar panel.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "DatePicker"
 js: true
 since: "0.1.0"
@@ -27,7 +27,7 @@ a11y:
   - "Escape closes the panel and returns focus to the trigger"
 usage: |-
   ---
-  import { DatePicker, Label } from "astro-ui";
+  import { DatePicker, Label } from "@parsakafi/astro-ui";
   ---
   
   <Label for="start-input">Start date</Label>

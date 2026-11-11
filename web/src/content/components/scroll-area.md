@@ -4,7 +4,7 @@ name: "ScrollArea"
 description: >-
   Token-themed scrollable region with styled scrollbar.
 category: layout
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "ScrollArea"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "Optionally add tabindex=0 + aria-label via props for focusable regions"
 usage: |-
   ---
-  import { ScrollArea } from "astro-ui";
+  import { ScrollArea } from "@parsakafi/astro-ui";
   ---
   
   <ScrollArea height="12rem">

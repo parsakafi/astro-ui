@@ -4,7 +4,7 @@ name: "Collapsible"
 description: >-
   Expand/collapse region with a dedicated trigger button.
 category: layout
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Collapsible"
 js: true
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Escape closes and returns focus to the trigger"
 usage: |-
   ---
-  import { Collapsible } from "astro-ui";
+  import { Collapsible } from "@parsakafi/astro-ui";
   ---
   
   <Collapsible id="filters" open>

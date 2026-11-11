@@ -1,6 +1,6 @@
 /** changelog-entry block — copy-paste-ready Astro markup. */
 export const codeChangelogEntry = `---
-import { Card, Badge, Kbd } from "astro-ui";
+import { Card, Badge, Kbd } from "@parsakafi/astro-ui";
 ---
 
 <Card>

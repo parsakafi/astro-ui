@@ -6,12 +6,12 @@ export const stepper: ComponentMeta = {
     description: "Ordered progress indicator with complete/current/upcoming states.",
     overview:
         "Stepper visualizes multi-step progress as a semantic &lt;ol&gt;: numbered markers, ✓ for completed steps, and optional links per step. Connectors are CSS pseudo-elements; states are data-attributes.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Stepper",
     category: "navigation",
     js: false,
     usage:
-        `---\nimport { Stepper } from "astro-ui";\n---\n\n<Stepper\n  ariaLabel="Checkout progress"\n  items={[\n    { label: "Cart", complete: true },\n    { label: "Shipping", current: true, description: "Address & delivery" },\n    { label: "Payment" },\n  ]}\n/>`,
+        `---\nimport { Stepper } from "@parsakafi/astro-ui";\n---\n\n<Stepper\n  ariaLabel="Checkout progress"\n  items={[\n    { label: "Cart", complete: true },\n    { label: "Shipping", current: true, description: "Address & delivery" },\n    { label: "Payment" },\n  ]}\n/>`,
     features: [
         "Semantic ol with aria-current=\"step\"",
         "complete/current/upcoming/disabled states",

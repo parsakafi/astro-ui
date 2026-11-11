@@ -4,7 +4,7 @@ name: "Radio Group"
 description: >-
   Declarative single-choice group — fieldset of radios from a plain items array.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "RadioGroup"
 js: false
 since: "0.1.0"
@@ -26,7 +26,7 @@ a11y:
   - "The required indicator is text (\" *\" in the legend), never color alone"
 usage: |-
   ---
-  import { RadioGroup } from "astro-ui";
+  import { RadioGroup } from "@parsakafi/astro-ui";
   ---
   
   <RadioGroup

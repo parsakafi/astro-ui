@@ -5,7 +5,7 @@ disabled, readonly). Compose with `Label` + hint/error text; wire them with `id`
 
 ```astro
 ---
-import { Textarea, Label } from "astro-ui";
+import { Textarea, Label } from "@parsakafi/astro-ui";
 ---
 <Label for="bio">Bio</Label>
 <Textarea id="bio" name="bio" rows={4} maxlength={280} placeholder="Tell us about yourself…" aria-describedby="bio-hint" />

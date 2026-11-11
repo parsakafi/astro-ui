@@ -6,7 +6,7 @@ placeholders.
 
 ```astro
 ---
-import { Skeleton } from "astro-ui";
+import { Skeleton } from "@parsakafi/astro-ui";
 ---
 <!-- Text lines -->
 <div style="display:flex;flex-direction:column;gap:var(--ui-space-2)">

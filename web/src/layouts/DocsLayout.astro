@@ -9,12 +9,12 @@ import SiteFooter from "../components/docs/SiteFooter.astro";
 import DocsSidebar from "../components/docs/DocsSidebar.astro";
 import BlocksSidebar from "../components/docs/BlocksSidebar.astro";
 import Toc from "../components/docs/Toc.astro";
-import "astro-ui/tokens.css";
-import "astro-ui/base.css";
+import "@parsakafi/astro-ui/tokens.css";
+import "@parsakafi/astro-ui/base.css";
 // Toast styles ship globally: Toaster renders into fixed stacks on any
 // page, and component-level CSS imports don't survive the static
 // build — so this lives with the other global stylesheets.
-import "astro-ui/toast.css";
+import "@parsakafi/astro-ui/toast.css";
 import "../styles/tailwind.css";
 import "../styles/demo.css";
 import "../styles/docs.css";

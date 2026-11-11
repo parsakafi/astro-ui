@@ -6,12 +6,12 @@ export const carousel: ComponentMeta = {
     description: "Accessible scroll-snap slide deck with buttons, counter, drag, and vertical layout.",
     overview:
         "Carousel is a native scroll container with CSS scroll-snap — scrolling IS the interaction, so touch, trackpad, and drag all work with no positioning math. Prev/next buttons and an optional counter ride the header row; a small scoped script syncs the active slide on scroll, wires buttons, and adds ArrowLeft/ArrowRight (\u2191/\u2193 vertical) navigation with optional loop wrap. Slides are CarouselSlide wrappers around any content, each announced as \u201cx of y\u201d. variant=\"multiple\" shows a peek layout sized via slideBasis. A bubbling carousel:change event fires on move, and carousel:set ({index} or {action}) drives it programmatically.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Carousel",
     category: "general",
     js: true,
     usage:
-        `---\nimport { Carousel, CarouselSlide } from "astro-ui";\n---\n\n<Carousel label="Featured cards">\n  <CarouselSlide><div class="card">1</div></CarouselSlide>\n  <CarouselSlide><div class="card">2</div></CarouselSlide>\n  <CarouselSlide><div class="card">3</div></CarouselSlide>\n</Carousel>`,
+        `---\nimport { Carousel, CarouselSlide } from "@parsakafi/astro-ui";\n---\n\n<Carousel label="Featured cards">\n  <CarouselSlide><div class="card">1</div></CarouselSlide>\n  <CarouselSlide><div class="card">2</div></CarouselSlide>\n  <CarouselSlide><div class="card">3</div></CarouselSlide>\n</Carousel>`,
     features: [
         "Native scroll-snap: touch, trackpad, and drag work with zero positioning code",
         "Prev/next buttons, optional \u201c1 / 5\u201d counter, optional loop wrap",

@@ -6,13 +6,13 @@ export const spinner: ComponentMeta = {
     description: "Loading indicator in 4 animation styles and 6 sizes.",
     overview:
         "Spinner communicates in-flight work with pure CSS animation — ring, dots, bars, and pulse styles at six sizes. Color follows the text color; wrap it in a button or surface and it inherits.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Spinner",
     category: "feedback",
     js: false,
     usage:
         `---
-import { Spinner } from "astro-ui";
+import { Spinner } from "@parsakafi/astro-ui";
 ---
 
 <Spinner />

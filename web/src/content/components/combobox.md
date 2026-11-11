@@ -4,7 +4,7 @@ name: "Combobox"
 description: >-
   Select-style trigger that opens a searchable listbox — pick one from many.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Combobox"
 js: true
 since: "0.1.0"
@@ -26,7 +26,7 @@ a11y:
   - "Escape always returns focus to the trigger; Tab closes without stealing focus"
 usage: |-
   ---
-  import { Combobox } from "astro-ui";
+  import { Combobox } from "@parsakafi/astro-ui";
   ---
   
   <Combobox

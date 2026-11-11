@@ -4,7 +4,7 @@ name: "Accordion"
 description: >-
   Collapsible sections built on native details/summary — zero JS.
 category: layout
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Accordion"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Focus-visible ring on summaries via `:focus-visible`"
 usage: |-
   ---
-  import { Accordion } from "astro-ui";
+  import { Accordion } from "@parsakafi/astro-ui";
   ---
   
   <Accordion

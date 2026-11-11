@@ -6,12 +6,12 @@ export const tooltip: ComponentMeta = {
     description: "CSS-only hover/focus tooltip on a trigger wrapper.",
     overview:
         "Tooltip wraps a trigger and reveals a bubble on :hover and :focus-visible — pure CSS, no script. The bubble is aria-hidden; name the trigger with aria-label. Tooltips never carry essential information.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Tooltip",
     category: "overlay",
     js: false,
     usage:
-        `---\nimport { Tooltip, Button } from "astro-ui";\n---\n\n<Tooltip ariaLabel="Delete item">\n  <Button size="icon" variant="error" ariaLabel="Delete">␡</Button>\n  <span slot="content">Delete this item permanently</span>\n</Tooltip>`,
+        `---\nimport { Tooltip, Button } from "@parsakafi/astro-ui";\n---\n\n<Tooltip ariaLabel="Delete item">\n  <Button size="icon" variant="error" ariaLabel="Delete">␡</Button>\n  <span slot="content">Delete this item permanently</span>\n</Tooltip>`,
     features: [
         "Pure CSS :hover/:focus-visible",
         "top/bottom placement with arrow",

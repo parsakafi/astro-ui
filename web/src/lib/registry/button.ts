@@ -6,12 +6,12 @@ export const button: ComponentMeta = {
     description: "Action trigger with variants, sizes, loading states, and anchor mode.",
     overview:
         "Button is the workhorse of the library: a zero-JS action trigger that renders a &lt;button&gt; — or an &lt;a&gt; when href is set — with eleven variants, eight theme colors, seven sizes, four loading-spinner styles, and native form participation. Extra attributes forward untouched.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Button",
     category: "general",
     js: false,
     usage:
-        `---\nimport { Button } from "astro-ui";\n---\n\n<Button>Primary</Button>\n<Button variant="outline" href="/docs">Read docs</Button>\n<Button color="success">Approve</Button>\n<Button loading loadingIcon="dots">Saving…</Button>`,
+        `---\nimport { Button } from "@parsakafi/astro-ui";\n---\n\n<Button>Primary</Button>\n<Button variant="outline" href="/docs">Read docs</Button>\n<Button color="success">Approve</Button>\n<Button loading loadingIcon="dots">Saving…</Button>`,
     features: [
         "11 variants: primary, secondary, outline, ghost, error, link, solid, dashed, soft, plain, pure",
         "8 theme colors via `color`: primary, secondary, error, success, warning, info, carbon, accent",

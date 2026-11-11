@@ -5,7 +5,7 @@ Zero-JS form label. Native `<label>` associated with a control via `for` (matchi
 
 ```astro
 ---
-import { Label, Input } from "astro-ui";
+import { Label, Input } from "@parsakafi/astro-ui";
 ---
 <Label for="name">Full name</Label>
 <Input id="name" name="name" />

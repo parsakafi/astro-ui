@@ -17,7 +17,7 @@ npm install
 npm run dev       # playground at http://localhost:4321
 ```
 
-The playground consumes the real package (`"astro-ui": "../astro-ui"`),
+The playground consumes the real package (`"@parsakafi/astro-ui": "../astro-ui"`),
 so library edits show up on refresh.
 
 ## Adding a component (Definition of Done)

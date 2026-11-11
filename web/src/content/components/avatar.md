@@ -4,7 +4,7 @@ name: "Avatar"
 description: >-
   User image with initials fallback, status badges, rings, groups, and loading state.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Avatar"
 js: false
 since: "0.1.0"
@@ -26,7 +26,7 @@ a11y:
   - "Group is role=group with a default User group label; the count chip keeps its text content"
 usage: |-
   ---
-  import { Avatar, AvatarGroup } from "astro-ui";
+  import { Avatar, AvatarGroup } from "@parsakafi/astro-ui";
   ---
   
   <Avatar name="Ada Lovelace" src="/ada.jpg" />

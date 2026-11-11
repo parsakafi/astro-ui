@@ -1,6 +1,6 @@
 /** faq-accordion block — copy-paste-ready Astro markup. */
 export const codeFaqAccordion = `---
-import { Accordion } from "astro-ui";
+import { Accordion } from "@parsakafi/astro-ui";
 ---
 
 <Accordion

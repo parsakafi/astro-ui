@@ -1,6 +1,6 @@
 # AstroUI Playground (`web/`)
 
-Manual-verification Astro app that consumes the real `astro-ui` package (`"astro-ui": "../astro-ui"` — never source
+Manual-verification Astro app that consumes the real `@parsakafi/astro-ui` package (`"@parsakafi/astro-ui": "../astro-ui"` - never source
 imports).
 
 - `/` — landing + install snippet.
@@ -20,7 +20,7 @@ imports).
 
 - Tailwind v3 via `@astrojs/tailwind` (`tailwind.config.cjs` includes the
   library path for future `@apply` use).
-- `astro-ui/tokens.css` + `astro-ui/base.css` imported once in
+- `@parsakafi/astro-ui/tokens.css` + `@parsakafi/astro-ui/base.css` imported once in
   `src/layouts/Layout.astro`.
 - Theme toggle (`light`/`dark`, `localStorage`-persisted, SSR-guarded) —
   the reference recipe for `data-theme` theming.

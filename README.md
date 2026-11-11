@@ -9,16 +9,16 @@ design tokens. Dark mode, Tailwind interop, SSR-safe, tree-shakable, typed.
 ## Install
 
 ```bash
-npm install astro-ui
+npm install @parsakafi/astro-ui
 ```
 
 One-time style import in your layout:
 
 ```astro
 ---
-import "astro-ui/tokens.css"; // required — semantic tokens + themes
-import "astro-ui/base.css";   // optional — focus rings, sr-only, reduced motion
-import { Button, Card } from "astro-ui";
+import "@parsakafi/astro-ui/tokens.css"; // required — semantic tokens + themes
+import "@parsakafi/astro-ui/base.css";   // optional — focus rings, sr-only, reduced motion
+import { Button, Card } from "@parsakafi/astro-ui";
 ---
 <Button variant="primary" size="lg">Get Started</Button>
 ```
@@ -26,7 +26,7 @@ import { Button, Card } from "astro-ui";
 Individual entry points also work (better tree-shaking signals):
 
 ```ts
-import Button from "astro-ui/button";
+import Button from "@parsakafi/astro-ui/button";
 ```
 
 ## Components

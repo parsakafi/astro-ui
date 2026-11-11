@@ -4,7 +4,7 @@ name: "Tabs"
 description: >-
   WAI-ARIA tab switcher — line, pill, and card variants.
 category: navigation
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Tabs"
 js: true
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Arrow keys move between tabs with roving `tabindex` (script)"
 usage: |-
   ---
-  import { Tabs } from "astro-ui";
+  import { Tabs } from "@parsakafi/astro-ui";
   ---
   
   <Tabs id="settings" ariaLabel="Settings" defaultValue="billing"

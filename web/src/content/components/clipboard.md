@@ -4,7 +4,7 @@ name: "Clipboard"
 description: >-
   Icon-first copy-to-clipboard trigger with copied-state check.
 category: general
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Clipboard"
 js: true
 since: "0.1.0"
@@ -22,10 +22,10 @@ a11y:
   - "Real button with an `aria-label`; icons `aria-hidden`"
 usage: |-
   ---
-  import { Clipboard } from "astro-ui";
+  import { Clipboard } from "@parsakafi/astro-ui";
   ---
   
-  <Clipboard value="npm install astro-ui" auto />
+  <Clipboard value="npm install @parsakafi/astro-ui" auto />
   
   <!-- or wire it yourself -->
   <Clipboard value="npx astro add" />

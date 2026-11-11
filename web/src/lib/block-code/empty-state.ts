@@ -1,6 +1,6 @@
 /** empty-state block — copy-paste-ready Astro markup. */
 export const codeEmptyState = `---
-import { Empty, Button } from "astro-ui";
+import { Empty, Button } from "@parsakafi/astro-ui";
 ---
 
 <Empty>

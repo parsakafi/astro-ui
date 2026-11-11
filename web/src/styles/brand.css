@@ -9,7 +9,7 @@
  * neutral, matching the main site. Light theme keeps the violet as
  * primary on a warm-white canvas.
  *
- * Loaded after astro-ui/tokens.css so these override per-site only.
+ * Loaded after @parsakafi/astro-ui/tokens.css so these override per-site only.
  */
 
 :root {

@@ -4,7 +4,7 @@ name: "Command"
 description: >-
   Inline searchable command palette — grouped actions, keyboard-first.
 category: general
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Command"
 js: true
 since: "0.1.0"
@@ -26,7 +26,7 @@ a11y:
   - "Empty state lives inside the listbox so it is announced with context"
 usage: |-
   ---
-  import { Command } from "astro-ui";
+  import { Command } from "@parsakafi/astro-ui";
   ---
   
   <Command

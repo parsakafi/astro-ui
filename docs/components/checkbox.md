@@ -5,7 +5,7 @@ correct semantics. `checked` sets the initial server-rendered state; toggling is
 
 ```astro
 ---
-import { Checkbox, Label } from "astro-ui";
+import { Checkbox, Label } from "@parsakafi/astro-ui";
 ---
 <fieldset>
   <legend>Notifications</legend>

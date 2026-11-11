@@ -4,7 +4,7 @@ name: "Sidebar"
 description: >-
   Side navigation shell with header, grouped links, and a footer.
 category: navigation
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Sidebar"
 js: false
 since: "0.1.0"
@@ -25,7 +25,7 @@ a11y:
   - "Collapsible groups are native `<details>` — no keyboard handler to get wrong"
 usage: |-
   ---
-  import { Sidebar, SidebarGroup, SidebarItem } from "astro-ui";
+  import { Sidebar, SidebarGroup, SidebarItem } from "@parsakafi/astro-ui";
   ---
   
   <Sidebar ariaLabel="Project">

@@ -4,7 +4,7 @@ name: "Carousel"
 description: >-
   Accessible scroll-snap slide deck with buttons, counter, drag, and vertical layout.
 category: general
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Carousel"
 js: true
 since: "0.1.0"
@@ -29,7 +29,7 @@ a11y:
   - "Reduced motion: scrollIntoView respects the browser's behavior setting"
 usage: |-
   ---
-  import { Carousel, CarouselSlide } from "astro-ui";
+  import { Carousel, CarouselSlide } from "@parsakafi/astro-ui";
   ---
   
   <Carousel label="Featured cards">

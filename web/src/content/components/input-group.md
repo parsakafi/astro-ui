@@ -4,7 +4,7 @@ name: "Input Group"
 description: >-
   Input with attached addons — icons, text prefixes, and buttons around the control.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "InputGroup"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Focus ring uses :focus-within so keyboard focus is always visible"
 usage: |-
   ---
-  import { InputGroup, Input } from "astro-ui";
+  import { InputGroup, Input } from "@parsakafi/astro-ui";
   ---
   
   <InputGroup>

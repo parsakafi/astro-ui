@@ -6,12 +6,12 @@ export const select: ComponentMeta = {
     description: "Native select with custom chevron, placeholder, and validation state.",
     overview:
         "Select wraps the native &lt;select&gt; so keyboard support and mobile pickers stay perfect — with token styling, a custom chevron, placeholder support, and options composed through the default slot.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Select",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Select, Label } from "astro-ui";\n---\n\n<Label for="fruit" required>Fruit</Label>\n<Select id="fruit" placeholder="Choose a fruit" required>\n  <option value="apple">Apple</option>\n  <option value="pear">Pear</option>\n</Select>`,
+        `---\nimport { Select, Label } from "@parsakafi/astro-ui";\n---\n\n<Label for="fruit" required>Fruit</Label>\n<Select id="fruit" placeholder="Choose a fruit" required>\n  <option value="apple">Apple</option>\n  <option value="pear">Pear</option>\n</Select>`,
     features: [
         "Native <select> — full keyboard + platform pickers",
         "Custom chevron (hidden when multiple)",

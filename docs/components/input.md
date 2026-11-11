@@ -5,7 +5,7 @@ Zero-JS text control. Native `<input>` with token-driven states (focus ring, inv
 
 ```astro
 ---
-import { Input, Label } from "astro-ui";
+import { Input, Label } from "@parsakafi/astro-ui";
 ---
 <Label for="email">Email</Label>
 <Input id="email" type="email" placeholder="you@example.com" aria-describedby="email-hint" />

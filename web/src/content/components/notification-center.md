@@ -4,7 +4,7 @@ name: "NotificationCenter"
 description: >-
   Bell trigger with an unread badge and a grouped notification panel.
 category: feedback
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "NotificationCenter"
 js: true
 since: "0.1.0"
@@ -29,7 +29,7 @@ usage: |-
     NotificationCenter,
     NotificationGroup,
     NotificationItem,
-  } from "astro-ui";
+  } from "@parsakafi/astro-ui";
   ---
   
   <NotificationCenter count={2} title="Notifications">

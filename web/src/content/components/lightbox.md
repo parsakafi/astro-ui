@@ -4,7 +4,7 @@ name: "Lightbox"
 description: >-
   Accessible image/video/iframe gallery overlay with arrows, counter, and indicators.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Lightbox"
 js: true
 since: "0.1.0"
@@ -25,7 +25,7 @@ a11y:
   - "`prefers-reduced-motion` disables smooth gallery scrolling"
 usage: |-
   ---
-  import { Button, Lightbox, LightboxItem } from "astro-ui";
+  import { Button, Lightbox, LightboxItem } from "@parsakafi/astro-ui";
   ---
   
   <Button id="open-gallery">View gallery</Button>

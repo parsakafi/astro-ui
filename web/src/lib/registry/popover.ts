@@ -6,12 +6,12 @@ export const popover: ComponentMeta = {
     description: "Click-triggered anchored panel for interactive content.",
     overview:
         "Popover is a click-triggered anchored layer for interactive content — the trigger slot renders a real &lt;button&gt; (aria-expanded + aria-controls) and the content slot renders in an anchored panel below (or above) it. The scoped script toggles the panel, closes on Escape and outside-pointer, moves focus into the panel on open, and returns focus to the trigger on close. Positioning is CSS-anchored relative to the trigger wrapper (same technique as Tooltip), so the panel never needs viewport math.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Popover",
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Popover } from "astro-ui";\n---\n\n<Popover id="share">\n  <span slot="trigger">Share</span>\n  <span slot="content">Share via <a href="…">link</a></span>\n</Popover>`,
+        `---\nimport { Popover } from "@parsakafi/astro-ui";\n---\n\n<Popover id="share">\n  <span slot="trigger">Share</span>\n  <span slot="content">Share via <a href="…">link</a></span>\n</Popover>`,
     features: [
         "Real <button> trigger with aria-expanded / aria-controls",
         "Focus moves into the panel on open, returns to the trigger on close",

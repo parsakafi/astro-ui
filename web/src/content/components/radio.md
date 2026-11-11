@@ -4,7 +4,7 @@ name: "Radio"
 description: >-
   Native radio button with custom circle — group via shared name.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Radio"
 js: false
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "`aria-invalid` + `aria-describedby` for validation"
 usage: |-
   ---
-  import { Radio } from "astro-ui";
+  import { Radio } from "@parsakafi/astro-ui";
   ---
   
   <Radio name="plan" value="free" checked>Free</Radio>

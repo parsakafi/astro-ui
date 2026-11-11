@@ -6,12 +6,12 @@ export const sidebar: ComponentMeta = {
     description: "Side navigation shell with header, grouped links, and a footer.",
     overview:
         "Sidebar is a `<nav>` landmark with three regions: a header for the product or workspace switcher, a scrollable body of SidebarGroup and SidebarItem children, and a footer for the user menu. Groups can be static or collapsible through native `<details>`, so a long navigation tree expands and collapses without any JavaScript. Collapsing the whole sidebar to an icon rail is application state, not a visual variant, and is left to the app.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Sidebar",
     category: "navigation",
     js: false,
     usage:
-        `---\nimport { Sidebar, SidebarGroup, SidebarItem } from "astro-ui";\n---\n\n<Sidebar ariaLabel="Project">\n  <div slot="header">Acme</div>\n  <SidebarGroup label="Workspace">\n    <SidebarItem href="/overview" active>Overview</SidebarItem>\n    <SidebarItem href="/deploys" badge="3">Deploys</SidebarItem>\n  </SidebarGroup>\n  <div slot="footer">ada@acme.dev</div>\n</Sidebar>`,
+        `---\nimport { Sidebar, SidebarGroup, SidebarItem } from "@parsakafi/astro-ui";\n---\n\n<Sidebar ariaLabel="Project">\n  <div slot="header">Acme</div>\n  <SidebarGroup label="Workspace">\n    <SidebarItem href="/overview" active>Overview</SidebarItem>\n    <SidebarItem href="/deploys" badge="3">Deploys</SidebarItem>\n  </SidebarGroup>\n  <div slot="footer">ada@acme.dev</div>\n</Sidebar>`,
     features: [
         "Attached (flush) or floating (stand-off) surfaces",
         "Optional sticky positioning and a scrollable body",

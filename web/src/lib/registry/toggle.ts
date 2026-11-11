@@ -6,12 +6,12 @@ export const toggle: ComponentMeta = {
     description: "Two-state button with aria-pressed — SSR-controlled.",
     overview:
         "Toggle is a semantic &lt;button type=\"button\"&gt; that carries aria-pressed. State is server-rendered: pass pressed for SSR-controlled state (e.g. a filter that is on for the initial page load), and flip the attribute with your own one-line script when the user clicks. Styles mirror Button: default (muted fill when pressed) and outline (primary fill) variants at three sizes.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Toggle",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { Toggle } from "astro-ui";\n---\n\n<Toggle ariaLabel="Bold"><strong>B</strong></Toggle>\n\n<script>\n  document.querySelectorAll(".aui-toggle").forEach((btn) => {\n    btn.addEventListener("click", () => {\n      const on = btn.getAttribute("aria-pressed") === "true";\n      btn.setAttribute("aria-pressed", String(!on));\n      btn.classList.toggle("aui-toggle--pressed", !on);\n    });\n  });\n</script>`,
+        `---\nimport { Toggle } from "@parsakafi/astro-ui";\n---\n\n<Toggle ariaLabel="Bold"><strong>B</strong></Toggle>\n\n<script>\n  document.querySelectorAll(".aui-toggle").forEach((btn) => {\n    btn.addEventListener("click", () => {\n      const on = btn.getAttribute("aria-pressed") === "true";\n      btn.setAttribute("aria-pressed", String(!on));\n      btn.classList.toggle("aui-toggle--pressed", !on);\n    });\n  });\n</script>`,
     features: [
         "Semantic button + aria-pressed (correct pressed semantics, no div hacks)",
         "SSR-controlled state via the pressed prop",

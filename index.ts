@@ -3,12 +3,12 @@
 // Tree-shakable: every component also has an individual subpath export
 // (see package.json "exports"), so bundlers only include what you import.
 //
-//   import { Button, Card } from "astro-ui";
-//   import Button from "astro-ui/button";   // individual entry
+//   import { Button, Card } from "@parsakafi/astro-ui";
+//   import Button from "@parsakafi/astro-ui/button";   // individual entry
 //
 // Styles (import once in your app layout):
-//   import "astro-ui/tokens.css";  // required — semantic design tokens
-//   import "astro-ui/base.css";     // optional — sensible base defaults
+//   import "@parsakafi/astro-ui/tokens.css";  // required — semantic design tokens
+//   import "@parsakafi/astro-ui/base.css";     // optional — sensible base defaults
 //
 // .astro modules are typed via astro check, so no directive is needed here.
 

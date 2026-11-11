@@ -6,12 +6,12 @@ export const alertDialog: ComponentMeta = {
     description: "role=\"alertdialog\" modal that interrupts for a decision.",
     overview:
         "AlertDialog is a modal that interrupts for a decision — role=\"alertdialog\" tells assistive tech to announce the message immediately. Structure mirrors Dialog (native &lt;dialog&gt;, platform modality/focus containment, zero JS in the component) with an action-oriented footer: cancel buttons are plain &lt;form method=\"dialog\"&gt; submissions, so dismissal needs no JS. The dialog's returnValue receives the submitting button's value, so the app can tell which action dismissed it.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "AlertDialog",
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Button, AlertDialog } from "astro-ui";\n---\n\n<Button id="open-delete">Delete project</Button>\n<AlertDialog id="delete">\n  <h2 slot="title">Delete project?</h2>\n  <p slot="description">This cannot be undone.</p>\n  <Fragment slot="footer">\n    <form method="dialog"><Button variant="outline">Cancel</Button></form>\n    <form method="dialog">\n      <Button variant="error" value="confirm">Delete</Button>\n    </form>\n  </Fragment>\n</AlertDialog>\n\n<script>\n  document.getElementById("open-delete")?.addEventListener("click", () => {\n    document.getElementById("delete")?.showModal();\n  });\n</script>`,
+        `---\nimport { Button, AlertDialog } from "@parsakafi/astro-ui";\n---\n\n<Button id="open-delete">Delete project</Button>\n<AlertDialog id="delete">\n  <h2 slot="title">Delete project?</h2>\n  <p slot="description">This cannot be undone.</p>\n  <Fragment slot="footer">\n    <form method="dialog"><Button variant="outline">Cancel</Button></form>\n    <form method="dialog">\n      <Button variant="error" value="confirm">Delete</Button>\n    </form>\n  </Fragment>\n</AlertDialog>\n\n<script>\n  document.getElementById("open-delete")?.addEventListener("click", () => {\n    document.getElementById("delete")?.showModal();\n  });\n</script>`,
     features: [
         "role=\"alertdialog\" — announced immediately by assistive tech",
         "Native <dialog> modality, focus containment, Escape-to-close",

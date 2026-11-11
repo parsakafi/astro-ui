@@ -4,7 +4,7 @@ name: "Sticky Surface"
 description: >-
   Sticky-positioned region with scroll-based line, elevation, and glass effects.
 category: layout
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "StickySurface"
 js: true
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "Stuck state is visual only: content never hides, moves, or reflows"
 usage: |-
   ---
-  import { StickySurface } from "astro-ui";
+  import { StickySurface } from "@parsakafi/astro-ui";
   ---
   
   <StickySurface effects={["line", "elevate"]} threshold="0px">

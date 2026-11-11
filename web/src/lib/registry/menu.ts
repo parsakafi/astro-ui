@@ -6,12 +6,12 @@ export const menu: ComponentMeta = {
     description: "Floating action menu with the WAI-ARIA menu-button keyboard model.",
     overview:
         "Menu is the \"⋯\" action list: a trigger button that opens a `role=\"menu\"` panel of actions. MenuItem renders a real `<button>` or `<a>`, so activation, middle-click, and copy-link all behave like normal HTML. The scoped script adds the parts native HTML cannot express — roving focus, arrow/Home/End navigation, typeahead, Escape-to-close with focus return, and outside-click dismissal.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Menu",
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Menu, MenuItem, MenuSeparator } from "astro-ui";\n---\n\n<Menu id="row-actions" triggerLabel="Row actions">\n  <MenuItem shortcut="⌘E">Edit</MenuItem>\n  <MenuItem shortcut="⌘D">Duplicate</MenuItem>\n  <MenuSeparator/>\n  <MenuItem variant="error" shortcut="⌫">Delete</MenuItem>\n</Menu>`,
+        `---\nimport { Menu, MenuItem, MenuSeparator } from "@parsakafi/astro-ui";\n---\n\n<Menu id="row-actions" triggerLabel="Row actions">\n  <MenuItem shortcut="⌘E">Edit</MenuItem>\n  <MenuItem shortcut="⌘D">Duplicate</MenuItem>\n  <MenuSeparator/>\n  <MenuItem variant="error" shortcut="⌫">Delete</MenuItem>\n</Menu>`,
     features: [
         "WAI-ARIA menu-button pattern: aria-haspopup, aria-expanded, role=menu",
         "Arrow keys with wraparound, Home/End, letter typeahead",

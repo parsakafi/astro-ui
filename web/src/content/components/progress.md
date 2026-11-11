@@ -4,7 +4,7 @@ name: "Progress"
 description: >-
   Determinate/indeterminate progress bar and circle.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Progress"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "`aria-label` names the task; visual bars are `aria-hidden`"
 usage: |-
   ---
-  import { Progress } from "astro-ui";
+  import { Progress } from "@parsakafi/astro-ui";
   ---
   
   <Progress value={64} label="Uploading" showValue />

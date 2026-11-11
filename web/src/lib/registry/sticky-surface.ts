@@ -6,12 +6,12 @@ export const stickySurface: ComponentMeta = {
     description: "Sticky-positioned region with scroll-based line, elevation, and glass effects.",
     overview:
         "StickySurface sticks to the viewport (or nearest scrolling ancestor) at a threshold with pure CSS. While stuck, it can grow a border line, an elevation shadow, and a frosted-glass wash — and observeStuck exposes the same moment as an is-stuck class for your own selectors. State is detected with an IntersectionObserver sentinel, so the only JavaScript is the tiny observer script.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "StickySurface",
     category: "layout",
     js: true,
     usage:
-        `---\nimport { StickySurface } from "astro-ui";\n---\n\n<StickySurface effects={["line", "elevate"]} threshold="0px">\n  <strong>Toolbar</strong>\n</StickySurface>`,
+        `---\nimport { StickySurface } from "@parsakafi/astro-ui";\n---\n\n<StickySurface effects={["line", "elevate"]} threshold="0px">\n  <strong>Toolbar</strong>\n</StickySurface>`,
     features: [
         "Pure-CSS sticking (position: sticky) — works with zero JS",
         "Scroll effects while stuck: line, elevate, backdrop glass",

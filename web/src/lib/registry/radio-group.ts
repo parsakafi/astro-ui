@@ -6,12 +6,12 @@ export const radioGroup: ComponentMeta = {
     description: "Declarative single-choice group — fieldset of radios from a plain items array.",
     overview:
         "RadioGroup renders a labelled fieldset of Radio components from a plain `items` array — native radios underneath, so the browser provides single-choice semantics and arrow-key navigation with zero JavaScript. The group centralizes what hand-written fieldsets repeat: `defaultValue` picks the initially checked option (only one carries `checked`), `orientation` lays rows out vertically or horizontally, options can carry a muted `hint` line or be individually disabled, and group-level `invalid` styling ties the legend to your error text via `ariaDescribedby`. For fully custom per-option markup, hand-write the fieldset with Radio components instead.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "RadioGroup",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { RadioGroup } from "astro-ui";\n---\n\n<RadioGroup\n  name="plan"\n  label="Plan"\n  defaultValue="pro"\n  items={[\n    { value: "free", label: "Free", hint: "For hobbies" },\n    { value: "pro", label: "Pro", hint: "For teams" },\n  ]}\n/>`,
+        `---\nimport { RadioGroup } from "@parsakafi/astro-ui";\n---\n\n<RadioGroup\n  name="plan"\n  label="Plan"\n  defaultValue="pro"\n  items={[\n    { value: "free", label: "Free", hint: "For hobbies" },\n    { value: "pro", label: "Pro", hint: "For teams" },\n  ]}\n/>`,
     features: [
         "Declarative `items` array — strings or {value, label, hint?, disabled?}",
         "defaultValue sets the initially checked option (server-rendered)",

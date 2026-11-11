@@ -4,7 +4,7 @@ name: "Select"
 description: >-
   Native select with custom chevron, placeholder, and validation state.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Select"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "`aria-invalid` + `aria-describedby` for validation"
 usage: |-
   ---
-  import { Select, Label } from "astro-ui";
+  import { Select, Label } from "@parsakafi/astro-ui";
   ---
   
   <Label for="fruit" required>Fruit</Label>

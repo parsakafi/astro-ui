@@ -1,6 +1,6 @@
 /** pricing-tiers block — copy-paste-ready Astro markup. */
 export const codePricingTiers = `---
-import { Card, Badge, Button } from "astro-ui";
+import { Card, Badge, Button } from "@parsakafi/astro-ui";
 ---
 
 <div class="block-pricing">

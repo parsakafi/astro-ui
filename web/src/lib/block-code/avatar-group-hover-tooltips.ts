@@ -1,6 +1,6 @@
 /** avatar-group-hover-tooltips block — copy-paste-ready Astro markup. */
 export const codeAvatarGroupHoverTooltips = `---
-import { Avatar, AvatarGroup, Tooltip } from "astro-ui";
+import { Avatar, AvatarGroup, Tooltip } from "@parsakafi/astro-ui";
 ---
 
 <AvatarGroup hover>

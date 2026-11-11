@@ -4,7 +4,7 @@ name: "Textarea"
 description: >-
   Multi-line input with counters, clear button, and resize control.
 category: forms
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Textarea"
 js: true
 since: "0.1.0"
@@ -21,7 +21,7 @@ a11y:
   - "`aria-invalid` for validation state"
 usage: |-
   ---
-  import { Textarea, Label } from "astro-ui";
+  import { Textarea, Label } from "@parsakafi/astro-ui";
   ---
   
   <Label for="bio">Bio</Label>

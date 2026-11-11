@@ -4,7 +4,7 @@ name: "Skeleton"
 description: >-
   Pulsing placeholder blocks for loading layouts.
 category: feedback
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Skeleton"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "Animation removed under prefers-reduced-motion"
 usage: |-
   ---
-  import { Skeleton } from "astro-ui";
+  import { Skeleton } from "@parsakafi/astro-ui";
   ---
   
   <Skeleton style="width:100%;height:1rem" />

@@ -1,6 +1,6 @@
 /** forgot-password block — copy-paste-ready Astro markup. */
 export const codeForgotPassword = `---
-import { Card, Input, Button } from "astro-ui";
+import { Card, Input, Button } from "@parsakafi/astro-ui";
 ---
 
 <Card class="block-auth">

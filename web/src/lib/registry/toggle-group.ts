@@ -6,12 +6,12 @@ export const toggleGroup: ComponentMeta = {
     description: "Connected row of Toggles — segmented control styling.",
     overview:
         "ToggleGroup wraps any number of Toggle children and stitches their borders into one segmented control, mirroring the ButtonGroup composition. Radius and negative-margin stitching reach slotted children through :global(). State stays per-toggle (aria-pressed on each child); whether the group enforces single-selection is the consumer's choice — a one-line app script, same recipe as Toggle.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "ToggleGroup",
     category: "forms",
     js: false,
     usage:
-        `---\nimport { ToggleGroup, Toggle } from "astro-ui";\n---\n\n<ToggleGroup ariaLabel="Text align">\n  <Toggle ariaLabel="Left">Left</Toggle>\n  <Toggle ariaLabel="Center">Center</Toggle>\n  <Toggle ariaLabel="Right">Right</Toggle>\n</ToggleGroup>`,
+        `---\nimport { ToggleGroup, Toggle } from "@parsakafi/astro-ui";\n---\n\n<ToggleGroup ariaLabel="Text align">\n  <Toggle ariaLabel="Left">Left</Toggle>\n  <Toggle ariaLabel="Center">Center</Toggle>\n  <Toggle ariaLabel="Right">Right</Toggle>\n</ToggleGroup>`,
     features: [
         "Joins Toggle children into one segmented control",
         "horizontal / vertical orientation",

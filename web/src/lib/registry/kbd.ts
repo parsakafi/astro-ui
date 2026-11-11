@@ -6,12 +6,12 @@ export const kbd: ComponentMeta = {
     description: "Keyboard key cap for documenting shortcuts.",
     overview:
         "Kbd renders an inline semantic &lt;kbd&gt; styled as a key cap. Optional raised shadow gives physical depth. Use inside prose; describe sequences with an accessible label on a wrapper.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Kbd",
     category: "general",
     js: false,
     usage:
-        `---\nimport { Kbd } from "astro-ui";\n---\n\n<p>Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to search.</p>`,
+        `---\nimport { Kbd } from "@parsakafi/astro-ui";\n---\n\n<p>Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to search.</p>`,
     features: [
         "Semantic <kbd>",
         "3 variants incl. borderless muted",

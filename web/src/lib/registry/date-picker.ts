@@ -6,12 +6,12 @@ export const datePicker: ComponentMeta = {
     description: "Native date input with a Gregorian or Persian calendar panel.",
     overview:
         "DatePicker wraps a real `<input type=\"date\">`, so the field submits with the form, validates natively, and opens the platform picker on mobile with no JavaScript at all. The calendar panel is the enhancement: a month grid whose month names, weekday order, and digits come from `Intl.DateTimeFormat`, which is what makes a Persian (Jalali) calendar possible without shipping a calendar library.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "DatePicker",
     category: "forms",
     js: true,
     usage:
-        `---\nimport { DatePicker, Label } from "astro-ui";\n---\n\n<Label for="start-input">Start date</Label>\n<DatePicker\n  id="start"\n  name="start"\n  calendar="persian"\n  locale="fa-IR"\n  min="2026-01-01"\n/>`,
+        `---\nimport { DatePicker, Label } from "@parsakafi/astro-ui";\n---\n\n<Label for="start-input">Start date</Label>\n<DatePicker\n  id="start"\n  name="start"\n  calendar="persian"\n  locale="fa-IR"\n  min="2026-01-01"\n/>`,
     features: [
         "Native `<input type=\"date\">` baseline — works with zero JS",
         "Gregorian and Persian (Jalali) month grids from `Intl`",

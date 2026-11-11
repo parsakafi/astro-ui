@@ -5,7 +5,7 @@ any `<img>`-compatible `src`.
 
 ```astro
 ---
-import { Avatar } from "astro-ui";
+import { Avatar } from "@parsakafi/astro-ui";
 ---
 <Avatar src="/users/ada.jpg" name="Ada Lovelace" size="lg" />
 <Avatar name="Ada Lovelace" />

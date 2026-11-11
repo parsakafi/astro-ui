@@ -4,7 +4,7 @@ name: "Card"
 description: >-
   Content container with named-slot header/content/footer composition.
 category: layout
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Card"
 js: false
 since: "0.1.0"
@@ -22,7 +22,7 @@ a11y:
   - "`aria-label` fallback for cards without a visible title"
 usage: |-
   ---
-  import { Card, Button } from "astro-ui";
+  import { Card, Button } from "@parsakafi/astro-ui";
   ---
   
   <Card>

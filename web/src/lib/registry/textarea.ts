@@ -6,12 +6,12 @@ export const textarea: ComponentMeta = {
     description: "Multi-line input with counters, clear button, and resize control.",
     overview:
         "Textarea mirrors Input's states and adds multi-line niceties: character counter, optional clear button, auto-grow bounds, and resize control. The core control is zero-JS; the extras are progressive enhancements — a tiny scoped script wires them and they degrade gracefully without it.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Textarea",
     category: "forms",
     js: true,
     usage:
-        `---\nimport { Textarea, Label } from "astro-ui";\n---\n\n<Label for="bio">Bio</Label>\n<Textarea id="bio" rows={4} maxlength={280} showCount clearable />`,
+        `---\nimport { Textarea, Label } from "@parsakafi/astro-ui";\n---\n\n<Label for="bio">Bio</Label>\n<Textarea id="bio" rows={4} maxlength={280} showCount clearable />`,
     features: [
         "Input-matching variants and sizes",
         "showCount / counter character displays",

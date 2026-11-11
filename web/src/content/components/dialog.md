@@ -4,7 +4,7 @@ name: "Dialog"
 description: >-
   Native <dialog> modal — platform focus trap, Esc, and backdrop.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Dialog"
 js: true
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Decorative icons `aria-hidden`"
 usage: |-
   ---
-  import { Dialog, Button } from "astro-ui";
+  import { Dialog, Button } from "@parsakafi/astro-ui";
   ---
   
   <Button id="open">Open</Button>

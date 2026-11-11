@@ -6,12 +6,12 @@ export const combobox: ComponentMeta = {
     description: "Select-style trigger that opens a searchable listbox — pick one from many.",
     overview:
         "Combobox reads like a select: the trigger shows the committed value with a chevron, and opening it reveals a panel with a search field on top of a filterable listbox. Type to filter (case-insensitive substring on label/value), move with ↑/↓, commit with Enter or click, dismiss with Escape. The committed value posts with the form via a hidden input under the field's `name`. The selected option carries a check mark, and options can carry a muted hint line. With JS disabled the trigger still renders the committed value; the popup and search need the small scoped script.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Combobox",
     category: "forms",
     js: true,
     usage:
-        `---\nimport { Combobox } from "astro-ui";\n---\n\n<Combobox\n  name="framework"\n  placeholder="Select framework…"\n  items={["Astro", "Next.js", "Nuxt", "SvelteKit"]}\n  clearable\n/>`,
+        `---\nimport { Combobox } from "@parsakafi/astro-ui";\n---\n\n<Combobox\n  name="framework"\n  placeholder="Select framework…"\n  items={["Astro", "Next.js", "Nuxt", "SvelteKit"]}\n  clearable\n/>`,
     features: [
         "Select-style trigger (committed value + chevron) with a search field inside the popup",
         "Case-insensitive substring filtering across label and value",

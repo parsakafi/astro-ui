@@ -4,7 +4,7 @@ name: "HoverCard"
 description: >-
   Rich preview card on hover and keyboard focus — CSS-only.
 category: overlay
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "HoverCard"
 js: false
 since: "0.1.0"
@@ -20,7 +20,7 @@ a11y:
   - "Triggerable from keyboard focus, not only pointer hover"
 usage: |-
   ---
-  import { HoverCard } from "astro-ui";
+  import { HoverCard } from "@parsakafi/astro-ui";
   ---
   
   <HoverCard ariaLabel="Profile preview">

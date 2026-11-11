@@ -4,7 +4,7 @@ name: "Bubble"
 description: >-
   Chat message bubble — 7 variants, start/end align, reactions, groups.
 category: data-display
-importPath: "astro-ui"
+importPath: "@parsakafi/astro-ui"
 exportName: "Bubble"
 js: false
 since: "0.1.0"
@@ -23,7 +23,7 @@ a11y:
   - "Variant color pairs keep 4.5:1 contrast on their content"
 usage: |-
   ---
-  import { Bubble, BubbleContent, BubbleReactions } from "astro-ui";
+  import { Bubble, BubbleContent, BubbleReactions } from "@parsakafi/astro-ui";
   ---
   
   <Bubble align="end" variant="primary">

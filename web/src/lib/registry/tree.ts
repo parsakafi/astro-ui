@@ -6,12 +6,12 @@ export const tree: ComponentMeta = {
     description: "Keyboard-navigable file/folder hierarchy with guide lines.",
     overview:
         "Tree renders a nested `role=\"tree\"` from a plain `items` array — no markup authoring, no recursion in your page. Branches toggle `aria-expanded`, leaves with an `href` are real links, and one tab stop plus arrow keys give the whole hierarchy a single keyboard entry point. Because the structure is semantic, screen readers announce level and position for free.",
-    importPath: "astro-ui",
+    importPath: "@parsakafi/astro-ui",
     exportName: "Tree",
     category: "navigation",
     js: true,
     usage:
-        `---\nimport { Tree } from "astro-ui";\n---\n\n<Tree\n  ariaLabel="Project files"\n  items={[\n    {\n      id: "src",\n      label: "src",\n      icon: "▸",\n      expanded: true,\n      children: [\n        { id: "app", label: "App.astro" },\n        { id: "lib", label: "lib", children: [{ id: "cn", label: "cn.ts" }] },\n      ],\n    },\n    { id: "pkg", label: "package.json" },\n  ]}\n/>`,
+        `---\nimport { Tree } from "@parsakafi/astro-ui";\n---\n\n<Tree\n  ariaLabel="Project files"\n  items={[\n    {\n      id: "src",\n      label: "src",\n      icon: "▸",\n      expanded: true,\n      children: [\n        { id: "app", label: "App.astro" },\n        { id: "lib", label: "lib", children: [{ id: "cn", label: "cn.ts" }] },\n      ],\n    },\n    { id: "pkg", label: "package.json" },\n  ]}\n/>`,
     features: [
         "Data-driven recursion via `Astro.self` — any depth, correct `aria-level`",
         "WAI-ARIA tree view keyboard model: arrows, Home/End, typeahead",

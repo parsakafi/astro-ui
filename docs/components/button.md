@@ -4,7 +4,7 @@ Zero-JS action trigger. Renders `<button>`, or `<a>` when `href` is set.
 
 ```astro
 ---
-import { Button } from "astro-ui";
+import { Button } from "@parsakafi/astro-ui";
 ---
 <Button variant="primary" size="md">Get Started</Button>
 <Button href="/docs" variant="outline">Read docs</Button>

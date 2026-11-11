@@ -6,7 +6,7 @@
  * tokens (never hard-code values) so themes work by swapping variables.
  *
  * Usage:
- *   import "astro-ui/tokens.css";
+ *   import "@parsakafi/astro-ui/tokens.css";
  *
  * Theming:
  *   <html data-theme="light"> … always light
