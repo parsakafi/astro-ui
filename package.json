@@ -4,10 +4,10 @@
   "homepage": "https://astroui.ir",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/parsakafi/astro-ui-component-library.git"
+    "url": "git+https://github.com/parsakafi/astro-ui.git"
   },
   "bugs": {
-    "url": "https://github.com/parsakafi/astro-ui-component-library/issues"
+    "url": "https://github.com/parsakafi/astro-ui/issues"
   },
   "version": "0.1.0",
   "license": "MIT",
