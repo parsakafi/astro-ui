@@ -26,7 +26,7 @@ Project checks, by unit type:
 | Unit of work | Loop check (must exit 0) |
 | --- | --- |
 | Library source (`src/`) | `npm run check` (astro check) + `npm test` |
-| Formatting/lint | `npm run lint` (biome + eslint, `--max-warnings 0`) |
+| Formatting/lint | `npm run lint` (biome + eslint, `--max-warnings 0`). `src/styles-scss/` is excluded in `biome.json`: Biome 2.6's SCSS parser misreads digit-led hex colours in custom properties as units (biomejs/biome#12958), so the exclusion goes away when that fix lands |
 | Registry / demo wiring | `npx tsx web/scripts/audit-demo-ids.ts` (0 problems) + `registry-consistency` test |
 | Docs content md | regenerate via `cd web && npx tsx scripts/gen-docs.ts` (paths are cwd-relative); never hand-edit generated files |
 | Docs site runtime | dev server page loads; demo verified in the browser, not just built |
