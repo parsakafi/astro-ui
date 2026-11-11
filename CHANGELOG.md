@@ -4,7 +4,15 @@ All notable changes to this project are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/);
 versioning follows [SemVer](https://semver.org/).
 
-## [0.1.0] — 2026-11-11
+## [Unreleased]
+
+## [0.1.1] - 2026-11-12
+
+### Added
+
+- `Progress color="dynamic"`: the fill hue follows the value itself (a `--ui-error` → `--ui-success` mix) using the CSS `progress()` function. The width is derived from the same `--aui-progress-percent` custom property, so writing that one value moves the bar and its colour together. Pure CSS; browsers without `progress()` keep the token fill and a plain width.
+
+## [0.1.0] - 2026-11-11
 
 First public release. The package ships as `0.1.0` (pre-1.0) so the API
 can settle in public before the project commits to full SemVer stability
