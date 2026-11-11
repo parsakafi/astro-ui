@@ -2,10 +2,28 @@
 import DemoTabs from "../DemoTabs.astro";
 import {
   Progress,
+  Slider,
 } from "@parsakafi/astro-ui";
 
 const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
 ---
+
+<style>
+  .docs-progress-playground {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-4);
+    inline-size: min(100%, 26rem);
+  }
+
+  .docs-progress-playground :global(.aui-progress__track) {
+    cursor: pointer;
+  }
+
+  .docs-progress-playground code {
+    white-space: nowrap;
+  }
+</style>
 
 <div>
     {demoIds.map((id) => (
@@ -91,6 +109,75 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
               </Fragment>
               <Fragment slot="code">
                 <Fragment set:html={codeHtml.get("squared")} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "dynamic" && (
+          <div class="docs-demo-block" id={`demo-progress-${id}`}>
+            <h3 class="docs-demo-title">Dynamic color</h3>
+            <DemoTabs id="dm-progress-dynamic">
+              <Fragment slot="preview">
+                <div class="docs-progress-playground">
+                  <Progress
+                    id="dm-progress-dynamic-bar"
+                    value={65}
+                    color="dynamic"
+                    label="Uploading"
+                    showValue
+                    size="2xl"
+                  />
+                  <Slider
+                    id="dm-progress-dynamic-range"
+                    label="Value"
+                    value={65}
+                    min={0}
+                    max={100}
+                    step={1}
+                    showValue
+                  />
+                  <p class="docs-demo-note">
+                    Drag the slider or click anywhere on the bar — both write
+                    <code>--aui-progress-percent</code>, and the CSS <code>progress()</code>
+                    function derives the width and the hue from it.
+                  </p>
+                </div>
+                <script>
+                  const bar = document.getElementById("dm-progress-dynamic-bar");
+                  const range = document.getElementById(
+                    "dm-progress-dynamic-range",
+                  ) as HTMLInputElement | null;
+                  const track = bar?.querySelector<HTMLElement>(".aui-progress__track");
+                  const readout = bar?.querySelector<HTMLElement>(".aui-progress__value");
+
+                  const apply = (raw: number) => {
+                    if (!bar) return;
+                    const value = Math.max(0, Math.min(100, Math.round(raw)));
+                    bar.style.setProperty("--aui-progress-percent", String(value));
+                    bar.setAttribute("aria-valuenow", String(value));
+                    bar.dataset.value = String(value);
+                    if (readout) readout.textContent = `${value}%`;
+                  };
+
+                  range?.addEventListener("input", () => apply(Number(range.value)));
+
+                  track?.addEventListener("click", (event) => {
+                    const rect = track.getBoundingClientRect();
+                    if (!rect.width) return;
+                    const rtl = getComputedStyle(track).direction === "rtl";
+                    const ratio = (event.clientX - rect.left) / rect.width;
+                    const value = Math.round((rtl ? 1 - ratio : ratio) * 100);
+                    if (range) {
+                      range.value = String(value);
+                      range.dispatchEvent(new Event("input", {bubbles: true}));
+                    } else {
+                      apply(value);
+                    }
+                  });
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get("dynamic")} />
               </Fragment>
             </DemoTabs>
           </div>

@@ -5,7 +5,7 @@ export const progress: ComponentMeta = {
     name: "Progress",
     description: "Determinate/indeterminate progress bar and circle.",
     overview:
-        "Progress shows task completion as a bar or circle. Omit value for indeterminate. `stripes` overlays diagonal stripes on the bar fill (optionally animated), `stripedTrack` hatches the empty remainder, `segmented` renders discrete blocks, and `squared` separates fill and track with a gap. The circle uses an SVG ring with stroke-dashoffset math.",
+        "Progress shows task completion as a bar or circle. Omit value for indeterminate. `stripes` overlays diagonal stripes on the bar fill (optionally animated), `stripedTrack` hatches the empty remainder, `segmented` renders discrete blocks, and `squared` separates fill and track with a gap. The circle uses an SVG ring with stroke-dashoffset math. `color=\"dynamic\"` turns the value itself into colour: the CSS `progress()` function maps `--aui-progress-percent` onto an error → success mix, and derives the width from the same variable, so one write moves both.",
     importPath: "@parsakafi/astro-ui",
     exportName: "Progress",
     category: "data-display",
@@ -15,7 +15,8 @@ export const progress: ComponentMeta = {
     features: [
         "Bar and circle variants",
         "Determinate (value) or indeterminate",
-        "6 sizes, 8 colors",
+        "6 sizes, 9 colors",
+        "color=\"dynamic\": hue follows the value (error → success) in pure CSS",
         "stripes: static or animated diagonal stripes on the bar fill",
         "stripedTrack / segmented / squared bar styles",
         "label + showValue text",
@@ -62,12 +63,24 @@ export const progress: ComponentMeta = {
             code: `<Progress value={40} squared />
 <Progress value={90} squared color="success" />`,
         },
+        {
+            id: "dynamic",
+            title: "Dynamic color",
+            code: `<Progress id="upload" value={65} color="dynamic" label="Uploading" showValue />
+
+<script>
+  // One custom property drives both the width and the hue.
+  const bar = document.getElementById("upload");
+  bar.style.setProperty("--aui-progress-percent", "82");
+  bar.setAttribute("aria-valuenow", "82");
+</script>`,
+        },
     ],
     props: [
         t("value", "number", "—", "0–100; omit for indeterminate."),
         t("variant", `"bar" | "circle"`, `"bar"`, "Shape."),
         t("size", `"xs" | "sm" | "md" | "lg" | "xl" | "2xl"`, `"md"`, "Scale."),
-        t("color", `"primary" | "secondary" | "success" | "warning" | "info" | "muted" | "error"`, `"primary"`, "Fill color."),
+        t("color", `"primary" | "secondary" | "success" | "warning" | "info" | "muted" | "error" | "dynamic"`, `"primary"`, "Fill color; `dynamic` maps the value onto an error → success hue."),
         t("label", "string", "—", "Text label."),
         t("showValue", "boolean", "false", "Show the percentage."),
         t("stripes", `boolean | "static"`, "false", "Diagonal stripes on the bar fill; true animates them."),
@@ -81,7 +94,11 @@ export const progress: ComponentMeta = {
             q: "Is the value announced?",
             a: "When label is set the component exposes a role=\"progressbar\" with aria-valuenow. Without label, treat it as decorative.",
         },
+        {
+            q: "How does color=\"dynamic\" work without JavaScript?",
+            a: "The fill width and colour both read --aui-progress-percent through the CSS progress() function: width is progress() * 100% and the colour is a color-mix between --ui-error and --ui-success weighted by the same ratio. To animate it live, write --aui-progress-percent (and aria-valuenow) from your own script — the demo's slider does exactly that. Browsers without progress() fall back to the plain token fill.",
+        },
     ],
-    since: "0.1.0",
+    since: "0.1.1",
     related: ["spinner", "skeleton", "badge"],
 };

@@ -9,6 +9,11 @@ astro-dev.log
 # vercel project metadata
 .vercel/
 
+# playwright failure artifacts next to snapshots
+web/tests/e2e/**/*-snapshots/*-actual.png
+web/tests/e2e/**/*-snapshots/*-diff.png
+web/tests/e2e/*-snapshots/*.png
+
 # dependencies
 node_modules/
 

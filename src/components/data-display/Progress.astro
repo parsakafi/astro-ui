@@ -8,6 +8,11 @@
   * and `squared` separates fill and track with a gap. For
   * indeterminate loading, use `Spinner` instead.
   *
+  * `color="dynamic"` derives the fill hue from the value itself
+  * (error → success) with the CSS `progress()` function, and reads
+  * the width from `--aui-progress-percent` — write that one custom
+  * property to move both width and colour.
+  *
   * JavaScript required: No
   */
 import { cn } from "../../utils/cn";
@@ -19,7 +24,8 @@ export interface Props {
   variant?: "bar" | "circle";
   /** Visual size. */
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
-  /** Fill color. */
+  /** Fill color. `"dynamic"` mixes `--ui-error` → `--ui-success` by
+   * value, so the hue tracks the progress itself (determinate only). */
   color?:
     | "primary"
     | "secondary"
@@ -27,7 +33,8 @@ export interface Props {
     | "warning"
     | "info"
     | "muted"
-    | "error";
+    | "error"
+    | "dynamic";
   /** Optional label above/beside the track. */
   label?: string;
   /** Optional current value text (e.g. "64%"). Shown when `label` is set. */
@@ -128,7 +135,8 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     aria-valuemin={0}
     aria-valuemax={100}
     aria-label={ariaLabel}
-    style={`width:${circle.size};height:${circle.size}`}
+    data-value={isDeterminate ? percent : undefined}
+    style={`width:${circle.size};height:${circle.size}${isDeterminate ? `;--aui-progress-percent:${percent}` : ""}`}
     {...rest}
   >
 			<svg
@@ -179,7 +187,8 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     aria-valuemin={0}
     aria-valuemax={100}
     aria-label={ariaLabel}
-    style={`--aui-progress-bar-height:${bar.height};width:${bar.width}`}
+    data-value={isDeterminate ? percent : undefined}
+    style={`--aui-progress-bar-height:${bar.height};width:${bar.width}${isDeterminate ? `;--aui-progress-percent:${percent}` : ""}`}
     {...rest}
   >
     {(label || label === '0') && (
@@ -187,8 +196,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
 					{label}
 				</span>
     )}
-    <span class="aui-progress__track" aria-hidden="true"
-          style={isDeterminate ? `--aui-progress-percent:${percent}` : undefined}>
+    <span class="aui-progress__track" aria-hidden="true">
 				{segmented ? (
           Array.from({length: SEGMENT_COUNT}, (_, i) => (
             <span
@@ -201,7 +209,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
         ) : (
           <span
             class="aui-progress__fill"
-            style={isDeterminate
+            style={isDeterminate && color !== "dynamic"
               ? `width:${percent}%;transition:width 0.3s ease-in-out`
               : undefined}
             aria-hidden="true"
@@ -547,6 +555,48 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
 
   .aui-progress--color-error.aui-progress--circle .aui-progress__value {
     color: var(--ui-error);
+  }
+
+  /* ---------- dynamic color (value → colour) ---------- */
+
+  /* progress() maps --aui-progress-percent onto 0–1. Width and colour
+     read the same custom property, so writing it (inline style or a
+     script) moves the bar and its hue together. Each progress() rule is
+     preceded by a plain-token fallback for browsers without it
+     (progress() is Baseline 2026). Determinate only: indeterminate
+     bars keep their own width animation. */
+  /* Base fill for dynamic: also the fallback when progress() is missing
+     or the bar is indeterminate. */
+  .aui-progress--color-dynamic .aui-progress__fill {
+    background-color: var(--ui-primary);
+    stroke: var(--ui-primary);
+  }
+
+  .aui-progress--determinate.aui-progress--color-dynamic.aui-progress--bar .aui-progress__fill {
+    width: calc(var(--aui-progress-percent, 0) * 1%);
+    width: calc(progress(var(--aui-progress-percent, 0), 0, 100) * 100%);
+    background-color: color-mix(
+      in oklch,
+      var(--ui-error),
+      var(--ui-success) calc(progress(var(--aui-progress-percent, 0), 0, 100) * 100%)
+    );
+    transition: width 0.3s ease-in-out;
+  }
+
+  .aui-progress--determinate.aui-progress--color-dynamic.aui-progress--circle .aui-progress__fill {
+    stroke: color-mix(
+      in oklch,
+      var(--ui-error),
+      var(--ui-success) calc(progress(var(--aui-progress-percent, 0), 0, 100) * 100%)
+    );
+  }
+
+  .aui-progress--determinate.aui-progress--color-dynamic.aui-progress--circle .aui-progress__value {
+    color: color-mix(
+      in oklch,
+      var(--ui-error),
+      var(--ui-success) calc(progress(var(--aui-progress-percent, 0), 0, 100) * 100%)
+    );
   }
 
   /* ---------- animations ---------- */

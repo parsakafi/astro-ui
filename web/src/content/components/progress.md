@@ -13,7 +13,8 @@ related: ["spinner", "skeleton", "badge"]
 features:
   - "Bar and circle variants"
   - "Determinate (value) or indeterminate"
-  - "6 sizes, 8 colors"
+  - "6 sizes, 9 colors"
+  - "color=\"dynamic\": hue follows the value (error → success) in pure CSS"
   - "stripes: static or animated diagonal stripes on the bar fill"
   - "stripedTrack / segmented / squared bar styles"
   - "label + showValue text"
@@ -28,7 +29,7 @@ usage: |-
   
   <Progress value={64} label="Uploading" showValue />
   <Progress variant="circle" value={80} showValue />
-demoIds: ["bar", "circle", "stripes", "striped-track", "segmented", "squared"]
+demoIds: ["bar", "circle", "stripes", "striped-track", "segmented", "squared", "dynamic"]
 props:
   - name: "value"
     type: "number"
@@ -43,9 +44,9 @@ props:
     def: "\"md\""
     description: "Scale."
   - name: "color"
-    type: "\"primary\" | \"secondary\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"error\""
+    type: "\"primary\" | \"secondary\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"error\" | \"dynamic\""
     def: "\"primary\""
-    description: "Fill color."
+    description: "Fill color; `dynamic` maps the value onto an error → success hue."
   - name: "label"
     type: "string"
     def: "—"
@@ -85,6 +86,8 @@ props:
 faq:
   - q: "Is the value announced?"
     a: "When label is set the component exposes a role=\"progressbar\" with aria-valuenow. Without label, treat it as decorative."
+  - q: "How does color=\"dynamic\" work without JavaScript?"
+    a: "The fill width and colour both read --aui-progress-percent through the CSS progress() function: width is progress() * 100% and the colour is a color-mix between --ui-error and --ui-success weighted by the same ratio. To animate it live, write --aui-progress-percent (and aria-valuenow) from your own script — the demo's slider does exactly that. Browsers without progress() fall back to the plain token fill."
 ---
 
-Progress shows task completion as a bar or circle. Omit value for indeterminate. `stripes` overlays diagonal stripes on the bar fill (optionally animated), `stripedTrack` hatches the empty remainder, `segmented` renders discrete blocks, and `squared` separates fill and track with a gap. The circle uses an SVG ring with stroke-dashoffset math.
+Progress shows task completion as a bar or circle. Omit value for indeterminate. `stripes` overlays diagonal stripes on the bar fill (optionally animated), `stripedTrack` hatches the empty remainder, `segmented` renders discrete blocks, and `squared` separates fill and track with a gap. The circle uses an SVG ring with stroke-dashoffset math. `color="dynamic"` turns the value itself into colour: the CSS `progress()` function maps `--aui-progress-percent` onto an error → success mix, and derives the width from the same variable, so one write moves both.

@@ -10,6 +10,7 @@ playwright/.cache/
 # playwright failure artifacts next to snapshots
 tests/e2e/**/*-snapshots/*-actual.png
 tests/e2e/**/*-snapshots/*-diff.png
+tests/e2e/*-snapshots/*
 
 # generated types
 .astro/

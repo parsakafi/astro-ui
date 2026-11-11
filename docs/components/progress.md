@@ -22,7 +22,11 @@ import { Progress } from "@parsakafi/astro-ui";
 <Progress value={33} color="error" />
 <Progress value={33} color="info" />
 <Progress value={33} color="muted" />
-<Progress value={33} color="error" />
+
+<!-- Dynamic color: hue follows the value (error → success) -->
+<Progress value={10} color="dynamic" label="10%" showValue />
+<Progress value={50} color="dynamic" label="50%" showValue />
+<Progress value={100} color="dynamic" label="100%" showValue />
 
 <!-- Indeterminate (no value) -->
 <Progress label="Indeterminate" />
@@ -56,7 +60,7 @@ import { Progress } from "@parsakafi/astro-ui";
 | `value`        | `number`                                                                              | —         | filled percentage 0–100; omit for indeterminate |
 | `variant`      | `bar \| circle`                                                                       | `bar`     | linear track or circular ring                   |
 | `size`         | `xs \| sm \| md \| lg \| xl \| 2xl`                                                   | `md`      | track/ring thickness + label size               |
-| `color`        | `primary \| secondary \| success \| warning \| error \| info \| muted` | `primary` | fill/stroke color                               |
+| `color`        | `primary \| secondary \| success \| warning \| error \| info \| muted \| dynamic` | `primary` | fill/stroke color; `dynamic` maps the value onto an error → success hue |
 | `label`        | `string`                                                                              | —         | optional label above/beside the track           |
 | `showValue`    | `boolean`                                                                             | `false`   | shows the current value as text (e.g. "64%")    |
 | `class` / `id` | `string`                                                                              | —         | `class` merged via `cn()`                       |
@@ -85,3 +89,16 @@ track ends. Circle stroke uses `stroke-current` so it inherits the text color se
 
 **JavaScript required: No.** The value is rendered server-side. For live progress updates, the consumer re-renders the
 component with a new `value` (e.g. via an Astro island or a page navigation). No client-side animation loop is shipped.
+
+`color="dynamic"` is still CSS-only: the fill width and hue are derived from `--aui-progress-percent` with the CSS
+`progress()` function (Baseline 2026). To animate a bar yourself, write that one custom property (and keep
+`aria-valuenow` in sync) instead of re-rendering:
+
+```js
+const bar = document.getElementById("upload");
+bar.style.setProperty("--aui-progress-percent", "82");
+bar.setAttribute("aria-valuenow", "82");
+```
+
+Browsers without `progress()` keep the plain token fill and a width derived from the same variable, so the bar still
+tracks the value — only the hue ramp is lost.
