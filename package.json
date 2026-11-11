@@ -4,7 +4,7 @@
   "homepage": "https://astroui.ir",
   "repository": {
     "type": "git",
-    "url": "https://github.com/parsakafi/astro-ui-component-library.git"
+    "url": "git+https://github.com/parsakafi/astro-ui-component-library.git"
   },
   "bugs": {
     "url": "https://github.com/parsakafi/astro-ui-component-library/issues"
@@ -72,6 +72,7 @@
     "./button-group-text": "./src/components/general/ButtonGroupText.astro",
     "./button-group-separator": "./src/components/general/ButtonGroupSeparator.astro",
     "./badge": "./src/components/data-display/Badge.astro",
+    "./before-after": "./src/components/data-display/BeforeAfter.astro",
     "./card": "./src/components/layout/Card.astro",
     "./avatar": "./src/components/data-display/Avatar.astro",
     "./avatar-group": "./src/components/data-display/AvatarGroup.astro",

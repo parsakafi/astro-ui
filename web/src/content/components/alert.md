@@ -11,14 +11,14 @@ since: "0.1.0"
 isNew: false
 related: ["spinner", "toast", "button"]
 features:
-  - "8 variants: primary, destructive, success, warning, info, carbon, secondary, accent"
+  - "8 variants: primary, error, success, warning, info, carbon, secondary, accent"
   - "5 sizes: xs → xl"
-  - "Smart role: alert (destructive) vs status (others)"
+  - "Smart role: alert (error) vs status (others)"
   - "closable renders an accessible dismiss button"
   - "Icon slot with built-in per-variant glyph"
 a11y:
   - "Icons and the close button are aria-hidden — decoration never reaches the a11y tree"
-  - "role=alert (destructive, assertive) vs role=status (others, polite)"
+  - "role=alert (error, assertive) vs role=status (others, polite)"
   - "Dismiss button carries an aria-label"
 usage: |-
   ---
@@ -26,11 +26,11 @@ usage: |-
   ---
   
   <Alert variant="info" title="Heads up">Scheduled maintenance Sunday.</Alert>
-  <Alert variant="destructive" title="Payment failed" closable>Retry or update your card.</Alert>
+  <Alert variant="error" title="Payment failed" closable>Retry or update your card.</Alert>
 demoIds: ["basic", "variants", "closable"]
 props:
   - name: "variant"
-    type: "\"primary\" | \"destructive\" | \"success\" | \"warning\" | \"info\" | …"
+    type: "\"primary\" | \"error\" | \"success\" | \"warning\" | \"info\" | …"
     def: "\"primary\""
     description: "Visual + semantic variant."
   - name: "size"
@@ -66,7 +66,7 @@ slots:
     description: "Custom leading glyph (overrides the built-in one)."
 faq:
   - q: "When is it announced?"
-    a: "Destructive alerts use role=alert (assertive, immediate); all other variants use role=status (polite). Mount-time announcements only — toggling content re-announces."
+    a: "Error alerts use role=alert (assertive, immediate); all other variants use role=status (polite). Mount-time announcements only — toggling content re-announces."
 ---
 
-Alert shows a persistent inline message with a variant-colored surface, built-in variant glyph, and an optional dismiss button. Smart semantics: destructive alerts render role=alert (announced immediately); the others render role=status (polite).
+Alert shows a persistent inline message with a variant-colored surface, built-in variant glyph, and an optional dismiss button. Smart semantics: error alerts render role=alert (announced immediately); the others render role=status (polite).

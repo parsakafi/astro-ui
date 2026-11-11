@@ -13,7 +13,7 @@ import { cn } from "../../utils/cn";
 export interface Props {
   variant?:
     | "primary"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info"
@@ -41,7 +41,7 @@ const {
   ...rest
 } = Astro.props;
 
-const resolvedRole = role ?? (variant === "destructive" ? "alert" : "status");
+const resolvedRole = role ?? (variant === "error" ? "alert" : "status");
 const classes = cn(
   "aui-alert",
   `aui-alert--variant-${variant}`,
@@ -82,7 +82,7 @@ const classes = cn(
           />
         </svg>
       )}
-      {variant === "destructive" && (
+      {variant === "error" && (
         <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
           <path
             d="M3 3l6 6M9 3 3 9"
@@ -218,7 +218,7 @@ const classes = cn(
     border-color: var(--ui-primary);
   }
 
-  .aui-alert--variant-destructive {
+  .aui-alert--variant-error {
     background-color: var(--ui-error);
     color: var(--ui-error-foreground);
     border-color: var(--ui-error);
@@ -303,7 +303,7 @@ const classes = cn(
     color: var(--ui-primary-foreground);
   }
 
-  .aui-alert--variant-destructive .aui-alert__icon {
+  .aui-alert--variant-error .aui-alert__icon {
     background-color: var(--ui-error);
     color: var(--ui-error-foreground);
   }

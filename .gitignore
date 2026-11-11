@@ -6,6 +6,9 @@ astro-dev.log
 # task cache
 .turbo/
 
+# vercel project metadata
+.vercel/
+
 # dependencies
 node_modules/
 

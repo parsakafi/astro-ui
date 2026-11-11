@@ -18,7 +18,7 @@ features:
   - "Four placements: bottom/top × start/end (logical, RTL-safe)"
   - "Flips to the other edge when the panel would leave the viewport"
   - "MenuGroup for labeled sections, MenuSeparator for dividers"
-  - "Destructive variant for irreversible actions"
+  - "Error variant for irreversible actions"
 a11y:
   - "Trigger is a real button with `aria-haspopup=\"menu\"` and `aria-expanded`"
   - "Panel is `role=\"menu\"` labelled by its trigger"
@@ -34,7 +34,7 @@ usage: |-
     <MenuItem shortcut="⌘E">Edit</MenuItem>
     <MenuItem shortcut="⌘D">Duplicate</MenuItem>
     <MenuSeparator/>
-    <MenuItem variant="destructive" shortcut="⌫">Delete</MenuItem>
+    <MenuItem variant="error" shortcut="⌫">Delete</MenuItem>
   </Menu>
 demoIds: ["row-actions", "groups", "links", "open"]
 props:
@@ -77,7 +77,7 @@ slots:
     description: "MenuItem, MenuGroup, and MenuSeparator children."
 faq:
   - q: "How does MenuItem behave?"
-    a: "It renders `<a>` when `href` is set and `<button type=\"button\">` otherwise, with `role=\"menuitem\"` and `tabindex=\"-1\"`. Props: `variant` (default/destructive), `href`, `disabled`, `shortcut`, `class`, `id`, plus an `icon` slot."
+    a: "It renders `<a>` when `href` is set and `<button type=\"button\">` otherwise, with `role=\"menuitem\"` and `tabindex=\"-1\"`. Props: `variant` (default/error), `href`, `disabled`, `shortcut`, `class`, `id`, plus an `icon` slot."
   - q: "What about MenuGroup and MenuSeparator?"
     a: "MenuGroup takes a `label` and renders `role=\"group\"` labelled by that heading, so screen readers name the section. MenuSeparator is an `<hr role=\"separator\">`, skipped by arrow-key navigation."
   - q: "Do submenus work?"

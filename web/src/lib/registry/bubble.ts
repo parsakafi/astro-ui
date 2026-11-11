@@ -13,7 +13,7 @@ export const bubble: ComponentMeta = {
     usage:
         `---\nimport { Bubble, BubbleContent, BubbleReactions } from "astro-ui";\n---\n\n<Bubble align="end" variant="primary">\n  <BubbleContent>Looks great — ship it.</BubbleContent>\n  <BubbleReactions side="bottom" align="end" ariaLabel="Reactions">\n    <span aria-hidden="true">🎉</span>\n  </BubbleReactions>\n</Bubble>`,
     features: [
-        "7 variants: primary, secondary, muted, tinted, outline, ghost, destructive",
+        "7 variants: primary, secondary, muted, tinted, outline, ghost, error",
         "start/end alignment for two-sided threads",
         "BubbleGroup collapses consecutive same-sender turns",
         "Edge-anchored reactions pill (top/bottom, start/end)",
@@ -34,7 +34,7 @@ export const bubble: ComponentMeta = {
         {
             id: "deploy-thread",
             title: "Seven variants in one deploy thread",
-            code: `<div class="docs-bubble-thread">\n  <Bubble align="end" variant="primary">\n    <BubbleContent>Deploy the preview build to production.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="secondary">\n    <BubbleContent>On it — building #412.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="muted">\n    <BubbleContent>Last production deploy was v2.4.1, two days ago.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="tinted">\n    <BubbleContent>Build passed in 1m 32s.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="outline">\n    <BubbleContent>3 files changed, 128 additions, 12 deletions.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="destructive">\n    <BubbleContent>Coverage dropped below 80% — consider adding tests.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="ghost">\n    <BubbleContent>Run #412 · runner eu-west-1 · log retained 30 days</BubbleContent>\n  </Bubble>\n</div>`,
+            code: `<div class="docs-bubble-thread">\n  <Bubble align="end" variant="primary">\n    <BubbleContent>Deploy the preview build to production.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="secondary">\n    <BubbleContent>On it — building #412.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="muted">\n    <BubbleContent>Last production deploy was v2.4.1, two days ago.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="tinted">\n    <BubbleContent>Build passed in 1m 32s.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="outline">\n    <BubbleContent>3 files changed, 128 additions, 12 deletions.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="error">\n    <BubbleContent>Coverage dropped below 80% — consider adding tests.</BubbleContent>\n  </Bubble>\n  <Bubble align="start" variant="ghost">\n    <BubbleContent>Run #412 · runner eu-west-1 · log retained 30 days</BubbleContent>\n  </Bubble>\n</div>`,
         },
         {
             id: "group",
@@ -64,7 +64,7 @@ export const bubble: ComponentMeta = {
     ],
     props: [
         t("align", `'"start" | "end"'`, `'"start"'`, "Side of the thread the message sits on."),
-        t("variant", `'"primary" | "secondary" | "muted" | "tinted" | "outline" | "ghost" | "destructive"'`, `'"primary"'`, "Color scheme of the content box."),
+        t("variant", `'"primary" | "secondary" | "muted" | "tinted" | "outline" | "ghost" | "error"'`, `'"primary"'`, "Color scheme of the content box."),
         t("class", "string", "—", "Merged via cn(); Tailwind classes welcome."),
         t("id", "string", "—", "Element id."),
     ],

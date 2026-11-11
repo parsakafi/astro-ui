@@ -11,7 +11,7 @@ export const menu: ComponentMeta = {
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Menu, MenuItem, MenuSeparator } from "astro-ui";\n---\n\n<Menu id="row-actions" triggerLabel="Row actions">\n  <MenuItem shortcut="⌘E">Edit</MenuItem>\n  <MenuItem shortcut="⌘D">Duplicate</MenuItem>\n  <MenuSeparator/>\n  <MenuItem variant="destructive" shortcut="⌫">Delete</MenuItem>\n</Menu>`,
+        `---\nimport { Menu, MenuItem, MenuSeparator } from "astro-ui";\n---\n\n<Menu id="row-actions" triggerLabel="Row actions">\n  <MenuItem shortcut="⌘E">Edit</MenuItem>\n  <MenuItem shortcut="⌘D">Duplicate</MenuItem>\n  <MenuSeparator/>\n  <MenuItem variant="error" shortcut="⌫">Delete</MenuItem>\n</Menu>`,
     features: [
         "WAI-ARIA menu-button pattern: aria-haspopup, aria-expanded, role=menu",
         "Arrow keys with wraparound, Home/End, letter typeahead",
@@ -20,7 +20,7 @@ export const menu: ComponentMeta = {
         "Four placements: bottom/top × start/end (logical, RTL-safe)",
         "Flips to the other edge when the panel would leave the viewport",
         "MenuGroup for labeled sections, MenuSeparator for dividers",
-        "Destructive variant for irreversible actions",
+        "Error variant for irreversible actions",
     ],
     a11y: [
         "Trigger is a real button with `aria-haspopup=\"menu\"` and `aria-expanded`",
@@ -33,12 +33,12 @@ export const menu: ComponentMeta = {
         {
             id: "row-actions",
             title: "Row actions",
-            code: `<Menu id="dm-menu-row" triggerLabel="Row actions">\n  <MenuItem shortcut="⌘E">Edit</MenuItem>\n  <MenuItem shortcut="⌘D">Duplicate</MenuItem>\n  <MenuSeparator/>\n  <MenuItem variant="destructive" shortcut="⌫">Delete</MenuItem>\n</Menu>`,
+            code: `<Menu id="dm-menu-row" triggerLabel="Row actions">\n  <MenuItem shortcut="⌘E">Edit</MenuItem>\n  <MenuItem shortcut="⌘D">Duplicate</MenuItem>\n  <MenuSeparator/>\n  <MenuItem variant="error" shortcut="⌫">Delete</MenuItem>\n</Menu>`,
         },
         {
             id: "groups",
             title: "Grouped actions with icons",
-            code: `<Menu id="dm-menu-groups" triggerLabel="Project actions">\n  <MenuGroup label="Project">\n    <MenuItem>\n      <span slot="icon" aria-hidden="true">✎</span>\n      Rename project\n    </MenuItem>\n    <MenuItem>\n      <span slot="icon" aria-hidden="true">⧉</span>\n      Duplicate\n    </MenuItem>\n  </MenuGroup>\n  <MenuSeparator/>\n  <MenuGroup label="Danger zone">\n    <MenuItem variant="destructive" disabled>Transfer ownership</MenuItem>\n    <MenuItem variant="destructive">Delete project</MenuItem>\n  </MenuGroup>\n</Menu>`,
+            code: `<Menu id="dm-menu-groups" triggerLabel="Project actions">\n  <MenuGroup label="Project">\n    <MenuItem>\n      <span slot="icon" aria-hidden="true">✎</span>\n      Rename project\n    </MenuItem>\n    <MenuItem>\n      <span slot="icon" aria-hidden="true">⧉</span>\n      Duplicate\n    </MenuItem>\n  </MenuGroup>\n  <MenuSeparator/>\n  <MenuGroup label="Danger zone">\n    <MenuItem variant="error" disabled>Transfer ownership</MenuItem>\n    <MenuItem variant="error">Delete project</MenuItem>\n  </MenuGroup>\n</Menu>`,
         },
         {
             id: "links",
@@ -71,7 +71,7 @@ export const menu: ComponentMeta = {
     faq: [
         {
             q: "How does MenuItem behave?",
-            a: "It renders `<a>` when `href` is set and `<button type=\"button\">` otherwise, with `role=\"menuitem\"` and `tabindex=\"-1\"`. Props: `variant` (default/destructive), `href`, `disabled`, `shortcut`, `class`, `id`, plus an `icon` slot.",
+            a: "It renders `<a>` when `href` is set and `<button type=\"button\">` otherwise, with `role=\"menuitem\"` and `tabindex=\"-1\"`. Props: `variant` (default/error), `href`, `disabled`, `shortcut`, `class`, `id`, plus an `icon` slot.",
         },
         {
             q: "What about MenuGroup and MenuSeparator?",

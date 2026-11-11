@@ -24,7 +24,7 @@ usage: |-
   ---
   
   <Tooltip ariaLabel="Delete item">
-    <Button size="icon" variant="destructive" ariaLabel="Delete">␡</Button>
+    <Button size="icon" variant="error" ariaLabel="Delete">␡</Button>
     <span slot="content">Delete this item permanently</span>
   </Tooltip>
 demoIds: ["basic"]

@@ -21,7 +21,7 @@ import { Checkbox, Label } from "astro-ui";
 <Checkbox name="c" orientation="vertical" checked label="Vertical layout" />
 
 <!-- Colors -->
-<Checkbox name="x" variant="destructive" checked label="Destructive" />
+<Checkbox name="x" variant="error" checked label="Error" />
 <Checkbox name="y" variant="success" checked label="Success" />
 <Checkbox name="z" variant="warning" checked label="Warning" />
 <Checkbox name="i" variant="info" checked label="Info" />
@@ -38,7 +38,7 @@ import { Checkbox, Label } from "astro-ui";
 | `disabled`        | `boolean`                                                                               | `false`      | native `disabled`                                                                                                    |
 | `invalid`         | `boolean`                                                                               | `false`      | visual error ring; set `aria-describedby` to point at error text                                                     |
 | `size`            | `xs \| sm \| md \| lg \| xl`                                                            | `md`         | control + label spacing scale                                                                                        |
-| `variant`         | `primary \| secondary \| muted \| destructive \| success \| warning \| info \| inherit` | `primary`    | check color + border color                                                                                           |
+| `variant`         | `primary \| secondary \| muted \| error \| success \| warning \| info \| inherit` | `primary`    | check color + border color                                                                                           |
 | `shape`           | `square \| rounded`                                                                     | `square`     | `rounded` = full-radius check box                                                                                    |
 | `orientation`     | `horizontal \| vertical`                                                                | `horizontal` | label layout direction                                                                                               |
 | `indeterminate`   | `boolean`                                                                               | `false`      | visual mixed state (`aria-checked="mixed"`); the live indeterminate state requires client JS if you need it to react |

@@ -15,7 +15,7 @@ import { Textarea, Label } from "astro-ui";
 <Textarea variant="primary" placeholder="Primary border" />
 <Textarea variant="secondary" placeholder="Secondary border" />
 <Textarea variant="muted" placeholder="Muted border" />
-<Textarea variant="destructive" placeholder="Destructive border" />
+<Textarea variant="error" placeholder="Error border" />
 <Textarea variant="success" placeholder="Success border" />
 <Textarea variant="warning" placeholder="Warning border" />
 <Textarea variant="info" placeholder="Info border" />
@@ -67,7 +67,7 @@ import { Textarea, Label } from "astro-ui";
 | `readonly`                | `boolean`                                                                               | `false`    | native `readonly`                                                              |
 | `invalid`                 | `boolean`                                                                               | `false`    | visual error ring + `aria-invalid`                                             |
 | `size`                    | `xs \| sm \| md \| lg \| xl`                                                            | `md`       | height + padding + font scale                                                  |
-| `variant`                 | `inherit \| primary \| secondary \| muted \| destructive \| success \| warning \| info` | `inherit`  | border color                                                                   |
+| `variant`                 | `inherit \| primary \| secondary \| muted \| error \| success \| warning \| info` | `inherit`  | border color                                                                   |
 | `showCount`               | `boolean`                                                                               | `false`    | when `maxlength` is set, show a "count / max" line below the textarea          |
 | `clearable`               | `boolean`                                                                               | `false`    | visual affordance (shows a clear button area); actual clearing needs client JS |
 | `counter`                 | `boolean`                                                                               | `false`    | shows a counter badge in the bottom-right corner (useful with `maxlength`)     |

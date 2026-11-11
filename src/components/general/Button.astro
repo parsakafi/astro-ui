@@ -14,7 +14,7 @@ import { cn } from "../../utils/cn";
 export interface Props {
   /**
    * Visual style.
-   * - `primary` / `secondary` / `destructive`: legacy solid shorthands (same as `variant="solid"` + that `color`).
+   * - `primary` / `secondary` / `error`: legacy solid shorthands (same as `variant="solid"` + that `color`).
    * - `solid` / `soft`: filled / tinted backgrounds colored by `color`.
    * - `outline` / `dashed`: bordered (neutral unless `color` is set).
    * - `ghost` / `link`: transparent (link underlines; `link` colors via `color`).
@@ -25,7 +25,7 @@ export interface Props {
     | "secondary"
     | "outline"
     | "ghost"
-    | "destructive"
+    | "error"
     | "link"
     | "solid"
     | "dashed"
@@ -34,13 +34,13 @@ export interface Props {
     | "pure";
   /**
    * Theme color applied to `solid` / `soft` / tinted outline-style variants.
-   * Ignored on legacy `primary` / `secondary` / `destructive` variants unless set explicitly
+   * Ignored on legacy `primary` / `secondary` / `error` variants unless set explicitly
    * (explicit `color` wins and re-resolves the button as `solid` for those shorthands).
    */
   color?:
     | "primary"
     | "secondary"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info"
@@ -128,7 +128,7 @@ const isDisabled = disabled || loading;
 // Legacy color-named variants map onto solid + color when an explicit color is set;
 // otherwise they keep their historical class + CSS (zero behavior change).
 const legacySolid =
-  variant === "primary" || variant === "secondary" || variant === "destructive";
+  variant === "primary" || variant === "secondary" || variant === "error";
 const resolvedVariant = legacySolid && colorProp ? "solid" : variant;
 const resolvedColor =
   colorProp ??
@@ -397,7 +397,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     background-color: var(--ui-secondary-hover);
   }
 
-  .aui-btn--solid[data-color="destructive"] {
+  .aui-btn--solid[data-color="error"] {
     background-color: var(--ui-error);
     color: var(--ui-error-foreground);
   }
@@ -427,7 +427,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     color: var(--ui-accent-foreground);
   }
 
-  .aui-btn--solid[data-color="destructive"]:hover,
+  .aui-btn--solid[data-color="error"]:hover,
   .aui-btn--solid[data-color="success"]:hover,
   .aui-btn--solid[data-color="warning"]:hover,
   .aui-btn--solid[data-color="info"]:hover,
@@ -456,7 +456,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     background-color: var(--ui-secondary-hover);
   }
 
-  .aui-btn--soft[data-color="destructive"] {
+  .aui-btn--soft[data-color="error"] {
     background-color: var(--ui-error-muted);
     color: var(--ui-error);
   }
@@ -486,7 +486,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     color: var(--ui-accent);
   }
 
-  .aui-btn--soft[data-color="destructive"]:hover,
+  .aui-btn--soft[data-color="error"]:hover,
   .aui-btn--soft[data-color="success"]:hover,
   .aui-btn--soft[data-color="warning"]:hover,
   .aui-btn--soft[data-color="info"]:hover,
@@ -517,7 +517,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     border-color: var(--ui-border);
   }
 
-  .aui-btn--outline[data-color="destructive"] {
+  .aui-btn--outline[data-color="error"] {
     color: var(--ui-error);
     border-color: var(--ui-error);
   }
@@ -555,7 +555,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     background-color: var(--ui-secondary-hover);
   }
 
-  .aui-btn--outline[data-color="destructive"]:hover {
+  .aui-btn--outline[data-color="error"]:hover {
     background-color: var(--ui-error-muted);
   }
 
@@ -602,7 +602,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     border-color: var(--ui-border);
   }
 
-  .aui-btn--dashed[data-color="destructive"] {
+  .aui-btn--dashed[data-color="error"] {
     color: var(--ui-error);
     border-color: var(--ui-error);
   }
@@ -640,7 +640,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     background-color: var(--ui-secondary-hover);
   }
 
-  .aui-btn--dashed[data-color="destructive"]:hover {
+  .aui-btn--dashed[data-color="error"]:hover {
     background-color: var(--ui-error-muted);
   }
 
@@ -686,7 +686,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     color: var(--ui-secondary-foreground);
   }
 
-  .aui-btn--plain[data-color="destructive"]:hover {
+  .aui-btn--plain[data-color="error"]:hover {
     border-color: var(--ui-error);
     color: var(--ui-error);
   }
@@ -738,7 +738,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     background-color: var(--ui-secondary-hover);
   }
 
-  .aui-btn--pure[data-color="destructive"]:hover {
+  .aui-btn--pure[data-color="error"]:hover {
     background-color: var(--ui-error-muted);
     color: var(--ui-error);
   }
@@ -787,7 +787,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     color: var(--ui-secondary-foreground);
   }
 
-  .aui-btn--ghost[data-color="destructive"] {
+  .aui-btn--ghost[data-color="error"] {
     color: var(--ui-error);
   }
 
@@ -819,7 +819,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     background-color: var(--ui-secondary-hover);
   }
 
-  .aui-btn--ghost[data-color="destructive"]:hover {
+  .aui-btn--ghost[data-color="error"]:hover {
     background-color: var(--ui-error-muted);
   }
 
@@ -843,14 +843,14 @@ const isCenterLoading = loading && loadingPosition === "center";
     background-color: color-mix(in srgb, var(--ui-accent) 10%, transparent);
   }
 
-  /* --- variant: destructive (legacy solid shorthand) --- */
+  /* --- variant: error (legacy solid shorthand) --- */
 
-  .aui-btn--destructive {
+  .aui-btn--error {
     background-color: var(--ui-error);
     color: var(--ui-error-foreground);
   }
 
-  .aui-btn--destructive:hover {
+  .aui-btn--error:hover {
     filter: brightness(0.92);
   }
 
@@ -869,7 +869,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     color: var(--ui-secondary-foreground);
   }
 
-  .aui-btn--link[data-color="destructive"] {
+  .aui-btn--link[data-color="error"] {
     color: var(--ui-error);
   }
 
@@ -911,7 +911,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     color: var(--ui-error);
   }
 
-  .aui-btn--solid.aui-btn--invalid:not([data-color="destructive"]),
+  .aui-btn--solid.aui-btn--invalid:not([data-color="error"]),
   .aui-btn--primary.aui-btn--invalid {
     box-shadow: inset 0 0 0 1px var(--ui-error);
   }

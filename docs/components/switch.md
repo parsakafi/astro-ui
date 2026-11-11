@@ -12,7 +12,7 @@ import { Switch, Label } from "astro-ui";
 <Switch name="bluetooth" variant="secondary">Bluetooth</Switch>
 <Switch name="airplane" disabled>Airplane mode (disabled)</Switch>
 <Switch name="compact" size="sm" variant="muted">Small switch</Switch>
-<Switch name="sync" variant="destructive" invalid aria-describedby="sync-error">Sync</Switch>
+<Switch name="sync" variant="error" invalid aria-describedby="sync-error">Sync</Switch>
 <p id="sync-error" class="demo-hint">Sync failed — invalid state demo.</p>
 
 <!-- Sizes with label prop -->
@@ -30,7 +30,7 @@ import { Switch, Label } from "astro-ui";
 <Switch name="success" variant="success" checked label="Success" />
 <Switch name="warning" variant="warning" checked label="Warning" />
 <Switch name="info" variant="info" checked label="Info" />
-<Switch name="destructive" variant="destructive" checked label="Destructive" />
+<Switch name="error" variant="error" checked label="Error" />
 ```
 
 ## Props
@@ -44,7 +44,7 @@ import { Switch, Label } from "astro-ui";
 | `disabled`        | `boolean`                                                                               | `false`   | native `disabled`                                                         |
 | `invalid`         | `boolean`                                                                               | `false`   | visual error state; pair with `aria-describedby` pointing at error text   |
 | `size`            | `xs \| sm \| md \| lg \| xl`                                                            | `md`      | track + thumb size scale                                                  |
-| `variant`         | `primary \| secondary \| muted \| destructive \| success \| warning \| info \| inherit` | `primary` | checked track color                                                       |
+| `variant`         | `primary \| secondary \| muted \| error \| success \| warning \| info \| inherit` | `primary` | checked track color                                                       |
 | `shape`           | `rounded \| square`                                                                     | `rounded` | thumb shape; `square` = sharp corners                                     |
 | `label`           | `string`                                                                                | —         | short label rendered after the thumb when no slot content is provided     |
 | `class` / `id`    | `string`                                                                                | —         | `class` merged via `cn()`                                                 |

@@ -31,7 +31,7 @@ usage: |-
     <Fragment slot="footer">
       <form method="dialog"><Button variant="outline">Cancel</Button></form>
       <form method="dialog">
-        <Button variant="destructive" value="confirm">Delete</Button>
+        <Button variant="error" value="confirm">Delete</Button>
       </form>
     </Fragment>
   </AlertDialog>

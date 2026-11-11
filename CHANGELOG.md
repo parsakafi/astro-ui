@@ -13,9 +13,9 @@ guarantees.
 ### Added
 
 - Foundation: semantic design tokens (`tokens.css`), base styles (`base.css`), `data-theme` light/dark/system theming, `cn()` and `uid()` utilities, and root + per-component ESM subpath exports with no runtime dependencies.
-- 63 catalog components across 7 categories (80 `.astro` files including sub-components): 43 render pure server-side HTML and 20 add a small scoped script.
+- 64 catalog components across 7 categories (81 `.astro` files including sub-components): 43 render pure server-side HTML and 21 add a small scoped script.
 - General (7): Button, ButtonGroup, Command, Carousel, Clipboard, Kbd, Link.
-- Data display (10): Badge, Avatar, Attachment, Table, Progress, Bubble, Chart, Empty, Tag, Timeline.
+- Data display (11): Badge, Avatar, Attachment, BeforeAfter, Table, Progress, Bubble, Chart, Empty, Tag, Timeline.
 - Layout (7): Card, AspectRatio, ScrollArea, Separator, Accordion, Collapsible, StickySurface.
 - Feedback (6): Alert, Spinner, Skeleton, Toast, Banner, NotificationCenter.
 - Forms (18): Autocomplete, Combobox, Label, Field, Input, InputGroup, Textarea, Select, Checkbox, Radio, Switch, Toggle, ToggleGroup, RadioGroup, Rating, Slider, DatePicker, TimePicker.
@@ -32,7 +32,7 @@ guarantees.
 ### Changed
 
 - The canonical brand color is Astro violet: `#881abd` light / `#b845ed` dark, with hover `#b845ed` / `#d06cf5`; `--ui-ring` follows the brand primary in both themes.
-- The semantic red prop value is `destructive` everywhere; the `--ui-error*` token names are unchanged.
+- The semantic red value is `error` everywhere — `variant="error"`, `color="error"`, `ring="error"`, and `.aui-*-error` modifiers resolve to the `--ui-error*` tokens, matching `toast.error()`, `Attachment state="error"`, and the `Field` error slot.
 - Button `shape` accepts `rounded | square | circle | pill` (default `rounded`).
 - Component-private CSS variables use the `--aui-*` prefix so they never collide with public `--ui-*` tokens.
 - Keyboard focus uses a `:focus-visible` outline driven by the focus-ring tokens instead of a `box-shadow` ring.

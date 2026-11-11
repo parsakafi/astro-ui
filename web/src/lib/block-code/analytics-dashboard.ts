@@ -24,7 +24,7 @@ import { Card, Chart, Badge, Button, Tabs } from "astro-ui";
       <div class="dash__kpi">
         <span class="dash__kpi-label">Bounce rate</span>
         <span class="dash__kpi-value">31.6%</span>
-        <Badge variant="destructive" size="sm">+2.3%</Badge>
+        <Badge variant="error" size="sm">+2.3%</Badge>
       </div>
     </Card>
     <Card size="sm">

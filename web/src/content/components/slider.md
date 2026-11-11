@@ -92,7 +92,7 @@ props:
     def: "—"
     description: "Label above the track."
   - name: "variant"
-    type: "\"primary\" | \"success\" | \"warning\" | \"destructive\" | \"info\""
+    type: "\"primary\" | \"success\" | \"warning\" | \"error\" | \"info\""
     def: "\"primary\""
     description: "Accent color."
   - name: "size"

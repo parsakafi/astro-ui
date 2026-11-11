@@ -5,7 +5,7 @@ export const alert: ComponentMeta = {
     name: "Alert",
     description: "Feedback message with 8 variants and accessible dismissal.",
     overview:
-        "Alert shows a persistent inline message with a variant-colored surface, built-in variant glyph, and an optional dismiss button. Smart semantics: destructive alerts render role=alert (announced immediately); the others render role=status (polite).",
+        "Alert shows a persistent inline message with a variant-colored surface, built-in variant glyph, and an optional dismiss button. Smart semantics: error alerts render role=alert (announced immediately); the others render role=status (polite).",
     importPath: "astro-ui",
     exportName: "Alert",
     category: "feedback",
@@ -16,17 +16,17 @@ import { Alert } from "astro-ui";
 ---
 
 <Alert variant="info" title="Heads up">Scheduled maintenance Sunday.</Alert>
-<Alert variant="destructive" title="Payment failed" closable>Retry or update your card.</Alert>`,
+<Alert variant="error" title="Payment failed" closable>Retry or update your card.</Alert>`,
     features: [
-        "8 variants: primary, destructive, success, warning, info, carbon, secondary, accent",
+        "8 variants: primary, error, success, warning, info, carbon, secondary, accent",
         "5 sizes: xs → xl",
-        "Smart role: alert (destructive) vs status (others)",
+        "Smart role: alert (error) vs status (others)",
         "closable renders an accessible dismiss button",
         "Icon slot with built-in per-variant glyph"
     ],
     a11y: [
         "Icons and the close button are aria-hidden — decoration never reaches the a11y tree",
-        "role=alert (destructive, assertive) vs role=status (others, polite)",
+        "role=alert (error, assertive) vs role=status (others, polite)",
         "Dismiss button carries an aria-label"
     ],
     demos: [
@@ -38,7 +38,7 @@ import { Alert } from "astro-ui";
         {
             id: "variants",
             title: "Variants",
-            code: `<Alert variant="info">…</Alert>\n<Alert variant="success">…</Alert>\n<Alert variant="warning">…</Alert>\n<Alert variant="destructive">…</Alert>`,
+            code: `<Alert variant="info">…</Alert>\n<Alert variant="success">…</Alert>\n<Alert variant="warning">…</Alert>\n<Alert variant="error">…</Alert>`,
         },
         {
             id: "closable",
@@ -47,7 +47,7 @@ import { Alert } from "astro-ui";
         },
     ],
     props: [
-        t("variant", "\"primary\" | \"destructive\" | \"success\" | \"warning\" | \"info\" | …", "\"primary\"", "Visual + semantic variant."),
+        t("variant", "\"primary\" | \"error\" | \"success\" | \"warning\" | \"info\" | …", "\"primary\"", "Visual + semantic variant."),
         t("size", "\"xs\" | \"sm\" | \"md\" | \"lg\" | \"xl\"", "\"md\"", "Surface scale."),
         t("closable", "boolean", "false", "Renders the dismiss button."),
         t("closeLabel", "string", "\"Dismiss\"", "Accessible name for the dismiss button."),
@@ -63,7 +63,7 @@ import { Alert } from "astro-ui";
     faq: [
         {
             q: "When is it announced?",
-            a: "Destructive alerts use role=alert (assertive, immediate); all other variants use role=status (polite). Mount-time announcements only — toggling content re-announces.",
+            a: "Error alerts use role=alert (assertive, immediate); all other variants use role=status (polite). Mount-time announcements only — toggling content re-announces.",
         },
     ],
     since: "0.1.0",

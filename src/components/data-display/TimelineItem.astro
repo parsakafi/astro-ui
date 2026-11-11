@@ -18,13 +18,7 @@ import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Marker tone. */
-  variant?:
-    | "neutral"
-    | "primary"
-    | "success"
-    | "warning"
-    | "destructive"
-    | "info";
+  variant?: "neutral" | "primary" | "success" | "warning" | "error" | "info";
   /** Emphasize the current/most recent event with a halo ring. */
   active?: boolean;
   class?: string;
@@ -114,7 +108,7 @@ const hasBody =
     --aui-timeline-tone: var(--ui-warning);
   }
 
-  .aui-timeline__item--destructive {
+  .aui-timeline__item--error {
     --aui-timeline-tone: var(--ui-error);
   }
 

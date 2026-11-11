@@ -16,6 +16,7 @@ export { default as Attachment } from "./src/components/data-display/Attachment.
 export { default as Avatar } from "./src/components/data-display/Avatar.astro";
 export { default as AvatarGroup } from "./src/components/data-display/AvatarGroup.astro";
 export { default as Badge } from "./src/components/data-display/Badge.astro";
+export { default as BeforeAfter } from "./src/components/data-display/BeforeAfter.astro";
 export { default as Bubble } from "./src/components/data-display/Bubble.astro";
 export { default as BubbleContent } from "./src/components/data-display/BubbleContent.astro";
 export { default as BubbleGroup } from "./src/components/data-display/BubbleGroup.astro";

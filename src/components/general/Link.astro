@@ -44,7 +44,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "inherit";
@@ -226,7 +226,7 @@ const isHref =
     --aui-link-underline-color: var(--ui-muted-foreground);
   }
 
-  .aui-link--color-destructive {
+  .aui-link--color-error {
     color: var(--ui-error);
     --aui-link-underline-color: var(--ui-error);
   }
@@ -307,7 +307,7 @@ const isHref =
     background-color: var(--ui-secondary);
   }
 
-  .aui-link--color-destructive:hover {
+  .aui-link--color-error:hover {
     color: var(--ui-error);
     filter: brightness(0.92);
   }

@@ -27,7 +27,7 @@ export interface Props {
     | "warning"
     | "info"
     | "muted"
-    | "destructive";
+    | "error";
   /** Optional label above/beside the track. */
   label?: string;
   /** Optional current value text (e.g. "64%"). Shown when `label` is set. */
@@ -280,7 +280,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     color: var(--ui-primary-foreground);
   }
 
-  .aui-progress--bar.aui-progress--color-destructive .aui-progress__value {
+  .aui-progress--bar.aui-progress--color-error .aui-progress__value {
     color: var(--ui-error-foreground);
   }
 
@@ -516,7 +516,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     background-color: var(--ui-muted-foreground);
   }
 
-  .aui-progress--color-destructive .aui-progress__fill {
+  .aui-progress--color-error .aui-progress__fill {
     stroke: var(--ui-error);
     background-color: var(--ui-error);
   }
@@ -545,7 +545,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     color: var(--ui-muted-foreground);
   }
 
-  .aui-progress--color-destructive.aui-progress--circle .aui-progress__value {
+  .aui-progress--color-error.aui-progress--circle .aui-progress__value {
     color: var(--ui-error);
   }
 

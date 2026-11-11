@@ -54,12 +54,12 @@ The canonical brand color is Astro violet: `#881abd` in light mode and
 always reads as part of the brand rather than a generic browser blue.
 
 Red is a semantic *state*, not a color name. Components expose the prop
-value `destructive` and resolve it to the `--ui-error*` tokens:
+value `error` and resolve it to the `--ui-error*` tokens:
 
 ```astro
-<Badge variant="destructive">Failed</Badge>
-<Button color="destructive">Delete</Button>
-<Avatar ring="destructive" />
+<Badge variant="error">Failed</Badge>
+<Button color="error">Delete</Button>
+<Avatar ring="error" />
 ```
 
 `error` remains valid only where it describes a lifecycle/event, not a

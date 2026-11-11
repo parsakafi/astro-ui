@@ -43,7 +43,7 @@ props:
     def: "\"md\""
     description: "Scale."
   - name: "color"
-    type: "\"primary\" | \"secondary\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"destructive\""
+    type: "\"primary\" | \"secondary\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"error\""
     def: "\"primary\""
     description: "Fill color."
   - name: "label"

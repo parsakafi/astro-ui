@@ -27,13 +27,7 @@ import { cn } from "../../utils/cn";
 
 export interface Props {
   /** Color treatment of the strip. */
-  variant?:
-    | "primary"
-    | "info"
-    | "success"
-    | "warning"
-    | "destructive"
-    | "neutral";
+  variant?: "primary" | "info" | "success" | "warning" | "error" | "neutral";
   /** Stick to the top of the scroll container while the page scrolls. */
   sticky?: boolean;
   /** Render a close button (`data-banner-close`); the app wires hiding. */
@@ -160,7 +154,7 @@ const classes = cn(
     border-block-end-color: var(--ui-warning);
   }
 
-  .aui-banner--destructive {
+  .aui-banner--error {
     background-color: var(--ui-error);
     color: var(--ui-error-foreground);
     border-block-end-color: var(--ui-error);

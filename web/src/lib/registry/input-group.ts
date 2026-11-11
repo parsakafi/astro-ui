@@ -54,7 +54,7 @@ export const inputGroup: ComponentMeta = {
     ],
     props: [
         t("size", `"xs" | "sm" | "md" | "lg" | "xl"`, `"md"`, "Group height; mirrors Input sizes."),
-        t("invalid", "boolean", "false", "Destructive border on the wrapper."),
+        t("invalid", "boolean", "false", "Error border on the wrapper."),
         t("disabled", "boolean", "false", "Dim + mute the whole group."),
         t("multiline", "boolean", "false", "Auto height for a Textarea control."),
         t("slot start / slot end", "Astro slots", "—", "Addon markup on each edge."),

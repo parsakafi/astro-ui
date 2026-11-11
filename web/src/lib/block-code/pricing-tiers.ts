@@ -10,7 +10,7 @@ import { Card, Badge, Button } from "astro-ui";
       <p class="block-price"><strong>$0</strong> <span>forever</span></p>
       <p class="block-hint">Everything you need to evaluate the library.</p>
       <ul class="block-features">
-        <li>63 components</li>
+        <li>64 components</li>
         <li>Tokens &amp; base CSS</li>
         <li>Community support</li>
       </ul>

@@ -33,7 +33,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info"
@@ -168,7 +168,7 @@ const classes = cn(
     border-color: var(--ui-muted-foreground);
   }
 
-  .aui-radio--variant-destructive .aui-radio__circle {
+  .aui-radio--variant-error .aui-radio__circle {
     border-color: var(--ui-error);
   }
 
@@ -236,7 +236,7 @@ const classes = cn(
     background-color: var(--ui-muted-foreground);
   }
 
-  .aui-radio--variant-destructive .aui-radio__dot {
+  .aui-radio--variant-error .aui-radio__dot {
     background-color: var(--ui-error);
   }
 
@@ -279,7 +279,7 @@ const classes = cn(
     border-color: var(--ui-muted-foreground);
   }
 
-  .aui-radio--variant-destructive .aui-radio__input:checked + .aui-radio__circle {
+  .aui-radio--variant-error .aui-radio__input:checked + .aui-radio__circle {
     border-color: var(--ui-error);
   }
 

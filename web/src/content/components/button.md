@@ -11,8 +11,8 @@ since: "0.1.0"
 isNew: false
 related: ["badge", "card", "dialog"]
 features:
-  - "11 variants: primary, secondary, outline, ghost, destructive, link, solid, dashed, soft, plain, pure"
-  - "8 theme colors via `color`: primary, secondary, destructive, success, warning, info, carbon, accent"
+  - "11 variants: primary, secondary, outline, ghost, error, link, solid, dashed, soft, plain, pure"
+  - "8 theme colors via `color`: primary, secondary, error, success, warning, info, carbon, accent"
   - "7 sizes: xs, sm, md, lg, xl, 2xl, icon (icon requires ariaLabel)"
   - "Loading state with 4 spinner styles (ring, dots, pulse, spin) and 3 positions"
   - "Invalid state: error border + red focus ring + aria-invalid"
@@ -37,11 +37,11 @@ usage: |-
 demoIds: ["basic", "variant", "color", "size", "loading", "invalid", "shape-shadow"]
 props:
   - name: "variant"
-    type: "\"primary\" | \"secondary\" | \"outline\" | \"ghost\" | \"destructive\" | \"link\" | \"solid\" | \"dashed\" | \"soft\" | \"plain\" | \"pure\""
+    type: "\"primary\" | \"secondary\" | \"outline\" | \"ghost\" | \"error\" | \"link\" | \"solid\" | \"dashed\" | \"soft\" | \"plain\" | \"pure\""
     def: "\"primary\""
-    description: "Visual style; primary/secondary/destructive are solid shorthands."
+    description: "Visual style; primary/secondary/error are solid shorthands."
   - name: "color"
-    type: "\"primary\" | \"secondary\" | \"destructive\" | \"success\" | \"warning\" | \"info\" | \"carbon\" | \"accent\""
+    type: "\"primary\" | \"secondary\" | \"error\" | \"success\" | \"warning\" | \"info\" | \"carbon\" | \"accent\""
     def: "—"
     description: "Theme color for solid/soft and tinted outline-style variants; re-resolves legacy solid shorthands when set."
   - name: "size"

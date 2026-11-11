@@ -58,7 +58,7 @@ props:
     def: "\"md\""
     description: "Scale."
   - name: "variant"
-    type: "\"primary\" | \"secondary\" | \"muted\" | \"destructive\" | \"success\" | \"warning\" | \"info\" | \"inherit\""
+    type: "\"primary\" | \"secondary\" | \"muted\" | \"error\" | \"success\" | \"warning\" | \"info\" | \"inherit\""
     def: "\"primary\""
     description: "Accent color."
   - name: "class"

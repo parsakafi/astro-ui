@@ -22,7 +22,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Badge variant="outline">Outline</Badge>
                 <Badge variant="success">Active</Badge>
                 <Badge variant="warning">Pending</Badge>
-                <Badge variant="destructive">Failed</Badge>
+                <Badge variant="error">Failed</Badge>
                 <Badge variant="info">New</Badge>
               </Fragment>
               <Fragment slot="code">
@@ -88,7 +88,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <div class="demo-row">
                   <Badge variant="success" dot>Operational</Badge>
                   <Badge variant="warning" dot>Degraded</Badge>
-                  <Badge variant="destructive" dot>Outage</Badge>
+                  <Badge variant="error" dot>Outage</Badge>
                 </div>
                 <p class="docs-demo-hint">The dot inherits the variant's text color — set it and forget it.</p>
               </Fragment>
@@ -175,7 +175,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <div class="demo-row">
 							<span class="docs-badge-anchor">
 								<Button variant="outline">Inbox</Button>
-								<Badge position="top-right" content="3" variant="destructive" ariaLabel="3 unread messages"/>
+								<Badge position="top-right" content="3" variant="error" ariaLabel="3 unread messages"/>
 							</span>
                   <span class="docs-badge-anchor">
 								<Button variant="outline">Feed</Button>
@@ -187,7 +187,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
 							</span>
                   <span class="docs-badge-anchor">
 								<Button variant="outline">Chat</Button>
-								<Badge position="bottom-right" variant="destructive" ariaLabel="Unread messages"/>
+								<Badge position="bottom-right" variant="error" ariaLabel="Unread messages"/>
 							</span>
                 </div>
                 <p class="docs-demo-hint">

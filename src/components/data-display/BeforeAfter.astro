@@ -1,0 +1,287 @@
+---
+/**
+ * BeforeAfter — draggable image comparison slider.
+ *
+ * Two images share one frame; the "before" layer is clipped at the
+ * split position and the "after" layer sits underneath. The split is
+ * driven by a real `<input type="range">` overlaid across the frame,
+ * so pointer drag, touch, and keyboard (Arrow / Home / End / Page)
+ * all work natively — the scoped script only mirrors the input value
+ * into `--aui-before-after-pos`. Logical properties and `:dir()` keep
+ * the split anchored to the reading direction in RTL.
+ *
+ *   <BeforeAfter
+ *     before={{ src: "/before.jpg", alt: "Empty room" }}
+ *     after={{ src: "/after.jpg", alt: "Furnished room" }}
+ *   />
+ *
+ * `value` sets the initial split, `aspectRatio` the frame shape, and
+ * `labels` adds "Before"/"After" chips. The range control carries the
+ * accessible name from `rangeLabel`; the region from `ariaLabel`.
+ * Every move emits a bubbling `before-after:change` event with
+ * `detail.value` (0–100).
+ *
+ * JavaScript required: Yes
+ */
+import { cn } from "../../utils/cn";
+
+export interface Props {
+  /** Image revealed on the start side of the split. */
+  before: { src: string; alt: string };
+  /** Image revealed on the end side of the split. */
+  after: { src: string; alt: string };
+  /** Initial split position, 0–100. */
+  value?: number;
+  /** Frame aspect ratio (any CSS `aspect-ratio` value, e.g. `"4 / 3"`). */
+  aspectRatio?: string;
+  /** Accessible name for the comparison region. */
+  ariaLabel?: string;
+  /** Accessible name for the range control. */
+  rangeLabel?: string;
+  /** Show "Before"/"After" chips over the images. */
+  labels?: boolean;
+  /** Text of the start-side chip. */
+  beforeLabel?: string;
+  /** Text of the end-side chip. */
+  afterLabel?: string;
+  class?: string;
+  id?: string;
+
+  /** Any extra HTML attribute (style, data-*, …) is forwarded to the root. */
+  [key: string]: unknown;
+}
+
+const {
+  before,
+  after,
+  value = 50,
+  aspectRatio = "16 / 9",
+  ariaLabel = "Before and after comparison",
+  rangeLabel = "Comparison position",
+  labels = false,
+  beforeLabel = "Before",
+  afterLabel = "After",
+  class: className,
+  id,
+  ...rest
+} = Astro.props;
+
+const position = Math.min(100, Math.max(0, Math.round(value)));
+const classes = cn("aui-before-after", className);
+---
+
+<div
+  class={classes}
+  id={id}
+  role="group"
+  aria-label={ariaLabel}
+  data-aui-before-after
+  {...rest}
+>
+  <div
+    class="aui-before-after__frame"
+    style={`--aui-before-after-ratio:${aspectRatio};--aui-before-after-pos:${position}%`}
+  >
+    <img
+      class="aui-before-after__image aui-before-after__image--after"
+      src={after.src}
+      alt={after.alt}
+      draggable="false"
+      loading="lazy"
+    />
+    <img
+      class="aui-before-after__image aui-before-after__image--before"
+      src={before.src}
+      alt={before.alt}
+      draggable="false"
+      loading="lazy"
+    />
+    {labels && (
+      <>
+        <span class="aui-before-after__label aui-before-after__label--before">{beforeLabel}</span>
+        <span class="aui-before-after__label aui-before-after__label--after">{afterLabel}</span>
+      </>
+    )}
+    <input
+      class="aui-before-after__range"
+      type="range"
+      min="0"
+      max="100"
+      step="1"
+      value={position}
+      aria-label={rangeLabel}
+      aria-valuetext={`${position}%`}
+    />
+    <div class="aui-before-after__divider" aria-hidden="true">
+      <span class="aui-before-after__handle">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M9 6 3 12 9 18V6ZM15 18 21 12 15 6V18Z"></path>
+        </svg>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const setup = (root: HTMLElement) => {
+    if (root.dataset.auiReady) return;
+
+    const frame = root.querySelector<HTMLElement>(".aui-before-after__frame");
+    const range = root.querySelector<HTMLInputElement>(".aui-before-after__range");
+    if (!frame || !range) return;
+
+    root.dataset.auiReady = "true";
+
+    const sync = () => {
+      const value = Number(range.value);
+      frame.style.setProperty("--aui-before-after-pos", `${value}%`);
+      range.setAttribute("aria-valuetext", `${value}%`);
+      root.dispatchEvent(
+        new CustomEvent("before-after:change", { bubbles: true, detail: { value } }),
+      );
+    };
+
+    range.addEventListener("input", sync);
+  };
+
+  document.querySelectorAll<HTMLElement>(".aui-before-after").forEach(setup);
+</script>
+
+<style>
+  .aui-before-after {
+    display: block;
+    inline-size: 100%;
+    font-family: var(--ui-font-sans);
+  }
+
+  .aui-before-after__frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--aui-before-after-ratio, 16 / 9);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-lg);
+    corner-shape: var(--ui-corner-shape);
+    background-color: var(--ui-muted);
+    isolation: isolate;
+  }
+
+  .aui-before-after__image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    user-select: none;
+  }
+
+  /* "before" paints over "after", revealed from the reading start side. */
+  .aui-before-after__image--before {
+    clip-path: inset(0 calc(100% - var(--aui-before-after-pos)) 0 0);
+  }
+
+  .aui-before-after__image--before:dir(rtl) {
+    clip-path: inset(0 0 0 calc(100% - var(--aui-before-after-pos)));
+  }
+
+  .aui-before-after__label {
+    position: absolute;
+    inset-block-start: var(--ui-space-3);
+    z-index: 2;
+    padding: var(--ui-space-1) var(--ui-space-2);
+    border: var(--ui-border-width) solid var(--ui-border);
+    border-radius: var(--ui-radius-full);
+    background-color: var(--ui-background);
+    color: var(--ui-foreground);
+    font-size: var(--ui-text-xs);
+    font-weight: var(--ui-font-medium);
+    line-height: var(--ui-leading-tight);
+    pointer-events: none;
+  }
+
+  .aui-before-after__label--before {
+    inset-inline-start: var(--ui-space-3);
+  }
+
+  .aui-before-after__label--after {
+    inset-inline-end: var(--ui-space-3);
+  }
+
+  .aui-before-after__range {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+    opacity: 0;
+    cursor: col-resize;
+  }
+
+  .aui-before-after__divider {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: var(--aui-before-after-pos);
+    z-index: 3;
+    inline-size: 2px;
+    background-color: var(--ui-primary);
+    box-shadow: 0 0 0 1px var(--ui-background);
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .aui-before-after__handle {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: var(--ui-radius-full);
+    corner-shape: var(--ui-corner-shape);
+    background-color: var(--ui-primary);
+    color: var(--ui-primary-foreground);
+    box-shadow: var(--ui-shadow-md);
+    transform: translate(-50%, -50%);
+    transition: transform var(--ui-transition-fast);
+  }
+
+  @media (hover: hover) {
+    .aui-before-after__frame:hover .aui-before-after__handle {
+      transform: translate(-50%, -50%) scale(1.06);
+    }
+  }
+
+  .aui-before-after__range:focus-visible ~ .aui-before-after__divider .aui-before-after__handle {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: var(--ui-focus-ring-offset);
+  }
+
+  @media (width <= 640px) {
+    .aui-before-after__handle {
+      inline-size: 2rem;
+      block-size: 2rem;
+    }
+
+    .aui-before-after__label {
+      font-size: var(--ui-text-2xs);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aui-before-after__handle {
+      transition: none;
+    }
+  }
+</style>

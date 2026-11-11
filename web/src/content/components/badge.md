@@ -11,7 +11,7 @@ since: "0.1.0"
 isNew: false
 related: ["button", "avatar", "card"]
 features:
-  - "11 variants incl. soft, muted, destructive"
+  - "11 variants incl. soft, muted, error"
   - "5 sizes: xs → 2xl"
   - "Overlay bubble mode with 4 corner positions"
   - "Icon slot, status dot, avatar alignment, dismiss button"
@@ -26,12 +26,12 @@ usage: |-
   ---
   
   <Badge variant="success">Active</Badge>
-  <Badge content="3" position="top-right" variant="destructive" ariaLabel="3 notifications" />
+  <Badge content="3" position="top-right" variant="error" ariaLabel="3 notifications" />
     Inbox
 demoIds: ["variants", "sizes", "icon", "dot", "avatar", "flag", "dismiss", "overlay"]
 props:
   - name: "variant"
-    type: "\"primary\" | \"secondary\" | \"outline\" | \"ghost\" | \"soft\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"destructive\""
+    type: "\"primary\" | \"secondary\" | \"outline\" | \"ghost\" | \"soft\" | \"success\" | \"warning\" | \"info\" | \"muted\" | \"error\""
     def: "\"primary\""
     description: "Color scheme."
   - name: "size"

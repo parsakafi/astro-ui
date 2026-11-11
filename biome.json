@@ -64,6 +64,17 @@
           }
         }
       }
+    },
+    {
+      "includes": [
+        "src/styles/toast.css"
+      ],
+      "formatter": {
+        "enabled": false
+      },
+      "linter": {
+        "enabled": false
+      }
     }
   ],
   "javascript": {

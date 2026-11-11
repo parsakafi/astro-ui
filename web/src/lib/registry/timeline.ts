@@ -14,7 +14,7 @@ export const timeline: ComponentMeta = {
         `---\nimport { Timeline, TimelineItem } from "astro-ui";\n---\n\n<Timeline ariaLabel="Deployment history">\n  <TimelineItem variant="success">\n    <time slot="time" datetime="2026-10-14T09:12Z">Oct 14 · 09:12</time>\n    <span slot="title">Deploy v2.5.0</span>\n    <span slot="description">Shipped by Ada — 42 files changed.</span>\n  </TimelineItem>\n</Timeline>`,
     features: [
         "Semantic `<ol>` / `<li>` — no list role needed",
-        "Marker variants: neutral, primary, success, warning, destructive, info",
+        "Marker variants: neutral, primary, success, warning, error, info",
         "Optional `active` halo marks the current event",
         "Custom glyphs through the `marker` slot",
         "Two scales (`sm`, `md`) shared by list and items",
@@ -29,7 +29,7 @@ export const timeline: ComponentMeta = {
         {
             id: "deploy",
             title: "Deployment history",
-            code: `<Timeline ariaLabel="Deployment history">\n  <TimelineItem variant="success" active>\n    <time slot="time" datetime="2026-10-14T09:12Z">Oct 14 · 09:12</time>\n    <span slot="title">Deploy v2.5.0</span>\n    <span slot="description">Production · 42 files changed · 1m 32s</span>\n  </TimelineItem>\n  <TimelineItem variant="info">\n    <time slot="time" datetime="2026-10-13T17:40Z">Oct 13 · 17:40</time>\n    <span slot="title">Deploy v2.4.3</span>\n    <span slot="description">Hotfix for the billing webhook retry loop.</span>\n  </TimelineItem>\n  <TimelineItem variant="destructive">\n    <time slot="time" datetime="2026-10-13T15:02Z">Oct 13 · 15:02</time>\n    <span slot="title">Rollback v2.4.2</span>\n    <span slot="description">Reverted after a spike in 500s on /api/invoices.</span>\n  </TimelineItem>\n</Timeline>`,
+            code: `<Timeline ariaLabel="Deployment history">\n  <TimelineItem variant="success" active>\n    <time slot="time" datetime="2026-10-14T09:12Z">Oct 14 · 09:12</time>\n    <span slot="title">Deploy v2.5.0</span>\n    <span slot="description">Production · 42 files changed · 1m 32s</span>\n  </TimelineItem>\n  <TimelineItem variant="info">\n    <time slot="time" datetime="2026-10-13T17:40Z">Oct 13 · 17:40</time>\n    <span slot="title">Deploy v2.4.3</span>\n    <span slot="description">Hotfix for the billing webhook retry loop.</span>\n  </TimelineItem>\n  <TimelineItem variant="error">\n    <time slot="time" datetime="2026-10-13T15:02Z">Oct 13 · 15:02</time>\n    <span slot="title">Rollback v2.4.2</span>\n    <span slot="description">Reverted after a spike in 500s on /api/invoices.</span>\n  </TimelineItem>\n</Timeline>`,
         },
         {
             id: "activity",
@@ -39,7 +39,7 @@ export const timeline: ComponentMeta = {
         {
             id: "rich",
             title: "Rich item content",
-            code: `<Timeline ariaLabel="Release timeline">\n  <TimelineItem variant="success">\n    <time slot="time" datetime="2026-10-20">Oct 20, 2026</time>\n    <span slot="title">v0.1.0 — First public release</span>\n    <div slot="description">\n      <p>63 components across 7 categories, with tokens, base styles, and docs.</p>\n      <Badge variant="success" size="sm">Stable</Badge>\n    </div>\n  </TimelineItem>\n  <TimelineItem variant="primary">\n    <time slot="time" datetime="2026-11-10">Nov 10, 2026</time>\n    <span slot="title">v0.2.0 — Planned</span>\n    <span slot="description">File upload, a dual-thumb range slider, and a sortable data grid.</span>\n  </TimelineItem>\n</Timeline>`,
+            code: `<Timeline ariaLabel="Release timeline">\n  <TimelineItem variant="success">\n    <time slot="time" datetime="2026-10-20">Oct 20, 2026</time>\n    <span slot="title">v0.1.0 — First public release</span>\n    <div slot="description">\n      <p>64 components across 7 categories, with tokens, base styles, and docs.</p>\n      <Badge variant="success" size="sm">Stable</Badge>\n    </div>\n  </TimelineItem>\n  <TimelineItem variant="primary">\n    <time slot="time" datetime="2026-11-10">Nov 10, 2026</time>\n    <span slot="title">v0.2.0 — Planned</span>\n    <span slot="description">File upload, a dual-thumb range slider, and a sortable data grid.</span>\n  </TimelineItem>\n</Timeline>`,
         },
     ],
     props: [

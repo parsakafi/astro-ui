@@ -11,9 +11,9 @@ export const badge: ComponentMeta = {
     category: "data-display",
     js: false,
     usage:
-        `---\nimport { Badge } from "astro-ui";\n---\n\n<Badge variant="success">Active</Badge>\n<Badge content="3" position="top-right" variant="destructive" ariaLabel="3 notifications" />\n  Inbox`,
+        `---\nimport { Badge } from "astro-ui";\n---\n\n<Badge variant="success">Active</Badge>\n<Badge content="3" position="top-right" variant="error" ariaLabel="3 notifications" />\n  Inbox`,
     features: [
-        "11 variants incl. soft, muted, destructive",
+        "11 variants incl. soft, muted, error",
         "5 sizes: xs → 2xl",
         "Overlay bubble mode with 4 corner positions",
         "Icon slot, status dot, avatar alignment, dismiss button",
@@ -33,7 +33,7 @@ export const badge: ComponentMeta = {
 <Badge variant="outline">Outline</Badge>
 <Badge variant="success">Active</Badge>
 <Badge variant="warning">Pending</Badge>
-<Badge variant="destructive">Failed</Badge>
+<Badge variant="error">Failed</Badge>
 <Badge variant="info">New</Badge>`,
         },
         {
@@ -66,7 +66,7 @@ export const badge: ComponentMeta = {
             title: "Badge with status dot",
             code: `<Badge variant="success" dot>Operational</Badge>
 <Badge variant="warning" dot>Degraded</Badge>
-<Badge variant="destructive" dot>Outage</Badge>`,
+<Badge variant="error" dot>Outage</Badge>`,
         },
         {
             id: "avatar",
@@ -103,13 +103,13 @@ export const badge: ComponentMeta = {
             id: "overlay",
             title: "Overlay bubble",
             code: `<span class="relative inline-block">
-  <Badge position="top-right" content="3" variant="destructive" ariaLabel="3 items" />
+  <Badge position="top-right" content="3" variant="error" ariaLabel="3 items" />
   Inbox
 </span>`,
         },
     ],
     props: [
-        t("variant", `"primary" | "secondary" | "outline" | "ghost" | "soft" | "success" | "warning" | "info" | "muted" | "destructive"`, `"primary"`, "Color scheme."),
+        t("variant", `"primary" | "secondary" | "outline" | "ghost" | "soft" | "success" | "warning" | "info" | "muted" | "error"`, `"primary"`, "Color scheme."),
         t("size", `"sm" | "md" | "lg" | "xl" | "2xl"`, `"md"`, "Font/padding scale."),
         t("content", "string", "—", "Count/content when no default slot is provided."),
         t("position", `"top-right" | "top-left" | "bottom-right" | "bottom-left"`, "—", "Overlay bubble corner (logical start/end — mirrors in RTL)."),

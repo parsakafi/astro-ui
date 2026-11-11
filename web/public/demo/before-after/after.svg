@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Sunny mountain lake with a leafy tree and a cabin">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fde68a"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fcd34d"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#sky)"/>
+  <circle cx="880" cy="170" r="70" fill="#fff7ed"/>
+  <circle cx="880" cy="170" r="110" fill="#fff7ed" opacity="0.25"/>
+  <path d="M0 400 L170 250 L300 370 L450 215 L600 380 L750 300 L900 395 L1050 285 L1200 405 L1200 520 L0 520 Z" fill="#b45309"/>
+  <path d="M0 470 L160 380 L310 465 L460 400 L620 480 L790 395 L960 485 L1110 420 L1200 470 L1200 520 L0 520 Z" fill="#7c2d12"/>
+  <rect y="520" width="1200" height="155" fill="url(#water)"/>
+  <ellipse cx="880" cy="566" rx="72" ry="13" fill="#fef3c7" opacity="0.6"/>
+  <path d="M0 600 C 220 560, 430 645, 700 615 C 900 592, 1090 635, 1200 605 L 1200 675 L 0 675 Z" fill="#166534"/>
+  <rect x="172" y="452" width="14" height="152" fill="#3f2a1d"/>
+  <g fill="#15803d">
+    <circle cx="120" cy="420" r="46"/>
+    <circle cx="235" cy="445" r="52"/>
+    <circle cx="179" cy="392" r="54"/>
+    <circle cx="152" cy="462" r="40"/>
+    <circle cx="222" cy="488" r="36"/>
+  </g>
+  <g fill="#22c55e" opacity="0.75">
+    <circle cx="150" cy="400" r="24"/>
+    <circle cx="212" cy="430" r="22"/>
+    <circle cx="179" cy="470" r="18"/>
+  </g>
+  <rect x="955" y="520" width="96" height="62" fill="#b45309"/>
+  <path d="M945 522 L1003 470 L1061 522 Z" fill="#7c2d12"/>
+  <rect x="985" y="548" width="22" height="34" fill="#92400e"/>
+  <rect x="1022" y="540" width="18" height="16" fill="#fde68a"/>
+  <g stroke="#7c2d12" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M320 160 q10 -8 20 0 q10 -8 20 0"/>
+    <path d="M420 210 q8 -7 16 0 q8 -7 16 0"/>
+    <path d="M360 120 q7 -6 14 0 q7 -6 14 0"/>
+  </g>
+</svg>

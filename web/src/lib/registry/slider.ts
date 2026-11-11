@@ -84,7 +84,7 @@ export const slider: ComponentMeta = {
         t("ariaStartLabel", "string", "—", "Accessible name for the start thumb (range)."),
         t("ariaEndLabel", "string", "—", "Accessible name for the end thumb (range)."),
         t("label", "string", "—", "Label above the track."),
-        t("variant", `"primary" | "success" | "warning" | "destructive" | "info"`, `"primary"`, "Accent color."),
+        t("variant", `"primary" | "success" | "warning" | "error" | "info"`, `"primary"`, "Accent color."),
         t("size", `"sm" | "md" | "lg"`, `"md"`, "Scale."),
         t("disabled", "boolean", "false", "Disabled state."),
         ...common(false),

@@ -50,7 +50,7 @@ export interface Props {
   /** Renders a value bubble above the thumb (appears on hover/drag/focus). */
   tooltip?: boolean;
   /** Visual color. */
-  variant?: "primary" | "success" | "warning" | "destructive" | "info";
+  variant?: "primary" | "success" | "warning" | "error" | "info";
   /** Scale of the control. */
   size?: "sm" | "md" | "lg";
   /** Disables the slider. */
@@ -554,7 +554,7 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
     --aui-slider-color: var(--ui-warning);
   }
 
-  .aui-slider--destructive {
+  .aui-slider--error {
     --aui-slider-color: var(--ui-error);
   }
 

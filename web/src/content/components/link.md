@@ -61,7 +61,7 @@ props:
     def: "true"
     description: "Text underline."
   - name: "color"
-    type: "\"primary\" | \"secondary\" | \"muted\" | \"destructive\" | \"success\" | \"warning\" | \"inherit\""
+    type: "\"primary\" | \"secondary\" | \"muted\" | \"error\" | \"success\" | \"warning\" | \"inherit\""
     def: "\"primary\""
     description: "Text color."
   - name: "block"

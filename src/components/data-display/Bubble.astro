@@ -16,7 +16,7 @@
  *   </Bubble>
  *
  * Variants: primary (sender), secondary, muted, tinted, outline,
- * ghost (bare content for headings/lists/code), destructive.
+ * ghost (bare content for headings/lists/code), error.
  *
  * JavaScript required: No
  */
@@ -33,7 +33,7 @@ export interface Props {
     | "tinted"
     | "outline"
     | "ghost"
-    | "destructive";
+    | "error";
   class?: string;
   id?: string;
   ariaLabel?: string;
@@ -150,7 +150,7 @@ const classes = cn(
     max-inline-size: 100%;
   }
 
-  .aui-bubble--destructive .aui-bubble__content {
+  .aui-bubble--error .aui-bubble__content {
     background-color: color-mix(in srgb, var(--ui-error) 10%, transparent);
     color: var(--ui-error);
   }

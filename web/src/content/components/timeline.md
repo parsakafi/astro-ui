@@ -12,7 +12,7 @@ isNew: true
 related: ["stepper", "separator", "card"]
 features:
   - "Semantic `<ol>` / `<li>` — no list role needed"
-  - "Marker variants: neutral, primary, success, warning, destructive, info"
+  - "Marker variants: neutral, primary, success, warning, error, info"
   - "Optional `active` halo marks the current event"
   - "Custom glyphs through the `marker` slot"
   - "Two scales (`sm`, `md`) shared by list and items"

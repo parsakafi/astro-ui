@@ -10,6 +10,7 @@ export {aspectRatio} from "./aspect-ratio";
 export {scrollArea} from "./scroll-area";
 export {separator} from "./separator";
 export {attachment} from "./attachment";
+export {beforeAfter} from "./before-after";
 export {autocomplete} from "./autocomplete";
 export {combobox} from "./combobox";
 export {command} from "./command";

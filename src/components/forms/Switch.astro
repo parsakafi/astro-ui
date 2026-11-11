@@ -25,7 +25,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info"
@@ -217,7 +217,7 @@ const classes = cn(
     background-color: var(--ui-muted-foreground);
   }
 
-  .aui-switch--variant-destructive .aui-switch__input:checked ~ .aui-switch__track {
+  .aui-switch--variant-error .aui-switch__input:checked ~ .aui-switch__track {
     background-color: var(--ui-error);
   }
 

@@ -18,7 +18,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
               <Fragment slot="preview">
                 <Button id="dm-toast-default">Default</Button>
                 <Button id="dm-toast-success" variant="outline">Success</Button>
-                <Button id="dm-toast-error" variant="destructive">Error</Button>
+                <Button id="dm-toast-error" variant="error">Error</Button>
                 <Toaster/>
               </Fragment>
               <Fragment slot="code">
@@ -35,7 +35,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <div class="demo-row">
                   <Button id="dm-toast-m-default" size="sm">Default</Button>
                   <Button id="dm-toast-m-success" size="sm" variant="outline">Success</Button>
-                  <Button id="dm-toast-m-error" size="sm" variant="destructive">Error</Button>
+                  <Button id="dm-toast-m-error" size="sm" variant="error">Error</Button>
                   <Button id="dm-toast-m-warning" size="sm" variant="outline">Warning</Button>
                   <Button id="dm-toast-m-info" size="sm" variant="outline">Info</Button>
                   <Button id="dm-toast-m-loading" size="sm" variant="outline">Loading</Button>

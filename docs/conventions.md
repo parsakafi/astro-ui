@@ -16,7 +16,7 @@ Single source of truth for naming. Enforced partly by
 | Concept   | Prop name                       | Values / notes                              |
 |-----------|---------------------------------|---------------------------------------------|
 | Style     | `variant`                       | per-component union, e.g. Button variants   |
-| Color     | `color`                         | `primary \| secondary \| destructive \| success \| warning \| info \| carbon \| accent` |
+| Color     | `color`                         | `primary \| secondary \| error \| success \| warning \| info \| carbon \| accent` |
 | Scale     | `size`                          | `xs \| sm \| md \| lg \| xl` (+ `icon`, `2xl` where apt) |
 | Shape     | `shape`                         | `rounded \| square \| circle \| pill`       |
 | Disabled  | `disabled`                      | boolean (never `isDisabled`)                |
@@ -27,10 +27,10 @@ Single source of truth for naming. Enforced partly by
 | Label     | `ariaLabel` / `ariaDescribedby` | camelCase mirrors of aria attrs             |
 | Label for | `for`                           | Label's `for` (matches control `id`)        |
 
-Red is `destructive`, never `error`. The `--ui-error*` token names are
-unchanged; only prop values use the semantic word. Lifecycle values such
-as `toast({ type: "error" })` and `state="error"` are not color variants
-and keep their names.
+Red is `error` everywhere — prop values, CSS modifiers, and the
+`--ui-error*` tokens all use one word. Lifecycle values such as
+`toast({ type: "error" })`, `state="error"`, and the `Field` error slot
+already spoke that language; there is no second name for the same red.
 
 Never introduce `theme`, `style`, `colorScheme`, `isDisabled`, or string
 event-handler props (`onclick="..."`). Behavior attaches via native DOM

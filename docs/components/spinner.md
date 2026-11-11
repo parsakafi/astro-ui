@@ -22,7 +22,7 @@ import { Spinner } from "astro-ui";
 <Spinner variant="primary" />
 <Spinner variant="secondary" />
 <Spinner variant="muted" />
-<Spinner variant="destructive" />
+<Spinner variant="error" />
 <Spinner variant="success" />
 <Spinner variant="warning" />
 <Spinner variant="info" />
@@ -44,7 +44,7 @@ import { Spinner } from "astro-ui";
 |----------------|-----------------------------------------------------------------------------------------|-------------|-----------------------------------------------------|
 | `size`         | `xs \| sm \| md \| lg \| xl \| 2xl`                                                     | `md`        | ring diameter                                       |
 | `label`        | `string`                                                                                | `"Loading"` | accessible label (rendered as visually-hidden text) |
-| `variant`      | `inherit \| primary \| secondary \| muted \| destructive \| success \| warning \| info` | `primary`   | ring color                                          |
+| `variant`      | `inherit \| primary \| secondary \| muted \| error \| success \| warning \| info` | `primary`   | ring color                                          |
 | `class` / `id` | `string`                                                                                | —           | `class` merged via `cn()`                           |
 
 Extra attributes are forwarded to the wrapper `<span>`.

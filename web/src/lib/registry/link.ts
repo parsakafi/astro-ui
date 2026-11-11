@@ -38,7 +38,7 @@ export const link: ComponentMeta = {
         {
             id: "colors",
             title: "Colors & sizes",
-            code: `<Link href="#" color="muted">Muted</Link>\n<Link href="#" color="destructive">Delete account</Link>\n<Link href="#" size="lg">Large</Link>`,
+            code: `<Link href="#" color="muted">Muted</Link>\n<Link href="#" color="error">Delete account</Link>\n<Link href="#" size="lg">Large</Link>`,
         },
         {
             id: "disabled",
@@ -55,7 +55,7 @@ export const link: ComponentMeta = {
         t("iconOnly", "boolean", "false", "Icon-only mode (provide ariaLabel)."),
         t("size", `"sm" | "md" | "lg"`, `"md"`, "Text scale."),
         t("underline", "boolean", "true", "Text underline."),
-        t("color", `"primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "inherit"`, `"primary"`, "Text color."),
+        t("color", `"primary" | "secondary" | "muted" | "error" | "success" | "warning" | "inherit"`, `"primary"`, "Text color."),
         t("block", "boolean", "false", "Fill the parent's inline width."),
         t("disabled", "boolean", "false", "Non-interactive: drops href and mutes."),
         t("loading", "boolean", "false", "Pending state; swaps content for loadingText."),

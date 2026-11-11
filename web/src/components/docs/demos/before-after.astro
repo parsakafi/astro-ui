@@ -1,0 +1,107 @@
+---
+import DemoTabs from "../DemoTabs.astro";
+import { BeforeAfter } from "astro-ui";
+
+const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<string, string>};
+---
+
+<div>
+    {demoIds.map((id) => (
+      <Fragment>
+        {id === "basic" && (
+          <div class="docs-demo-block" id={`demo-before-after-${id}`}>
+            <h3 class="docs-demo-title">Basic</h3>
+            <DemoTabs id="dm-before-after-basic">
+              <Fragment slot="preview">
+                <BeforeAfter
+                  id="ba-basic"
+                  style="inline-size:min(100%,36rem)"
+                  before={{ src: "/demo/before-after/before.svg", alt: "Overcast mountain lake" }}
+                  after={{ src: "/demo/before-after/after.svg", alt: "Sunny mountain lake" }}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get("basic")} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "labels" && (
+          <div class="docs-demo-block" id={`demo-before-after-${id}`}>
+            <h3 class="docs-demo-title">With labels</h3>
+            <DemoTabs id="dm-before-after-labels">
+              <Fragment slot="preview">
+                <BeforeAfter
+                  id="ba-labels"
+                  labels
+                  value={35}
+                  style="inline-size:min(100%,36rem)"
+                  before={{ src: "/demo/before-after/before.svg", alt: "Overcast mountain lake" }}
+                  after={{ src: "/demo/before-after/after.svg", alt: "Sunny mountain lake" }}
+                />
+                <p class="docs-demo-note">
+                  labels renders a chip per image; value={35} starts the split at
+                  35%. Drag the handle, click anywhere on the frame, or focus the
+                  range and use the arrow keys.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get("labels")} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "portrait" && (
+          <div class="docs-demo-block" id={`demo-before-after-${id}`}>
+            <h3 class="docs-demo-title">Custom ratio and start position</h3>
+            <DemoTabs id="dm-before-after-portrait">
+              <Fragment slot="preview">
+                <BeforeAfter
+                  id="ba-portrait"
+                  aspectRatio="4 / 3"
+                  value={70}
+                  style="inline-size:min(100%,24rem)"
+                  before={{ src: "/demo/before-after/before.svg", alt: "Overcast mountain lake" }}
+                  after={{ src: "/demo/before-after/after.svg", alt: "Sunny mountain lake" }}
+                />
+                <p class="docs-demo-note">
+                  aspectRatio accepts any CSS aspect-ratio value; the images crop
+                  with object-fit: cover.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get("portrait")} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "cinematic" && (
+          <div class="docs-demo-block" id={`demo-before-after-${id}`}>
+            <h3 class="docs-demo-title">Cinematic crop</h3>
+            <DemoTabs id="dm-before-after-cinematic">
+              <Fragment slot="preview">
+                <BeforeAfter
+                  id="ba-cinematic"
+                  aspectRatio="21 / 9"
+                  labels
+                  beforeLabel="Draft"
+                  afterLabel="Final"
+                  ariaLabel="Draft versus final render"
+                  style="inline-size:min(100%,44rem)"
+                  before={{ src: "/demo/before-after/before.svg", alt: "Draft render" }}
+                  after={{ src: "/demo/before-after/after.svg", alt: "Final render" }}
+                />
+                <p class="docs-demo-note">
+                  beforeLabel / afterLabel rename the chips; ariaLabel names the
+                  whole region. Listen for before-after:change to sync external UI.
+                </p>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get("cinematic")} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+      </Fragment>
+    ))}
+</div>

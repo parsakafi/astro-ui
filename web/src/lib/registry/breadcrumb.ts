@@ -75,7 +75,7 @@ export const breadcrumb: ComponentMeta = {
         {
             id: "badge-count",
             title: "Badge with count",
-            code: `<Breadcrumb ariaLabel="Mailbox">\n  <span class="aui-breadcrumb__item">\n    <a class="aui-breadcrumb__link" href="#">\n      Inbox\n      <Badge variant="destructive" size="sm" ariaLabel="3 unread messages" style="min-inline-size: 1.25rem">3</Badge>\n    </a>\n  </span>\n  <span class="aui-breadcrumb__item">\n    <a class="aui-breadcrumb__link" href="#">Labels</a>\n  </span>\n  <span class="aui-breadcrumb__item">\n    <span class="aui-breadcrumb__current" aria-current="page">Important</span>\n  </span>\n</Breadcrumb>`,
+            code: `<Breadcrumb ariaLabel="Mailbox">\n  <span class="aui-breadcrumb__item">\n    <a class="aui-breadcrumb__link" href="#">\n      Inbox\n      <Badge variant="error" size="sm" ariaLabel="3 unread messages" style="min-inline-size: 1.25rem">3</Badge>\n    </a>\n  </span>\n  <span class="aui-breadcrumb__item">\n    <a class="aui-breadcrumb__link" href="#">Labels</a>\n  </span>\n  <span class="aui-breadcrumb__item">\n    <span class="aui-breadcrumb__current" aria-current="page">Important</span>\n  </span>\n</Breadcrumb>`,
         },
         {
             id: "buttons",

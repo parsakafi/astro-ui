@@ -175,7 +175,7 @@ export const avatar: ComponentMeta = {
         t("statusPosition", `"top-left" | "top-right" | "bottom-left" | "bottom-right"`, `"bottom-right"`, "Corner carrying the status dot."),
         t("badgePosition", `"top-left" | "top-right" | "bottom-left" | "bottom-right"`, `"top-right"`, "Corner anchoring slotted badges to the avatar's border."),
         t("statusLabel", "string", "per status", "Accessible label for the status indicator."),
-        t("ring", `"primary" | "success" | "warning" | "destructive" | "info" | "background"`, "—", "Colored ring with background key line."),
+        t("ring", `"primary" | "success" | "warning" | "error" | "info" | "background"`, "—", "Colored ring with background key line."),
         t("filter", `"none" | "grayscale"`, `"none"`, "Image filter treatment."),
         t("filterHover", "boolean", "false", "Restores color on hover when filter=grayscale."),
         t("loading", "boolean", "false", "Spinner veil over the media."),
@@ -185,7 +185,7 @@ export const avatar: ComponentMeta = {
     faq: [
         {
             q: "How do I add a notification count?",
-            a: "Use the badge slot: <Avatar><Badge slot=\"badge\" variant=\"destructive\">3</Badge></Avatar>. Combine with status for two independent indicators.",
+            a: "Use the badge slot: <Avatar><Badge slot=\"badge\" variant=\"error\">3</Badge></Avatar>. Combine with status for two independent indicators.",
         },
         {
             q: "How does the gradient/animated ring work?",

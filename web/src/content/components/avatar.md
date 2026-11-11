@@ -76,7 +76,7 @@ props:
     def: "per status"
     description: "Accessible label for the status indicator."
   - name: "ring"
-    type: "\"primary\" | \"success\" | \"warning\" | \"destructive\" | \"info\" | \"background\""
+    type: "\"primary\" | \"success\" | \"warning\" | \"error\" | \"info\" | \"background\""
     def: "—"
     description: "Colored ring with background key line."
   - name: "filter"
@@ -105,7 +105,7 @@ props:
     description: "Element id."
 faq:
   - q: "How do I add a notification count?"
-    a: "Use the badge slot: <Avatar><Badge slot=\"badge\" variant=\"destructive\">3</Badge></Avatar>. Combine with status for two independent indicators."
+    a: "Use the badge slot: <Avatar><Badge slot=\"badge\" variant=\"error\">3</Badge></Avatar>. Combine with status for two independent indicators."
   - q: "How does the gradient/animated ring work?"
     a: "The ring demos compose a wrapper with a conic-gradient background behind the avatar (see each demo's code tab). The ring prop covers static rings; animated story rings stay in user CSS."
 ---

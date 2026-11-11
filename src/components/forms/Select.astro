@@ -37,7 +37,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info";
@@ -189,7 +189,7 @@ const classes = cn(
     border-color: var(--ui-muted-foreground);
   }
 
-  .aui-select--variant-destructive .aui-select__control {
+  .aui-select--variant-error .aui-select__control {
     border-color: var(--ui-error);
   }
 

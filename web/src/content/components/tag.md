@@ -29,7 +29,7 @@ usage: |-
 demoIds: ["basic"]
 props:
   - name: "variant"
-    type: "\"primary\" | \"secondary\" | \"outline\" | \"soft\" | \"success\" | \"warning\" | \"destructive\" | \"info\" | \"muted\""
+    type: "\"primary\" | \"secondary\" | \"outline\" | \"soft\" | \"success\" | \"warning\" | \"error\" | \"info\" | \"muted\""
     def: "\"primary\""
     description: "Color scheme."
   - name: "size"

@@ -39,7 +39,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   <Fragment slot="title">Saved</Fragment>
                   Your changes are live.
                 </Alert>
-                <Alert variant="destructive">
+                <Alert variant="error">
                   <Fragment slot="title">Failed</Fragment>
                   Announced immediately via role="alert".
                 </Alert>
@@ -63,7 +63,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Dismissible</h3>
             <DemoTabs id="dm-alert-closable">
               <Fragment slot="preview">
-                <Alert variant="destructive" closable>
+                <Alert variant="error" closable>
                   <Fragment slot="title">Dismiss me</Fragment>
                   Click the × to close (wire the click app-side).
                 </Alert>

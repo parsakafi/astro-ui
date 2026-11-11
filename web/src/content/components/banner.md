@@ -11,7 +11,7 @@ since: "0.1.0"
 isNew: true
 related: ["alert", "toast", "timeline"]
 features:
-  - "6 variants: primary, info, success, warning, destructive, neutral"
+  - "6 variants: primary, info, success, warning, error, neutral"
   - "Slots for icon, title, message, and an action row"
   - "Optional sticky placement for top-of-page announcements"
   - "Responsive: actions wrap under the message on narrow screens"
@@ -35,7 +35,7 @@ usage: |-
 demoIds: ["release", "dismissible", "sticky", "neutral"]
 props:
   - name: "variant"
-    type: "\"primary\" | \"info\" | \"success\" | \"warning\" | \"destructive\" | \"neutral\""
+    type: "\"primary\" | \"info\" | \"success\" | \"warning\" | \"error\" | \"neutral\""
     def: "\"primary\""
     description: "Color treatment of the strip."
   - name: "sticky"

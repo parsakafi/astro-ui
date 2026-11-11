@@ -15,7 +15,7 @@ import { Input, Label } from "astro-ui";
 <Input variant="primary" placeholder="Primary border" />
 <Input variant="secondary" placeholder="Secondary border" />
 <Input variant="muted" placeholder="Muted border" />
-<Input variant="destructive" placeholder="Destructive border" />
+<Input variant="error" placeholder="Error border" />
 <Input variant="success" placeholder="Success border" />
 <Input variant="warning" placeholder="Warning border" />
 <Input variant="info" placeholder="Info border" />
@@ -66,7 +66,7 @@ import { Input, Label } from "astro-ui";
 | `readonly`                | `boolean`                                                                                                                                            | `false`   | native `readonly`                        |
 | `invalid`                 | `boolean`                                                                                                                                            | `false`   | visual error ring + `aria-invalid`       |
 | `size`                    | `xs \| sm \| md \| lg \| xl`                                                                                                                         | `md`      | height + padding scale                   |
-| `variant`                 | `inherit \| primary \| secondary \| muted \| destructive \| success \| warning \| info`                                                              | `inherit` | border color                             |
+| `variant`                 | `inherit \| primary \| secondary \| muted \| error \| success \| warning \| info`                                                              | `inherit` | border color                             |
 | `class` / `id`            | `string`                                                                                                                                             | —         | `class` merged via `cn()`                |
 | `ariaLabel`               | `string`                                                                                                                                             | —         | accessible name (when no visible label)  |
 | `ariaDescribedby`         | `string`                                                                                                                                             | —         | hint/error text id                       |

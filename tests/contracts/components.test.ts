@@ -58,6 +58,7 @@ describe("component contracts", () => {
         "Avatar.astro",
         "Badge.astro",
         "Banner.astro",
+        "BeforeAfter.astro",
         "Breadcrumb.astro",
         "Bubble.astro",
         "BubbleContent.astro",
@@ -191,6 +192,7 @@ describe("component contracts", () => {
   it("marks JS-required components and everything else zero-JS", () => {
     const jsRequired = new Set([
       "Autocomplete.astro",
+      "BeforeAfter.astro",
       "Carousel.astro",
       "Combobox.astro",
       "Command.astro",
@@ -265,11 +267,13 @@ describe("component contracts", () => {
     ).toEqual([]);
   });
 
-  it("uses destructive, never error, as the semantic red prop value", () => {
+  it("uses error, never destructive, as the semantic red prop value", () => {
     for (const [file, src] of sources) {
-      expect(src, file).not.toMatch(/variant\s*[:=]\s*["']error["']/);
-      expect(src, file).not.toContain("--variant-error");
+      expect(src, file).not.toContain("destructive");
     }
+    expect(sources.get("Button.astro"), "Button.astro").toContain(
+      "var(--ui-error)",
+    );
   });
 
   it("uses the shared control scale for buttons and text controls", () => {

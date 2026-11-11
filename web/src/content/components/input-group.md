@@ -39,7 +39,7 @@ props:
   - name: "invalid"
     type: "boolean"
     def: "false"
-    description: "Destructive border on the wrapper."
+    description: "Error border on the wrapper."
   - name: "disabled"
     type: "boolean"
     def: "false"

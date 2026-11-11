@@ -14,7 +14,7 @@ export const input: ComponentMeta = {
         `---\nimport { Input, Label } from "astro-ui";\n---\n\n<Label for="email" required>Email</Label>\n<Input id="email" name="email" type="email" placeholder="ada@example.com" />`,
     features: [
         "All 16 native input types, fully typed",
-        "8 border variants incl. success/destructive",
+        "8 border variants incl. success/error",
         "5 sizes",
         "invalid state for server-side validation display",
         "min/max/step/accept forward via rest",
@@ -53,9 +53,9 @@ export const input: ComponentMeta = {
         t("name / value / placeholder", "string", "—", "Native attributes."),
         t("min / max / step", "string | number", "—", "Numeric/date bounds (native)."),
         t("minlength / maxlength", "number", "—", "Length bounds."),
-        t("invalid", "boolean", "false", "Destructive border + aria-invalid."),
+        t("invalid", "boolean", "false", "Error border + aria-invalid."),
         t("size", `"xs" | "sm" | "md" | "lg" | "xl"`, `"md"`, "Control scale."),
-        t("variant", `"inherit" | "primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info"`, `"primary"`, "Border color."),
+        t("variant", `"inherit" | "primary" | "secondary" | "muted" | "error" | "success" | "warning" | "info"`, `"primary"`, "Border color."),
         ...common(),
     ],
     faq: [

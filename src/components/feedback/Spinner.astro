@@ -19,7 +19,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info"
@@ -197,7 +197,7 @@ const dots = Array.from({ length: dotCount }, (_, i) => i);
     color: var(--ui-muted-foreground);
   }
 
-  .aui-spinner--variant-destructive {
+  .aui-spinner--variant-error {
     color: var(--ui-error);
   }
 

@@ -11,7 +11,7 @@ since: "0.1.0"
 isNew: false
 related: ["avatar", "collapsible", "attachment"]
 features:
-  - "7 variants: primary, secondary, muted, tinted, outline, ghost, destructive"
+  - "7 variants: primary, secondary, muted, tinted, outline, ghost, error"
   - "start/end alignment for two-sided threads"
   - "BubbleGroup collapses consecutive same-sender turns"
   - "Edge-anchored reactions pill (top/bottom, start/end)"
@@ -39,7 +39,7 @@ props:
     def: "'\"start\"'"
     description: "Side of the thread the message sits on."
   - name: "variant"
-    type: "'\"primary\" | \"secondary\" | \"muted\" | \"tinted\" | \"outline\" | \"ghost\" | \"destructive\"'"
+    type: "'\"primary\" | \"secondary\" | \"muted\" | \"tinted\" | \"outline\" | \"ghost\" | \"error\"'"
     def: "'\"primary\"'"
     description: "Color scheme of the content box."
   - name: "class"

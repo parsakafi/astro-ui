@@ -11,7 +11,7 @@ export const tooltip: ComponentMeta = {
     category: "overlay",
     js: false,
     usage:
-        `---\nimport { Tooltip, Button } from "astro-ui";\n---\n\n<Tooltip ariaLabel="Delete item">\n  <Button size="icon" variant="destructive" ariaLabel="Delete">␡</Button>\n  <span slot="content">Delete this item permanently</span>\n</Tooltip>`,
+        `---\nimport { Tooltip, Button } from "astro-ui";\n---\n\n<Tooltip ariaLabel="Delete item">\n  <Button size="icon" variant="error" ariaLabel="Delete">␡</Button>\n  <span slot="content">Delete this item permanently</span>\n</Tooltip>`,
     features: [
         "Pure CSS :hover/:focus-visible",
         "top/bottom placement with arrow",

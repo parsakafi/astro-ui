@@ -18,7 +18,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   <MenuItem shortcut="⌘E">Edit</MenuItem>
                   <MenuItem shortcut="⌘D">Duplicate</MenuItem>
                   <MenuSeparator />
-                  <MenuItem variant="destructive" shortcut="⌫">Delete</MenuItem>
+                  <MenuItem variant="error" shortcut="⌫">Delete</MenuItem>
                 </Menu>
               </Fragment>
               <Fragment slot="code">
@@ -45,8 +45,8 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   </MenuGroup>
                   <MenuSeparator />
                   <MenuGroup label="Danger zone">
-                    <MenuItem variant="destructive" disabled>Transfer ownership</MenuItem>
-                    <MenuItem variant="destructive">Delete project</MenuItem>
+                    <MenuItem variant="error" disabled>Transfer ownership</MenuItem>
+                    <MenuItem variant="error">Delete project</MenuItem>
                   </MenuGroup>
                 </Menu>
               </Fragment>

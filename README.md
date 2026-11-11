@@ -31,14 +31,14 @@ import Button from "astro-ui/button";
 
 ## Components
 
-63 catalog components across 7 categories (80 `.astro` files including
-sub-components). 43 render pure server-side HTML; 20 add a small scoped
+64 catalog components across 7 categories (81 `.astro` files including
+sub-components). 43 render pure server-side HTML; 21 add a small scoped
 script. Browse the catalog at https://astroui.ir/components/.
 
 | Category     | Components                                                                                                                              |
 |--------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | General      | Button, ButtonGroup, Command, Carousel, Clipboard, Kbd, Link                                                                            |
-| Data display | Badge, Avatar, Attachment, Table, Progress, Bubble, Chart, Empty, Tag, Timeline                                                         |
+| Data display | Badge, Avatar, Attachment, BeforeAfter, Table, Progress, Bubble, Chart, Empty, Tag, Timeline                        |
 | Layout       | Card, AspectRatio, ScrollArea, Separator, Accordion, Collapsible, StickySurface                                                         |
 | Feedback     | Alert, Spinner, Skeleton, Toast, Banner, NotificationCenter                                                                             |
 | Forms        | Autocomplete, Combobox, Label, Field, Input, InputGroup, Textarea, Select, Checkbox, Radio, Switch, Toggle, ToggleGroup, RadioGroup, Rating, Slider, DatePicker, TimePicker |

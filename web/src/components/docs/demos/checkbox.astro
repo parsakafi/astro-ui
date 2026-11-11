@@ -33,7 +33,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                 <Checkbox name="dm-sq" shape="square" checked label="Square"/>
                 <Checkbox name="dm-rd" shape="rounded" checked label="Rounded"/>
                 <Checkbox name="dm-suc" variant="success" checked label="Success"/>
-                <Checkbox name="dm-err" variant="destructive" checked label="Destructive"/>
+                <Checkbox name="dm-err" variant="error" checked label="Error"/>
               </Fragment>
               <Fragment slot="code">
                 <Fragment set:html={codeHtml.get("variants")} />

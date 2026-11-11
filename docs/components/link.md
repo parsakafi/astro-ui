@@ -21,7 +21,7 @@ import { Link } from "astro-ui";
 <!-- color variants -->
 <Link href="/primary" color="primary">Primary</Link>
 <Link href="/muted" color="muted">Muted</Link>
-<Link href="/destructive" color="destructive">Destructive</Link>
+<Link href="/error" color="error">Error</Link>
 <Link href="/success" color="success">Success</Link>
 <Link href="/warning" color="warning">Warning</Link>
 
@@ -55,7 +55,7 @@ import { Link } from "astro-ui";
 | `icon`           | `"arrow" \| "chevron" \| "external" \| "download"`                                            | —           | Inline SVG icon rendered before the link text.                                                                                                                        |
 | `size`           | `"sm" \| "md" \| "lg"`                                                                        | `"md"`      | Text size + line-height.                                                                                                                                              |
 | `underline`      | `boolean`                                                                                     | `true`      | When false, `text-decoration: none`.                                                                                                                                  |
-| `color`          | `"primary" \| "secondary" \| "muted" \| "destructive" \| "success" \| "warning" \| "inherit"` | `"primary"` | Link color + hover treatment. `inherit` uses the parent color.                                                                                                        |
+| `color`          | `"primary" \| "secondary" \| "muted" \| "error" \| "success" \| "warning" \| "inherit"` | `"primary"` | Link color + hover treatment. `inherit` uses the parent color.                                                                                                        |
 | `block`          | `boolean`                                                                                     | `false`     | Full inline width.                                                                                                                                                    |
 | `loading`        | `boolean`                                                                                     | `false`     | Dimmed, `cursor: wait`. Use with `loadingText` to replace content during pending navigation.                                                                          |
 | `loadingText`    | `string`                                                                                      | —           | Replaces slot content when `loading` is true.                                                                                                                         |
@@ -87,7 +87,7 @@ Hover treatment per color:
 - **primary**: darkens to `--ui-primary-hover`, tints background `--ui-secondary`
 - **secondary**: uses `--ui-secondary-foreground` + `--ui-secondary-hover` background
 - **muted**: lifts to `--ui-foreground` + `--ui-secondary` background
-- **destructive / success / warning**: filter `brightness(0.92)`
+- **error / success / warning**: filter `brightness(0.92)`
 - **inherit**: adopts `--ui-foreground` + `--ui-secondary` background
 
 ## Accessibility

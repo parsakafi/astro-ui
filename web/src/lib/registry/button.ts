@@ -13,8 +13,8 @@ export const button: ComponentMeta = {
     usage:
         `---\nimport { Button } from "astro-ui";\n---\n\n<Button>Primary</Button>\n<Button variant="outline" href="/docs">Read docs</Button>\n<Button color="success">Approve</Button>\n<Button loading loadingIcon="dots">Saving…</Button>`,
     features: [
-        "11 variants: primary, secondary, outline, ghost, destructive, link, solid, dashed, soft, plain, pure",
-        "8 theme colors via `color`: primary, secondary, destructive, success, warning, info, carbon, accent",
+        "11 variants: primary, secondary, outline, ghost, error, link, solid, dashed, soft, plain, pure",
+        "8 theme colors via `color`: primary, secondary, error, success, warning, info, carbon, accent",
         "7 sizes: xs, sm, md, lg, xl, 2xl, icon (icon requires ariaLabel)",
         "Loading state with 4 spinner styles (ring, dots, pulse, spin) and 3 positions",
         "Invalid state: error border + red focus ring + aria-invalid",
@@ -42,7 +42,7 @@ export const button: ComponentMeta = {
 <Button variant="secondary">Secondary</Button>
 <Button variant="outline">Outline</Button>
 <Button variant="ghost">Ghost</Button>
-<Button variant="destructive">Destructive</Button>
+<Button variant="error">Error</Button>
 <Button variant="link">Link</Button>
 <Button variant="solid">Solid</Button>
 <Button variant="dashed">Dashed</Button>
@@ -57,7 +57,7 @@ export const button: ComponentMeta = {
 <Button color="warning">Warning</Button>
 <Button color="info">Info</Button>
 <Button color="accent">Accent</Button>
-<Button variant="outline" color="destructive">Outline danger</Button>
+<Button variant="outline" color="error">Outline danger</Button>
 <Button variant="soft" color="info">Soft info</Button>`,
         },
         {
@@ -98,13 +98,13 @@ export const button: ComponentMeta = {
     props: [
         t(
             "variant",
-            `"primary" | "secondary" | "outline" | "ghost" | "destructive" | "link" | "solid" | "dashed" | "soft" | "plain" | "pure"`,
+            `"primary" | "secondary" | "outline" | "ghost" | "error" | "link" | "solid" | "dashed" | "soft" | "plain" | "pure"`,
             `"primary"`,
-            "Visual style; primary/secondary/destructive are solid shorthands.",
+            "Visual style; primary/secondary/error are solid shorthands.",
         ),
         t(
             "color",
-            `"primary" | "secondary" | "destructive" | "success" | "warning" | "info" | "carbon" | "accent"`,
+            `"primary" | "secondary" | "error" | "success" | "warning" | "info" | "carbon" | "accent"`,
             "—",
             "Theme color for solid/soft and tinted outline-style variants; re-resolves legacy solid shorthands when set.",
         ),

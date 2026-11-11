@@ -28,7 +28,7 @@ Project checks, by unit type:
 | Library source (`src/`) | `npm run check` (astro check) + `npm test` |
 | Formatting/lint | `npm run lint` (biome + eslint, `--max-warnings 0`) |
 | Registry / demo wiring | `npx tsx web/scripts/audit-demo-ids.ts` (0 problems) + `registry-consistency` test |
-| Docs content md | regenerate via `npx tsx web/scripts/gen-docs.ts`; never hand-edit generated files |
+| Docs content md | regenerate via `cd web && npx tsx scripts/gen-docs.ts` (paths are cwd-relative); never hand-edit generated files |
 | Docs site runtime | dev server page loads; demo verified in the browser, not just built |
 
 ## Graph: split work by blast radius, not by folder

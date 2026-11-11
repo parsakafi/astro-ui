@@ -51,7 +51,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info";
@@ -556,7 +556,7 @@ const classes = cn(
     border-color: var(--ui-muted-foreground);
   }
 
-  .aui-combobox--variant-destructive .aui-combobox__trigger,
+  .aui-combobox--variant-error .aui-combobox__trigger,
   .aui-combobox--invalid .aui-combobox__trigger {
     border-color: var(--ui-error);
   }

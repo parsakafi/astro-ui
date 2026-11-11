@@ -13,7 +13,7 @@ export const banner: ComponentMeta = {
     usage:
         `---\nimport { Banner, Button } from "astro-ui";\n---\n\n<Banner variant="info" closable>\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline and Banner have landed.\n  <Button slot="actions" size="sm" variant="outline">Read the notes</Button>\n</Banner>`,
     features: [
-        "6 variants: primary, info, success, warning, destructive, neutral",
+        "6 variants: primary, info, success, warning, error, neutral",
         "Slots for icon, title, message, and an action row",
         "Optional sticky placement for top-of-page announcements",
         "Responsive: actions wrap under the message on narrow screens",
@@ -51,7 +51,7 @@ export const banner: ComponentMeta = {
     props: [
         t(
             "variant",
-            `"primary" | "info" | "success" | "warning" | "destructive" | "neutral"`,
+            `"primary" | "info" | "success" | "warning" | "error" | "neutral"`,
             `"primary"`,
             "Color treatment of the strip.",
         ),

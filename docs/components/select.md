@@ -26,7 +26,7 @@ import { Select, Label } from "astro-ui";
 <Select placeholder="Muted" variant="muted" style="max-width:14rem">
   <option>Option C</option>
 </Select>
-<Select placeholder="Destructive" variant="destructive" style="max-width:14rem">
+<Select placeholder="Error" variant="error" style="max-width:14rem">
   <option>Remove</option>
 </Select>
 
@@ -67,7 +67,7 @@ import { Select, Label } from "astro-ui";
 | `multiple`        | `boolean`                                                                               | `false`   | native multi-select (native chrome, custom chevron hidden) |
 | `style`           | `string`                                                                                | —         | inline styles forwarded to the `<select>`                  |
 | `size`            | `xs \| sm \| md \| lg \| xl`                                                            | `md`      | height + padding scale                                     |
-| `variant`         | `inherit \| primary \| secondary \| muted \| destructive \| success \| warning \| info` | `inherit` | border color                                               |
+| `variant`         | `inherit \| primary \| secondary \| muted \| error \| success \| warning \| info` | `inherit` | border color                                               |
 | `class` / `id`    | `string`                                                                                | —         | `class` merged via `cn()`                                  |
 | `ariaLabel`       | `string`                                                                                | —         | accessible name (when no visible label)                    |
 | `ariaDescribedby` | `string`                                                                                | —         | hint/error text id                                         |

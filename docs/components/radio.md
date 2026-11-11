@@ -23,7 +23,7 @@ import { Radio, Label } from "astro-ui";
 <Radio name="r-xl" value="xl" size="xl">xl</Radio>
 
 <!-- Colors -->
-<Radio name="c" value="destructive" variant="destructive">Destructive</Radio>
+<Radio name="c" value="error" variant="error">Error</Radio>
 <Radio name="c" value="success" variant="success">Success</Radio>
 <Radio name="c" value="warning" variant="warning">Warning</Radio>
 <Radio name="c" value="info" variant="info">Info</Radio>
@@ -42,7 +42,7 @@ import { Radio, Label } from "astro-ui";
 | `disabled`        | `boolean`                                                                               | `false`   | native `disabled`                                                       |
 | `invalid`         | `boolean`                                                                               | `false`   | visual error ring; pair with `aria-describedby` pointing at error text  |
 | `size`            | `xs \| sm \| md \| lg \| xl`                                                            | `md`      | control + label spacing scale                                           |
-| `variant`         | `primary \| secondary \| muted \| destructive \| success \| warning \| info \| inherit` | `primary` | ring + dot color                                                        |
+| `variant`         | `primary \| secondary \| muted \| error \| success \| warning \| info \| inherit` | `primary` | ring + dot color                                                        |
 | `class` / `id`    | `string`                                                                                | —         | `class` merged via `cn()`                                               |
 | `ariaLabel`       | `string`                                                                                | —         | when set, the slot content is hidden from AT (use for icon-only radios) |
 | `ariaDescribedby` | `string`                                                                                | —         | hint/error text id                                                      |

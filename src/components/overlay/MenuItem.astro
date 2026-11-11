@@ -12,8 +12,8 @@
 import { cn } from "../../utils/cn";
 
 export interface Props {
-  /** Color treatment. Destructive items go last, separated by a separator. */
-  variant?: "default" | "destructive";
+  /** Color treatment. Error items go last, separated by a separator. */
+  variant?: "default" | "error";
   /** Render as a link instead of a button. */
   href?: string;
   /** Disable the item: `aria-disabled` + removed from the roving order. */
@@ -130,12 +130,12 @@ const hasIcon = Astro.slots.has("icon");
     outline-offset: calc(var(--ui-focus-ring-offset) * -1);
   }
 
-  .aui-menu__item--destructive {
+  .aui-menu__item--error {
     color: var(--ui-error);
   }
 
-  .aui-menu__item--destructive:hover:not(.aui-menu__item--disabled),
-  .aui-menu__item--destructive:focus-visible {
+  .aui-menu__item--error:hover:not(.aui-menu__item--disabled),
+  .aui-menu__item--error:focus-visible {
     background-color: var(--ui-error-muted);
   }
 

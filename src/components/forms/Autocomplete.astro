@@ -58,7 +58,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info";
@@ -491,7 +491,7 @@ const classes = cn(
     border-color: var(--ui-muted-foreground);
   }
 
-  .aui-autocomplete--variant-destructive .aui-autocomplete__input,
+  .aui-autocomplete--variant-error .aui-autocomplete__input,
   .aui-autocomplete--invalid .aui-autocomplete__input {
     border-color: var(--ui-error);
   }

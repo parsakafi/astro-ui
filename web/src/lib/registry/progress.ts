@@ -67,7 +67,7 @@ export const progress: ComponentMeta = {
         t("value", "number", "—", "0–100; omit for indeterminate."),
         t("variant", `"bar" | "circle"`, `"bar"`, "Shape."),
         t("size", `"xs" | "sm" | "md" | "lg" | "xl" | "2xl"`, `"md"`, "Scale."),
-        t("color", `"primary" | "secondary" | "success" | "warning" | "info" | "muted" | "destructive"`, `"primary"`, "Fill color."),
+        t("color", `"primary" | "secondary" | "success" | "warning" | "info" | "muted" | "error"`, `"primary"`, "Fill color."),
         t("label", "string", "—", "Text label."),
         t("showValue", "boolean", "false", "Show the percentage."),
         t("stripes", `boolean | "static"`, "false", "Diagonal stripes on the bar fill; true animates them."),

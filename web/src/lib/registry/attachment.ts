@@ -5,7 +5,7 @@ export const attachment: ComponentMeta = {
     name: "Attachment",
     description: "File attachment card with media, state hooks, and action slots.",
     overview:
-        "Attachment shows an attached file as a composed card: a media box (icon or image thumbnail), a title and description line, and an actions area. It is purely presentational — upload progress, errors, and removal are wired app-side. Five `state` values render as `data-state` attributes (idle is dashed; error is destructive) that you can target from your own CSS, and `orientation` stacks the card vertically (image-first) or in a row.",
+        "Attachment shows an attached file as a composed card: a media box (icon or image thumbnail), a title and description line, and an actions area. It is purely presentational — upload progress, errors, and removal are wired app-side. Five `state` values render as `data-state` attributes (idle is dashed; error is red) that you can target from your own CSS, and `orientation` stacks the card vertically (image-first) or in a row.",
     importPath: "astro-ui",
     exportName: "Attachment",
     category: "data-display",
@@ -69,7 +69,7 @@ export const attachment: ComponentMeta = {
         },
     ],
     props: [
-        t("state", `"idle" | "uploading" | "processing" | "error" | "done"`, `"done"`, `Visual state; renders as data-state for styling hooks (idle = dashed border, error = destructive).`),
+        t("state", `"idle" | "uploading" | "processing" | "error" | "done"`, `"done"`, `Visual state; renders as data-state for styling hooks (idle = dashed border, error = red).`),
         t("size", `"xs" | "sm" | "md"`, `"md"`, `Card and media-box scale.`),
         t("orientation", `"horizontal" | "vertical"`, `"horizontal"`, `Media above text (vertical) or inline row (horizontal).`),
         t("media", `"icon" | "image"`, `"icon"`, `Media-box content: paperclip icon or image fallback; override with the media slot.`),

@@ -28,7 +28,7 @@ export interface Props {
     | "primary"
     | "secondary"
     | "muted"
-    | "destructive"
+    | "error"
     | "success"
     | "warning"
     | "info"
@@ -250,7 +250,7 @@ const classes = cn(
     color: var(--ui-foreground);
   }
 
-  .aui-checkbox--variant-destructive .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
+  .aui-checkbox--variant-error .aui-checkbox__input:checked + .aui-checkbox__box .aui-checkbox__check {
     color: var(--ui-error-foreground);
   }
 
@@ -283,7 +283,7 @@ const classes = cn(
     border-color: var(--ui-muted-foreground);
   }
 
-  .aui-checkbox--variant-destructive .aui-checkbox__input:checked + .aui-checkbox__box {
+  .aui-checkbox--variant-error .aui-checkbox__input:checked + .aui-checkbox__box {
     background-color: var(--ui-error);
     border-color: var(--ui-error);
   }

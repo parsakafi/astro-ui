@@ -38,7 +38,7 @@ props:
   - name: "state"
     type: "\"idle\" | \"uploading\" | \"processing\" | \"error\" | \"done\""
     def: "\"done\""
-    description: "Visual state; renders as data-state for styling hooks (idle = dashed border, error = destructive)."
+    description: "Visual state; renders as data-state for styling hooks (idle = dashed border, error = red)."
   - name: "size"
     type: "\"xs\" | \"sm\" | \"md\""
     def: "\"md\""
@@ -78,4 +78,4 @@ faq:
     a: "Put a button in the actions slot with an explicit aria-label — icon-only actions need a name. Wire the click handler or a form submit in your app; the component ships zero JS."
 ---
 
-Attachment shows an attached file as a composed card: a media box (icon or image thumbnail), a title and description line, and an actions area. It is purely presentational — upload progress, errors, and removal are wired app-side. Five `state` values render as `data-state` attributes (idle is dashed; error is destructive) that you can target from your own CSS, and `orientation` stacks the card vertically (image-first) or in a row.
+Attachment shows an attached file as a composed card: a media box (icon or image thumbnail), a title and description line, and an actions area. It is purely presentational — upload progress, errors, and removal are wired app-side. Five `state` values render as `data-state` attributes (idle is dashed; error is red) that you can target from your own CSS, and `orientation` stacks the card vertically (image-first) or in a row.

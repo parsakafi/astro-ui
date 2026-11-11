@@ -48,7 +48,7 @@ export const checkbox: ComponentMeta = {
         t("orientation", `"horizontal" | "vertical"`, `"horizontal"`, "Label layout."),
         t("label", "string", "—", "Text when no slot content."),
         t("size", `"xs" | "sm" | "md" | "lg" | "xl"`, `"md"`, "Scale."),
-        t("variant", `"primary" | "secondary" | "muted" | "destructive" | "success" | "warning" | "info" | "inherit"`, `"primary"`, "Accent color."),
+        t("variant", `"primary" | "secondary" | "muted" | "error" | "success" | "warning" | "info" | "inherit"`, `"primary"`, "Accent color."),
         ...common(),
     ],
     faq: [

@@ -22,7 +22,7 @@ import { Progress } from "astro-ui";
 <Progress value={33} color="error" />
 <Progress value={33} color="info" />
 <Progress value={33} color="muted" />
-<Progress value={33} color="destructive" />
+<Progress value={33} color="error" />
 
 <!-- Indeterminate (no value) -->
 <Progress label="Indeterminate" />
@@ -36,7 +36,7 @@ import { Progress } from "astro-ui";
 
 <!-- Circle colors -->
 <Progress value={40} variant="circle" color="primary" size="md" showValue />
-<Progress value={40} variant="circle" color="destructive" size="md" showValue />
+<Progress value={40} variant="circle" color="error" size="md" showValue />
 <Progress value={40} variant="circle" color="success" size="md" showValue />
 <Progress value={40} variant="circle" color="warning" size="md" showValue />
 <Progress value={40} variant="circle" color="info" size="md" showValue />
@@ -56,7 +56,7 @@ import { Progress } from "astro-ui";
 | `value`        | `number`                                                                              | —         | filled percentage 0–100; omit for indeterminate |
 | `variant`      | `bar \| circle`                                                                       | `bar`     | linear track or circular ring                   |
 | `size`         | `xs \| sm \| md \| lg \| xl \| 2xl`                                                   | `md`      | track/ring thickness + label size               |
-| `color`        | `primary \| secondary \| success \| warning \| error \| info \| muted \| destructive` | `primary` | fill/stroke color                               |
+| `color`        | `primary \| secondary \| success \| warning \| error \| info \| muted` | `primary` | fill/stroke color                               |
 | `label`        | `string`                                                                              | —         | optional label above/beside the track           |
 | `showValue`    | `boolean`                                                                             | `false`   | shows the current value as text (e.g. "64%")    |
 | `class` / `id` | `string`                                                                              | —         | `class` merged via `cn()`                       |

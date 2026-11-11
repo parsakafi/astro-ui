@@ -30,7 +30,7 @@ export const tag: ComponentMeta = {
         },
     ],
     props: [
-        t("variant", `"primary" | "secondary" | "outline" | "soft" | "success" | "warning" | "destructive" | "info" | "muted"`, `"primary"`, "Color scheme."),
+        t("variant", `"primary" | "secondary" | "outline" | "soft" | "success" | "warning" | "error" | "info" | "muted"`, `"primary"`, "Color scheme."),
         t("size", `"sm" | "md" | "lg"`, `"md"`, "Scale."),
         t("shape", `"rounded" | "square" | "pill"`, `"rounded"`, "Corner shape."),
         t("content", "string", "—", "Text when no slot content."),

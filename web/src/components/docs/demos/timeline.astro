@@ -25,7 +25,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                     <span slot="title">Deploy v2.4.3</span>
                     <span slot="description">Hotfix for the billing webhook retry loop.</span>
                   </TimelineItem>
-                  <TimelineItem variant="destructive">
+                  <TimelineItem variant="error">
                     <time slot="time" datetime="2026-10-13T15:02Z">Oct 13 · 15:02</time>
                     <span slot="title">Rollback v2.4.2</span>
                     <span slot="description">Reverted after a spike in 500s on /api/invoices.</span>
@@ -78,7 +78,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                     <time slot="time" datetime="2026-10-20">Oct 20, 2026</time>
                     <span slot="title">v0.1.0 — First public release</span>
                     <div slot="description">
-                      <p>63 components across 7 categories, with tokens, base styles, and docs.</p>
+                      <p>64 components across 7 categories, with tokens, base styles, and docs.</p>
                       <Badge variant="success" size="sm">Stable</Badge>
                     </div>
                   </TimelineItem>

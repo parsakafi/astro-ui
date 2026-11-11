@@ -26,7 +26,7 @@ export interface Props {
     | "warning"
     | "info"
     | "muted"
-    | "destructive";
+    | "error";
   size?: "sm" | "md" | "lg" | "xl" | "2xl";
   class?: string;
   id?: string;
@@ -197,7 +197,7 @@ const classes = cn(
     color: var(--ui-primary);
   }
 
-  .aui-badge--destructive {
+  .aui-badge--error {
     background-color: var(--ui-error);
     color: var(--ui-error-foreground);
   }
@@ -491,10 +491,10 @@ const classes = cn(
     color: var(--ui-primary);
   }
 
-  .aui-badge--position-top-right.aui-badge--destructive .aui-badge__bubble,
-  .aui-badge--position-top-left.aui-badge--destructive .aui-badge__bubble,
-  .aui-badge--position-bottom-right.aui-badge--destructive .aui-badge__bubble,
-  .aui-badge--position-bottom-left.aui-badge--destructive .aui-badge__bubble {
+  .aui-badge--position-top-right.aui-badge--error .aui-badge__bubble,
+  .aui-badge--position-top-left.aui-badge--error .aui-badge__bubble,
+  .aui-badge--position-bottom-right.aui-badge--error .aui-badge__bubble,
+  .aui-badge--position-bottom-left.aui-badge--error .aui-badge__bubble {
     background-color: var(--ui-error);
     color: var(--ui-error-foreground);
   }
