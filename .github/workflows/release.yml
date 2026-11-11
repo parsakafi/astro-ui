@@ -1,0 +1,119 @@
+name: Release
+
+# Publishing is driven by tags, never by a push to main. Pushing vX.Y.Z
+# verifies the exact tagged tree, publishes to npm with provenance, and
+# creates the GitHub Release from the matching CHANGELOG section.
+# The Vercel production deploy is a separate, deliberate step: fast-forward
+# the `production` branch (see RELEASING.md).
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Full history so we can prove the tag is reachable from main.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+          registry-url: https://registry.npmjs.org
+
+      - name: Verify tag matches package version
+        run: |
+          node - <<'NODE'
+          const pkg = require("./package.json");
+          const tag = process.env.GITHUB_REF_NAME;
+          const expected = `v${pkg.version}`;
+          if (tag !== expected) {
+            console.error(`Tag ${tag} does not match package.json ${pkg.version} (expected ${expected})`);
+            process.exit(1);
+          }
+          NODE
+
+      - name: Ensure the tag is on main
+        run: |
+          git fetch origin main
+          git merge-base --is-ancestor HEAD origin/main
+
+      - run: npm ci
+
+      - name: Verify generated CSS is committed
+        run: |
+          npm run build:css
+          git diff --exit-code -- src/styles/toast.css
+
+      - run: npm run lint
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+
+      - name: Install Playwright Chromium
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+
+      # Visual baselines are -win32.png, so CI runs the functional specs
+      # only. Run the visual suite locally before tagging (RELEASING.md).
+      - name: Functional e2e
+        working-directory: web
+        run: npx playwright test --project=chromium --grep-invert "component gallery"
+
+      - name: Extract release notes
+        run: |
+          node - <<'NODE'
+          const fs = require("fs");
+          const version = require("./package.json").version;
+          const md = fs.readFileSync("CHANGELOG.md", "utf8");
+          const start = md.indexOf(`## [${version}]`);
+          if (start === -1) {
+            console.error(`CHANGELOG.md has no "## [${version}]" section`);
+            process.exit(1);
+          }
+          const next = md.indexOf("\n## [", start + 1);
+          const body = md.slice(start, next === -1 ? undefined : next).trim();
+          fs.writeFileSync("release-notes.md", `${body}\n`);
+          NODE
+
+      - name: Check whether this version is already on npm
+        id: npm_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "@parsakafi/astro-ui@$VERSION" version >/dev/null 2>&1; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Version already on npm
+        if: steps.npm_version.outputs.published == 'true'
+        run: echo "::notice::@parsakafi/astro-ui@${{ steps.npm_version.outputs.version }} already exists; skipping publish."
+
+      - name: Publish to npm
+        if: steps.npm_version.outputs.published != 'true'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release-notes.md
+          draft: false
+          prerelease: false

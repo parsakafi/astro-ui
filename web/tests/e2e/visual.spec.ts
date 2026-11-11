@@ -22,6 +22,15 @@ for (const theme of THEMES) {
         // injects Astro's dev toolbar, which would get baked into the snapshot.
         await expect(page.locator("astro-dev-toolbar")).toHaveCount(0);
 
+        // The site version changes on every release. Freeze it to a fixed
+        // placeholder so visual baselines track component rendering, not
+        // release numbers. The "JS" badges elsewhere are left untouched.
+        await page
+            .locator(".docs-brand > .docs-brand-version, .docs-footer-brand .aui-badge")
+            .evaluateAll((nodes) => {
+                for (const node of nodes) node.textContent = "0.0.0";
+            });
+
         await expect(page).toHaveScreenshot(`component-gallery-${theme}.png`, {
             fullPage: true,
             animations: "disabled",

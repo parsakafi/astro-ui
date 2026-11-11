@@ -42,8 +42,11 @@ so library edits show up on refresh.
   use `feat!:`/`fix!:` + `BREAKING CHANGE:` footer and a CHANGELOG entry
   with migration notes.
 - While the package is pre-1.0 (`0.x`), prop/markup/token removals and
-  renames bump the **minor**; additive changes are minor; fixes are
-  patch. After `1.0.0`, removals and renames bump the major.
+  renames bump the **minor** (`0.(x+1).0`); additive changes and fixes
+  bump the **patch** (`0.x.(y+1)`). After `1.0.0`, removals and renames
+  bump the major.
+- Release runbook: [`RELEASING.md`](./RELEASING.md) — tags, npm, and the
+  Vercel `production` branch.
 
 ## Security
 
