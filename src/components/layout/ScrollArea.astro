@@ -52,6 +52,12 @@ const classes = cn(
     overflow: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--ui-border) transparent;
+    /* Size containment on the inline axis: without it, a wide
+       max-content child (e.g. a horizontal tag row) feeds the
+       element's intrinsic width back into auto-sized ancestor grid /
+       flex tracks, stretching them past the viewport instead of
+       scrolling. Keeps width from the layout slot, height from content. */
+    contain: inline-size;
   }
 
   .aui-scroll-area--vertical {

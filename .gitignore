@@ -13,6 +13,7 @@ astro-dev.log
 web/tests/e2e/**/*-snapshots/*-actual.png
 web/tests/e2e/**/*-snapshots/*-diff.png
 web/tests/e2e/*-snapshots/*.png
+web/scripts/*
 
 # dependencies
 node_modules/

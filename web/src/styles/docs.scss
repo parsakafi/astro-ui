@@ -2193,9 +2193,19 @@ $docs-anchor-offset: 7.5rem;
 
 .docs-demo-block {
   display: grid;
+  /* Explicit minmax(0, 1fr): the default auto track sizes to the widest
+     line in a demo's Code tab (Shiki keeps long snippets on one line),
+     which stretched the whole article past the viewport on mobile. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ui-space-2);
   margin-block-end: var(--ui-space-6);
   scroll-margin-block-start: $docs-anchor-offset;
+
+  /* The Tabs wrapper is the grid item; its min-content width must not
+     widen the track, or the code panel overflows instead of scrolling. */
+  > * {
+    min-width: 0;
+  }
 }
 
 .docs-demo-title {
@@ -2216,6 +2226,7 @@ $docs-anchor-offset: 7.5rem;
      blending into the preview surface (muted == component fill). */
   background-color: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
   border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
+  min-width: 0;
 
   /* Library Tabs card variant rounds the list; square the bottom edge
      where it meets the preview surface below. */
@@ -2261,6 +2272,9 @@ $docs-anchor-offset: 7.5rem;
   padding: var(--ui-space-2);
   background-color: var(--ui-muted);
   border-radius: 0 0 var(--ui-radius-md) var(--ui-radius-md);
+  /* Long snippets scroll inside the panel, never widen the page. */
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* Cross-container shared rules — kept flat on purpose. */
@@ -2836,6 +2850,12 @@ $docs-anchor-offset: 7.5rem;
 
   .docs-hero h1 {
     font-size: var(--ui-text-3xl);
+  }
+
+  /* The desktop stage padding (24px) eats too much of a narrow
+     viewport, leaving demos cramped and clippable. */
+  .docs-demo-preview {
+    padding: var(--ui-space-4);
   }
 }
 
