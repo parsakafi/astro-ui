@@ -24,9 +24,9 @@ const columns: {
     label: "Shipped",
     items: [
       {
-        title: "v0.1.0 - 64 components",
-        desc: "First public release across 7 categories, with tokens, base styles, and docs.",
-        tag: "v0.1.0"
+        title: "v0.2.0 — 64 components",
+        desc: "Two public releases across 7 categories, with tokens, base styles, and docs. 0.2.0 added WCAG AA contrast pairs, label/i18n hooks, and Progress width.",
+        tag: "v0.2.0"
       },
       {
         title: "Accessibility section on every docs page",
@@ -35,8 +35,18 @@ const columns: {
       },
       {
         title: "Blocks library",
-        desc: "Composed sections (auth, pricing, stats, settings…) built from the components.",
+        desc: "25 composed sections across six categories: application, social, navigation, auth, marketing, and content.",
         tag: "blocks"
+      },
+      {
+        title: "Charts: 26 SVG types",
+        desc: "Bar, line, area, pie, donut, radar, sankey, heatmap and more — zero-JS, painted from the token palette.",
+        tag: "data"
+      },
+      {
+        title: "Native-input pickers and range slider",
+        desc: "DatePicker month grid, TimePicker, and Slider's two-thumb range and radial dial modes.",
+        tag: "forms"
       },
       {
         title: "hidden=until-found in Collapsible",
@@ -55,13 +65,10 @@ const columns: {
     label: "In progress",
     items: [
       {
-        title: "Combobox",
-        desc: "Filterable input + listbox on native semantics; async options supported.",
-        tag: "forms"
+        title: "More blocks",
+        desc: "App shell and onboarding sets; dashboard, settings, and stats blocks already ship.",
+        tag: "blocks"
       },
-      {title: "Date picker", desc: "Native-input-based month grid with keyboard entry as the base path.", tag: "forms"},
-      {title: "Command palette", desc: "Dialog + listbox pattern with keyboard-first navigation.", tag: "overlay"},
-      {title: "More blocks", desc: "App shell, dashboard, and onboarding block sets.", tag: "blocks"},
     ],
   },
   {
@@ -74,11 +81,6 @@ const columns: {
         tag: "forms"
       },
       {
-        title: "Dual-thumb range slider",
-        desc: "Two-thumb min/max selection built on two synchronized range inputs.",
-        tag: "forms"
-      },
-      {
         title: "Toast swipe-to-dismiss",
         desc: "Pointer-gesture dismissal with velocity threshold, matching the RTL-physical contract.",
         tag: "feedback"
@@ -86,11 +88,6 @@ const columns: {
       {
         title: "Data grid (sortable)",
         desc: "Table enhancement layer: sorting and column pinning without a runtime.",
-        tag: "data"
-      },
-      {
-        title: "Charts foundation",
-        desc: "SSR-rendered SVG primitives (line, bar, donut) reading the token palette.",
         tag: "data"
       },
       {title: "Figma kit", desc: "Design-file counterpart mapping 1:1 to the component API.", tag: "design"},
