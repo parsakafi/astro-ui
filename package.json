@@ -134,7 +134,10 @@
   "keywords": [
     "astro",
     "astro-component",
+    "withastro",
     "ui",
+    "css",
+    "accessibility",
     "design-system",
     "accessible",
     "zero-js"
