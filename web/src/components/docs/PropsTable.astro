@@ -25,16 +25,16 @@ const {rows} = Astro.props;
     {
       rows.map((row) => (
         <tr>
-          <td>
+          <td data-label="Prop">
             <code class="docs-code-pill">{row.name}</code>
           </td>
-          <td>
+          <td data-label="Type">
             <code class="docs-code-type">{row.type}</code>
           </td>
-          <td>
+          <td data-label="Default">
             <code>{row.def}</code>
           </td>
-          <td>{row.description}</td>
+          <td data-label="Description">{row.description}</td>
         </tr>
       ))
     }

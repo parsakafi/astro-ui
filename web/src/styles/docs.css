@@ -561,6 +561,10 @@
 .docs-article section {
   display: grid;
   gap: var(--ui-space-4);
+  /* Clamp the implicit column: a wide child (API table with a
+     min-width, chart, code line) must scroll inside its own wrapper
+     instead of stretching the section past the viewport. */
+  grid-template-columns: minmax(0, 1fr);
   /* TOC/anchor targets: keep the sticky header from covering the
      section heading after an in-page jump. */
   scroll-margin-block-start: 7.5rem;
@@ -2603,6 +2607,16 @@
   .docs-toc {
     display: none;
   }
+  /* Narrow layout: a squeezed Type column broke identifiers per character
+     ("numb er", one union member per line). Keep the type expression on a
+     single line and let the table scroll sideways instead. */
+  .docs-table {
+    min-width: 40rem;
+  }
+  .docs-code-type {
+    word-break: normal;
+    white-space: nowrap;
+  }
 }
 /* Below 48rem a start-aligned Components panel (34rem wide) would run
    past the inline-end edge, so every panel goes full-bleed. It anchors
@@ -2676,6 +2690,55 @@
      viewport, leaving demos cramped and clippable. */
   .docs-demo-preview {
     padding: var(--ui-space-4);
+  }
+  /* API tables restack as one card per row: each cell keeps its column
+     name as an inline label, so no column needs horizontal scrolling. */
+  .docs-table {
+    min-width: 0;
+  }
+  .docs-table thead {
+    display: none;
+  }
+  .docs-table,
+  .docs-table tbody,
+  .docs-table tr,
+  .docs-table td {
+    display: block;
+  }
+  .docs-table tr {
+    padding: var(--ui-space-3) var(--ui-space-4);
+  }
+  .docs-table tr + tr {
+    border-block-start: 1px solid var(--ui-border);
+  }
+  .docs-table td {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: var(--ui-space-2);
+    padding: 0;
+    border: 0;
+  }
+  .docs-table td + td {
+    margin-block-start: var(--ui-space-2);
+  }
+  .docs-table td {
+    /* Grid items stretch by default; keep code pills hugging their
+       text instead of filling the value column. */
+  }
+  .docs-table td > * {
+    justify-self: start;
+  }
+  .docs-table td::before {
+    content: attr(data-label);
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+    line-height: 1.7; /* match the code leading in the value column */
+  }
+  /* In a card the type expression has to wrap; it still breaks between
+     `|` members rather than inside a token. */
+  .docs-code-type {
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }
 @media (prefers-reduced-motion: reduce) {
