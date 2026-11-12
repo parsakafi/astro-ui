@@ -19,6 +19,7 @@ export const lightbox: ComponentMeta = {
         "Group sync: several lightboxes share one active index",
         "LightboxItem auto-detects image / video / iframe media",
         "Backdrop click, × button, and Esc close with zero extra code",
+        "Optional transparent backdrop: show the picture without the overlay",
     ],
     a11y: [
         "Native `<dialog>` semantics: modal focus containment, Escape-to-close, focus return",
@@ -69,6 +70,24 @@ export const lightbox: ComponentMeta = {
 </script>`,
         },
         {
+            id: "plain",
+            title: "Picture only, no backdrop",
+            code: `<Lightbox id="plain" ariaLabel="Picture preview" backdrop={false} navigation={false}>
+  <LightboxItem src="/demo/lightbox/aurora.svg" alt="Aurora over mountains" />
+</Lightbox>
+
+<!-- Completely bare: Esc or a click outside still closes it. -->
+<Lightbox id="bare" ariaLabel="Picture preview without controls" backdrop={false}
+  navigation={false} showClose={false}>
+  <LightboxItem src="/demo/lightbox/aurora.svg" alt="Aurora over mountains" />
+</Lightbox>
+
+<script>
+  document.getElementById("open-plain")?.addEventListener("click", () =>
+    document.getElementById("aui-lightbox-plain")?.showModal());
+</script>`,
+        },
+        {
             id: "thumbnail",
             title: "Thumbnail trigger",
             code: `<Lightbox id="preview" ariaLabel="Image preview">
@@ -109,6 +128,7 @@ export const lightbox: ComponentMeta = {
         t("labels", `{ media?, gallery?, goTo? }`, "-", "Translate the built-in strings; explicit *Label props still win."),
         t("navigation", "boolean", "true", "Prev/next buttons."),
         t("showClose", "boolean", "true", "Native × close button."),
+        t("backdrop", "boolean", "true", "Dimmed overlay behind the media; false shows the picture alone."),
         t("showCounter", "boolean", "false", "Shows the live \"1 / 5\" counter."),
         t("counterLabel", "string", '"Image"', "Counter word, e.g. \"Photo\" → \"Photo 1 of 3\"."),
         t("indicators", "boolean", "false", "One clickable dot per item."),

@@ -16,6 +16,12 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
     gap: var(--ui-space-2);
   }
 
+  .dm-lightbox-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ui-space-2);
+  }
+
   .dm-lightbox-thumb {
     padding: 0;
     overflow: hidden;
@@ -125,6 +131,50 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
               </Fragment>
               <Fragment slot="code">
                 <Fragment set:html={codeHtml.get("programmatic")} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
+        {id === "plain" && (
+          <div class="docs-demo-block" id={`demo-lightbox-${id}`}>
+            <h3 class="docs-demo-title">Picture only, no backdrop</h3>
+            <DemoTabs id="dm-lightbox-plain">
+              <Fragment slot="preview">
+                <div class="dm-lightbox-actions">
+                  <Button id="dm-lightbox-plain-open">View picture</Button>
+                  <Button variant="outline" id="dm-lightbox-bare-open">Bare picture</Button>
+                </div>
+                <Lightbox
+                  id="dm-lightbox-plain"
+                  ariaLabel="Picture preview"
+                  backdrop={false}
+                  navigation={false}
+                >
+                  <LightboxItem src="/demo/lightbox/aurora.svg" alt="Aurora over mountains" />
+                </Lightbox>
+                <Lightbox
+                  id="dm-lightbox-bare"
+                  ariaLabel="Picture preview without controls"
+                  backdrop={false}
+                  navigation={false}
+                  showClose={false}
+                >
+                  <LightboxItem src="/demo/lightbox/aurora.svg" alt="Aurora over mountains" />
+                </Lightbox>
+                <script is:inline>
+                  for (const [btnId, dlgId] of [
+                    ["dm-lightbox-plain-open", "aui-lightbox-dm-lightbox-plain"],
+                    ["dm-lightbox-bare-open", "aui-lightbox-dm-lightbox-bare"],
+                  ]) {
+                    document.getElementById(btnId)?.addEventListener("click", () => {
+                      const dlg = document.getElementById(dlgId);
+                      if (dlg instanceof HTMLDialogElement) dlg.showModal();
+                    });
+                  }
+                </script>
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get("plain")} />
               </Fragment>
             </DemoTabs>
           </div>

@@ -52,6 +52,11 @@ export interface Props {
   ariaDescribedby?: string;
   /** Render the native (zero-JS) close button. Defaults to true. */
   showClose?: boolean;
+  /**
+   * Paint the dimmed overlay behind the media. Defaults to true — pass
+   * false to show the picture alone over the live page.
+   */
+  backdrop?: boolean;
   /** Accessible label for the built-in close button. */
   closeLabel?: string;
   /** Show prev/next navigation buttons. Defaults to true. */
@@ -87,6 +92,7 @@ const {
   ariaDescribedby,
   showClose = true,
   closeLabel = "Close lightbox",
+  backdrop = true,
   navigation = true,
   previousLabel = "Previous image",
   nextLabel = "Next image",
@@ -138,7 +144,12 @@ const classes = cn("aui-lightbox", className);
   data-group={groupAttr}
   {...rest}
 >
-  <div class="aui-lightbox__backdrop" data-lightbox-backdrop aria-hidden="true"></div>
+  <div
+    class="aui-lightbox__backdrop"
+    data-lightbox-backdrop
+    data-transparent={backdrop ? undefined : ""}
+    aria-hidden="true"
+  ></div>
   <div class="aui-lightbox__panel" role="document">
     {
       showClose && (
@@ -498,6 +509,11 @@ const classes = cn("aui-lightbox", className);
     position: absolute;
     inset: 0;
     background-color: var(--ui-backdrop-strong);
+  }
+
+  /* backdrop={false}: keep the click-to-close layer, drop the dimming. */
+  .aui-lightbox__backdrop[data-transparent] {
+    background-color: transparent;
   }
 
   .aui-lightbox__panel {

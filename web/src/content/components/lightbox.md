@@ -17,6 +17,7 @@ features:
   - "Group sync: several lightboxes share one active index"
   - "LightboxItem auto-detects image / video / iframe media"
   - "Backdrop click, × button, and Esc close with zero extra code"
+  - "Optional transparent backdrop: show the picture without the overlay"
 a11y:
   - "Native `<dialog>` semantics: modal focus containment, Escape-to-close, focus return"
   - "Inactive slides get `aria-hidden`; slides carry `aria-roledescription=\"slide\"`"
@@ -39,7 +40,7 @@ usage: |-
     document.getElementById("open-gallery")?.addEventListener("click", () =>
       document.getElementById("aui-lightbox-gallery")?.showModal());
   </script>
-demoIds: ["gallery", "programmatic", "thumbnail"]
+demoIds: ["gallery", "programmatic", "plain", "thumbnail"]
 props:
   - name: "id"
     type: "string"
@@ -61,6 +62,10 @@ props:
     type: "boolean"
     def: "true"
     description: "Native × close button."
+  - name: "backdrop"
+    type: "boolean"
+    def: "true"
+    description: "Dimmed overlay behind the media; false shows the picture alone."
   - name: "showCounter"
     type: "boolean"
     def: "false"
