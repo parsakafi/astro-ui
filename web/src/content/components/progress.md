@@ -7,7 +7,7 @@ category: data-display
 importPath: "@parsakafi/astro-ui"
 exportName: "Progress"
 js: false
-since: "0.1.1"
+since: "0.2.0"
 isNew: false
 related: ["spinner", "skeleton", "badge"]
 features:

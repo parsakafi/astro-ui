@@ -100,6 +100,6 @@ export const progress: ComponentMeta = {
             a: "The fill width and colour both read --aui-progress-percent through the CSS progress() function: width is progress() * 100% and the colour is a color-mix between --ui-error and --ui-success weighted by the same ratio. To animate it live, write --aui-progress-percent (and aria-valuenow) from your own script — the demo's slider does exactly that. Browsers without progress() fall back to the plain token fill.",
         },
     ],
-    since: "0.1.1",
+    since: "0.2.0",
     related: ["spinner", "skeleton", "badge"],
 };

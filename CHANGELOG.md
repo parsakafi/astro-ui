@@ -22,6 +22,11 @@ accessible names, localization hooks, and the toast live region.
   `prefers-color-scheme` dark blocks.
 - `Progress width` (any CSS length) for bar and circle, plus accessible-name
   resolution from `ariaLabel`/`label`/native `aria-label`.
+- `Progress color="dynamic"`: the fill hue follows the value itself (a
+  `--ui-error` → `--ui-success` mix) using the CSS `progress()` function. The
+  width is derived from the same `--aui-progress-percent` custom property, so
+  writing that one value moves the bar and its colour together. Pure CSS;
+  browsers without `progress()` keep the token fill and a plain width.
 - Partial `labels` props on Pagination, Carousel, DatePicker, Autocomplete,
   Combobox, Textarea, and Lightbox, and `uiLabels` on Chart (zoom toolbar and
   fallback-table headers). Omitted keys keep their English defaults.
@@ -107,12 +112,6 @@ accessible names, localization hooks, and the toast live region.
 | Progress | bar width fixed at 100% | `width` prop + accessible name | Pass `width`/`ariaLabel` only if you need the new behavior. |
 | Astro peer | `^7.3.3` | `>=7.0.0 <8.0.0` | Upgrade Astro 7.x freely; Astro 6 is still unsupported. |
 
-
-## [0.1.1] - 2026-11-12
-
-### Added
-
-- `Progress color="dynamic"`: the fill hue follows the value itself (a `--ui-error` → `--ui-success` mix) using the CSS `progress()` function. The width is derived from the same `--aui-progress-percent` custom property, so writing that one value moves the bar and its colour together. Pure CSS; browsers without `progress()` keep the token fill and a plain width.
 
 ## [0.1.0] - 2026-11-11
 
