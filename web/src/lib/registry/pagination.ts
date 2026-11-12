@@ -45,6 +45,7 @@ export const pagination: ComponentMeta = {
         t("compact", "boolean", "false", "Arrows-only mode."),
         t("variant", `"outline" | "ghost"`, `"outline"`, "Control style."),
         t("size", `"sm" | "md" | "lg"`, `"md"`, "Scale."),
+        t("labels", `{ previous?, next? }`, "-", "Translate the prev/next accessible names; omitted keys keep their English defaults."),
         ...common(false),
     ],
     faq: [

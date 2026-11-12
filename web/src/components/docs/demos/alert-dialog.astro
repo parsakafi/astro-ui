@@ -22,10 +22,10 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   <p slot="description">This cannot be undone.</p>
                   <Fragment slot="footer">
                     <form method="dialog">
-                      <Button variant="outline">Cancel</Button>
+                      <Button type="submit" variant="outline">Cancel</Button>
                     </form>
                     <form method="dialog">
-                      <Button variant="error" value="confirm">Delete</Button>
+                      <Button type="submit" variant="error" value="confirm">Delete</Button>
                     </form>
                   </Fragment>
                 </AlertDialog>
@@ -56,7 +56,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   <p slot="description">20rem panel for short confirmations.</p>
                   <Fragment slot="footer">
                     <form method="dialog">
-                      <Button variant="ghost">Close</Button>
+                      <Button type="submit" variant="ghost">Close</Button>
                     </form>
                   </Fragment>
                 </AlertDialog>
@@ -65,7 +65,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                   <p slot="description">32rem panel when the message needs room.</p>
                   <Fragment slot="footer">
                     <form method="dialog">
-                      <Button variant="ghost">Close</Button>
+                      <Button type="submit" variant="ghost">Close</Button>
                     </form>
                   </Fragment>
                 </AlertDialog>

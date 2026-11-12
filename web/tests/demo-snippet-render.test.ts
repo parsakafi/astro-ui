@@ -15,7 +15,7 @@ import {describe, expect, it} from "vitest";
 import {components} from "../src/lib/registry/index";
 
 const CONTENT_DIR = "src/content/components";
-const THEMES = {light: "github-light", dark: "github-dark-default"} as const;
+const THEMES = {light: "github-light-high-contrast", dark: "github-dark-default"} as const;
 
 const genDocsDemoIds = (slug: string): string[] => {
   // The usage frontmatter block embeds "---" fences (Astro snippet

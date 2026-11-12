@@ -57,6 +57,7 @@ export const datePicker: ComponentMeta = {
         t("ariaLabel", "string", "—", "Accessible name when there is no visible label."),
         t("toggleLabel", "string", `"Open calendar"`, "Accessible name for the calendar button."),
         t("panelLabel", "string", `"Choose date"`, "Accessible name for the panel."),
+        t("labels", `{ toggle?, panel?, previousMonth?, nextMonth?, today?, clear? }`, "-", "Translate the calendar's built-in control names; explicit *Label props still win."),
         t("required", "boolean", "false", "Required field."),
         t("disabled", "boolean", "false", "Disabled field."),
         t("class", "string", "—", "Merged via cn(); Tailwind classes welcome."),

@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Kbd — zero-JS keyboard key indicator.
  *
@@ -43,7 +44,7 @@ const classes = cn(
 );
 ---
 
-<kbd id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<kbd id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   <slot/>
 </kbd>
 

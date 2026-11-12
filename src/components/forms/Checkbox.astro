@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Checkbox — zero-JS boolean control.
  *
@@ -91,9 +92,10 @@ const classes = cn(
     required={required || undefined}
     disabled={disabled || undefined}
     aria-invalid={invalid || undefined}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     aria-describedby={ariaDescribedby}
     aria-checked={isIndeterminate ? "mixed" : isChecked ? "true" : "false"}
+    data-indeterminate={isIndeterminate || undefined}
     id={id}
     {...rest}
   />
@@ -118,6 +120,17 @@ const classes = cn(
       <slot/>}
 	</span>
 </label>
+
+{
+  isIndeterminate && (
+    /* Native checkboxes expose "mixed" through the DOM property only; the
+       aria-checked mirror alone is inconsistent with the real state. This
+       inline script runs only for indeterminate instances. */
+    <script is:inline>
+      document.currentScript.previousElementSibling.querySelector(".aui-checkbox__input").indeterminate = true;
+    </script>
+  )
+}
 
 <style>
   .aui-checkbox {

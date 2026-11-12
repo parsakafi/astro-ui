@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Textarea — multi-line text control with optional progressive extras.
  *
@@ -14,6 +15,7 @@
  * JavaScript required: Yes
  */
 import { cn } from "../../utils/cn";
+import { resolveLabels } from "../../utils/i18n";
 
 export interface Props {
   name?: string;
@@ -52,6 +54,10 @@ export interface Props {
   id?: string;
   ariaLabel?: string;
   ariaDescribedby?: string;
+  /** Translate the built-in strings (English defaults). */
+  labels?: {
+    clear?: string;
+  };
 }
 
 const {
@@ -78,8 +84,11 @@ const {
   id,
   ariaLabel,
   ariaDescribedby,
+  labels,
   ...rest
 } = Astro.props;
+
+const text = resolveLabels({ clear: "Clear text" }, labels);
 
 const showCounter = showCount || counter;
 const grows = Boolean(minRows || maxRows);
@@ -111,7 +120,7 @@ const classes = cn(
       disabled={disabled || undefined}
       readonly={readonly || undefined}
       aria-invalid={invalid || undefined}
-      aria-label={ariaLabel}
+      aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
       aria-describedby={ariaDescribedby}
       id={id}
       data-aui-textarea=""
@@ -126,7 +135,7 @@ const classes = cn(
     <button
       type="button"
       class="aui-textarea__clear"
-      aria-label="Clear text"
+      aria-label={text.clear}
       data-aui-textarea-clear=""
       hidden={initialCount === 0}
     >
@@ -166,7 +175,7 @@ const classes = cn(
   disabled={disabled || undefined}
   readonly={readonly || undefined}
   aria-invalid={invalid || undefined}
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   aria-describedby={ariaDescribedby}
   id={id}
   data-aui-textarea=""

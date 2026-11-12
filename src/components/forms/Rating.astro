@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Rating — rating input built on native radios, zero JS.
  *
@@ -133,7 +134,7 @@ const classes = cn(
   <fieldset
     id={id}
     class={classes}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     style={scaleStyle}
     {...rest}
   >

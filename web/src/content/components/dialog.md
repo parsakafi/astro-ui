@@ -30,7 +30,7 @@ usage: |-
   <Dialog id="prefs">
     <h2 slot="title">Preferences</h2>
     <p slot="description">Device-only settings.</p>
-    <form method="dialog"><Button>Close</Button></form>
+    <form method="dialog"><Button type="submit">Close</Button></form>
   </Dialog>
   <script>
     document.getElementById("open")?.addEventListener("click", () =>
@@ -77,7 +77,7 @@ slots:
     description: "Action row."
 faq:
   - q: "How do I close it without JS?"
-    a: "A <form method=\"dialog\"> button inside the dialog closes natively. Esc and the × button also work with zero app code."
+    a: "A <form method=\"dialog\"> button with type=\"submit\" inside the dialog closes natively. Esc and the × button also work with zero app code."
   - q: "Can clicking the backdrop close it?"
     a: "Yes — recipe: dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); })."
 ---

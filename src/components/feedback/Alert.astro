@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /** Alert — zero-JS feedback message.
  *
  * `role` defaults by variant: "alert" for errors (announced
@@ -55,7 +56,7 @@ const classes = cn(
   id={id}
   class={classes}
   role={resolvedRole === "none" ? undefined : resolvedRole}
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   {...rest}
 >
 	<span class="aui-alert__icon" aria-hidden="true">

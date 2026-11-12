@@ -13,27 +13,27 @@
  * JavaScript required: Yes
  */
 ---
-<section class="aui-toaster" id="aui-toaster-top-left" data-aui-toaster data-position="top-left" aria-live="polite"
+<section class="aui-toaster" id="aui-toaster-top-left" data-aui-toaster data-position="top-left"
          aria-relevant="additions" aria-atomic="false">
   <ol class="aui-toaster__list" data-aui-toaster-list></ol>
 </section>
-<section class="aui-toaster" id="aui-toaster-top-center" data-aui-toaster data-position="top-center" aria-live="polite"
+<section class="aui-toaster" id="aui-toaster-top-center" data-aui-toaster data-position="top-center"
          aria-relevant="additions" aria-atomic="false">
   <ol class="aui-toaster__list" data-aui-toaster-list></ol>
 </section>
-<section class="aui-toaster" id="aui-toaster-top-right" data-aui-toaster data-position="top-right" aria-live="polite"
+<section class="aui-toaster" id="aui-toaster-top-right" data-aui-toaster data-position="top-right"
          aria-relevant="additions" aria-atomic="false">
   <ol class="aui-toaster__list" data-aui-toaster-list></ol>
 </section>
 <section class="aui-toaster" id="aui-toaster-bottom-left" data-aui-toaster data-position="bottom-left"
-         aria-live="polite" aria-relevant="additions" aria-atomic="false">
+         aria-relevant="additions" aria-atomic="false">
   <ol class="aui-toaster__list" data-aui-toaster-list></ol>
 </section>
 <section class="aui-toaster" id="aui-toaster-bottom-center" data-aui-toaster data-position="bottom-center"
-         aria-live="polite" aria-relevant="additions" aria-atomic="false">
+         aria-relevant="additions" aria-atomic="false">
   <ol class="aui-toaster__list" data-aui-toaster-list></ol>
 </section>
-<section class="aui-toaster" id="aui-toaster" data-aui-toaster data-position="bottom-right" aria-live="polite"
+<section class="aui-toaster" id="aui-toaster" data-aui-toaster data-position="bottom-right"
          aria-relevant="additions" aria-atomic="false">
   <ol class="aui-toaster__list" data-aui-toaster-list></ol>
 </section>
@@ -41,16 +41,9 @@
 <script>
   import type {Toast, ToastAction} from "@parsakafi/astro-ui/toast";
 
-  // Inline icons to avoid cross-module import path issues at runtime
-  const ICONS: Record<string, string> = {
-    success: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.528-9.981a.75.75 0 011.05-.143z" clip-rule="evenodd"/></svg>`,
-    error: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>`,
-    warning: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.35-1.167 3.022 0l6.28 10.867c.673 1.167-.17 2.62-1.516 2.62H3.72c-1.347 0-2.189-1.453-1.515-2.62L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>`,
-    info: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clip-rule="evenodd"/></svg>`,
-    default: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>`,
-    loading: `<span class="aui-toast__spinner" aria-hidden="true"><span class="aui-toast__spinner-bar"></span></span>`,
-  };
-  const CLOSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  // Icons live in the toast module (single source of truth); the
+  // scoped script runs in the browser, so this import ships once.
+  import { CLOSE_ICON, ICONS } from "@parsakafi/astro-ui/toast";
 
   (async () => {
     const toast = (await import("@parsakafi/astro-ui/toast")).toast;
@@ -132,9 +125,21 @@
       });
     }
 
+    // Screen readers announce additions from every `aria-live` region on
+    // the page, so keeping it on all six stacks would read each toast up
+    // to six times. Exactly one stack — the one that most recently
+    // received a toast — owns the live region at any moment.
+    var livePosition = 'bottom-right';
+
+    function setLiveStack(position: string): void {
+      livePosition = position;
+    }
+
     function refreshStacks(): void {
-      stacks.forEach(function (stack) {
+      var counts = new Map<string, number>();
+      stacks.forEach(function (stack, position) {
         var count = stack.list.querySelectorAll('.aui-toast:not([data-exit="true"])').length;
+        counts.set(position, count);
         if (stackHasExpand(stack) || stack.hovered || count < 2) {
           stack.container.setAttribute('data-collapsed', 'false');
         } else {
@@ -148,6 +153,23 @@
           stack.container.setAttribute('data-active', 'true');
         } else {
           stack.container.removeAttribute('data-active');
+        }
+      });
+
+      // Prefer the stack that received the latest toast; fall back to the
+      // first non-empty stack when that one has emptied out.
+      var live: string | null =
+        (counts.get(livePosition) || 0) > 0 ? livePosition : null;
+      if (!live) {
+        counts.forEach(function (count: number, position: string) {
+          if (!live && count > 0) live = position;
+        });
+      }
+      stacks.forEach(function (stack, position) {
+        if (position === live) {
+          stack.list.setAttribute('aria-live', 'polite');
+        } else {
+          stack.list.removeAttribute('aria-live');
         }
       });
     }
@@ -376,11 +398,13 @@
           var target = stackFor(t.position);
           if (existing.parentNode !== target.list) {
             target.list.appendChild(existing);
+            setLiveStack(t.position || 'bottom-right');
           }
           scheduleTimer(t, existing);
         } else {
           var el = createEl(t);
           stackFor(t.position).list.appendChild(el);
+          setLiveStack(t.position || 'bottom-right');
           mounted.set(t.id, el);
           enter(el);
           scheduleTimer(t, el);

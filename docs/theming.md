@@ -49,9 +49,15 @@ html[data-theme="acme"] {
 ## Semantic color naming
 
 The canonical brand color is Astro violet: `#881abd` in light mode and
-`#b845ed` in dark mode (hover `#b845ed` / `#d06cf5`). The focus ring
+`#a63be0` in dark mode (hover `#9b30d6` / `#9333c9`). The focus ring
 (`--ui-ring`) follows the brand primary in both themes, so keyboard focus
 always reads as part of the brand rather than a generic browser blue.
+
+Colored text on neutral surfaces uses the dedicated `-text` tokens
+(`--ui-primary-text`, `--ui-success-text`, `--ui-warning-text`,
+`--ui-error-text`, `--ui-info-text`), which are tuned for AA contrast on
+`background`/`muted`. The `-foreground` tokens stay reserved for text
+sitting on a solid `color` fill.
 
 Red is a semantic *state*, not a color name. Components expose the prop
 value `error` and resolve it to the `--ui-error*` tokens:
@@ -72,10 +78,10 @@ color variant — e.g. `toast({ type: "error" })` and
   `secondary-foreground`, `secondary-hover`, `muted`,
   `muted-foreground`, `border`, `border-width`, `input`, `carbon`,
   `carbon-foreground`.
-- **Brand:** `primary`, `primary-foreground`, `primary-hover`, `accent`,
-  `accent-foreground`, `ring`.
-- **Feedback:** `success`, `warning`, `error`, `info` + `-foreground` and
-  `-muted` surfaces.
+- **Brand:** `primary`, `primary-foreground`, `primary-hover`, `primary-text`,
+  `accent`, `accent-foreground`, `ring`.
+- **Feedback:** `success`, `warning`, `error`, `info` + `-foreground`,
+  `-muted` surfaces, and `-text` for colored copy on neutral surfaces.
 - **Overlays:** `backdrop`, `backdrop-strong`, `progress-stripe`,
   `shadow-color`.
 - **Data viz:** `chart-1…6`, `rating-1…5`.

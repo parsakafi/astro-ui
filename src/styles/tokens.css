@@ -26,14 +26,20 @@
 
   --ui-primary: #881abd;
   --ui-primary-foreground: #ffffff;
-  --ui-primary-hover: #b845ed;
+  /* Hover shade is darker than the base so white text keeps AA contrast
+     (the old #b845ed was only 4.11:1 against white). */
+  --ui-primary-hover: #9b30d6;
+  /* Colored text on neutral/muted surfaces (never on solid fills). */
+  --ui-primary-text: #881abd;
 
   --ui-secondary: #f4f4f5;
   --ui-secondary-foreground: #18181b;
   --ui-secondary-hover: #e4e4e7;
 
   --ui-muted: #f4f4f5;
-  --ui-muted-foreground: #71717a;
+  /* #71717a was 4.39:1 on --ui-muted; #6b6b74 clears AA on both the
+     muted surface and the page background. */
+  --ui-muted-foreground: #6b6b74;
 
   --ui-border: #e4e4e7;
   --ui-border-width: 1px;
@@ -41,17 +47,20 @@
   /* Focus ring follows the brand primary in every theme. */
   --ui-ring: #881abd;
 
-  --ui-success: #16a34a;
+  --ui-success: #15803d;
   --ui-success-foreground: #ffffff;
   --ui-success-muted: #dcfce7;
+  --ui-success-text: #15803d;
 
-  --ui-warning: #d97706;
+  --ui-warning: #b45309;
   --ui-warning-foreground: #ffffff;
   --ui-warning-muted: #fef3c7;
+  --ui-warning-text: #92400e;
 
   --ui-error: #dc2626;
   --ui-error-foreground: #ffffff;
   --ui-error-muted: #fee2e2;
+  --ui-error-text: #b91c1c;
 
   --ui-carbon: #64748b;
   --ui-carbon-foreground: #fafafa;
@@ -59,9 +68,10 @@
   --ui-accent: #7c3aed;
   --ui-accent-foreground: #ffffff;
 
-  --ui-info: #0284c7;
+  --ui-info: #0369a1;
   --ui-info-foreground: #ffffff;
   --ui-info-muted: #e0f2fe;
+  --ui-info-text: #0369a1;
 
   /* Surfaces & overlays */
   --ui-card: var(--ui-background);
@@ -194,9 +204,10 @@
   --ui-background: #09090b;
   --ui-foreground: #fafafa;
 
-  --ui-primary: #b845ed;
+  --ui-primary: #a63be0;
   --ui-primary-foreground: #ffffff;
-  --ui-primary-hover: #d06cf5;
+  --ui-primary-hover: #9333c9;
+  --ui-primary-text: #d8b4fe;
 
   --ui-secondary: #27272a;
   --ui-secondary-foreground: #fafafa;
@@ -208,12 +219,27 @@
   --ui-border: #27272a;
   --ui-border-width: 1px;
   --ui-input: #3f3f46;
-  --ui-ring: #b845ed;
+  --ui-ring: #a63be0;
 
+  --ui-success: #15803d;
+  --ui-success-foreground: #ffffff;
   --ui-success-muted: #052e16;
+  --ui-success-text: #4ade80;
+
+  --ui-warning: #b45309;
+  --ui-warning-foreground: #ffffff;
   --ui-warning-muted: #451a03;
+  --ui-warning-text: #fbbf24;
+
+  --ui-error: #dc2626;
+  --ui-error-foreground: #ffffff;
   --ui-error-muted: #450a0a;
+  --ui-error-text: #f87171;
+
+  --ui-info: #0369a1;
+  --ui-info-foreground: #ffffff;
   --ui-info-muted: #0c2d48;
+  --ui-info-text: #38bdf8;
 
   --ui-card: var(--ui-background);
   --ui-backdrop: rgb(0 0 0 / 0.7);
@@ -256,9 +282,10 @@
     --ui-background: #09090b;
     --ui-foreground: #fafafa;
 
-    --ui-primary: #b845ed;
+    --ui-primary: #a63be0;
     --ui-primary-foreground: #ffffff;
-    --ui-primary-hover: #d06cf5;
+    --ui-primary-hover: #9333c9;
+    --ui-primary-text: #d8b4fe;
 
     --ui-secondary: #27272a;
     --ui-secondary-foreground: #fafafa;
@@ -269,12 +296,27 @@
 
     --ui-border: #27272a;
     --ui-input: #3f3f46;
-    --ui-ring: #b845ed;
+    --ui-ring: #a63be0;
 
+    --ui-success: #15803d;
+    --ui-success-foreground: #ffffff;
     --ui-success-muted: #052e16;
+    --ui-success-text: #4ade80;
+
+    --ui-warning: #b45309;
+    --ui-warning-foreground: #ffffff;
     --ui-warning-muted: #451a03;
+    --ui-warning-text: #fbbf24;
+
+    --ui-error: #dc2626;
+    --ui-error-foreground: #ffffff;
     --ui-error-muted: #450a0a;
+    --ui-error-text: #f87171;
+
+    --ui-info: #0369a1;
+    --ui-info-foreground: #ffffff;
     --ui-info-muted: #0c2d48;
+    --ui-info-text: #38bdf8;
 
     --ui-card: var(--ui-background);
     --ui-backdrop: rgb(0 0 0 / 0.7);

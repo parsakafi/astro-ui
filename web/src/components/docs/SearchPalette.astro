@@ -17,17 +17,17 @@ const groups = GROUP_ORDER.map((group) => ({
 const totalCount = searchEntries.length;
 ---
 
-<button id="search-trigger" type="button" class="docs-search-btn"
-        aria-label={`Search (${totalCount} pages, components, and blocks)`}>
+<button id="search-trigger" type="button" class="docs-search-btn">
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
     <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.5"/>
     <path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
   </svg>
   <span class="docs-search-btn-label">Search…</span>
-  <kbd class="docs-search-kbd" aria-hidden="true">
+  <kbd class="docs-search-kbd">
     <span class="docs-search-kbd-mac">⌘K</span>
     <span class="docs-search-kbd-pc">Ctrl K</span>
   </kbd>
+  <span class="docs-visually-hidden">, {totalCount} pages, components, and blocks</span>
 </button>
 
 <script is:inline>

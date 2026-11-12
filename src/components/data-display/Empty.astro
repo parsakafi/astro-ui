@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Empty — zero-JS empty-state placeholder.
  *
@@ -27,7 +28,7 @@ const hasTitle = Astro.slots.has("title");
 const hasDescription = Astro.slots.has("description");
 ---
 
-<div id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<div id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   {
     Astro.slots.has("media") && (
       <div class="aui-empty__media">

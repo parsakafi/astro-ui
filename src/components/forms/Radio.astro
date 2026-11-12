@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Radio — zero-JS single-choice control.
  *
@@ -79,7 +80,7 @@ const classes = cn(
     checked={checked || undefined}
     required={required || undefined}
     disabled={disabled || undefined}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     aria-describedby={ariaDescribedby}
     id={id}
     {...rest}

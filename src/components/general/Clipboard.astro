@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Clipboard — copy-to-clipboard affordance with icon-first triggers.
  *
@@ -78,7 +79,7 @@ const buttonId =
     id={buttonId}
     class="aui-clipboard__trigger"
     data-aui-clipboard={value}
-    aria-label={triggerLabel}
+    aria-label={resolveAriaLabel(Astro.props, triggerLabel)}
     disabled={disabled}
     {...rest}
   >
@@ -209,7 +210,7 @@ const buttonId =
 
   .aui-clipboard__icon--check {
     display: none;
-    color: var(--ui-success);
+    color: var(--ui-success-text);
   }
 
   .aui-clipboard.is-copied .aui-clipboard__icon--copy {
@@ -253,7 +254,7 @@ const buttonId =
   }
 
   .aui-clipboard--soft .aui-clipboard__trigger {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
   }
 
@@ -278,7 +279,7 @@ const buttonId =
     margin-inline-start: var(--ui-space-2);
     white-space: nowrap;
     pointer-events: none;
-    color: var(--ui-success);
+    color: var(--ui-success-text);
     font-size: var(--ui-text-xs);
     opacity: 0;
     transition: opacity var(--ui-transition-fast);

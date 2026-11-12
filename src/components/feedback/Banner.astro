@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Banner — zero-JS full-width announcement strip.
  *
@@ -66,7 +67,7 @@ const classes = cn(
   id={id}
   class={classes}
   role={role === "none" ? undefined : role}
-  aria-label={role === "none" ? undefined : ariaLabel}
+  aria-label={role === "none" ? undefined : resolveAriaLabel(Astro.props, ariaLabel)}
   {...rest}
 >
   {

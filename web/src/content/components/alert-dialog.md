@@ -29,9 +29,9 @@ usage: |-
     <h2 slot="title">Delete project?</h2>
     <p slot="description">This cannot be undone.</p>
     <Fragment slot="footer">
-      <form method="dialog"><Button variant="outline">Cancel</Button></form>
+      <form method="dialog"><Button type="submit" variant="outline">Cancel</Button></form>
       <form method="dialog">
-        <Button variant="error" value="confirm">Delete</Button>
+        <Button type="submit" variant="error" value="confirm">Delete</Button>
       </form>
     </Fragment>
   </AlertDialog>
@@ -67,7 +67,7 @@ slots:
   - name: "default"
     description: "Extra body content."
   - name: "footer"
-    description: "Action buttons — wrap each in <form method=\"dialog\"> for zero-JS close."
+    description: "Action buttons - wrap each in <form method=\"dialog\"> with type=\"submit\" for zero-JS close."
 faq:
   - q: "How do I know which button closed it?"
     a: "The dialog's returnValue receives the submitting button's value — listen for the close event and read dialog.returnValue === \"confirm\"."

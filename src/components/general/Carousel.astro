@@ -28,9 +28,10 @@
  * JavaScript required: Yes (button + keyboard navigation, counter sync)
  */
 import { cn } from "../../utils/cn";
+import { resolveLabels } from "../../utils/i18n";
 
 export interface Props {
-  /** Accessible name — required for a sensible carousel region. */
+  /** Accessible name - required for a sensible carousel region. */
   label?: string;
   /** Scroll axis. */
   orientation?: "horizontal" | "vertical";
@@ -54,6 +55,14 @@ export interface Props {
   previousLabel?: string;
   /** Accessible label for the next button. */
   nextLabel?: string;
+  /** Translate the built-in control names (English defaults); the explicit *Label props still win. */
+  labels?: {
+    previous?: string;
+    next?: string;
+    pause?: string;
+    resume?: string;
+    counter?: string;
+  };
   /** Scroll-snap strictness. */
   snapType?: "mandatory" | "proximity";
   /** Additional classes for the scroll container (e.g. fixed heights for vertical). */
@@ -85,10 +94,11 @@ const {
   controls = true,
   controlsPlacement = "header",
   showCounter = orientation === "horizontal" && variant === "single",
-  counterLabel = "Slide",
+  counterLabel,
   indicators = false,
-  previousLabel = "Previous slide",
-  nextLabel = "Next slide",
+  previousLabel,
+  nextLabel,
+  labels,
   snapType = "mandatory",
   contentClass,
   slideBasis,
@@ -103,6 +113,19 @@ const {
 } = Astro.props;
 
 const uid = id ?? `aui-car-${Math.random().toString(36).slice(2, 8)}`;
+const text = resolveLabels(
+  {
+    previous: "Previous slide",
+    next: "Next slide",
+    pause: "Pause autoplay",
+    resume: "Resume autoplay",
+    counter: "Slide",
+  },
+  labels,
+);
+const previousText = previousLabel ?? text.previous;
+const nextText = nextLabel ?? text.next;
+const counterText = counterLabel ?? text.counter;
 
 /* Corner-toggle progress ring geometry. The ring is an SVG circle
    whose stroke-dashoffset the script animates from empty to full over
@@ -116,9 +139,11 @@ const config = {
   uid,
   loop: loop || autoplay,
   defaultIndex,
-  counterLabel,
+  counterLabel: counterText,
   autoplay,
   interval,
+  pauseLabel: text.pause,
+  resumeLabel: text.resume,
   autoplayStopsOnInteraction,
 };
 
@@ -163,18 +188,18 @@ const contentClasses = cn(
       )}
       {controls && (
         <div class="aui-carousel__buttons">
-          <button type="button" class="aui-carousel__button" data-action="prev" aria-label={previousLabel}>
+          <button type="button" class="aui-carousel__button" data-action="prev" aria-label={previousText}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d={orientation === "horizontal" ? "M10 3L5 8l5 5" : "M3 10l5-5 5 5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <button type="button" class="aui-carousel__button" data-action="next" aria-label={nextLabel}>
+          <button type="button" class="aui-carousel__button" data-action="next" aria-label={nextText}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d={orientation === "horizontal" ? "M6 3l5 5-5 5" : "M13 6l-5 5-5-5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           {autoplay && autoplayToggle === true && (
-            <button type="button" class="aui-carousel__button" data-action="toggle" aria-label="Pause autoplay" aria-pressed="false">
+            <button type="button" class="aui-carousel__button" data-action="toggle" aria-label={text.pause} aria-pressed="false">
               <svg class="aui-carousel__icon-pause" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M5 3v10M11 3v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
@@ -201,18 +226,18 @@ const contentClasses = cn(
     </div>
     {(controlsPlacement === "overlay" && controls) && (
       <div class="aui-carousel__overlay-buttons">
-        <button type="button" class="aui-carousel__button aui-carousel__button--overlay" data-action="prev" aria-label={previousLabel}>
+        <button type="button" class="aui-carousel__button aui-carousel__button--overlay" data-action="prev" aria-label={previousText}>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d={orientation === "horizontal" ? "M10 3L5 8l5 5" : "M3 10l5-5 5 5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
-        <button type="button" class="aui-carousel__button aui-carousel__button--overlay" data-action="next" aria-label={nextLabel}>
+        <button type="button" class="aui-carousel__button aui-carousel__button--overlay" data-action="next" aria-label={nextText}>
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d={orientation === "horizontal" ? "M6 3l5 5-5 5" : "M13 6l-5 5-5-5"} stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
         {autoplay && autoplayToggle === "corner" && (
-          <button type="button" class="aui-carousel__button aui-carousel__button--overlay aui-carousel__toggle-corner" data-action="toggle" aria-label="Pause autoplay" aria-pressed="false">
+          <button type="button" class="aui-carousel__button aui-carousel__button--overlay aui-carousel__toggle-corner" data-action="toggle" aria-label={text.pause} aria-pressed="false">
             <svg class="aui-carousel__toggle-ring" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
               <circle class="aui-carousel__toggle-ring-track" cx="17" cy="17" r={ringR} fill="none"/>
               <circle class="aui-carousel__toggle-ring-progress" cx="17" cy="17" r={ringR} fill="none" stroke-dasharray={ringC} stroke-dashoffset={ringC} transform="rotate(-90 17 17)"/>
@@ -228,7 +253,7 @@ const contentClasses = cn(
       </div>
     )}
     {autoplay && autoplayToggle === "corner" && !(controlsPlacement === "overlay" && controls) && (
-      <button type="button" class="aui-carousel__toggle-corner" data-action="toggle" aria-label="Pause autoplay" aria-pressed="false">
+      <button type="button" class="aui-carousel__toggle-corner" data-action="toggle" aria-label={text.pause} aria-pressed="false">
         <svg class="aui-carousel__toggle-ring" width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
           <circle class="aui-carousel__toggle-ring-track" cx="17" cy="17" r={ringR} fill="none"/>
           <circle class="aui-carousel__toggle-ring-progress" cx="17" cy="17" r={ringR} fill="none" stroke-dasharray={ringC} stroke-dashoffset={ringC} transform="rotate(-90 17 17)"/>
@@ -264,7 +289,7 @@ const contentClasses = cn(
 
     const cfg = cfgEl
       ? JSON.parse(cfgEl.textContent ?? "{}")
-      : {loop: false, defaultIndex: 0, counterLabel: "Slide", autoplay: false, interval: 4000};
+      : {loop: false, defaultIndex: 0, counterLabel: "Slide", autoplay: false, interval: 4000, pauseLabel: "Pause autoplay", resumeLabel: "Resume autoplay"};
 
     const slides = () => [...content.querySelectorAll<HTMLElement>(".aui-carousel-slide")];
     const counter = root.querySelector<HTMLElement>(".aui-carousel__counter-current");
@@ -376,7 +401,7 @@ const contentClasses = cn(
             autoplayHalted = false;
             autoplayStop = startAutoplay();
             root.removeAttribute("data-paused");
-            btn.setAttribute("aria-label", "Pause autoplay");
+            btn.setAttribute("aria-label", cfg.pauseLabel || "Pause autoplay");
             btn.setAttribute("aria-pressed", "false");
           } else {
             userPaused = true;
@@ -384,7 +409,7 @@ const contentClasses = cn(
             autoplayStop = null;
             autoplayHalted = true;
             root.setAttribute("data-paused", "");
-            btn.setAttribute("aria-label", "Resume autoplay");
+            btn.setAttribute("aria-label", cfg.resumeLabel || "Resume autoplay");
             btn.setAttribute("aria-pressed", "true");
           }
           return;

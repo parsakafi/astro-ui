@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Tree — a keyboard-navigable file/folder hierarchy.
  *
@@ -26,8 +27,6 @@
  * JavaScript required: Yes
  */
 import { cn } from "../../utils/cn";
-// Rendered inside the template below, which Biome's Astro pass does not read.
-// biome-ignore lint/correctness/noUnusedImports: used as <TreeItem/> in the template
 import TreeItem from "./TreeItem.astro";
 
 export interface TreeNode {
@@ -79,7 +78,7 @@ const classes = cn("aui-tree", className);
   id={id}
   class={classes}
   role="tree"
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   data-aui-tree
   {...rest}
 >

@@ -5,7 +5,7 @@ export const avatar: ComponentMeta = {
     name: "Avatar",
     description: "User image with initials fallback, status badges, rings, groups, and loading state.",
     overview:
-        "Avatar renders an <img> when src is provided, otherwise initials derived from name. Beyond the base surface it composes the extras design systems need: an online status badge (four states, four corners), colored rings, radius overrides, custom explicit sizes, a grayscale filter (with hover-to-restore), a loading spinner veil, and a badge slot for counts or checkmarks. AvatarGroup stacks avatars with overlap and an optional trailing count chip (numeric or icon) with an optional hover-spread.",
+        "Avatar renders an `<img>` when src is provided, otherwise initials derived from name. Beyond the base surface it composes the extras design systems need: an online status badge (four states, four corners), colored rings, radius overrides, custom explicit sizes, a grayscale filter (with hover-to-restore), a loading spinner veil, and a badge slot for counts or checkmarks. AvatarGroup stacks avatars with overlap and an optional trailing count chip (numeric or icon) with an optional hover-spread.",
     importPath: "@parsakafi/astro-ui",
     exportName: "Avatar",
     category: "data-display",

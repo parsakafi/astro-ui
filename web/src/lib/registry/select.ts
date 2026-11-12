@@ -28,7 +28,8 @@ export const select: ComponentMeta = {
         {
             id: "basic",
             title: "Basic",
-            code: `<Select placeholder="Choose a fruit">
+            code: `<Label for="fruit">Fruit</Label>
+<Select id="fruit" placeholder="Choose a fruit">
   <option value="apple">Apple</option>
   <option value="pear">Pear</option>
 </Select>`,
@@ -36,9 +37,9 @@ export const select: ComponentMeta = {
         {
             id: "states",
             title: "States & sizes",
-            code: `<Select invalid><option>…</option></Select>
-<Select disabled><option>…</option></Select>
-<Select size="lg"><option>…</option></Select>`,
+            code: `<Select invalid aria-label="Invalid select"><option>…</option></Select>
+<Select disabled aria-label="Disabled select"><option>…</option></Select>
+<Select size="lg" aria-label="Large select"><option>…</option></Select>`,
         },
     ],
     props: [

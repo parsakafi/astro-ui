@@ -109,7 +109,7 @@ export const button: ComponentMeta = {
             "Theme color for solid/soft and tinted outline-style variants; re-resolves legacy solid shorthands when set.",
         ),
         t("size", `"xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "icon"`, `"md"`, "icon is a square target — set ariaLabel."),
-        t("type", `"button" | "submit" | "reset"`, `"submit"`, "Native default so form-wrapped buttons submit (method=dialog works zero-JS). Pass button for standalone controls."),
+        t("type", `"button" | "submit" | "reset"`, `"button"`, "Defaults to button so a component dropped into a form never submits by accident. Pass submit for form actions - including the zero-JS <form method=\"dialog\"> close pattern."),
         t("href", "string", "—", "Renders <a> instead of <button>."),
         t("disabled", "boolean", "false", "Native disabled (button) / aria-disabled (link)."),
         t("loading", "boolean", "false", "Disables + shows spinner + aria-busy."),

@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Pagination — zero-JS page navigation.
  *
@@ -11,6 +12,7 @@
  * JavaScript required: No
  */
 import { cn } from "../../utils/cn";
+import { resolveLabels } from "../../utils/i18n";
 
 export interface Props {
   /** 1-based current page. */
@@ -25,6 +27,11 @@ export interface Props {
   showPrevNext?: boolean;
   /** Accessible name for the nav landmark. */
   ariaLabel?: string;
+  /** Translate the prev/next control names (English defaults). */
+  labels?: {
+    previous?: string;
+    next?: string;
+  };
   /** Visual style. */
   variant?: "outline" | "ghost";
   /** Scale of the controls. */
@@ -42,6 +49,7 @@ const {
   siblingCount = 1,
   showPrevNext = true,
   ariaLabel = "Pagination",
+  labels,
   variant = "outline",
   size = "md",
   compact = false,
@@ -73,6 +81,10 @@ function pageRange(
 }
 
 const range = compact ? [] : pageRange(page, total, siblingCount);
+const text = resolveLabels(
+  { previous: "Previous page", next: "Next page" },
+  labels,
+);
 
 const classes = cn(
   "aui-pagination",
@@ -85,13 +97,13 @@ const control = "aui-pagination__control";
 const linkClass = `${control} aui-pagination__link`;
 ---
 
-<nav id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<nav id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   <ul class="aui-pagination__list">
     {
       showPrevNext && (
         <li>
           {page > 1 ? (
-            <a class={linkClass} href={pageHref(page - 1)} aria-label="Previous page">
+            <a class={linkClass} href={pageHref(page - 1)} aria-label={text.previous}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                       stroke-linejoin="round"/>
@@ -133,7 +145,7 @@ const linkClass = `${control} aui-pagination__link`;
       showPrevNext && (
         <li>
           {page < total ? (
-            <a class={linkClass} href={pageHref(page + 1)} aria-label="Next page">
+            <a class={linkClass} href={pageHref(page + 1)} aria-label={text.next}>
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                       stroke-linejoin="round"/>

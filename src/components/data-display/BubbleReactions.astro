@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * BubbleReactions — reaction pill anchored to a Bubble's edge.
  *
@@ -46,7 +47,7 @@ const classes = cn(
 );
 ---
 
-<div id={id} class={classes} role="group" aria-label={ariaLabel ?? "Reactions"} {...rest}>
+<div id={id} class={classes} role="group" aria-label={resolveAriaLabel(Astro.props, ariaLabel ?? "Reactions")} {...rest}>
   <slot/>
 </div>
 

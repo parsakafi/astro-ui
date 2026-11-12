@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * AlertDialog — a modal that interrupts for a decision.
  *
@@ -39,6 +40,7 @@ export interface Props {
 }
 
 const { size = "sm", id, ariaLabel, class: className, ...rest } = Astro.props;
+const resolvedAriaLabel = resolveAriaLabel(Astro.props, ariaLabel);
 
 const hasTitle = Astro.slots.has("title");
 const hasDescription = Astro.slots.has("description");
@@ -54,8 +56,8 @@ const classes = cn("aui-alert-dialog", `aui-alert-dialog--${size}`, className);
   id={id}
   class={classes}
   role="alertdialog"
-  aria-label={ariaLabel}
-  aria-labelledby={ariaLabel ?? titleId}
+  aria-label={resolvedAriaLabel}
+  aria-labelledby={resolvedAriaLabel ? undefined : titleId}
   aria-describedby={descriptionId}
   {...rest}
 >

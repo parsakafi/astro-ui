@@ -30,7 +30,7 @@ usage: |-
   <Banner variant="info" closable>
     <span slot="icon" aria-hidden="true">✦</span>
     <strong>v2.5 is out.</strong> Timeline and Banner have landed.
-    <Button slot="actions" size="sm" variant="outline">Read the notes</Button>
+    <Button slot="actions" size="sm" variant="secondary">Read the notes</Button>
   </Banner>
 demoIds: ["release", "dismissible", "sticky", "neutral"]
 props:

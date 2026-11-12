@@ -21,7 +21,7 @@ export const badge: ComponentMeta = {
         "Logical-property positioning — mirrors in RTL",
     ],
     a11y: [
-        "Status changes announced via `aria-label` on status badges",
+        "Status changes announced via `aria-label`; labelled badges get `role=\"img\"`",
         "Purely presentational by default — no extra semantics to announce",
     ],
     demos: [

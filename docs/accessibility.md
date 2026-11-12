@@ -11,8 +11,12 @@ a11y review in its Definition of Done.
   (provided by `base.css`; Checkbox draws its own for the custom box).
 - `prefers-reduced-motion` honored globally (`base.css`); animations in
   Spinner/Skeleton/Button-loading are decorative and suppressed.
-- Color contrast: token pairs (`*-foreground` on base) target WCAG AA.
-  Status Badges/Alerts never rely on color alone (text label + icon).
+- Color contrast: token pairs (`*-foreground` on solid fills, `*-text` on
+  neutral surfaces) target WCAG AA. `tests/contrast.test.ts` asserts every
+  documented pair, including both theme blocks. Status Badges/Alerts never
+  rely on color alone (text label + icon).
+- Accessible names accept either spelling: the native `aria-label` always
+  wins over the camelCase `ariaLabel` alias when both are present.
 - SSR output must be fully meaningful without JS (zero-JS guarantee).
 
 ## Per-component behavior (MVP)

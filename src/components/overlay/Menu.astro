@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Menu — a click-triggered floating action menu.
  *
@@ -70,7 +71,7 @@ const triggerClasses = cn(
     aria-haspopup="menu"
     aria-expanded={open ? "true" : "false"}
     aria-controls={panelId}
-    aria-label={triggerLabel}
+    aria-label={resolveAriaLabel(Astro.props, triggerLabel)}
     disabled={disabled}
     data-aui-menu-trigger
   >

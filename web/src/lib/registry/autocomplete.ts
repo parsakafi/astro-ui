@@ -86,6 +86,7 @@ export const autocomplete: ComponentMeta = {
         t("variant", `"inherit" | "primary" | … | "info"`, `"inherit"`, "Border color variant (mirrors Input)."),
         t("placement", `"bottom" | "top"`, `"bottom"`, "Which side the panel opens on."),
         t("disabled / required / invalid", "boolean", "false", "Native states + invalid styling hook."),
+        t("labels", `{ clear?, empty? }`, "-", "Translate the built-in strings; explicit props still win."),
         ...common(false),
     ],
     faq: [

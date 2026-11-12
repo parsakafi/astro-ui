@@ -35,13 +35,13 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">States &amp; sizes</h3>
             <DemoTabs id="dm-select-states">
               <Fragment slot="preview">
-                <Select invalid placeholder="Invalid">
+                <Select invalid placeholder="Invalid" aria-label="Invalid select">
                   <option>Option</option>
                 </Select>
-                <Select disabled placeholder="Disabled">
+                <Select disabled placeholder="Disabled" aria-label="Disabled select">
                   <option>Option</option>
                 </Select>
-                <Select size="lg" placeholder="Large">
+                <Select size="lg" placeholder="Large" aria-label="Large select">
                   <option>Option</option>
                 </Select>
               </Fragment>

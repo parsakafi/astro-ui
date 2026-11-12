@@ -7,7 +7,7 @@ category: data-display
 importPath: "@parsakafi/astro-ui"
 exportName: "Progress"
 js: false
-since: "0.1.0"
+since: "0.1.1"
 isNew: false
 related: ["spinner", "skeleton", "badge"]
 features:
@@ -71,6 +71,10 @@ props:
     type: "boolean"
     def: "false"
     description: "Gap between fill and track."
+  - name: "width"
+    type: "string"
+    def: "—"
+    description: "Bar track width (any CSS length); defaults to 100%."
   - name: "class"
     type: "string"
     def: "—"
@@ -85,7 +89,7 @@ props:
     description: "Accessible name."
 faq:
   - q: "Is the value announced?"
-    a: "When label is set the component exposes a role=\"progressbar\" with aria-valuenow. Without label, treat it as decorative."
+    a: "Yes. The component is a role=\"progressbar\" with aria-valuenow/min/max, and it always has an accessible name: `label` or `ariaLabel` when provided, otherwise the default \"Progress\" so assistive tech still announces the value."
   - q: "How does color=\"dynamic\" work without JavaScript?"
     a: "The fill width and colour both read --aui-progress-percent through the CSS progress() function: width is progress() * 100% and the colour is a color-mix between --ui-error and --ui-success weighted by the same ratio. To animate it live, write --aui-progress-percent (and aria-valuenow) from your own script — the demo's slider does exactly that. Browsers without progress() fall back to the plain token fill."
 ---

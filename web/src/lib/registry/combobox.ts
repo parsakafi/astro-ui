@@ -70,6 +70,7 @@ export const combobox: ComponentMeta = {
         t("placement", `"bottom" | "top"`, `"bottom"`, "Which side the panel opens on."),
         t("panelWidth", "string", "trigger width", "Fixed panel width (any CSS inline-size value)."),
         t("disabled / required / invalid", "boolean", "false", "Native states + invalid styling hook."),
+        t("labels", `{ clear?, empty? }`, "-", "Translate the built-in strings; explicit props still win."),
         ...common(false),
     ],
     faq: [

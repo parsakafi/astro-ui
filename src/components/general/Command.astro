@@ -124,13 +124,14 @@ const classes = cn("aui-command", className);
   </div>
   <div class="aui-command__list" id={listId} role="listbox" aria-label={label}>
     {
-      groups.map((g) => (
+      groups.map((g, gi) => (
         <div class="aui-command__group" role="group" aria-label={g.label}>
           <p class="aui-command__group-label">{g.label}</p>
-          {g.items.map((item) => (
+          {g.items.map((item, ii) => (
             <button
               type="button"
               class="aui-command__item"
+              id={`${uid}-option-${gi}-${ii}`}
               role="option"
               aria-selected="false"
               aria-disabled={item.disabled || undefined}
@@ -184,7 +185,7 @@ const classes = cn("aui-command", className);
         item.setAttribute("aria-selected", idx === i ? "true" : "false");
       }
       if (current) {
-        input.setAttribute("aria-activedescendant", current.dataset.value ?? "");
+        input.setAttribute("aria-activedescendant", current.id);
         // Only scroll on user-driven moves — initial paint must not yank
         // the page down to an off-screen instance.
         if (doScroll) current.scrollIntoView({block: "nearest"});

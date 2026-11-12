@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * ButtonGroup — zero-JS button container.
  *
@@ -46,7 +47,7 @@ const classes = cn(
   role={role}
   class={classes}
   data-orientation={orientation}
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   {...rest}
 >
   <slot/>

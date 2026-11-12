@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * ScrollArea — themed thin scrollbars with zero JS.
  *
@@ -39,7 +40,7 @@ const classes = cn(
   id={id}
   class={classes}
   role="region"
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   tabindex="0"
   {...rest}
 >

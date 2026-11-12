@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /** Progress — zero-JS progress indicator.
 
   * Determinate (bar or circle) or indeterminate bar. `value` sets
@@ -55,6 +56,8 @@ export interface Props {
   class?: string;
   id?: string;
   ariaLabel?: string;
+  /** Track width for the bar variant (any CSS length). Defaults to 100%. */
+  width?: string;
 }
 
 const {
@@ -71,6 +74,7 @@ const {
   class: className,
   id,
   ariaLabel,
+  width,
   ...rest
 } = Astro.props;
 
@@ -105,13 +109,13 @@ const circleSizeMap: Record<string, { size: string; labelFontSize: string }> = {
   "2xl": { size: "96px", labelFontSize: "var(--ui-text-xl)" },
 };
 
-const barSizeMap: Record<string, { height: string; width: string }> = {
-  xs: { height: "4px", width: "8rem" },
-  sm: { height: "6px", width: "10rem" },
-  md: { height: "8px", width: "12rem" },
-  lg: { height: "12px", width: "16rem" },
-  xl: { height: "16px", width: "20rem" },
-  "2xl": { height: "20px", width: "24rem" },
+const barSizeMap: Record<string, { height: string }> = {
+  xs: { height: "4px" },
+  sm: { height: "6px" },
+  md: { height: "8px" },
+  lg: { height: "12px" },
+  xl: { height: "16px" },
+  "2xl": { height: "20px" },
 };
 
 const SEGMENT_COUNT =
@@ -124,6 +128,23 @@ const SEGMENT_FILL = Math.min(
 
 const bar = barSizeMap[size] ?? barSizeMap.md;
 const circle = circleSizeMap[size] ?? circleSizeMap.md;
+
+const barStyle = [
+  `--aui-progress-bar-height:${bar.height}`,
+  "width:var(--aui-progress-width, 100%)",
+  width ? `--aui-progress-width:${width}` : null,
+  isDeterminate ? `--aui-progress-percent:${percent}` : null,
+]
+  .filter(Boolean)
+  .join(";");
+
+const circleStyle = [
+  `width:${circle.size}`,
+  `height:${circle.size}`,
+  isDeterminate ? `--aui-progress-percent:${percent}` : null,
+]
+  .filter(Boolean)
+  .join(";");
 ---
 {
   variant === "circle" ? (
@@ -134,9 +155,9 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     aria-valuenow={isDeterminate ? percent : undefined}
     aria-valuemin={0}
     aria-valuemax={100}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel ?? label ?? "Progress")}
     data-value={isDeterminate ? percent : undefined}
-    style={`width:${circle.size};height:${circle.size}${isDeterminate ? `;--aui-progress-percent:${percent}` : ""}`}
+    style={circleStyle}
     {...rest}
   >
 			<svg
@@ -186,9 +207,9 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
     aria-valuenow={isDeterminate ? percent : undefined}
     aria-valuemin={0}
     aria-valuemax={100}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel ?? label ?? "Progress")}
     data-value={isDeterminate ? percent : undefined}
-    style={`--aui-progress-bar-height:${bar.height};width:${bar.width}${isDeterminate ? `;--aui-progress-percent:${percent}` : ""}`}
+    style={barStyle}
     {...rest}
   >
     {(label || label === '0') && (
@@ -530,7 +551,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
   }
 
   .aui-progress--color-primary.aui-progress--circle .aui-progress__value {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   .aui-progress--color-secondary.aui-progress--circle .aui-progress__value {
@@ -538,15 +559,15 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
   }
 
   .aui-progress--color-success.aui-progress--circle .aui-progress__value {
-    color: var(--ui-success);
+    color: var(--ui-success-text);
   }
 
   .aui-progress--color-warning.aui-progress--circle .aui-progress__value {
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
   }
 
   .aui-progress--color-info.aui-progress--circle .aui-progress__value {
-    color: var(--ui-info);
+    color: var(--ui-info-text);
   }
 
   .aui-progress--color-muted.aui-progress--circle .aui-progress__value {
@@ -554,7 +575,7 @@ const circle = circleSizeMap[size] ?? circleSizeMap.md;
   }
 
   .aui-progress--color-error.aui-progress--circle .aui-progress__value {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   /* ---------- dynamic color (value → colour) ---------- */

@@ -1944,10 +1944,10 @@
   display: inline-flex;
   padding: 1px var(--ui-space-2);
   margin-inline-start: var(--ui-space-2);
-  color: var(--ui-success);
+  color: var(--ui-success-text);
   font-size: var(--ui-text-2xs);
   font-weight: var(--ui-font-semibold);
-  background-color: color-mix(in srgb, var(--ui-success) 12%, transparent);
+  background-color: var(--ui-success-muted);
   border-radius: var(--ui-radius-full);
 }
 
@@ -2195,6 +2195,12 @@
   background-color: var(--ui-background);
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-md);
+  /* Same reason as .docs-demo-preview: chrome prose rules must not tint
+     components staged here (the Alert title inherits its solid fill). */
+}
+.token-playground-preview p,
+.token-playground-preview ul {
+  color: inherit;
 }
 
 .tp-preview-row {
@@ -2675,6 +2681,21 @@
   color: var(--ui-muted-foreground);
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius-sm);
+}
+
+/* Kept out of the visual layout but inside the accessible name (the
+   search trigger's name comes from its contents so it always matches the
+   visible "Search… + shortcut" text). */
+.docs-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Platform-aware shortcut hint: both spans render by default (no-JS

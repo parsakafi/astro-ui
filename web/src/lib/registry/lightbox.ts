@@ -105,7 +105,8 @@ export const lightbox: ComponentMeta = {
     ],
     props: [
         t("id", "string", "required", "Dialog DOM id (`aui-lightbox-<id>`) and aria target ids."),
-        t("group", "string", "—", "Links several Lightbox instances into one synchronized gallery."),
+        t("group", "string", "-", "Links several Lightbox instances into one synchronized gallery."),
+        t("labels", `{ media?, gallery?, goTo? }`, "-", "Translate the built-in strings; explicit *Label props still win."),
         t("navigation", "boolean", "true", "Prev/next buttons."),
         t("showClose", "boolean", "true", "Native × close button."),
         t("showCounter", "boolean", "false", "Shows the live \"1 / 5\" counter."),

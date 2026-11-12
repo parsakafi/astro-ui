@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * BubbleGroup — a run of consecutive bubbles from one sender.
  *
@@ -27,7 +28,7 @@ const { class: className, id, ariaLabel, ...rest } = Astro.props;
 const classes = cn("aui-bubble-group", className);
 ---
 
-<div id={id} class={classes} role="group" aria-label={ariaLabel} {...rest}>
+<div id={id} class={classes} role="group" aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   <slot/>
 </div>
 

@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Dialog — modal window built on the native <dialog> element.
  *
@@ -73,6 +74,7 @@ const hasTitle = Astro.slots.has("title");
 const hasDescription = Astro.slots.has("description");
 const hasFooter = Astro.slots.has("footer");
 
+const resolvedAriaLabel = resolveAriaLabel(Astro.props, ariaLabel);
 const titleId = id && hasTitle ? `${id}-title` : undefined;
 const descriptionId = id && hasDescription ? `${id}-description` : undefined;
 
@@ -87,8 +89,8 @@ const classes = cn(
 <dialog
   id={id}
   class={classes}
-  aria-label={ariaLabel}
-  aria-labelledby={ariaLabel ?? ariaLabelledby ?? titleId}
+  aria-label={resolvedAriaLabel}
+  aria-labelledby={resolvedAriaLabel ? undefined : ariaLabelledby ?? titleId}
   aria-describedby={ariaDescribedby ?? descriptionId}
   {...rest}
 >

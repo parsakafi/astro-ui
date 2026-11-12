@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * NotificationCenter — bell trigger with a grouped notification panel.
  *
@@ -56,6 +57,7 @@ const triggerId = `${base}-trigger`;
 const panelId = `${base}-panel`;
 const headingId = `${base}-heading`;
 const badge = count > 99 ? "99+" : String(count);
+const resolvedAriaLabel = resolveAriaLabel(Astro.props, ariaLabel);
 
 const classes = cn("aui-notif", `aui-notif--${placement}`, className);
 ---
@@ -68,7 +70,7 @@ const classes = cn("aui-notif", `aui-notif--${placement}`, className);
     aria-haspopup="dialog"
     aria-expanded={open ? "true" : "false"}
     aria-controls={panelId}
-    aria-label={count > 0 ? `${ariaLabel}, ${count} unread` : ariaLabel}
+    aria-label={count > 0 ? `${resolvedAriaLabel}, ${count} unread` : resolvedAriaLabel}
     data-aui-notif-trigger
   >
     <slot name="trigger">

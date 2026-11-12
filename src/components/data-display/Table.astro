@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Table — zero-JS semantic data table.
  *
@@ -61,7 +62,7 @@ const classes = cn(
   id={id}
   class={classes}
   role="region"
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   aria-describedby={ariaDescribedby}
   {...rest}
 >
@@ -177,86 +178,109 @@ const classes = cn(
      are rendered by the consumer and lack data-astro-cid.
      ============================================================ */
 
-  /* ---- head cells (always: muted bg, bottom border, medium weight) ---- */
+  /* ---- head cells (raw <th> and the optional BEM alias) ---- */
+  .aui-table__head :global(th),
   .aui-table__head :global(.aui-table__head-cell) {
+    padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
+    font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
     font-weight: var(--ui-font-medium);
-    text-align: start;
+    /* inherit, so the table-level `align` prop also reaches head cells */
+    text-align: inherit;
     white-space: nowrap;
     color: var(--ui-foreground);
     background-color: var(--ui-muted);
     border-bottom: 1px solid var(--ui-border);
+    vertical-align: middle;
   }
 
-  /* ---- body cells: base (no border) ---- */
+  /* ---- body cells: raw <td> and the optional BEM alias ---- */
+  .aui-table__body :global(td),
   .aui-table__body :global(.aui-table__cell) {
+    padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
+    font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
     vertical-align: middle;
     color: var(--ui-foreground);
   }
 
   /* ---- non-bordered mode ---- */
+  .aui-table:not(.aui-table--bordered) .aui-table__body :global(td),
   .aui-table:not(.aui-table--bordered) .aui-table__body :global(.aui-table__cell) {
     border-bottom: 1px solid var(--ui-border);
   }
 
+  .aui-table:not(.aui-table--bordered) .aui-table__body :global(tr:last-child td),
   .aui-table:not(.aui-table--bordered) .aui-table__body :global(tr:last-child .aui-table__cell) {
     border-bottom: none;
   }
 
+  .aui-table:not(.aui-table--bordered) .aui-table__body :global(tr:hover td),
   .aui-table:not(.aui-table--bordered) .aui-table__body :global(tr:hover .aui-table__cell) {
     background-color: var(--ui-secondary);
   }
 
+  .aui-table:not(.aui-table--bordered) .aui-table__foot :global(td),
+  .aui-table:not(.aui-table--bordered) .aui-table__foot :global(th),
   .aui-table:not(.aui-table--bordered) .aui-table__foot :global(.aui-table__cell) {
     font-weight: var(--ui-font-medium);
     background-color: var(--ui-muted);
     color: var(--ui-foreground);
-    text-align: start;
+    text-align: inherit;
     border-top: 1px solid var(--ui-border);
     padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
     font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
   }
 
   /* ---- bordered mode ---- */
+  .aui-table--bordered .aui-table__body :global(td),
   .aui-table--bordered .aui-table__body :global(.aui-table__cell) {
     border: 1px solid var(--ui-border);
   }
 
+  .aui-table--bordered .aui-table__head :global(th),
   .aui-table--bordered .aui-table__head :global(.aui-table__head-cell) {
     background-color: var(--ui-muted);
     border: 1px solid var(--ui-border);
   }
 
+  .aui-table--bordered .aui-table__body :global(tr:last-child td),
   .aui-table--bordered .aui-table__body :global(tr:last-child .aui-table__cell) {
     border-bottom: none;
   }
 
+  .aui-table--bordered .aui-table__body :global(tr:hover td),
   .aui-table--bordered .aui-table__body :global(tr:hover .aui-table__cell) {
     background-color: var(--ui-secondary);
   }
 
+  .aui-table--bordered .aui-table__foot :global(td),
+  .aui-table--bordered .aui-table__foot :global(th),
   .aui-table--bordered .aui-table__foot :global(.aui-table__cell) {
     font-weight: var(--ui-font-medium);
     background-color: var(--ui-muted);
     color: var(--ui-foreground);
-    text-align: start;
+    text-align: inherit;
     padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
     font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
   }
 
   /* ---- striped mode ---- */
+  .aui-table--striped .aui-table__body :global(tr:nth-child(2n) td),
   .aui-table--striped .aui-table__body :global(tr:nth-child(2n) .aui-table__cell) {
     background-color: var(--ui-muted);
   }
 
+  .aui-table--striped .aui-table__body :global(tr:nth-child(2n):hover td),
   .aui-table--striped .aui-table__body :global(tr:nth-child(2n):hover .aui-table__cell) {
     background-color: var(--ui-secondary);
   }
 
   /* ---- striped + bordered ---- */
+  .aui-table--bordered.aui-table--striped .aui-table__body :global(tr:nth-child(2n) td),
   .aui-table--bordered.aui-table--striped .aui-table__body :global(tr:nth-child(2n) .aui-table__cell) {
     background-color: var(--ui-muted);
   }
 
+  .aui-table--bordered.aui-table--striped .aui-table__body :global(tr:nth-child(2n):hover td),
   .aui-table--bordered.aui-table--striped .aui-table__body :global(tr:nth-child(2n):hover .aui-table__cell) {
     background-color: var(--ui-secondary);
   }
@@ -282,11 +306,13 @@ const classes = cn(
     --aui-table-cell-font-size: var(--ui-text-base);
   }
 
+  .aui-table__head :global(th),
   .aui-table__head :global(.aui-table__head-cell) {
     padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
     font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));
   }
 
+  .aui-table__body :global(td),
   .aui-table__body :global(.aui-table__cell) {
     padding: var(--aui-table-cell-padding, var(--ui-space-2) var(--ui-space-4));
     font-size: var(--aui-table-cell-font-size, var(--ui-text-sm));

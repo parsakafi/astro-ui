@@ -9,7 +9,7 @@
   "bugs": {
     "url": "https://github.com/parsakafi/astro-ui/issues"
   },
-  "version": "0.1.1",
+  "version": "0.2.0",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
@@ -49,6 +49,7 @@
     "./sidebar-group": "./src/components/navigation/SidebarGroup.astro",
     "./sidebar-item": "./src/components/navigation/SidebarItem.astro",
     "./popover": "./src/components/overlay/Popover.astro",
+    "./progress": "./src/components/data-display/Progress.astro",
     "./menu": "./src/components/overlay/Menu.astro",
     "./menu-item": "./src/components/overlay/MenuItem.astro",
     "./menu-group": "./src/components/overlay/MenuGroup.astro",
@@ -118,13 +119,16 @@
     "./utils": "./src/utils/cn.ts"
   },
   "files": [
+    "index.ts",
     "src",
-    "!src/content",
+    "!src/styles-scss",
     "!src/pages",
-    "index.ts"
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "sideEffects": [
-    "*.css"
+    "**/*.css"
   ],
   "keywords": [
     "astro",
@@ -144,10 +148,11 @@
     "format": "biome check --write src tests index.ts",
     "build:css": "sass src/styles-scss/toast.scss src/styles/toast.css --quiet --no-source-map",
     "watch:css": "sass src/styles-scss/toast.scss src/styles/toast.css --quiet --no-source-map --watch",
-    "prepublishOnly": "npm run build:css && npx astro check && npx biome check src tests index.ts && npx vitest run"
+    "check:pack": "node scripts/check-pack.mjs",
+    "prepublishOnly": "npm run build:css && npx astro check && npx biome check src tests index.ts && npx vitest run && npm run check:pack"
   },
   "peerDependencies": {
-    "astro": "^7.3.3"
+    "astro": ">=7.0.0 <8.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

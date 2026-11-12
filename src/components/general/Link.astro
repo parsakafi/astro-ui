@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Link — semantic anchor with smart defaults for external/target="_blank"
  * links, disabled (non-interactive) state, and view-transition support.
@@ -149,7 +150,7 @@ const isHref =
   href={isDisabled || !isHref ? undefined : href}
   id={id}
   class={classes}
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   aria-disabled={isDisabled || undefined}
   aria-current={ariaCurrent}
   rel={resolvedRel}
@@ -212,7 +213,7 @@ const isHref =
   /* ---------- color ---------- */
 
   .aui-link--color-primary {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     --aui-link-underline-color: var(--ui-primary);
   }
 
@@ -227,17 +228,17 @@ const isHref =
   }
 
   .aui-link--color-error {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
     --aui-link-underline-color: var(--ui-error);
   }
 
   .aui-link--color-success {
-    color: var(--ui-success);
+    color: var(--ui-success-text);
     --aui-link-underline-color: var(--ui-success);
   }
 
   .aui-link--color-warning {
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
     --aui-link-underline-color: var(--ui-warning);
   }
 
@@ -308,17 +309,17 @@ const isHref =
   }
 
   .aui-link--color-error:hover {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
     filter: brightness(0.92);
   }
 
   .aui-link--color-success:hover {
-    color: var(--ui-success);
+    color: var(--ui-success-text);
     filter: brightness(0.92);
   }
 
   .aui-link--color-warning:hover {
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
     filter: brightness(0.92);
   }
 

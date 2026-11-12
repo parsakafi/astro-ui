@@ -87,12 +87,13 @@ export const progress: ComponentMeta = {
         t("stripedTrack", "boolean", "false", "Hatch the empty remainder inside an outlined track."),
         t("segmented", `boolean | number`, "false", "Discrete blocks; a number sets the count."),
         t("squared", "boolean", "false", "Gap between fill and track."),
+        t("width", "string", "—", "Bar track width (any CSS length); defaults to 100%."),
         ...common(),
     ],
     faq: [
         {
             q: "Is the value announced?",
-            a: "When label is set the component exposes a role=\"progressbar\" with aria-valuenow. Without label, treat it as decorative.",
+            a: "Yes. The component is a role=\"progressbar\" with aria-valuenow/min/max, and it always has an accessible name: `label` or `ariaLabel` when provided, otherwise the default \"Progress\" so assistive tech still announces the value.",
         },
         {
             q: "How does color=\"dynamic\" work without JavaScript?",

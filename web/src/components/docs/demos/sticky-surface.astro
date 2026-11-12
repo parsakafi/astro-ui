@@ -15,7 +15,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Toolbar</h3>
             <DemoTabs id="dm-sticky-surface-toolbar">
               <Fragment slot="preview">
-                <div style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
+                <div tabindex="0" role="region" aria-label="Sticky toolbar demo" style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
                   <StickySurface effects={["line", "elevate"]} threshold="0px">
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--ui-space-3) var(--ui-space-4);">
                       <strong>Toolbar</strong>
@@ -49,7 +49,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Glass header</h3>
             <DemoTabs id="dm-sticky-surface-glass">
               <Fragment slot="preview">
-                <div style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
+                <div tabindex="0" role="region" aria-label="Glass header demo" style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
                   <StickySurface as="header" effects={["backdrop"]} threshold="8px">
                     <div style="padding: var(--ui-space-3) var(--ui-space-4);">
                       <strong>Glass header</strong>
@@ -82,7 +82,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Stuck-state hook</h3>
             <DemoTabs id="dm-sticky-surface-hook">
               <Fragment slot="preview">
-                <div style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
+                <div tabindex="0" role="region" aria-label="Stuck-state demo" style="max-height: 320px; overflow-y: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius-md);">
                   <StickySurface id="dm-sticky-hook-surface" observeStuck threshold="0px">
                     <div style="padding: var(--ui-space-3) var(--ui-space-4);">
                       <strong>Toolbar</strong>

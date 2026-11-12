@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Lightbox — accessible image video gallery modal.
  *
@@ -32,6 +33,7 @@
  * gallery script that ships with this component.
  */
 import { cn } from "../../utils/cn";
+import { resolveLabels } from "../../utils/i18n";
 
 export interface Props {
   /** Required for accessible labelling and trigger targeting. */
@@ -40,6 +42,12 @@ export interface Props {
   group?: string;
   /** Explicit accessible name (overrides automatic `aria-labelledby`). */
   ariaLabel?: string;
+  /** Translate the built-in strings (English defaults); explicit *Label props still win. */
+  labels?: {
+    media?: string;
+    gallery?: string;
+    goTo?: string;
+  };
   /** Override the automatic `aria-describedby` target. */
   ariaDescribedby?: string;
   /** Render the native (zero-JS) close button. Defaults to true. */
@@ -75,6 +83,7 @@ const {
   id,
   group,
   ariaLabel,
+  labels,
   ariaDescribedby,
   showClose = true,
   closeLabel = "Close lightbox",
@@ -93,10 +102,15 @@ const {
 } = Astro.props;
 
 const uid = `aui-lightbox-${id}`;
+const text = resolveLabels(
+  { media: "Media", gallery: "Gallery", goTo: "Go to" },
+  labels,
+);
 const groupAttr = group ? `aui-lightbox-group-${group}` : undefined;
 
 const hasTitle = Astro.slots.has("title");
 const hasDescription = Astro.slots.has("description");
+const resolvedAriaLabel = resolveAriaLabel(Astro.props, ariaLabel);
 const titleId = hasTitle ? `${uid}-title` : undefined;
 const descriptionId = hasDescription ? `${uid}-description` : undefined;
 
@@ -108,6 +122,7 @@ const config = {
   duration,
   keyboard,
   counterLabel,
+  goToLabel: text.goTo,
 };
 
 const classes = cn("aui-lightbox", className);
@@ -116,8 +131,8 @@ const classes = cn("aui-lightbox", className);
 <dialog
   id={uid}
   class={classes}
-  aria-label={ariaLabel}
-  aria-labelledby={ariaLabel ?? titleId}
+  aria-label={resolvedAriaLabel}
+  aria-labelledby={resolvedAriaLabel ? undefined : titleId}
   aria-describedby={ariaDescribedby ?? descriptionId}
   data-aui-lightbox
   data-group={groupAttr}
@@ -145,7 +160,7 @@ const classes = cn("aui-lightbox", className);
         class="aui-lightbox__content"
         data-lightbox-content
         role="region"
-        aria-label="Media"
+        aria-label={text.media}
         tabindex="0"
       >
         <slot />
@@ -198,7 +213,7 @@ const classes = cn("aui-lightbox", className);
               <div
                 class="aui-lightbox__indicators"
                 role="tablist"
-                aria-label={counterLabel ? `${counterLabel} gallery` : "Gallery"}
+                aria-label={counterLabel ? `${counterLabel} ${text.gallery}` : text.gallery}
                 data-lightbox-indicators
               />
             )
@@ -346,7 +361,7 @@ const classes = cn("aui-lightbox", className);
         dot.className = "aui-lightbox__indicator";
         dot.dataset.slideIndex = String(i);
         dot.setAttribute("role", "tab");
-        dot.setAttribute("aria-label", `Go to ${cfg.counterLabel} ${i + 1}`);
+        dot.setAttribute("aria-label", `${cfg.goToLabel || "Go to"} ${cfg.counterLabel} ${i + 1}`);
         dot.setAttribute("aria-selected", i === 0 ? "true" : "false");
         if (i === 0) dot.setAttribute("data-active", "true");
         dot.addEventListener("click", () => setActive(i));

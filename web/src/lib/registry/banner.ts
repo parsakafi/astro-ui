@@ -11,7 +11,7 @@ export const banner: ComponentMeta = {
     category: "feedback",
     js: false,
     usage:
-        `---\nimport { Banner, Button } from "@parsakafi/astro-ui";\n---\n\n<Banner variant="info" closable>\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline and Banner have landed.\n  <Button slot="actions" size="sm" variant="outline">Read the notes</Button>\n</Banner>`,
+        `---\nimport { Banner, Button } from "@parsakafi/astro-ui";\n---\n\n<Banner variant="info" closable>\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline and Banner have landed.\n  <Button slot="actions" size="sm" variant="secondary">Read the notes</Button>\n</Banner>`,
     features: [
         "6 variants: primary, info, success, warning, error, neutral",
         "Slots for icon, title, message, and an action row",
@@ -30,7 +30,7 @@ export const banner: ComponentMeta = {
         {
             id: "release",
             title: "Release announcement",
-            code: `<Banner variant="info">\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline, Banner, and Menu are here.\n  <Button slot="actions" size="sm" variant="outline">Read the notes</Button>\n</Banner>`,
+            code: `<Banner variant="info">\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline, Banner, and Menu are here.\n  <Button slot="actions" size="sm" variant="secondary">Read the notes</Button>\n</Banner>`,
         },
         {
             id: "dismissible",

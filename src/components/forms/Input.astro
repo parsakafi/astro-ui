@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Input — zero-JS text control.
  *
@@ -133,7 +134,7 @@ const classes = cn(
   disabled={disabled || undefined}
   readonly={readonly || undefined}
   aria-invalid={invalid || undefined}
-  aria-label={ariaLabel}
+  aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
   aria-describedby={ariaDescribedby}
   id={id}
   {...rest}

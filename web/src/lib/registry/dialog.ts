@@ -11,7 +11,7 @@ export const dialog: ComponentMeta = {
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Dialog, Button } from "@parsakafi/astro-ui";\n---\n\n<Button id="open">Open</Button>\n<Dialog id="prefs">\n  <h2 slot="title">Preferences</h2>\n  <p slot="description">Device-only settings.</p>\n  <form method="dialog"><Button>Close</Button></form>\n</Dialog>\n<script>\n  document.getElementById("open")?.addEventListener("click", () =>\n    document.getElementById("prefs")?.showModal());\n</script>`,
+        `---\nimport { Dialog, Button } from "@parsakafi/astro-ui";\n---\n\n<Button id="open">Open</Button>\n<Dialog id="prefs">\n  <h2 slot="title">Preferences</h2>\n  <p slot="description">Device-only settings.</p>\n  <form method="dialog"><Button type="submit">Close</Button></form>\n</Dialog>\n<script>\n  document.getElementById("open")?.addEventListener("click", () =>\n    document.getElementById("prefs")?.showModal());\n</script>`,
     features: [
         "Native <dialog>: focus trap + return, Esc, backdrop",
         "title/description/footer slots with automatic aria wiring",
@@ -34,7 +34,7 @@ export const dialog: ComponentMeta = {
   <h2 slot="title">Preferences</h2>
   <p slot="description">These settings apply to this device only.</p>
   <div slot="footer">
-<form method="dialog"><Button>Close</Button></form>
+<form method="dialog"><Button type="submit">Close</Button></form>
   </div>
 </Dialog>
 <script>
@@ -61,7 +61,7 @@ document.getElementById("prefs")?.showModal());
     faq: [
         {
             q: "How do I close it without JS?",
-            a: "A <form method=\"dialog\"> button inside the dialog closes natively. Esc and the × button also work with zero app code.",
+            a: "A <form method=\"dialog\"> button with type=\"submit\" inside the dialog closes natively. Esc and the × button also work with zero app code.",
         },
         {
             q: "Can clicking the backdrop close it?",

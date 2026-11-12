@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Breadcrumb — zero-JS breadcrumb trail.
  *
@@ -67,7 +68,7 @@ const classes = cn(
 );
 ---
 
-<nav id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<nav id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   <div class="aui-breadcrumb__list">
     {
       (items?.filter((item) => !item.hidden) ?? []).map((item) => (

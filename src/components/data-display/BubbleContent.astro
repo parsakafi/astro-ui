@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * BubbleContent — the visible rounded box inside a Bubble.
  *
@@ -26,7 +27,7 @@ const { class: className, id, ariaLabel, ...rest } = Astro.props;
 const classes = cn("aui-bubble__content", className);
 ---
 
-<div id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<div id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   <slot/>
 </div>
 

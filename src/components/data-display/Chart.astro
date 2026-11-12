@@ -33,6 +33,7 @@
  * JavaScript required: No
  */
 import { cn } from "../../utils/cn";
+import { resolveLabels } from "../../utils/i18n";
 
 export interface ChartSeries {
   /** Series name — used in the fallback table and aria labels. */
@@ -265,6 +266,27 @@ export interface Props {
    *  enables wheel-to-zoom plus drag-to-pan on the SVG. Requires a
    *  small inline script — the only chart feature that ships JS. */
   zoomable?: boolean;
+  /** Translate the zoom toolbar labels (English defaults). `labels` is
+   *  already the category-label data prop, so UI strings live here. */
+  uiLabels?: {
+    zoomIn?: string;
+    zoomOut?: string;
+    reset?: string;
+    /** Fallback-table column headers. */
+    category?: string;
+    group?: string;
+    min?: string;
+    q1?: string;
+    median?: string;
+    q3?: string;
+    max?: string;
+    bin?: string;
+    count?: string;
+    measure?: string;
+    ranges?: string;
+    actual?: string;
+    target?: string;
+  };
   /** Accessible title (rendered as figcaption, visually hidden is not used — show it). */
   title?: string;
   /** Supporting line under the title. */
@@ -434,6 +456,7 @@ const {
   boxRadius = 8,
   boxplotOutliers = true,
   zoomable = false,
+  uiLabels,
   terrainMode = "both",
   terrainAxes,
   terrainCallouts = true,
@@ -444,6 +467,28 @@ const {
   class: className,
   id,
 } = Astro.props;
+
+const uiText = resolveLabels(
+  {
+    zoomIn: "Zoom in",
+    zoomOut: "Zoom out",
+    reset: "Reset view",
+    category: "Category",
+    group: "Group",
+    min: "Min",
+    q1: "Q1",
+    median: "Median",
+    q3: "Q3",
+    max: "Max",
+    bin: "Bin",
+    count: "Count",
+    measure: "Measure",
+    ranges: "Ranges",
+    actual: "Actual",
+    target: "Target",
+  },
+  uiLabels,
+);
 
 const colors = [
   "var(--ui-chart-1, var(--ui-primary))",
@@ -3540,9 +3585,9 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   {
     zoomable && isMap && map && (
       <div class="aui-chart__zoombar">
-        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="in" aria-label="Zoom in">+</button>
-        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="out" aria-label="Zoom out">−</button>
-        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="reset" aria-label="Reset view">Reset</button>
+        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="in" aria-label={uiText.zoomIn}>+</button>
+        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="out" aria-label={uiText.zoomOut}>−</button>
+        <button type="button" class="aui-chart__zoombtn" data-aui-zoom="reset" aria-label={uiText.reset}>{uiText.reset}</button>
       </div>
     )
   }
@@ -3795,13 +3840,13 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   <table class="aui-chart__table">
     <thead>
     <tr>
-      <th scope="col">Category</th>
-      {boxData.grouped && <th scope="col">Group</th>}
-      <th scope="col">Min</th>
-      <th scope="col">Q1</th>
-      <th scope="col">Median</th>
-      <th scope="col">Q3</th>
-      <th scope="col">Max</th>
+      <th scope="col">{uiText.category}</th>
+      {boxData.grouped && <th scope="col">{uiText.group}</th>}
+      <th scope="col">{uiText.min}</th>
+      <th scope="col">{uiText.q1}</th>
+      <th scope="col">{uiText.median}</th>
+      <th scope="col">{uiText.q3}</th>
+      <th scope="col">{uiText.max}</th>
     </tr>
     </thead>
     <tbody>
@@ -3822,8 +3867,8 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   <table class="aui-chart__table">
     <thead>
     <tr>
-      <th scope="col">Bin</th>
-      <th scope="col">Count</th>
+      <th scope="col">{uiText.bin}</th>
+      <th scope="col">{uiText.count}</th>
     </tr>
     </thead>
     <tbody>
@@ -3839,10 +3884,10 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   <table class="aui-chart__table">
     <thead>
     <tr>
-      <th scope="col">Measure</th>
-      <th scope="col">Ranges</th>
-      <th scope="col">Actual</th>
-      <th scope="col">Target</th>
+      <th scope="col">{uiText.measure}</th>
+      <th scope="col">{uiText.ranges}</th>
+      <th scope="col">{uiText.actual}</th>
+      <th scope="col">{uiText.target}</th>
     </tr>
     </thead>
     <tbody>
@@ -3860,7 +3905,7 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
   <table class="aui-chart__table">
     <thead>
     <tr>
-      <th scope="col">Category</th>
+      <th scope="col">{uiText.category}</th>
       {series.map((s) => (
         <th scope="col">{s.name}</th>
       ))}

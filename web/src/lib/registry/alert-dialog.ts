@@ -11,7 +11,7 @@ export const alertDialog: ComponentMeta = {
     category: "overlay",
     js: true,
     usage:
-        `---\nimport { Button, AlertDialog } from "@parsakafi/astro-ui";\n---\n\n<Button id="open-delete">Delete project</Button>\n<AlertDialog id="delete">\n  <h2 slot="title">Delete project?</h2>\n  <p slot="description">This cannot be undone.</p>\n  <Fragment slot="footer">\n    <form method="dialog"><Button variant="outline">Cancel</Button></form>\n    <form method="dialog">\n      <Button variant="error" value="confirm">Delete</Button>\n    </form>\n  </Fragment>\n</AlertDialog>\n\n<script>\n  document.getElementById("open-delete")?.addEventListener("click", () => {\n    document.getElementById("delete")?.showModal();\n  });\n</script>`,
+        `---\nimport { Button, AlertDialog } from "@parsakafi/astro-ui";\n---\n\n<Button id="open-delete">Delete project</Button>\n<AlertDialog id="delete">\n  <h2 slot="title">Delete project?</h2>\n  <p slot="description">This cannot be undone.</p>\n  <Fragment slot="footer">\n    <form method="dialog"><Button type="submit" variant="outline">Cancel</Button></form>\n    <form method="dialog">\n      <Button type="submit" variant="error" value="confirm">Delete</Button>\n    </form>\n  </Fragment>\n</AlertDialog>\n\n<script>\n  document.getElementById("open-delete")?.addEventListener("click", () => {\n    document.getElementById("delete")?.showModal();\n  });\n</script>`,
     features: [
         "role=\"alertdialog\" — announced immediately by assistive tech",
         "Native <dialog> modality, focus containment, Escape-to-close",
@@ -27,7 +27,7 @@ export const alertDialog: ComponentMeta = {
         {
             id: "confirm",
             title: "Confirm an irreversible action",
-            code: `<Button id="open-delete" variant="error">Delete project</Button>\n<AlertDialog id="delete">\n  <h2 slot="title">Delete project?</h2>\n  <p slot="description">This cannot be undone.</p>\n  <Fragment slot="footer">\n    <form method="dialog"><Button variant="outline">Cancel</Button></form>\n    <form method="dialog"><Button variant="error" value="confirm">Delete</Button></form>\n  </Fragment>\n</AlertDialog>`,
+            code: `<Button id="open-delete" variant="error">Delete project</Button>\n<AlertDialog id="delete">\n  <h2 slot="title">Delete project?</h2>\n  <p slot="description">This cannot be undone.</p>\n  <Fragment slot="footer">\n    <form method="dialog"><Button type="submit" variant="outline">Cancel</Button></form>\n    <form method="dialog"><Button type="submit" variant="error" value="confirm">Delete</Button></form>\n  </Fragment>\n</AlertDialog>`,
         },
         {
             id: "sizes",
@@ -44,7 +44,7 @@ export const alertDialog: ComponentMeta = {
         {name: "title", description: "Heading (auto-wired to aria-labelledby)."},
         {name: "description", description: "Supporting copy (auto-wired to aria-describedby)."},
         {name: "default", description: "Extra body content."},
-        {name: "footer", description: "Action buttons — wrap each in <form method=\"dialog\"> for zero-JS close."},
+        {name: "footer", description: "Action buttons - wrap each in <form method=\"dialog\"> with type=\"submit\" for zero-JS close."},
     ],
     faq: [
         {

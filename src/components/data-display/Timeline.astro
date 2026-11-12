@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Timeline — zero-JS ordered list of dated events.
  *
@@ -32,7 +33,7 @@ const { size = "md", class: className, id, ariaLabel, ...rest } = Astro.props;
 const classes = cn("aui-timeline", `aui-timeline--${size}`, className);
 ---
 
-<ol id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<ol id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   <slot/>
 </ol>
 

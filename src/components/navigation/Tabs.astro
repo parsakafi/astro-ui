@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Tabs — tabbed content switcher following the WAI-ARIA tabs pattern.
  *
@@ -104,7 +105,7 @@ const classes = cn(
 >
   <div
     role="tablist"
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     aria-orientation={orientation === "vertical" ? "vertical" : undefined}
     class="aui-tabs__list"
   >
@@ -404,7 +405,7 @@ const classes = cn(
   }
 
   .aui-tabs--line > .aui-tabs__list > .aui-tabs__tab[data-active] {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     border-block-end-color: var(--ui-primary);
   }
 

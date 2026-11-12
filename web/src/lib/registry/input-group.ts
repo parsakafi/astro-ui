@@ -49,7 +49,7 @@ export const inputGroup: ComponentMeta = {
         {
             id: "states",
             title: "Invalid & disabled",
-            code: `<InputGroup invalid>\n  <Input name="url" invalid placeholder="Required field…" />\n</InputGroup>\n<InputGroup disabled>\n  <Input disabled value="Cannot edit" />\n</InputGroup>`,
+            code: `<InputGroup invalid>\n  <Input name="url" invalid placeholder="Required field…" />\n</InputGroup>\n<InputGroup disabled>\n  <Input disabled value="Cannot edit" aria-label="Cannot edit" />\n</InputGroup>`,
         },
     ],
     props: [

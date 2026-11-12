@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Tooltip — CSS-only tooltip on hover and keyboard focus.
  *
@@ -45,7 +46,7 @@ const classes = cn(
 ---
 
 <span id={id} class={classes} {...rest}>
-	<span class="aui-tooltip__trigger" aria-label={ariaLabel}>
+	<span class="aui-tooltip__trigger" aria-label={resolveAriaLabel(Astro.props, ariaLabel)}>
 		<slot/>
 	</span>
 	<span class="aui-tooltip__bubble" role="tooltip" aria-hidden="true">

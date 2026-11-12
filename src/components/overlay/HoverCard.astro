@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * HoverCard — a rich preview card on hover and keyboard focus.
  *
@@ -41,7 +42,7 @@ const classes = cn("aui-hover-card", `aui-hover-card--${placement}`, className);
 	<div
     class="aui-hover-card__panel"
     role="note"
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     tabindex="0"
   >
 		<slot name="content"/>

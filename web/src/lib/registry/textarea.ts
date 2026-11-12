@@ -45,6 +45,7 @@ export const textarea: ComponentMeta = {
         t("maxlength / minlength", "number", "—", "Length bounds."),
         t("showCount / counter", "boolean", "false", "Character-count readout (aliases)."),
         t("clearable", "boolean", "false", "Clear button, visible with text."),
+        t("labels", `{ clear? }`, "-", "Translate the clear button's accessible name."),
         t("minRows / maxRows", "number", "—", "Auto-grow bounds; sets resize to none."),
         t("resize", `"none" | "vertical" | "horizontal" | "both"`, `"vertical"`, "Resize axis."),
         t("invalid", "boolean", "false", "Validation state."),

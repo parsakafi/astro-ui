@@ -1,6 +1,6 @@
 ---
-// biome-ignore lint/correctness/noUnusedImports: used in the Astro template below; biome does not see component usage in .astro markup
 import { Image } from "astro:assets";
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Avatar — zero-JS user/system image with initials fallback.
  *
@@ -98,6 +98,10 @@ const initials = name
   .join("");
 
 const resolvedAlt = alt ?? (name ? `${name}'s avatar` : "Avatar");
+const resolvedAriaLabel = resolveAriaLabel(
+  Astro.props,
+  ariaLabel ?? (alt === "" ? undefined : resolvedAlt),
+);
 const sizeToPx: Record<string, number> = {
   xs: 20,
   sm: 32,
@@ -146,7 +150,7 @@ const inlineStyle = [
   id={id}
   class={classes}
   role="img"
-  aria-label={ariaLabel ?? (alt === "" ? resolvedAlt : undefined)}
+  aria-label={resolvedAriaLabel}
   style={inlineStyle || undefined}
   {...rest}
 >
@@ -155,14 +159,14 @@ const inlineStyle = [
       <Image
         class="aui-avatar__img"
         src={src}
-        alt={ariaLabel ? "" : resolvedAlt}
+        alt={resolvedAriaLabel ? "" : resolvedAlt}
         loading="lazy"
         width={typeof customSize === "number" ? customSize : sizeToPx[size]}
         height={typeof customSize === "number" ? customSize : sizeToPx[size]}
         style={`object-fit:${fit}`}
       />
     ) : (
-      <span class="aui-avatar__fallback" aria-hidden={ariaLabel ? undefined : "true"}>
+      <span class="aui-avatar__fallback" aria-hidden={resolvedAriaLabel ? undefined : "true"}>
 				{initials ||
           <slot/>}
 			</span>
@@ -421,7 +425,7 @@ const inlineStyle = [
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     background: color-mix(in srgb, var(--ui-background) 55%, transparent);
     border-radius: inherit;
   }

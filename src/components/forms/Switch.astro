@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Switch — zero-JS on/off toggle.
  *
@@ -79,7 +80,7 @@ const classes = cn(
     required={required || undefined}
     disabled={disabled || undefined}
     aria-invalid={invalid || undefined}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     aria-describedby={ariaDescribedby}
     id={id}
     {...rest}

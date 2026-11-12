@@ -26,7 +26,6 @@ import { cn } from "../../utils/cn";
  *
  * JavaScript required: No
  */
-// biome-ignore lint/correctness/noUnusedImports: used in the Astro template below; biome does not see component usage in .astro markup
 import Radio from "./Radio.astro";
 
 export interface RadioGroupOption {
@@ -137,7 +136,7 @@ const classes = cn(
   }
 
   .aui-radio-group--invalid .aui-radio-group__legend {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   .aui-radio-group__options {

@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Accordion — collapsible sections with zero JS.
  *
@@ -66,7 +67,7 @@ const classes = cn(
 );
 ---
 
-<div id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<div id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   {
     items.map((item) => (
       <details

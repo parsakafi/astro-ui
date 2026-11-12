@@ -87,6 +87,7 @@ export const carousel: ComponentMeta = {
         t("showCounter", "boolean", "horizontal+single", "Show the \u201c1 / 5\u201d counter."),
         t("counterLabel", "string", `"Slide"`, "Word used in the counter's aria-label."),
         t("previousLabel / nextLabel", "string", `"Previous slide" / "Next slide"`, "Accessible labels for the buttons."),
+        t("labels", `{ previous?, next?, pause?, resume?, counter? }`, "-", "Translate the built-in control names; explicit *Label props still win."),
         t("snapType", `"mandatory" | "proximity"`, `"mandatory"`, "Scroll-snap strictness."),
         t("contentClass", "string", "\u2014", "Classes for the scroll container (e.g. fixed height for vertical)."),
         t("slideBasis", "string", "100% / 50%", "Slide size for variant=\"multiple\" (any flex-basis value)."),

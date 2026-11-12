@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Sidebar — zero-JS side navigation shell.
  *
@@ -51,7 +52,7 @@ const classes = cn(
 );
 ---
 
-<nav id={id} class={classes} aria-label={ariaLabel} {...rest}>
+<nav id={id} class={classes} aria-label={resolveAriaLabel(Astro.props, ariaLabel)} {...rest}>
   {
     Astro.slots.has("header") && (
       <div class="aui-sidebar__header">

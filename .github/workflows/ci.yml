@@ -30,3 +30,29 @@ jobs:
         run: npm test
       - name: Build docs site (SSR proof)
         run: npm run build
+      - name: Verify published tarball
+        run: npm run check:pack
+
+  # The peer range is >=7.0.0 <8.0.0; pin the oldest supported minor and the
+  # current dev version so a 7.x release cannot silently break the floor.
+  astro-peer:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        astro: [ "7.0.0", "7.4.1" ]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Install workspace deps
+        run: npm ci
+      - name: Pin Astro ${{ matrix.astro }}
+        run: npm install --no-save astro@${{ matrix.astro }}
+      - name: Typecheck against pinned Astro
+        run: npx astro check
+      - name: Library tests against pinned Astro
+        run: npx vitest run

@@ -1,4 +1,5 @@
 ---
+import { resolveAriaLabel } from "../../utils/a11y";
 /**
  * Button — zero-JS action trigger.
  *
@@ -47,7 +48,7 @@ export interface Props {
     | "carbon"
     | "accent";
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "icon";
-  /** Default `submit` (native HTML default) so `<form method="dialog">` and other form-wrapped buttons work with zero JS — pass `"button"` for standalone controls. */
+  /** Native button type. Defaults to `button` so a component dropped into an existing form never submits it by accident; pass `"submit"` for form actions (including the zero-JS `<form method="dialog">` close pattern). */
   type?: "button" | "submit" | "reset";
   href?: string;
   /** Native form participation (buttons only; ignored on <a>). */
@@ -95,7 +96,7 @@ const {
   variant = "primary",
   color: colorProp,
   size = "md",
-  type = "submit",
+  type = "button",
   href,
   name,
   value,
@@ -164,7 +165,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     href={href}
     id={id}
     class={classes}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     aria-disabled={isDisabled || undefined}
     aria-busy={loading || undefined}
     rel={rel}
@@ -206,7 +207,7 @@ const isCenterLoading = loading && loadingPosition === "center";
     formtarget={formTarget}
     formnovalidate={formNoValidate || undefined}
     disabled={isDisabled}
-    aria-label={ariaLabel}
+    aria-label={resolveAriaLabel(Astro.props, ariaLabel)}
     aria-busy={loading || undefined}
     style={style}
     data-color={resolvedColor}
@@ -440,7 +441,7 @@ const isCenterLoading = loading && loadingPosition === "center";
 
   .aui-btn--soft {
     background-color: color-mix(in srgb, var(--ui-primary) 12%, transparent);
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   .aui-btn--soft:hover {
@@ -458,22 +459,22 @@ const isCenterLoading = loading && loadingPosition === "center";
 
   .aui-btn--soft[data-color="error"] {
     background-color: var(--ui-error-muted);
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   .aui-btn--soft[data-color="success"] {
     background-color: var(--ui-success-muted);
-    color: var(--ui-success);
+    color: var(--ui-success-text);
   }
 
   .aui-btn--soft[data-color="warning"] {
     background-color: var(--ui-warning-muted);
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
   }
 
   .aui-btn--soft[data-color="info"] {
     background-color: var(--ui-info-muted);
-    color: var(--ui-info);
+    color: var(--ui-info-text);
   }
 
   .aui-btn--soft[data-color="carbon"] {
@@ -508,7 +509,7 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--outline[data-color] {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     border-color: var(--ui-primary);
   }
 
@@ -518,22 +519,22 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--outline[data-color="error"] {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
     border-color: var(--ui-error);
   }
 
   .aui-btn--outline[data-color="success"] {
-    color: var(--ui-success);
+    color: var(--ui-success-text);
     border-color: var(--ui-success);
   }
 
   .aui-btn--outline[data-color="warning"] {
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
     border-color: var(--ui-warning);
   }
 
   .aui-btn--outline[data-color="info"] {
-    color: var(--ui-info);
+    color: var(--ui-info-text);
     border-color: var(--ui-info);
   }
 
@@ -593,7 +594,7 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--dashed[data-color] {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     border-color: var(--ui-primary);
   }
 
@@ -603,22 +604,22 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--dashed[data-color="error"] {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
     border-color: var(--ui-error);
   }
 
   .aui-btn--dashed[data-color="success"] {
-    color: var(--ui-success);
+    color: var(--ui-success-text);
     border-color: var(--ui-success);
   }
 
   .aui-btn--dashed[data-color="warning"] {
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
     border-color: var(--ui-warning);
   }
 
   .aui-btn--dashed[data-color="info"] {
-    color: var(--ui-info);
+    color: var(--ui-info-text);
     border-color: var(--ui-info);
   }
 
@@ -678,7 +679,7 @@ const isCenterLoading = loading && loadingPosition === "center";
 
   .aui-btn--plain[data-color="primary"]:hover {
     border-color: var(--ui-primary);
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   .aui-btn--plain[data-color="secondary"]:hover {
@@ -688,22 +689,22 @@ const isCenterLoading = loading && loadingPosition === "center";
 
   .aui-btn--plain[data-color="error"]:hover {
     border-color: var(--ui-error);
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   .aui-btn--plain[data-color="success"]:hover {
     border-color: var(--ui-success);
-    color: var(--ui-success);
+    color: var(--ui-success-text);
   }
 
   .aui-btn--plain[data-color="warning"]:hover {
     border-color: var(--ui-warning);
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
   }
 
   .aui-btn--plain[data-color="info"]:hover {
     border-color: var(--ui-info);
-    color: var(--ui-info);
+    color: var(--ui-info-text);
   }
 
   .aui-btn--plain[data-color="carbon"]:hover {
@@ -726,12 +727,12 @@ const isCenterLoading = loading && loadingPosition === "center";
 
   .aui-btn--pure:hover {
     background-color: color-mix(in srgb, var(--ui-primary) 12%, var(--ui-background));
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   .aui-btn--pure[data-color="primary"]:hover {
     background-color: color-mix(in srgb, var(--ui-primary) 12%, var(--ui-background));
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   .aui-btn--pure[data-color="secondary"]:hover {
@@ -740,22 +741,22 @@ const isCenterLoading = loading && loadingPosition === "center";
 
   .aui-btn--pure[data-color="error"]:hover {
     background-color: var(--ui-error-muted);
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   .aui-btn--pure[data-color="success"]:hover {
     background-color: var(--ui-success-muted);
-    color: var(--ui-success);
+    color: var(--ui-success-text);
   }
 
   .aui-btn--pure[data-color="warning"]:hover {
     background-color: var(--ui-warning-muted);
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
   }
 
   .aui-btn--pure[data-color="info"]:hover {
     background-color: var(--ui-info-muted);
-    color: var(--ui-info);
+    color: var(--ui-info-text);
   }
 
   .aui-btn--pure[data-color="carbon"]:hover {
@@ -780,7 +781,7 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--ghost[data-color] {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   .aui-btn--ghost[data-color="secondary"] {
@@ -788,19 +789,19 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--ghost[data-color="error"] {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   .aui-btn--ghost[data-color="success"] {
-    color: var(--ui-success);
+    color: var(--ui-success-text);
   }
 
   .aui-btn--ghost[data-color="warning"] {
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
   }
 
   .aui-btn--ghost[data-color="info"] {
-    color: var(--ui-info);
+    color: var(--ui-info-text);
   }
 
   .aui-btn--ghost[data-color="carbon"] {
@@ -858,7 +859,7 @@ const isCenterLoading = loading && loadingPosition === "center";
 
   .aui-btn--link {
     background-color: transparent;
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     height: auto;
     padding: 0;
     text-decoration: underline;
@@ -870,19 +871,19 @@ const isCenterLoading = loading && loadingPosition === "center";
   }
 
   .aui-btn--link[data-color="error"] {
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   .aui-btn--link[data-color="success"] {
-    color: var(--ui-success);
+    color: var(--ui-success-text);
   }
 
   .aui-btn--link[data-color="warning"] {
-    color: var(--ui-warning);
+    color: var(--ui-warning-text);
   }
 
   .aui-btn--link[data-color="info"] {
-    color: var(--ui-info);
+    color: var(--ui-info-text);
   }
 
   .aui-btn--link[data-color="carbon"] {
@@ -908,7 +909,7 @@ const isCenterLoading = loading && loadingPosition === "center";
   .aui-btn--link.aui-btn--invalid,
   .aui-btn--link.aui-btn--invalid:hover {
     border-color: transparent;
-    color: var(--ui-error);
+    color: var(--ui-error-text);
   }
 
   .aui-btn--solid.aui-btn--invalid:not([data-color="error"]),

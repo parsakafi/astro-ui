@@ -24,7 +24,8 @@ Single source of truth for naming. Enforced partly by
 | Invalid   | `invalid`                       | boolean → visual state + `aria-invalid` where the role supports it |
 | Override  | `class`                         | merged last via `cn()`, never discarded     |
 | Identity  | `id`                            | forwarded as-is                             |
-| Label     | `ariaLabel` / `ariaDescribedby` | camelCase mirrors of aria attrs             |
+| Label     | `ariaLabel` / `ariaDescribedby` | camelCase mirrors of aria attrs; a native `aria-label` wins when both are set |
+| Localize  | `labels` (Chart: `uiLabels`)    | partial object merged over English defaults  |
 | Label for | `for`                           | Label's `for` (matches control `id`)        |
 
 Red is `error` everywhere — prop values, CSS modifiers, and the
