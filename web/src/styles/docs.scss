@@ -2853,20 +2853,36 @@ $docs-anchor-offset: 7.5rem;
 }
 
 /* Below 48rem a start-aligned Components panel (34rem wide) would run
-   past the inline-end edge, so every panel becomes a full-bleed fixed
-   dropdown pinned under the header. */
+   past the inline-end edge, so every panel goes full-bleed. It anchors
+   to the whole nav instead of its trigger: the header wraps to two rows
+   here, so a fixed 3.5rem top dropped the panel onto the link row. */
 @media (max-width: 48rem) {
+  .docs-nav {
+    position: relative;
+  }
+
+  /* Static trigger → the panel's absolute box resolves against .docs-nav,
+     so `inset-block-start: 100%` sits below the wrapped header. */
+  .docs-nav-links .docs-mega {
+    position: static;
+
+    /* The hover bridge would span the header's full width here. */
+    &::after {
+      display: none;
+    }
+  }
+
   /* Match the base rule's 0-3-0 specificity so the override wins. */
   .docs-nav-links .docs-mega .docs-mega-panel,
     /* …and the 0-4-0 open-state rule (hover/focus-within resets translate). */
   .docs-nav-links .docs-mega:hover .docs-mega-panel,
   .docs-nav-links .docs-mega:focus-within .docs-mega-panel,
   .docs-nav-links .docs-mega:focus-visible .docs-mega-panel {
-    position: fixed;
     inset-inline: var(--ui-space-3); /* full-bleed: left+right pin */
-    inset-block-start: auto;
     translate: 0 var(--ui-space-2);
-    top: 3.5rem;
+    /* The panel owns the scroll, so a long menu never runs off-screen. */
+    max-block-size: calc(100dvh - 11rem);
+    overflow-y: auto;
   }
 }
 
@@ -2900,14 +2916,13 @@ $docs-anchor-offset: 7.5rem;
     position: relative;
   }
 
-  /* Kill the desktop min-widths/multi-column grids so panels fit 390px. */
+  /* Kill the desktop min-widths/multi-column grids so panels fit 390px.
+     Scrolling is handled by the panel itself (see the 48rem block). */
   .docs-mega[data-mega='components'] .docs-mega-panel .docs-mega-grid,
   .docs-mega[data-mega='blocks'] .docs-mega-panel .docs-mega-grid,
   .docs-mega[data-mega='docs'] .docs-mega-panel .docs-mega-grid {
     grid-template-columns: 1fr;
     min-width: 0;
-    max-block-size: calc(100dvh - 6rem);
-    overflow-block: auto;
   }
 
   .docs-hero {
