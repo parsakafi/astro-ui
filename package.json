@@ -121,6 +121,7 @@
   "files": [
     "index.ts",
     "src",
+    "!src/env.d.ts",
     "!src/styles-scss",
     "!src/pages",
     "README.md",

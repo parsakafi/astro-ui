@@ -33,6 +33,8 @@ const problems = [];
 
 for (const path of paths) {
   if (/\.scss$/.test(path)) problems.push(`SCSS source leaked: ${path}`);
+  if (path === "src/env.d.ts")
+    problems.push(`repo-only ambient types leaked: ${path}`);
   if (/^(tests|web|scripts|docs)\//.test(path))
     problems.push(`repo-only path leaked: ${path}`);
 }

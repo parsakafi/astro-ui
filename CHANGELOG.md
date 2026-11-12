@@ -52,9 +52,10 @@ accessible names, localization hooks, and the toast live region.
   light hover (`#b845ed` → `#9b30d6`), and component text now uses the
   `-text` tokens. Custom themes that hard-coded the old values will not
   inherit the fix.
-- **Breaking (package contents):** `src/styles-scss/` and `src/pages/` are no
-  longer published, and `sideEffects` is limited to CSS. Import
-  `@parsakafi/astro-ui/toast.css` (not the `.scss` source).
+- **Breaking (package contents):** `src/styles-scss/`, `src/pages/`, and the
+  repo-only `src/env.d.ts` ambient reference are no longer published, and
+  `sideEffects` is limited to CSS. Import `@parsakafi/astro-ui/toast.css`
+  (not the `.scss` source).
 - `ariaLabel` resolution now prefers the native `aria-label` when both are
   supplied; previously an explicit rendered `aria-label` could blank the
   native attribute. Dialogs skip automatic `aria-labelledby` when an explicit
