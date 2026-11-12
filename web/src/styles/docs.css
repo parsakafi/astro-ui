@@ -410,6 +410,11 @@
   overflow-y: auto;
 }
 
+/* Mobile-only disclosure trigger; hidden while the tree is inline. */
+.docs-sidebar-toggle {
+  display: none;
+}
+
 .docs-side-cat {
   display: flex;
   align-items: center;
@@ -2203,10 +2208,20 @@
   display: grid;
   gap: var(--ui-space-3);
   min-inline-size: 0;
+  /* The default auto track sizes to the widest line in the generated
+     CSS output (and the chart's intrinsic width), stretching the page
+     on mobile. Clamp the track; the output pane scrolls internally. */
+  grid-template-columns: minmax(0, 1fr);
+}
+.token-playground-side > * {
+  min-inline-size: 0;
 }
 
 .token-playground-preview {
   display: grid;
+  /* Clamp the implicit column: the chart's intrinsic width would
+     otherwise overflow the panel (and the page) on narrow screens. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ui-space-4);
   padding: var(--ui-space-6);
   background-color: var(--ui-background);
@@ -2535,9 +2550,52 @@
   .docs-sidebar {
     position: static;
     max-height: none;
+    padding-block: var(--ui-space-3) var(--ui-space-4);
     border-inline-end: none;
     border-block-end: 1px solid var(--ui-border);
-    padding-block-end: var(--ui-space-4);
+    overflow-y: visible;
+  }
+  /* Collapse the 65-link tree behind a summary so the article starts at
+     the top of the page instead of ~2300px down. */
+  .docs-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--ui-space-2);
+    padding: var(--ui-space-2) var(--ui-space-3);
+    font-size: var(--ui-text-sm);
+    font-weight: var(--ui-font-medium);
+    color: var(--ui-foreground);
+    background-color: var(--ui-muted);
+    border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius-md);
+    cursor: pointer;
+    list-style: none;
+  }
+  .docs-sidebar-toggle::-webkit-details-marker {
+    display: none;
+  }
+  .docs-sidebar-toggle-count {
+    margin-inline-start: auto;
+    font-size: var(--ui-text-xs);
+    color: var(--ui-muted-foreground);
+  }
+  .docs-sidebar-toggle-chevron {
+    transition: rotate var(--ui-transition-fast);
+  }
+  .docs-sidebar-details[open] .docs-sidebar-toggle-chevron {
+    rotate: 180deg;
+  }
+  /* The panel owns its scroll, so opening it can never push the article
+     more than ~70vh down the page. */
+  .docs-sidebar-body {
+    max-height: min(70vh, 36rem);
+    margin-block-start: var(--ui-space-2);
+    padding-inline-end: var(--ui-space-2);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .docs-search {
+    margin-top: 5px;
   }
   .docs-content-wrap {
     grid-template-columns: 1fr;
