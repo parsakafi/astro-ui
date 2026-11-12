@@ -17,68 +17,108 @@ interface Props {
 }
 
 const {currentBlockId, currentCategoryId, isCatalog = false} = Astro.props;
+const blockCount = blockCategories.reduce((total, category) => total + category.blocks.length, 0);
 ---
 
 <nav class="docs-sidebar" aria-label="Blocks">
-  <div class="docs-search">
-    <input
-      type="search"
-      class="docs-search-input"
-      placeholder="Search blocks…"
-      aria-label="Search blocks"
-      autocomplete="off"
-      spellcheck="false"
-      data-docs-search
-    />
-    <p class="docs-search-empty" role="status" hidden data-docs-search-empty>
-      No blocks match.
-    </p>
-  </div>
-  <a class:list={{"docs-side-link": true, "is-active": isCatalog}} href={blocksIndexHref}>
-    All Blocks
-  </a>
-  {
-    blockCategories.map((category) => (
-      <div class="docs-side-group">
-        <a
-          class:list={{"docs-side-cat": true, "is-active": currentCategoryId === category.id && !currentBlockId}}
-          href={`/blocks/${category.id}/`}
-        >
-          <span class="docs-side-cat-icon" aria-hidden="true">{category.icon}</span>
-          {category.label}
-          <span class="docs-side-count">{category.blocks.length}</span>
-        </a>
-        <div class="docs-side-items">
-          {category.blocks.map((block) => (
-            <a
-              class:list={{
-                "docs-side-link": true,
-                "is-active": currentBlockId === block.id,
-              }}
-              aria-current={currentBlockId === block.id ? "page" : undefined}
-              href={`/blocks/${category.id}/${block.id}/`}
-              data-search-name={`${block.title} ${block.sidebarTitle ?? ""}`.toLowerCase()}
-            >
-              {block.sidebarTitle ?? block.title}
-            </a>
-          ))}
-        </div>
+  {/* Mobile: the tree collapses behind a summary so pages don't start
+      under the whole block list. Desktop hides the summary and shows it
+      expanded — same pattern as the components sidebar. */}
+  <details class="docs-sidebar-details" open data-docs-sidebar-details>
+    <summary class="docs-sidebar-toggle">
+      <span>Browse blocks</span>
+      <span class="docs-sidebar-toggle-count">{blockCount}</span>
+      <svg class="docs-sidebar-toggle-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </summary>
+    <div class="docs-sidebar-body">
+      <div class="docs-search">
+        <input
+          type="search"
+          class="docs-search-input"
+          placeholder="Search blocks…"
+          aria-label="Search blocks"
+          autocomplete="off"
+          spellcheck="false"
+          data-docs-search
+        />
+        <p class="docs-search-empty" role="status" hidden data-docs-search-empty>
+          No blocks match.
+        </p>
       </div>
-    ))
-  }
+      <a class:list={{"docs-side-link": true, "is-active": isCatalog}} href={blocksIndexHref}>
+        All Blocks
+      </a>
+      {
+        blockCategories.map((category) => (
+          <div class="docs-side-group">
+            <a
+              class:list={{"docs-side-cat": true, "is-active": currentCategoryId === category.id && !currentBlockId}}
+              href={`/blocks/${category.id}/`}
+            >
+              <span class="docs-side-cat-icon" aria-hidden="true">{category.icon}</span>
+              {category.label}
+              <span class="docs-side-count">{category.blocks.length}</span>
+            </a>
+            <div class="docs-side-items">
+              {category.blocks.map((block) => (
+                <a
+                  class:list={{
+                    "docs-side-link": true,
+                    "is-active": currentBlockId === block.id,
+                  }}
+                  aria-current={currentBlockId === block.id ? "page" : undefined}
+                  href={`/blocks/${category.id}/${block.id}/`}
+                  data-search-name={`${block.title} ${block.sidebarTitle ?? ""}`.toLowerCase()}
+                >
+                  {block.sidebarTitle ?? block.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </details>
 </nav>
+
+{/* Inline (not bundled) so the panel is already closed during the first
+    paint on mobile — no flash of the full list before hydration. */}
+<script is:inline>
+  (() => {
+    const details = document.querySelector("[data-docs-sidebar-details]");
+    if (details && window.matchMedia("(max-width: 64rem)").matches) {
+      details.open = false;
+    }
+  })();
+</script>
 
 <script>
   const input = document.querySelector<HTMLInputElement>("[data-docs-search]");
   const nav = input?.closest<HTMLElement>(".docs-sidebar");
 
   if (input && nav) {
+    const details = nav.querySelector<HTMLDetailsElement>(
+      "[data-docs-sidebar-details]",
+    );
+    const body = nav.querySelector<HTMLElement>(".docs-sidebar-body");
+    const mobile = window.matchMedia("(max-width: 64rem)");
+
+    // The disclosure only exists on mobile; above the breakpoint the tree
+    // is always visible, so reopening after a resize keeps it usable.
+    mobile.addEventListener("change", (event) => {
+      if (!event.matches && details) details.open = true;
+    });
+
     const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>("[data-search-name]"));
     const groups = Array.from(nav.querySelectorAll<HTMLElement>(".docs-side-group"));
     const empty = nav.querySelector<HTMLElement>("[data-docs-search-empty]");
 
     const filter = (): number => {
       const query = input.value.trim().toLowerCase();
+      // Typing must reveal the results, even when the panel is closed.
+      if (query && details) details.open = true;
       let visible = 0;
       for (const link of links) {
         const match = link.dataset.searchName?.includes(query) ?? false;
@@ -103,15 +143,25 @@ const {currentBlockId, currentCategoryId, isCatalog = false} = Astro.props;
       }
     });
 
-    // Keep the current page's link centered in the scrollable sidebar.
-    const active = nav.querySelector<HTMLElement>(
-      ".docs-side-link.is-active, .docs-side-cat.is-active",
-    );
-    if (active) {
-      const navRect = nav.getBoundingClientRect();
+    // Keep the current page's link centered in whichever element scrolls:
+    // the panel body on mobile, the sidebar itself on desktop.
+    const centerActive = (): void => {
+      const active = nav.querySelector<HTMLElement>(
+        ".docs-side-link.is-active, .docs-side-cat.is-active",
+      );
+      if (!active) return;
+      const scroller =
+        body && body.scrollHeight > body.clientHeight + 1 ? body : nav;
+      const areaRect = scroller.getBoundingClientRect();
       const linkRect = active.getBoundingClientRect();
-      nav.scrollTop +=
-        linkRect.top - navRect.top - nav.clientHeight / 2 + linkRect.height / 2;
-    }
+      scroller.scrollTop +=
+        linkRect.top - areaRect.top - scroller.clientHeight / 2 + linkRect.height / 2;
+    };
+
+    centerActive();
+
+    details?.addEventListener("toggle", () => {
+      if (details?.open) requestAnimationFrame(centerActive);
+    });
   }
 </script>

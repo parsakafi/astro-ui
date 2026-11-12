@@ -2795,6 +2795,7 @@ $docs-anchor-offset: 7.5rem;
     padding-block: var(--ui-space-3) var(--ui-space-4);
     border-inline-end: none;
     border-block-end: 1px solid var(--ui-border);
+    padding-inline-end: 0;
     overflow-y: visible;
   }
 
@@ -2901,7 +2902,6 @@ $docs-anchor-offset: 7.5rem;
     overflow-y: auto;
   }
 }
-
 
 
 @media (max-width: 40rem) {
@@ -3600,13 +3600,12 @@ html[data-kbd="mac"] .docs-search-kbd-pc {
 .docs-navbar-hero {
   padding: var(--ui-space-2);
   border-radius: var(--ui-radius-lg);
-  background:
-    radial-gradient(
-      120% 140% at 10% 0%,
-      color-mix(in oklab, var(--ui-primary) 22%, transparent),
-      transparent 60%
-    ),
-    var(--ui-muted);
+  background: radial-gradient(
+    120% 140% at 10% 0%,
+    color-mix(in oklab, var(--ui-primary) 22%, transparent),
+    transparent 60%
+  ),
+  var(--ui-muted);
 }
 
 .docs-navbar-hero-copy {

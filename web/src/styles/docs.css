@@ -2557,6 +2557,7 @@
     padding-block: var(--ui-space-3) var(--ui-space-4);
     border-inline-end: none;
     border-block-end: 1px solid var(--ui-border);
+    padding-inline-end: 0;
     overflow-y: visible;
   }
   /* Collapse the 65-link tree behind a summary so the article starts at
