@@ -370,12 +370,14 @@ $docs-anchor-offset: 7.5rem;
   }
 }
 
-.docs-github-link {
+.docs-github-link,
+.docs-npm-link {
   display: inline-flex;
   align-items: center;
   gap: var(--ui-space-1);
 
-  .docs-github-icon {
+  .docs-github-icon,
+  .docs-npm-icon {
     flex: none;
   }
 }
@@ -2789,8 +2791,9 @@ $docs-anchor-offset: 7.5rem;
 }
 
 @media (max-width: 40rem) {
-  /* GitHub and theme toggle collapse to icon-only to save header space. */
+  /* GitHub, npm and theme toggle collapse to icon-only to save header space. */
   .docs-github-link .docs-github-label,
+  .docs-npm-link .docs-npm-label,
   .docs-theme-btn .docs-theme-label {
     display: none;
   }
