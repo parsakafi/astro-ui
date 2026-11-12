@@ -254,8 +254,16 @@ const classes = cn(
     }
 
     .aui-banner__actions {
+      order: 2;
       inline-size: 100%;
       padding-inline-start: calc(var(--ui-space-3) + 1rem);
+    }
+
+    /* The actions row is full-bleed and comes before the close button in
+       DOM order, so without this the close wraps onto a third row at the
+       bottom-start instead of staying beside the message. */
+    .aui-banner__close {
+      order: 1;
     }
   }
 
