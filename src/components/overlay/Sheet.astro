@@ -198,44 +198,47 @@ const classes = cn(
 
   /* --- sizes --- */
 
+  /* min(100%, …): a side sheet never gets wider than the viewport, or
+     the panel hangs off the opposite edge on a phone. */
+
   .aui-sheet--sm.aui-sheet--left .aui-sheet__panel,
   .aui-sheet--sm.aui-sheet--right .aui-sheet__panel {
-    width: 20rem;
+    width: min(100%, 20rem);
   }
 
   .aui-sheet--md.aui-sheet--left .aui-sheet__panel,
   .aui-sheet--md.aui-sheet--right .aui-sheet__panel {
-    width: 26rem;
+    width: min(100%, 26rem);
   }
 
   .aui-sheet--lg.aui-sheet--left .aui-sheet__panel,
   .aui-sheet--lg.aui-sheet--right .aui-sheet__panel {
-    width: 32rem;
+    width: min(100%, 32rem);
   }
 
   .aui-sheet--xl.aui-sheet--left .aui-sheet__panel,
   .aui-sheet--xl.aui-sheet--right .aui-sheet__panel {
-    width: 40rem;
+    width: min(100%, 40rem);
   }
 
   .aui-sheet--sm.aui-sheet--top .aui-sheet__panel,
   .aui-sheet--sm.aui-sheet--bottom .aui-sheet__panel {
-    height: 12rem;
+    height: min(85vh, 12rem);
   }
 
   .aui-sheet--md.aui-sheet--top .aui-sheet__panel,
   .aui-sheet--md.aui-sheet--bottom .aui-sheet__panel {
-    height: 18rem;
+    height: min(85vh, 18rem);
   }
 
   .aui-sheet--lg.aui-sheet--top .aui-sheet__panel,
   .aui-sheet--lg.aui-sheet--bottom .aui-sheet__panel {
-    height: 24rem;
+    height: min(85vh, 24rem);
   }
 
   .aui-sheet--xl.aui-sheet--top .aui-sheet__panel,
   .aui-sheet--xl.aui-sheet--bottom .aui-sheet__panel {
-    height: 32rem;
+    height: min(85vh, 32rem);
   }
 
   @keyframes aui-sheet-in-left {
