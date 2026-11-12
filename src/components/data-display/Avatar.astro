@@ -210,6 +210,10 @@ const inlineStyle = [
     flex-shrink: 0;
     overflow: visible; /* status badges + rings sit outside the media */
     border-radius: var(--ui-radius-full);
+    /* A circle stays a circle: themes that opt into --ui-corner-shape:
+       squircle (applied to every element by base.css) would otherwise
+       render the avatar as a rounded square. */
+    corner-shape: round;
     color: var(--ui-foreground);
     font-family: var(--ui-font-sans);
     font-weight: var(--ui-font-medium);
@@ -220,6 +224,7 @@ const inlineStyle = [
   .aui-avatar > :global(.aui-avatar__img),
   .aui-avatar > .aui-avatar__fallback {
     border-radius: inherit;
+    corner-shape: round;
   }
 
   .aui-avatar > :global(.aui-avatar__img) {
@@ -267,6 +272,7 @@ const inlineStyle = [
 
   .aui-avatar--radius-full {
     border-radius: var(--ui-radius-full);
+    corner-shape: round;
   }
 
   /* --- size --- */
@@ -327,6 +333,7 @@ const inlineStyle = [
     background: var(--ui-muted-foreground);
     border: 2px solid var(--ui-background);
     border-radius: var(--ui-radius-full);
+    corner-shape: round;
   }
 
   .aui-avatar--xs .aui-avatar__status,
@@ -428,6 +435,7 @@ const inlineStyle = [
     color: var(--ui-primary-text);
     background: color-mix(in srgb, var(--ui-background) 55%, transparent);
     border-radius: inherit;
+    corner-shape: round;
   }
 
   .aui-avatar__spinner {
