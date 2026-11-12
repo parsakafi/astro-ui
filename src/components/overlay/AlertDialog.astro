@@ -97,6 +97,7 @@ const classes = cn("aui-alert-dialog", `aui-alert-dialog--${size}`, className);
     background: transparent;
     color: var(--ui-foreground);
     max-width: calc(100% - var(--ui-space-8));
+    max-height: calc(100% - var(--ui-space-8));
   }
 
   .aui-alert-dialog::backdrop {
@@ -104,6 +105,12 @@ const classes = cn("aui-alert-dialog", `aui-alert-dialog--${size}`, className);
   }
 
   .aui-alert-dialog__panel {
+    /* The fixed size widths below must never beat the viewport: on a
+       phone the panel was wider than the dialog box and spilled off
+       screen. */
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
     background-color: var(--ui-background);
     border: 1px solid var(--ui-border);
     border-radius: var(--ui-radius-lg);

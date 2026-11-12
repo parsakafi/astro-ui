@@ -157,6 +157,10 @@ const classes = cn(
 
   .aui-dialog__panel {
     position: relative;
+    /* Size widths below are preferences, not limits: cap them to the
+       dialog box so a phone never gets a panel wider than the screen. */
+    max-width: 100%;
+    max-height: 100%;
     background-color: var(--ui-background);
     border: 1px solid var(--ui-border);
     border-radius: var(--ui-radius-lg);
