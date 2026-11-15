@@ -39,13 +39,6 @@ const pages: SearchEntry[] = [
         keywords: "composed sections templates"
     },
     {
-        title: "Releases",
-        hint: "What shipped, by version",
-        href: "/docs/releases/",
-        group: "Docs",
-        keywords: "changelog versions notes release"
-    },
-    {
         title: "Roadmap",
         hint: "Shipped, in progress, planned",
         href: "/docs/roadmap/",

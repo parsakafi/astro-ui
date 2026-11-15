@@ -432,7 +432,7 @@ $docs-anchor-offset: 7.5rem;
   margin-inline: auto;
   padding-inline: var(--ui-space-4);
 
-  /* Shell variant without the left sidebar (releases page). */
+  /* Shell variant without the left sidebar (guides and reference pages). */
   &--no-side {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -2006,7 +2006,7 @@ $docs-anchor-offset: 7.5rem;
   }
 }
 
-/* ---------- Releases: release-notes structure ---------- */
+/* ---------- Release history: entry structure ---------- */
 
 .docs-release-legend {
   display: flex;
@@ -2646,7 +2646,7 @@ $docs-anchor-offset: 7.5rem;
   }
 }
 
-/* ---------- Releases page ---------- */
+/* ---------- Release history: changelog page ---------- */
 
 .docs-release {
   display: grid;

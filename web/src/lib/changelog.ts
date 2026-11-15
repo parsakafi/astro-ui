@@ -1,5 +1,5 @@
 /**
- * Tiny CHANGELOG.md parser for the Releases page and per-component
+ * Tiny CHANGELOG.md parser for the changelog page and per-component
  * changelog tabs. Keeps the site data-driven from a single markdown
  * file — no git history required.
  *

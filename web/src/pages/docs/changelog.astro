@@ -1,8 +1,7 @@
 ---
 /**
-  * /docs/changelog/ — the full changelog in Keep a Changelog format
-  * (docs-flavored: dense, factual). The marketing-oriented release
-  * highlights live at /docs/releases/.
+  * /docs/changelog/ — the single release history, in Keep a Changelog
+  * format (docs-flavored: dense, factual). /docs/releases/ redirects here.
   */
 import DocsLayout from "../../layouts/DocsLayout.astro";
 import {parseChangelog, renderBullet} from "../../lib/changelog";
@@ -20,10 +19,26 @@ const sectionIcons: Record<string, string> = {
   removed: "✕",
   security: "🔒",
 };
+
+// Legend mirrors the sections that actually occur, so every icon used in
+// the entries below is explained.
+const legend = Object.entries(sectionIcons).filter(([key]) =>
+  entries.some((e) => e.sections[key]?.length > 0),
+);
+
+// An empty `## [Unreleased]` heading in CHANGELOG.md should not become an
+// empty card; it appears as soon as the first entry is written.
+const visibleEntries = entries.filter(
+  (entry) =>
+    Object.values(entry.sections).reduce(
+      (n, bullets) => n + bullets.length,
+      0,
+    ) > 0,
+);
 ---
 
 <DocsLayout title="Changelog" description="Full changelog for astro-ui." activePath="docs"
-            toc={entries.map((e) => ({id: `v-${e.version}`, label: e.version}))}>
+            toc={visibleEntries.map((e) => ({id: `v-${e.version}`, label: e.version}))}>
   <article class="docs-article docs-prose">
     <section id="overview" class="docs-hero">
       <p class="docs-hero-kicker">Docs · Reference</p>
@@ -35,9 +50,20 @@ const sectionIcons: Record<string, string> = {
       </p>
     </section>
 
+    <nav class="docs-release-legend" aria-label="Change type legend">
+      {
+        legend.map(([key, icon]) => (
+          <span class="docs-release-legend-item">
+            <span class="docs-release-icon" aria-hidden="true">{icon}</span>
+            {key.charAt(0).toUpperCase() + key.slice(1)}
+          </span>
+        ))
+      }
+    </nav>
+
     <section>
       {
-        entries.map((entry) => (
+        visibleEntries.map((entry) => (
           <article class="docs-release" id={`v-${entry.version}`}>
             <header class="docs-release-head">
               <span class="docs-release-version">v{entry.version}</span>
