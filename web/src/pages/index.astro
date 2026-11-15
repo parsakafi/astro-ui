@@ -1,18 +1,39 @@
 ---
 /**
-  * Home — astro.build-aligned marketing page: atmosphere hero with
-  * gradient headline, capability trio, the "N free components" count
-  * band, block teaser, docs teaser, and CTA.
-  * No component demos — those live on component pages and /blocks.
-  */
+ * Home — astro.build-aligned marketing page.
+ *
+ * Section order mirrors the reference: hero (no customer logo wall),
+ * what-is statement, "Astro Islands" fair comparison, zero lock-in
+ * (live block), fully-featured grid of live components, professional
+ * support (maker), and the final CTA. No themes section, no sponsors.
+ *
+ * Every "visual" on this page is a real astro-ui component render —
+ * there are no screenshots or mock images.
+ */
 import DocsLayout from "../layouts/DocsLayout.astro";
+import BlockDemo from "../components/docs/BlockDemo.astro";
 import Button from "@parsakafi/astro-ui/button";
 import Badge from "@parsakafi/astro-ui/badge";
-import {Toaster} from "@parsakafi/astro-ui";
-import "@parsakafi/astro-ui/toast.css";
+import Avatar from "@parsakafi/astro-ui/avatar";
+import AvatarGroup from "@parsakafi/astro-ui/avatar-group";
+import Clipboard from "@parsakafi/astro-ui/clipboard";
+import Progress from "@parsakafi/astro-ui/progress";
+import Tabs from "@parsakafi/astro-ui/tabs";
+import Chart from "@parsakafi/astro-ui/chart";
+import Accordion from "@parsakafi/astro-ui/accordion";
+import Alert from "@parsakafi/astro-ui/alert";
+import Table from "@parsakafi/astro-ui/table";
+import Switch from "@parsakafi/astro-ui/switch";
+import Input from "@parsakafi/astro-ui/input";
+import Slider from "@parsakafi/astro-ui/slider";
+import Rating from "@parsakafi/astro-ui/rating";
+import Spinner from "@parsakafi/astro-ui/spinner";
+import Tag from "@parsakafi/astro-ui/tag";
 import {categories} from "../lib/components";
+import {blockCount} from "../lib/blocks";
 import {SITE} from "../lib/site";
 import {getCollection} from "astro:content";
+import "../styles/home.css";
 
 const entries = await getCollection("components");
 const metas = entries.map((d) => d.data);
@@ -23,151 +44,612 @@ const stats = {
   js: metas.filter((m) => m.js).length,
 };
 
-const capabilities = [
+const INSTALL = "npm install @parsakafi/astro-ui";
+
+const pillars = [
   {
-    title: "Zero JS by default",
-    body: `${stats.zeroJs} of ${stats.components} components render pure server-side HTML. Where behavior is needed, it's a few hundred bytes of scoped script — never a runtime.`,
+    title: "Server-First",
+    body: "Components render to HTML at build time or on request. The browser gets markup and CSS — no client bundle waiting to hydrate.",
+    icon: '<path d="M3 5.5h10M3 8.5h10M3 11.5h6" /><path d="M12.5 2v12" />',
+    tone: "violet",
   },
   {
-    title: "Native elements first",
-    body: "Real <button>, <input>, <details>, <dialog>. Keyboard support, focus management, and announced states come from the platform, not a headless layer.",
+    title: "Platform-Native",
+    body: "Every control is a real <button>, <input>, <details> or <dialog>. Keyboard support, focus handling, and states come from the browser.",
+    icon: '<rect x="2.5" y="4.5" width="11" height="7" rx="2" /><path d="M6 8h4" />',
+    tone: "royal",
   },
   {
-    title: "Themed by tokens",
-    body: "Every color, radius, and space is a CSS custom property. Restyle the whole system — or flip to dark and RTL — without touching a component.",
+    title: "Customizable",
+    body: "Design tokens drive every color, radius, and space. Override one custom property or the whole theme — dark mode and RTL included.",
+    icon: '<path d="M4 13V8M8 13V4M12 13V6" /><circle cx="4" cy="6" r="1" /><circle cx="8" cy="2.5" r="1" /><circle cx="12" cy="4.5" r="1" />',
+    tone: "mint",
   },
 ];
 
-const blockTeasers = [
-  {id: "auth", name: "Auth", desc: "Sign-in & sign-up panels", parts: "Card · Input · Button · Checkbox"},
-  {id: "pricing", name: "Pricing", desc: "Plan cards with feature lists", parts: "Card · Badge · Button · Separator"},
-  {id: "stats", name: "Stats", desc: "Metric bands with counters", parts: "Card · Progress · Badge"},
-  {id: "faq", name: "FAQ", desc: "Answer sections that stay searchable", parts: "Accordion · Kbd"},
+/**
+ * Fair comparison — defaults only, no ranking. Columns: Astro UI,
+ * daisyUI, shadcn/ui, Bootstrap, MUI. `state` drives the marker:
+ * ok (✓), partial (◐), no (✕), text (no marker).
+ */
+const comparisonColumns = ["Astro UI", "daisyUI", "shadcn/ui", "Bootstrap", "MUI"];
+
+const comparisonRows = [
+  {
+    label: "Default output",
+    values: [
+      {state: "text", text: "HTML + CSS"},
+      {state: "text", text: "HTML + utility classes"},
+      {state: "text", text: "React source (TSX)"},
+      {state: "text", text: "HTML + CSS (+ JS plugins)"},
+      {state: "text", text: "React components (JS)"},
+    ],
+  },
+  {
+    label: "Client runtime",
+    values: [
+      {state: "text", text: "None"},
+      {state: "text", text: "None"},
+      {state: "text", text: "React"},
+      {state: "text", text: "None (plugins optional)"},
+      {state: "text", text: "React"},
+    ],
+  },
+  {
+    label: "Works without JavaScript",
+    values: [
+      {state: "ok", text: "All components"},
+      {state: "ok", text: "CSS-only components"},
+      {state: "no", text: "Needs React"},
+      {state: "partial", text: "Static UI only"},
+      {state: "no", text: "Needs React"},
+    ],
+  },
+  {
+    label: "Behavior comes from",
+    values: [
+      {state: "text", text: "Native HTML + scoped scripts"},
+      {state: "text", text: "Your own JS"},
+      {state: "text", text: "React + Radix"},
+      {state: "text", text: "Bootstrap plugins"},
+      {state: "text", text: "React + Emotion"},
+    ],
+  },
+  {
+    label: "Theming",
+    values: [
+      {state: "text", text: "CSS custom properties"},
+      {state: "text", text: "CSS variables + themes"},
+      {state: "text", text: "CSS variables + Tailwind"},
+      {state: "text", text: "Sass variables + CSS vars"},
+      {state: "text", text: "JS theme object"},
+    ],
+  },
+  {
+    label: "Framework lock-in",
+    values: [
+      {state: "partial", text: "Astro (.astro)"},
+      {state: "ok", text: "None"},
+      {state: "no", text: "React"},
+      {state: "ok", text: "None"},
+      {state: "no", text: "React"},
+    ],
+  },
 ];
 ---
 
-<DocsLayout title="Home" description={SITE.description}>
-  <!-- Atmosphere hero (astro.build-style gradient wash) -->
-  <section class="docs-hero docs-hero-atmosphere docs-hero-statement">
-    <p class="docs-hero-kicker">The component library for Astro</p>
-    <h1>
-      <span class="docs-text-gradient">UI components</span> that feel like
-      the platform
+<DocsLayout
+  title="Accessible UI components for Astro"
+  description={`${SITE.description} ${stats.components} components, ${blockCount} composed blocks, zero shared runtime.`}
+  activePath="home"
+>
+  <!-- ========== Hero ========== -->
+  <section class="home-hero" aria-labelledby="home-h1">
+    <a class="home-announce" href="/docs/changelog/">
+      <span class="home-announce-tag">Astro UI {SITE.version}</span>
+      <span>First public release — see what shipped</span>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M3 8h9.5M9 4.5 12.5 8 9 11.5" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+
+    <h1 id="home-h1">
+      The component library for <span class="docs-text-gradient">content-driven sites</span>
     </h1>
-    <p class="docs-hero-lede">
-      {SITE.name} gives Astro sites accessible, token-themed interface
-      components — server-rendered HTML, no runtime, no hydration. Built for
-      the framework that ships zero JS by default.
+
+    <p class="home-hero-lede">
+      {SITE.name} gives Astro projects accessible, token-themed interface components.
+      Server-rendered HTML, no shared runtime, and a few hundred bytes of scoped
+      script only where the platform needs a hand.
     </p>
-    <div class="docs-hero-actions">
+
+    <div class="home-hero-actions">
       <Button href="/docs/get-started/" size="lg">Get started</Button>
-      <Button href="/components/" variant="outline" size="lg">Components</Button>
-      <Button href={SITE.repo} variant="ghost" size="lg">GitHub ↗</Button>
+      <div class="home-install">
+        <span class="home-install-prompt" aria-hidden="true">$</span>
+        <code>{INSTALL}</code>
+        <Clipboard
+          value={INSTALL}
+          onlyIcon
+          auto
+          id="home-copy-install-hero"
+          variant="ghost"
+          size="sm"
+          feedback={null}
+          ariaLabel="Copy install command"
+        />
+      </div>
+    </div>
+
+    <ul class="home-hero-meta" aria-label="Project facts">
+      <li>{stats.components} components</li>
+      <li>{blockCount} blocks</li>
+      <li>MIT licensed</li>
+      <li>RTL-ready</li>
+      <li>Dark mode</li>
+    </ul>
+
+    <a class="home-hero-more" href="/docs/">
+      Or read the introduction
+      <span aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <!-- ========== What is Astro UI ========== -->
+  <section class="home-section home-what" aria-labelledby="home-what-h">
+    <h2 id="home-what-h" class="home-statement">
+      <strong>{SITE.name}</strong> is a UI component library optimized for building
+      fast, content-driven websites with Astro.
+    </h2>
+
+    <div class="home-what-grid">
+      {
+        pillars.map((pillar, index) => (
+          <article class:list={["home-what-card", `home-what-card--${pillar.tone}`]}>
+            <span class="home-what-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" set:html={pillar.icon}/>
+            </span>
+            <h3>{pillar.title}</h3>
+            <p>{pillar.body}</p>
+            <span class="home-what-index" aria-hidden="true">0{index + 1}</span>
+          </article>
+        ))
+      }
     </div>
   </section>
 
   <hr class="docs-gradient-rule"/>
 
-  <!-- Capability trio -->
-  <section class="docs-capabilities" aria-label="Why astro-ui">
-    {
-      capabilities.map((cap) => (
-        <div class="docs-capability">
-          <h2>{cap.title}</h2>
-          <p>{cap.body}</p>
-        </div>
-      ))
-    }
+  <!-- ========== Astro Islands / fair comparison ========== -->
+  <section class="home-section home-islands" id="islands" aria-labelledby="home-islands-h">
+    <div class="home-section-head">
+      <p class="home-kicker">Zero hydration by default</p>
+      <h2 id="home-islands-h">
+        <strong>Astro Islands</strong> — ship HTML, not a runtime.
+      </h2>
+      <p class="home-lede">
+        Astro renders pages on the server and only hydrates the islands you mark.
+        Astro UI is built for that default: {stats.zeroJs} of {stats.components} components
+        ship no JavaScript at all. Here is how the same idea compares with other
+        component libraries — defaults only, no ranking.
+      </p>
+    </div>
+
+    <div class="home-island-stats">
+      <div class="home-stat">
+        <span class="home-stat-value">{stats.zeroJs}</span>
+        <span class="home-stat-label">components with zero JS</span>
+      </div>
+      <div class="home-stat">
+        <span class="home-stat-value">0</span>
+        <span class="home-stat-label">shared runtime dependencies</span>
+      </div>
+      <div class="home-stat">
+        <span class="home-stat-value">{stats.js}</span>
+        <span class="home-stat-label">components with a scoped script</span>
+      </div>
+    </div>
+
+    <div class="home-compare">
+      <div class="home-compare-scroll" role="region" tabindex="0" aria-label="Library comparison table">
+        <table class="home-compare-table">
+          <caption class="home-visually-hidden">
+            Comparison of Astro UI defaults with daisyUI, shadcn/ui, Bootstrap, and MUI.
+            Describes documented defaults only; it is not a ranking.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="home-visually-hidden">Criteria</span></th>
+              {comparisonColumns.map((column) => (
+                <th scope="col" class:list={{ "is-self": column === "Astro UI" }}>{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {comparisonRows.map((row) => (
+              <tr>
+                <th scope="row">{row.label}</th>
+                {row.values.map((value, index) => (
+                  <td class:list={{ "is-self": index === 0 }}>
+                    {value.state === "text" ? (
+                      value.text
+                    ) : (
+                      <span class:list={["home-status", `home-status--${value.state}`]}>
+                        <span class="home-status-mark" aria-hidden="true">
+                          {value.state === "ok" ? "✓" : value.state === "partial" ? "◐" : "✕"}
+                        </span>
+                        {value.text}
+                      </span>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="home-compare-note">
+        Each library below is a good fit for different constraints. This table maps
+        documented defaults, not quality, and implies no ranking. Astro UI is
+        Astro-first by design — if your project isn't on Astro, one of the other
+        options will probably serve you better.
+      </p>
+    </div>
   </section>
 
-  <!-- Count band ("N free components" pattern) -->
-  <section class="docs-count-band" aria-labelledby="count-h">
-    <p class="docs-hero-kicker">{SITE.name} · open source · MIT</p>
-    <h2 id="count-h">
-      <span class="docs-text-gradient">{stats.components}</span> free Astro UI
-      components
-    </h2>
-    <p class="docs-count-lede">
-      Every component ships as typed Astro source with design tokens,
-      accessibility wiring, and copy-paste usage — no license tiers, no
-      component paywalls.
-    </p>
-    <div class="docs-count-badges">
-      <Badge variant="muted">{stats.zeroJs} zero-JS</Badge>
-      <Badge variant="muted">{stats.js} with behavior</Badge>
-      <Badge variant="muted">{stats.categories} categories</Badge>
-      <Badge variant="muted">RTL-ready</Badge>
-      <Badge variant="muted">Dark mode</Badge>
-    </div>
-    <div class="docs-hero-actions">
-      <Button href="/components/">Browse the catalog</Button>
-      <Button href="/blocks/" variant="outline">Explore blocks</Button>
-    </div>
-  </section>
-
-  <!-- Blocks teaser -->
-  <section aria-labelledby="blocks-h">
-    <div class="docs-section-head">
-      <div>
-        <h2 id="blocks-h">Blocks — components, composed</h2>
-        <p>
-          Ready-to-adapt sections built entirely from {SITE.name}
-          components. Copy the block, keep the pieces.
+  <!-- ========== Zero lock-in ========== -->
+  <section class="home-section home-lockin" id="lock-in" aria-labelledby="home-lockin-h">
+    <div class="home-lockin-grid">
+      <div class="home-section-head">
+        <p class="home-kicker">Maximum flexibility</p>
+        <h2 id="home-lockin-h"><strong>Zero lock-in</strong> in what your users download.</h2>
+        <p class="home-lede">
+          Astro UI is Astro-first by design and runtime-free by default. Components
+          render to standard HTML, styles come from CSS custom properties, and every
+          block is source you can copy out and keep.
         </p>
+        <ul class="home-check-list">
+          <li>Plain HTML output — inspect it, style it, override it.</li>
+          <li>One token file themes every component, dark mode and RTL included.</li>
+          <li>Typed <code>.astro</code> source you can copy into your project.</li>
+          <li>MIT licensed, no seats, no paywalled components.</li>
+        </ul>
+        <div class="home-actions">
+          <Button href="/blocks/auth/signin/" variant="outline">Get the block source</Button>
+          <Button href="/blocks/" variant="ghost">Browse all blocks</Button>
+        </div>
       </div>
-      <Button href="/blocks/" variant="outline" size="sm">All blocks</Button>
-    </div>
-    <div class="docs-block-teaser-grid">
-      {
-        blockTeasers.map((block) => (
-          <a class="docs-block-teaser" href={`/blocks/#${block.id}`}>
-            <span class="docs-block-name">{block.name}</span>
-            <span class="docs-block-desc">{block.desc}</span>
-            <span class="docs-block-parts">{block.parts}</span>
-          </a>
-        ))
-      }
+
+      <div class="home-stage">
+        <div class="home-stage-head">
+          <span>Live block · Auth / Sign in</span>
+          <span class="home-stage-live">Rendered HTML</span>
+        </div>
+        <div class="home-stage-canvas">
+          <BlockDemo id="signin" idPrefix="home-signin"/>
+        </div>
+        <div class="home-stage-code">
+          <code>{'import { Button, Card, Input } from "@parsakafi/astro-ui";'}</code>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Docs teaser -->
-  <section aria-labelledby="docs-h">
-    <div class="docs-section-head">
-      <div>
-        <h2 id="docs-h">Docs that respect your time</h2>
-        <p>Short guides for the things you'll actually configure.</p>
-      </div>
-      <Button href="/docs/" variant="outline" size="sm">Open the docs</Button>
+  <hr class="docs-gradient-rule"/>
+
+  <!-- ========== Fully featured ========== -->
+  <section class="home-section home-features" id="features" aria-labelledby="home-features-h">
+    <div class="home-section-head">
+      <p class="home-kicker">Everything you need</p>
+      <h2 id="home-features-h"><strong>Fully featured</strong>, without the runtime.</h2>
+      <p class="home-lede">
+        Forms, navigation, overlays, data display, and feedback — a complete toolkit
+        themed by the same tokens. Every card below is a live Astro UI render.
+      </p>
     </div>
-    <div class="docs-block-teaser-grid">
-      {
-        [
-          {href: "/docs/get-started/", name: "Get started", desc: "Install tokens and render your first component."},
-          {href: "/docs/styling/", name: "Styling", desc: "The token model and how to override it."},
-          {href: "/docs/rtl/", name: "RTL support", desc: "Logical properties and mirroring — no overrides."},
-          {href: "/docs/changelog/", name: "Changelog", desc: "What changed, release by release."},
-        ].map((guide) => (
-          <a class="docs-block-teaser" href={guide.href}>
-            <span class="docs-block-name">{guide.name}</span>
-            <span class="docs-block-desc">{guide.desc}</span>
-          </a>
-        ))
-      }
+
+    <div class="home-features-grid">
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-row home-viz-buttons">
+            <Button size="sm">Publish</Button>
+            <Button size="sm" variant="outline">Preview</Button>
+            <Button size="sm" variant="ghost">Draft</Button>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Buttons</h3>
+          <p>Solid, outline, ghost, link, loading — sized by one token scale.</p>
+          <a class="home-feature-link" href="/components/button/">Read the docs<span class="home-visually-hidden"> for Button</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <Tabs
+            id="home-feature-tabs"
+            variant="pill"
+            size="sm"
+            ariaLabel="Component output"
+            items={[
+              {value: "html", label: "HTML"},
+              {value: "css", label: "CSS"},
+              {value: "js", label: "JS"},
+            ]}
+          >
+            <div data-tab="html" class="home-tab-panel"><code>&lt;button class="aui-btn"&gt;</code></div>
+            <div data-tab="css" class="home-tab-panel"><code>--ui-primary: #b845ed</code></div>
+            <div data-tab="js" class="home-tab-panel"><code>0 bytes by default</code></div>
+          </Tabs>
+        </div>
+        <div class="home-feature-body">
+          <h3>Tabs</h3>
+          <p>WAI-ARIA tabs with arrow keys, from a scoped script — no island.</p>
+          <a class="home-feature-link" href="/components/tabs/">Read the docs<span class="home-visually-hidden"> for Tabs</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-stack">
+            <Input size="sm" type="email" placeholder="you@example.com" ariaLabel="Email address"/>
+            <Switch name="home-digest" checked label="Weekly digest" size="sm"/>
+            <Switch name="home-alerts" label="Security alerts" size="sm"/>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Form controls</h3>
+          <p>Native inputs, selects, switches, and sliders with full form participation.</p>
+          <a class="home-feature-link" href="/components/input/">Read the docs<span class="home-visually-hidden"> for form controls</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-stack home-viz-progress">
+            <Progress value={71} label="Coverage" showValue stripes/>
+            <Progress value={38} label="Tree-shaken" showValue color="success"/>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Progress</h3>
+          <p>Bars, rings, stripes, and segmented fills — driven by one value prop.</p>
+          <a class="home-feature-link" href="/components/progress/">Read the docs<span class="home-visually-hidden"> for progress bars</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-stack home-viz-avatars">
+            <AvatarGroup size="md" hover ariaLabel="Team members">
+              <Avatar name="Ada Lovelace" size="md" status="online"/>
+              <Avatar name="Grace Hopper" size="md"/>
+              <Avatar name="Alan Turing" size="md" status="away"/>
+              <Avatar name="Katherine Johnson" size="md"/>
+              <span slot="count">+5</span>
+            </AvatarGroup>
+            <div class="home-viz-avatar-row">
+              <Avatar name="Parsa Kafi" size="sm" variant="primary" ring="primary"/>
+              <span>Initials fallback, status dots, and rings.</span>
+            </div>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Avatars</h3>
+          <p>Stacks with hover spread, status badges, initials fallbacks, and rings.</p>
+          <a class="home-feature-link" href="/components/avatar/">Read the docs<span class="home-visually-hidden"> for avatars</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-stack">
+            <Alert variant="success" size="sm">
+              <span slot="title">Saved</span>
+              Your changes are live.
+            </Alert>
+            <Alert variant="warning" size="sm">
+              <span slot="title">Heads up</span>
+              This token is deprecated.
+            </Alert>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Alerts</h3>
+          <p>Status messages with the right role by variant — no dismiss script.</p>
+          <a class="home-feature-link" href="/components/alert/">Read the docs<span class="home-visually-hidden"> for alerts</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <Accordion
+            size="sm"
+            animated
+            ariaLabel="Accordion example"
+            items={[
+              {value: "native", title: "Native by default", content: "Built on <details> and <summary>.", open: true},
+              {value: "hydrate", title: "No hydration", content: "The browser owns expand and collapse."},
+              {value: "a11y", title: "Accessible for free", content: "Keyboard and announcements come with the platform."},
+            ]}
+          />
+        </div>
+        <div class="home-feature-body">
+          <h3>Accordion</h3>
+          <p>Expandable sections on native <code>details</code> — animated where supported.</p>
+          <a class="home-feature-link" href="/components/accordion/">Read the docs<span class="home-visually-hidden"> for accordions</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <Chart
+            type="bar"
+            labels={["", "", "", "", "", ""]}
+            series={[{name: "Installs", data: [12, 19, 15, 27, 22, 32]}]}
+            height={200}
+            legend={false}
+            grid={false}
+          />
+        </div>
+        <div class="home-feature-body">
+          <h3>Charts</h3>
+          <p>Server-rendered SVG charts that recolor with your tokens — no chart runtime.</p>
+          <a class="home-feature-link" href="/components/chart/">Read the docs<span class="home-visually-hidden"> for charts</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-badges">
+            <Badge>New</Badge>
+            <Badge variant="success" dot>Stable</Badge>
+            <Badge variant="warning" dot>Beta</Badge>
+            <Badge variant="outline">v0.2</Badge>
+            <Tag variant="soft">Astro</Tag>
+            <Tag variant="secondary">RTL</Tag>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Badges &amp; tags</h3>
+          <p>Status, counts, and categories — with optional dots and dismiss buttons.</p>
+          <a class="home-feature-link" href="/components/badge/">Read the docs<span class="home-visually-hidden"> for badges and tags</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <Table size="xs" ariaLabel="Component JavaScript checklist">
+            <tr slot="head">
+              <th class="aui-table__head-cell">Component</th>
+              <th class="aui-table__head-cell">JS</th>
+            </tr>
+            <tr>
+              <td class="aui-table__cell">Card</td>
+              <td class="aui-table__cell"><Badge variant="success" size="sm">0 B</Badge></td>
+            </tr>
+            <tr>
+              <td class="aui-table__cell">Tabs</td>
+              <td class="aui-table__cell"><Badge variant="warning" size="sm">scoped</Badge></td>
+            </tr>
+          </Table>
+        </div>
+        <div class="home-feature-body">
+          <h3>Tables</h3>
+          <p>Semantic, sortable-ready tables that stay readable at every size.</p>
+          <a class="home-feature-link" href="/components/table/">Read the docs<span class="home-visually-hidden"> for tables</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-stack home-viz-slider">
+            <Slider name="home-rating-slider" value={68} label="Quality" showValue size="sm"/>
+            <Rating name="home-rating" value={4} readonly size="sm" ariaLabel="Rated 4 out of 5"/>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Sliders &amp; rating</h3>
+          <p>Native range inputs and radio-based rating scales, styled by tokens.</p>
+          <a class="home-feature-link" href="/components/slider/">Read the docs<span class="home-visually-hidden"> for sliders and rating</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-visual">
+          <div class="home-viz-row home-viz-loading">
+            <Spinner size="lg" icon="ring" label="Loading"/>
+            <Spinner size="lg" icon="dots" label="Loading"/>
+            <Button size="sm" loading>Saving</Button>
+          </div>
+        </div>
+        <div class="home-feature-body">
+          <h3>Loading states</h3>
+          <p>Spinners and button loading built from CSS — zero JavaScript to animate.</p>
+          <a class="home-feature-link" href="/components/spinner/">Read the docs<span class="home-visually-hidden"> for loading states</span> <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    </div>
+
+    <div class="home-actions home-actions--center">
+      <Button href="/components/" size="lg">Browse all {stats.components} components</Button>
+      <Button href="/docs/get-started/" variant="outline" size="lg">Install in 2 minutes</Button>
     </div>
   </section>
 
-  <!-- Final CTA -->
-  <section class="docs-cta-band docs-hero-atmosphere">
-    <h2>Start building with {SITE.name} today</h2>
-    <p>
-      One install, one token import, {stats.components} components — free
-      and open source.
-    </p>
-    <div class="docs-hero-actions">
+  <hr class="docs-gradient-rule"/>
+
+  <!-- ========== Professional support ========== -->
+  <section class="home-section home-support" id="support" aria-labelledby="home-support-h">
+    <div class="home-support-grid">
+      <div class="home-section-head">
+        <p class="home-kicker">Work with the maker</p>
+        <h2 id="home-support-h"><strong>Get professional Astro support</strong></h2>
+        <p class="home-lede">
+          Astro UI is designed and built by Parsa Kafi, an independent Astro
+          developer. If you need a hand with implementation, a design system, or
+          RTL-ready interfaces, get in touch directly.
+        </p>
+        <div class="home-actions">
+          <Button href="https://parsa.ws" target="_blank" rel="noreferrer noopener" size="lg">
+            Visit parsa.ws ↗
+          </Button>
+          <Button href={SITE.repo} target="_blank" rel="noreferrer noopener" variant="outline" size="lg">
+            GitHub
+          </Button>
+        </div>
+      </div>
+
+      <aside class="home-profile" aria-label="About the maker">
+        <div class="home-profile-head">
+          <Avatar name="Parsa Kafi" size="2xl" variant="primary" ring="primary"/>
+          <div>
+            <p class="home-profile-name">Parsa Kafi</p>
+            <p class="home-profile-role">Maker &amp; developer of {SITE.name}</p>
+          </div>
+        </div>
+        <p class="home-profile-body">
+          Astro sites, component systems, and accessible interfaces — built with the
+          same zero-runtime philosophy this library follows.
+        </p>
+        <div class="home-profile-chips">
+          <Tag variant="soft" size="sm">Astro</Tag>
+          <Tag variant="soft" size="sm">Design systems</Tag>
+          <Tag variant="soft" size="sm">RTL</Tag>
+          <Tag variant="soft" size="sm">Accessibility</Tag>
+          <Tag variant="soft" size="sm">Performance</Tag>
+        </div>
+        <a class="home-profile-link" href="https://parsa.ws" target="_blank" rel="noreferrer noopener">
+          <span>Portfolio and contact</span>
+          <span aria-hidden="true">parsa.ws ↗</span>
+        </a>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ========== Final CTA ========== -->
+  <section class="home-final" aria-labelledby="home-final-h">
+    <h2 id="home-final-h">Start building with<br/>{SITE.name} today</h2>
+    <p>One install, one token import, {stats.components} components — free and open source.</p>
+    <div class="home-hero-actions">
       <Button href="/docs/get-started/" size="lg">Get started</Button>
-      <Button href="/docs/roadmap/" variant="outline" size="lg">Roadmap</Button>
+      <div class="home-install home-install--inverse">
+        <span class="home-install-prompt" aria-hidden="true">$</span>
+        <code>{INSTALL}</code>
+        <Clipboard
+          value={INSTALL}
+          onlyIcon
+          auto
+          id="home-copy-install-cta"
+          variant="ghost"
+          size="sm"
+          feedback={null}
+          ariaLabel="Copy install command"
+        />
+      </div>
     </div>
+    <p class="home-final-note">MIT licensed · {stats.categories} categories · {blockCount} composed blocks</p>
   </section>
-
-  <Toaster/>
 </DocsLayout>

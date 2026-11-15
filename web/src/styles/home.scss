@@ -1,0 +1,1210 @@
+/**
+ * Home page — astro.build-inspired marketing layout.
+ *
+ * Source of truth — compiled to home.css by `npm run css`.
+ * Imported only by src/pages/index.astro, so it never ships to docs or
+ * component pages. Logical properties throughout (RTL mirrors with no
+ * overrides); dark canvas is the default, light theme gets a softer wash.
+ */
+
+/* ---------- Shared bits ---------- */
+
+.home-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.home-section {
+  /* Sections never outgrow a readable measure inside the wide shell. */
+  inline-size: 100%;
+  max-inline-size: 72rem;
+  margin-inline: auto;
+  padding-block: clamp(1.5rem, 3.5vw, 2.75rem);
+
+  h2 {
+    margin: 0;
+    color: var(--ui-muted-foreground);
+    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+    font-weight: var(--ui-font-semibold);
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+
+    strong {
+      color: var(--ui-foreground);
+      font-weight: var(--ui-font-bold);
+    }
+  }
+}
+
+/* The home page loads this sheet last, so it can neutralize the
+   gradient rule's generous margins and let section padding set rhythm. */
+.docs-main > .docs-gradient-rule {
+  margin-block: calc(-1 * var(--ui-space-4));
+}
+
+.home-section-head {
+  display: grid;
+  gap: var(--ui-space-3);
+  align-content: start;
+  max-inline-size: 52rem;
+}
+
+.home-statement {
+  max-inline-size: 46ch;
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: clamp(1.6rem, 3.3vw, 2.35rem);
+  font-weight: var(--ui-font-medium);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+
+  strong {
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-bold);
+  }
+}
+
+.home-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-2xs);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  &::before {
+    content: "";
+    flex: none;
+    inline-size: 1.5rem;
+    block-size: 2px;
+    border-radius: var(--ui-radius-full);
+    background: linear-gradient(to right, var(--astro-violet), var(--astro-royal));
+  }
+}
+
+.home-lede {
+  max-inline-size: 62ch;
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-base);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+  align-items: center;
+
+  &.home-actions--center {
+    justify-content: center;
+    padding-block-start: var(--ui-space-4);
+  }
+}
+
+/* ---------- Hero ---------- */
+
+.home-hero {
+  position: relative;
+  isolation: isolate;
+  /* The atmosphere below bleeds past the hero box; clip it on the inline
+     axis so the page never gains a horizontal scrollbar (block axis stays
+     visible so the bloom can sit under the header). */
+  overflow-x: clip;
+  display: grid;
+  justify-items: center;
+  gap: var(--ui-space-4);
+  margin-block-start: calc(-1 * var(--ui-space-8));
+  margin-inline: calc(-1 * var(--ui-space-4));
+  padding: clamp(3rem, 7vw, 5.5rem) clamp(1rem, 4vw, 3rem) clamp(2.5rem, 5vw, 4rem);
+  text-align: center;
+  border-block-end: 1px solid color-mix(in srgb, var(--ui-border) 55%, transparent);
+
+  h1 {
+    max-inline-size: 20ch;
+    margin: 0;
+    font-size: clamp(2.25rem, 5.4vw, 4.15rem);
+    font-weight: var(--ui-font-bold);
+    line-height: 1.03;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+}
+
+/* Atmosphere: three radial blooms over the page canvas. The wash fades to
+   transparent at the inline edges (mask below) so it dissolves into the
+   page on wide screens instead of ending in a hard-edged panel. */
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: -6rem 0 -1px;
+  z-index: -2;
+  background:
+    radial-gradient(70% 95% at 50% 0%, color-mix(in srgb, var(--astro-violet) 30%, transparent), transparent 62%),
+    radial-gradient(55% 80% at 16% 6%, color-mix(in srgb, var(--astro-royal) 24%, transparent), transparent 66%),
+    radial-gradient(50% 75% at 86% 2%, color-mix(in srgb, var(--astro-fuchsia) 22%, transparent), transparent 70%),
+    linear-gradient(to bottom, color-mix(in srgb, var(--astro-space) 34%, var(--ui-background)), var(--ui-background) 88%);
+  mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent);
+  animation: home-hero-drift 26s ease-in-out infinite;
+  transform-origin: 50% 0;
+  pointer-events: none;
+}
+
+/* Faint star field — only meaningful on the dark canvas. */
+.home-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(1px 1px at 18% 24%, #ffffff, transparent),
+    radial-gradient(1px 1px at 72% 18%, #ffffff, transparent),
+    radial-gradient(1.5px 1.5px at 44% 62%, #ffffff, transparent),
+    radial-gradient(1px 1px at 88% 48%, #ffffff, transparent),
+    radial-gradient(1px 1px at 30% 82%, #ffffff, transparent),
+    radial-gradient(1.5px 1.5px at 62% 88%, #ffffff, transparent);
+  background-size: 420px 320px;
+  opacity: 0.28;
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
+  pointer-events: none;
+}
+
+html[data-theme="light"] .home-hero::before {
+  background:
+    radial-gradient(70% 95% at 50% 0%, color-mix(in srgb, var(--astro-violet) 20%, transparent), transparent 62%),
+    radial-gradient(55% 80% at 16% 6%, color-mix(in srgb, var(--astro-royal) 14%, transparent), transparent 66%),
+    radial-gradient(50% 75% at 86% 2%, color-mix(in srgb, var(--astro-fuchsia) 12%, transparent), transparent 70%),
+    linear-gradient(to bottom, #fdfbff, var(--ui-background) 88%);
+}
+
+html[data-theme="light"] .home-hero::after {
+  opacity: 0;
+}
+
+/* In dark mode the headline gradient needs lighter stops to stay legible
+   on the violet wash; light mode keeps the brand violet→royal voltage. */
+.home-hero .docs-text-gradient {
+  background: linear-gradient(100deg, #f0e4ff 0%, #cbb4ff 45%, #93a7ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+html[data-theme="light"] .home-hero .docs-text-gradient {
+  background: linear-gradient(100deg, var(--astro-fuchsia), #6d5df5 55%, var(--astro-royal));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.home-announce {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  max-inline-size: 100%;
+  padding: 0.25rem var(--ui-space-3) 0.25rem 0.3rem;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-xs);
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--ui-foreground) 18%, transparent);
+  border-radius: var(--ui-radius-full);
+  background: color-mix(in srgb, var(--ui-background) 45%, transparent);
+  backdrop-filter: blur(8px);
+  transition: border-color var(--ui-transition-fast), background-color var(--ui-transition-fast);
+
+  &:hover,
+  &:focus-visible {
+    border-color: color-mix(in srgb, var(--astro-violet) 55%, transparent);
+    background: color-mix(in srgb, var(--ui-background) 70%, transparent);
+  }
+
+  svg {
+    flex: none;
+    color: var(--ui-muted-foreground);
+    transition: translate var(--ui-transition-fast);
+  }
+
+  &:hover svg {
+    translate: 2px 0;
+  }
+}
+
+.home-announce-tag {
+  flex: none;
+  padding: 0.2rem var(--ui-space-2);
+  color: #fff;
+  font-size: var(--ui-text-2xs);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: 0.01em;
+  border-radius: var(--ui-radius-full);
+  background: linear-gradient(100deg, var(--astro-violet), var(--astro-royal));
+}
+
+.home-hero-lede {
+  max-inline-size: 62ch;
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+.home-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-3);
+  align-items: center;
+  justify-content: center;
+  margin-block-start: var(--ui-space-2);
+}
+
+.home-install {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  max-inline-size: 100%;
+  block-size: var(--ui-control-height-lg);
+  padding-inline: var(--ui-space-4) var(--ui-space-1);
+  border: 1px solid color-mix(in srgb, var(--ui-foreground) 16%, transparent);
+  border-radius: var(--ui-control-radius);
+  background: color-mix(in srgb, var(--ui-background) 55%, transparent);
+  backdrop-filter: blur(8px);
+
+  code {
+    min-inline-size: 0;
+    overflow: hidden;
+    color: var(--ui-foreground);
+    font-family: var(--ui-font-mono);
+    font-size: var(--ui-text-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .aui-clipboard__trigger {
+    color: var(--ui-muted-foreground);
+  }
+
+  .aui-clipboard__trigger:hover {
+    color: var(--ui-foreground);
+  }
+}
+
+.home-install-prompt {
+  flex: none;
+  color: color-mix(in srgb, var(--ui-success-text) 85%, var(--ui-foreground));
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-sm);
+  user-select: none;
+}
+
+.home-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ui-space-1) var(--ui-space-4);
+  margin: var(--ui-space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ui-space-4);
+  }
+
+  li + li::before {
+    content: "";
+    inline-size: 3px;
+    block-size: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.55;
+  }
+}
+
+.home-hero-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-block-start: var(--ui-space-1);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  text-decoration: none;
+
+  span {
+    transition: translate var(--ui-transition-fast);
+  }
+
+  &:hover {
+    color: var(--ui-foreground);
+  }
+
+  &:hover span {
+    translate: 3px 0;
+  }
+}
+
+/* ---------- What is Astro UI ---------- */
+
+.home-what {
+  display: grid;
+  gap: var(--ui-space-6);
+  padding-block-start: clamp(1.25rem, 3vw, 2rem);
+}
+
+.home-what-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.home-what-card {
+  position: relative;
+  display: grid;
+  gap: var(--ui-space-3);
+  align-content: start;
+  padding: var(--ui-space-6);
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl);
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--home-accent) 10%, transparent), transparent 60%),
+    color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+  transition: border-color var(--ui-transition-fast), transform var(--ui-transition-fast);
+
+  &:hover {
+    /* transform, not translate: the scroll-driven reveal owns `translate` with fill: both */
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--home-accent) 45%, var(--ui-border));
+  }
+
+  h3 {
+    margin: 0;
+    font-size: var(--ui-text-md);
+    font-weight: var(--ui-font-semibold);
+  }
+
+  p {
+    margin: 0;
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-sm);
+    line-height: 1.65;
+  }
+
+  code {
+    padding: 0.05em 0.3em;
+    border-radius: var(--ui-radius-sm);
+    background: color-mix(in srgb, currentColor 10%, transparent);
+    font-family: var(--ui-font-mono);
+    font-size: 0.9em;
+  }
+
+  &--violet {
+    --home-accent: var(--astro-violet);
+  }
+
+  &--royal {
+    --home-accent: var(--astro-royal);
+  }
+
+  &--mint {
+    --home-accent: #2dd4bf;
+  }
+}
+
+.home-what-icon {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  color: var(--home-accent);
+  border: 1px solid color-mix(in srgb, var(--home-accent) 35%, transparent);
+  border-radius: var(--ui-radius-full);
+  background: color-mix(in srgb, var(--home-accent) 12%, transparent);
+}
+
+.home-what-index {
+  position: absolute;
+  inset-block-start: var(--ui-space-5);
+  inset-inline-end: var(--ui-space-5);
+  color: color-mix(in srgb, var(--ui-foreground) 22%, transparent);
+  font-family: var(--ui-font-mono);
+  font-size: var(--ui-text-xs);
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Astro Islands / comparison ---------- */
+
+.home-islands {
+  display: grid;
+  gap: var(--ui-space-5);
+}
+
+.home-island-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--ui-space-3);
+}
+
+.home-stat {
+  display: grid;
+  gap: var(--ui-space-1);
+  align-content: start;
+  padding: var(--ui-space-4) var(--ui-space-5);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+
+.home-stat-value {
+  color: var(--ui-foreground);
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  font-weight: var(--ui-font-bold);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-stat-label {
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+.home-compare {
+  display: grid;
+  gap: var(--ui-space-3);
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+
+.home-compare-scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+
+  &:focus-visible {
+    outline: var(--ui-focus-ring-width) solid var(--ui-ring);
+    outline-offset: calc(-1 * var(--ui-focus-ring-width));
+  }
+}
+
+.home-compare-table {
+  inline-size: 100%;
+  min-inline-size: 58rem;
+  border-collapse: collapse;
+  font-size: var(--ui-text-sm);
+
+  caption {
+    /* The accessible caption is visually hidden via .home-visually-hidden. */
+    text-align: start;
+  }
+
+  th,
+  td {
+    padding: var(--ui-space-3) var(--ui-space-4);
+    text-align: start;
+    vertical-align: top;
+    border-block-start: 1px solid var(--ui-border);
+  }
+
+  thead th {
+    padding-block: var(--ui-space-4);
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-2xs);
+    font-weight: var(--ui-font-semibold);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-block-start: 0;
+  }
+
+  tbody th {
+    color: var(--ui-foreground);
+    font-weight: var(--ui-font-medium);
+    white-space: nowrap;
+  }
+
+  tbody td {
+    color: var(--ui-muted-foreground);
+  }
+
+  /* Astro UI column — tinted so the reader can find it while scanning. */
+  thead th:nth-child(2),
+  tbody td:nth-child(2) {
+    background: color-mix(in srgb, var(--astro-violet) 7%, transparent);
+  }
+
+  thead th:nth-child(2) {
+    color: var(--ui-foreground);
+  }
+
+  tbody td:nth-child(2) {
+    color: var(--ui-foreground);
+  }
+
+  tbody tr:hover th,
+  tbody tr:hover td {
+    background: color-mix(in srgb, var(--ui-foreground) 4%, transparent);
+  }
+
+  tbody tr:hover td:nth-child(2) {
+    background: color-mix(in srgb, var(--astro-violet) 12%, transparent);
+  }
+}
+
+.home-status {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.45em;
+
+  &--ok {
+    color: var(--ui-success-text);
+  }
+
+  &--partial {
+    color: var(--ui-warning-text);
+  }
+
+  &--no {
+    color: var(--ui-muted-foreground);
+  }
+}
+
+.home-status-mark {
+  flex: none;
+  font-size: 0.95em;
+  line-height: 1.45;
+}
+
+.home-compare-note {
+  margin: 0;
+  padding: 0 var(--ui-space-4) var(--ui-space-4);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+  line-height: 1.6;
+  max-inline-size: 82ch;
+}
+
+/* ---------- Zero lock-in ---------- */
+
+.home-lockin-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.home-check-list {
+  display: grid;
+  gap: var(--ui-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ui-space-2);
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-sm);
+    line-height: 1.6;
+  }
+
+  li::before {
+    content: "✓";
+    flex: none;
+    color: var(--ui-success-text);
+    font-weight: var(--ui-font-semibold);
+    line-height: 1.6;
+  }
+
+  code {
+    padding: 0.05em 0.3em;
+    border-radius: var(--ui-radius-sm);
+    background: var(--ui-muted);
+    font-family: var(--ui-font-mono);
+    font-size: 0.9em;
+  }
+}
+
+.home-stage {
+  position: relative;
+  display: grid;
+  gap: var(--ui-space-3);
+  padding: var(--ui-space-4);
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl);
+  background:
+    radial-gradient(90% 80% at 100% 0%, color-mix(in srgb, var(--astro-violet) 14%, transparent), transparent 55%),
+    radial-gradient(80% 70% at 0% 100%, color-mix(in srgb, var(--astro-royal) 12%, transparent), transparent 55%),
+    color-mix(in srgb, var(--ui-foreground) 3%, var(--ui-background));
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.home-stage-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-2xs);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-stage-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  color: var(--ui-success-text);
+  white-space: nowrap;
+}
+
+.home-stage-live::before {
+  content: "";
+  inline-size: 0.4rem;
+  block-size: 0.4rem;
+  border-radius: 50%;
+  background: var(--ui-success);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ui-success) 55%, transparent);
+  animation: home-live-pulse 2.4s ease-out infinite;
+}
+
+.home-stage-canvas {
+  display: grid;
+  place-items: center;
+  padding: clamp(var(--ui-space-3), 3vw, var(--ui-space-6));
+  border: 1px solid color-mix(in srgb, var(--ui-border) 70%, transparent);
+  border-radius: var(--ui-radius-lg);
+  background: color-mix(in srgb, var(--ui-background) 60%, transparent);
+}
+
+.home-stage-code {
+  overflow-x: auto;
+  padding: var(--ui-space-2) var(--ui-space-3);
+  border-radius: var(--ui-radius-md);
+  background: color-mix(in srgb, var(--ui-foreground) 6%, transparent);
+
+  code {
+    color: var(--ui-muted-foreground);
+    font-family: var(--ui-font-mono);
+    font-size: var(--ui-text-2xs);
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Fully featured ---------- */
+
+.home-features {
+  display: grid;
+  gap: var(--ui-space-5);
+}
+
+.home-features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ui-space-4);
+}
+
+.home-feature {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-inline-size: 0;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl);
+  background: color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+  transition: transform var(--ui-transition-fast), border-color var(--ui-transition-fast),
+  box-shadow var(--ui-transition-fast);
+
+  &:hover {
+    /* transform, not translate: the scroll-driven reveal owns `translate` with fill: both */
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--astro-violet) 40%, var(--ui-border));
+    box-shadow: var(--ui-shadow-lg);
+  }
+}
+
+.home-feature-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-block-size: 10.5rem;
+  padding: var(--ui-space-4);
+  overflow: hidden;
+  border-block-end: 1px solid var(--ui-border);
+  background:
+    radial-gradient(110% 120% at 50% 0%, color-mix(in srgb, var(--astro-violet) 10%, transparent), transparent 62%),
+    color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+
+  > * {
+    max-inline-size: 100%;
+    transition: translate 240ms ease;
+  }
+}
+
+.home-feature:hover .home-feature-visual > * {
+  translate: 0 -2px;
+}
+
+.home-feature-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-2);
+  padding: var(--ui-space-5);
+
+  h3 {
+    margin: 0;
+    font-size: var(--ui-text-md);
+    font-weight: var(--ui-font-semibold);
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ui-muted-foreground);
+    font-size: var(--ui-text-sm);
+    line-height: 1.6;
+  }
+
+  code {
+    padding: 0.05em 0.3em;
+    border-radius: var(--ui-radius-sm);
+    background: var(--ui-muted);
+    font-family: var(--ui-font-mono);
+    font-size: 0.9em;
+  }
+}
+
+.home-feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  margin-block-start: auto;
+  padding-block-start: var(--ui-space-2);
+  color: var(--ui-primary-text);
+  font-size: var(--ui-text-xs);
+  font-weight: var(--ui-font-medium);
+  text-decoration: none;
+
+  span {
+    transition: translate var(--ui-transition-fast);
+  }
+
+  &:hover span {
+    translate: 3px 0;
+  }
+}
+
+/* --- Feature visuals --- */
+
+.home-viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-2);
+}
+
+.home-viz-stack {
+  display: grid;
+  gap: var(--ui-space-3);
+  inline-size: 100%;
+}
+
+.home-viz-progress {
+  gap: var(--ui-space-4);
+}
+
+.home-viz-avatars {
+  justify-items: start;
+}
+
+.home-viz-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-2);
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-2xs);
+  line-height: 1.4;
+}
+
+.home-viz-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ui-space-2);
+}
+
+.home-viz-loading {
+  gap: var(--ui-space-4);
+}
+
+.home-tab-panel {
+  padding-block-start: var(--ui-space-3);
+  text-align: center;
+
+  code {
+    color: var(--ui-muted-foreground);
+    font-family: var(--ui-font-mono);
+    font-size: var(--ui-text-2xs);
+    white-space: nowrap;
+  }
+}
+
+/* Status dot gets a soft radar pulse on the avatars card. */
+.home-feature .aui-avatar__status--online {
+  animation: home-live-pulse 2.4s ease-out infinite;
+}
+
+/* ---------- Professional support ---------- */
+
+.home-support {
+  padding: clamp(1.5rem, 4vw, 2.75rem);
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-xl);
+  background:
+    radial-gradient(80% 120% at 100% 0%, color-mix(in srgb, var(--astro-violet) 15%, transparent), transparent 58%),
+    radial-gradient(70% 110% at 0% 100%, color-mix(in srgb, var(--astro-royal) 12%, transparent), transparent 58%),
+    color-mix(in srgb, var(--ui-foreground) 2%, var(--ui-background));
+}
+
+.home-support-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.home-profile {
+  display: grid;
+  gap: var(--ui-space-4);
+  padding: var(--ui-space-6);
+  border: 1px solid color-mix(in srgb, var(--ui-foreground) 14%, transparent);
+  border-radius: var(--ui-radius-xl);
+  background: color-mix(in srgb, var(--ui-background) 65%, transparent);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.home-profile-head {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-3);
+}
+
+.home-profile-name {
+  margin: 0;
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-lg);
+  font-weight: var(--ui-font-semibold);
+  letter-spacing: -0.01em;
+}
+
+.home-profile-role {
+  margin: 0.15rem 0 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-xs);
+}
+
+.home-profile-body {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: var(--ui-text-sm);
+  line-height: 1.65;
+}
+
+.home-profile-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ui-space-2);
+}
+
+.home-profile-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-2);
+  padding-block-start: var(--ui-space-3);
+  color: var(--ui-foreground);
+  font-size: var(--ui-text-sm);
+  text-decoration: none;
+  border-block-start: 1px solid var(--ui-border);
+
+  span:last-child {
+    color: var(--ui-primary-text);
+    font-size: var(--ui-text-xs);
+    transition: translate var(--ui-transition-fast);
+  }
+
+  &:hover span:last-child {
+    translate: 3px 0;
+  }
+}
+
+/* ---------- Final CTA ---------- */
+
+.home-final {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: var(--ui-space-4);
+  justify-items: center;
+  max-inline-size: 72rem;
+  inline-size: 100%;
+  margin-block-start: var(--ui-space-4);
+  margin-inline: auto;
+  padding: clamp(2.75rem, 6vw, 4.5rem) clamp(1.25rem, 5vw, 4rem);
+  overflow: hidden;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, var(--astro-violet) 38%, transparent);
+  border-radius: var(--ui-radius-xl);
+  background:
+    radial-gradient(70% 120% at 10% 0%, var(--astro-royal) 0%, transparent 64%),
+    radial-gradient(70% 120% at 92% 100%, var(--astro-violet) 0%, transparent 64%),
+    #0a0b1c;
+  animation: home-final-drift 30s ease-in-out infinite alternate;
+
+  h2 {
+    max-inline-size: 28ch;
+    margin: 0;
+    color: #fff;
+    font-size: clamp(2rem, 4.5vw, 3.1rem);
+    font-weight: var(--ui-font-bold);
+    line-height: 1.06;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+
+  > p {
+    max-inline-size: 56ch;
+    margin: 0;
+    color: color-mix(in srgb, #fff 78%, transparent);
+    font-size: var(--ui-text-base);
+    line-height: 1.6;
+  }
+
+  .home-hero-actions {
+    margin-block-start: var(--ui-space-2);
+  }
+
+  .home-final-note {
+    color: color-mix(in srgb, #fff 55%, transparent);
+    font-size: var(--ui-text-xs);
+  }
+}
+
+/* Grid texture, masked to the middle so edges stay clean. */
+.home-final::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, #fff 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, #fff 7%, transparent) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: radial-gradient(80% 90% at 50% 50%, #000 0%, transparent 78%);
+  pointer-events: none;
+}
+
+.home-install--inverse {
+  border-color: color-mix(in srgb, #fff 26%, transparent);
+  background: color-mix(in srgb, #fff 10%, transparent);
+
+  code {
+    color: #fff;
+  }
+
+  .home-install-prompt {
+    color: #8ff0d6;
+  }
+
+  .aui-clipboard__trigger {
+    color: color-mix(in srgb, #fff 70%, transparent);
+  }
+
+  .aui-clipboard__trigger:hover {
+    color: #fff;
+    background: color-mix(in srgb, #fff 12%, transparent);
+  }
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes home-hero-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -1.5%, 0) scale(1.05);
+  }
+}
+
+@keyframes home-final-drift {
+  from {
+    background-position: 0% 0%, 100% 100%, 0 0;
+  }
+
+  to {
+    background-position: 12% 8%, 88% 92%, 0 0;
+  }
+}
+
+@keyframes home-live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ui-success) 55%, transparent);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--ui-success) 0%, transparent);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ui-success) 0%, transparent);
+  }
+}
+
+@keyframes home-rise {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* Scroll-driven reveal: only where the browser supports view timelines,
+   so unsupported engines simply render the cards in place. */
+@supports (animation-timeline: view()) {
+  .home-feature,
+  .home-what-card {
+    animation: home-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 8% cover 32%;
+  }
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 64rem) {
+  .home-features-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 56rem) {
+  .home-lockin-grid,
+  .home-support-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-support-grid {
+    gap: var(--ui-space-8);
+  }
+
+  .home-lockin-grid .home-section-head {
+    max-inline-size: 44rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .home-hero {
+    gap: var(--ui-space-3);
+    padding-block-start: 2.5rem;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(2rem, 10vw, 2.6rem);
+  }
+
+  .home-announce {
+    font-size: var(--ui-text-2xs);
+  }
+
+  .home-hero-actions {
+    inline-size: 100%;
+  }
+
+  .home-install {
+    inline-size: 100%;
+    justify-content: flex-start;
+  }
+
+  .home-install code {
+    flex: 1;
+  }
+
+  .home-features-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-feature-visual {
+    min-block-size: 9rem;
+  }
+
+  .home-compare-table {
+    min-inline-size: 52rem;
+  }
+
+  .home-stat {
+    padding: var(--ui-space-3) var(--ui-space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero::before,
+  .home-final,
+  .home-stage-live::before,
+  .home-feature .aui-avatar__status--online,
+  .home-feature,
+  .home-what-card {
+    animation: none;
+  }
+
+  .home-feature,
+  .home-what-card,
+  .home-feature-visual > *,
+  .home-feature-link span,
+  .home-profile-link span:last-child,
+  .home-announce svg,
+  .home-hero-more span {
+    transition: none;
+  }
+
+  .home-feature:hover,
+  .home-what-card:hover {
+    transform: none;
+  }
+
+  .home-feature:hover .home-feature-visual > * {
+    translate: none;
+  }
+}
