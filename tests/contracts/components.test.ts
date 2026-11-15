@@ -256,7 +256,11 @@ describe("component contracts", () => {
   it("does not redeclare global --ui-* tokens inside components", () => {
     const offenders: string[] = [];
     for (const [file, src] of sources) {
-      const style = src.slice(src.indexOf("<style>"));
+      // Comments explain which global token a component opts out of; only
+      // real declarations count as redecorations.
+      const style = src
+        .slice(src.indexOf("<style>"))
+        .replace(/\/\*[\s\S]*?\*\//g, "");
       for (const m of style.matchAll(/(--ui-[\w-]+)\s*:/g)) {
         offenders.push(`${file}: ${m[1]}`);
       }
