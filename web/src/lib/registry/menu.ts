@@ -43,7 +43,7 @@ export const menu: ComponentMeta = {
         {
             id: "links",
             title: "Link items",
-            code: `<Menu id="dm-menu-links" triggerLabel="Open in" placement="bottom-start">\n  <MenuItem href="https://astro.build" shortcut="↗">Astro docs</MenuItem>\n  <MenuItem href="https://github.com/parsakafi/astro-ui" shortcut="↗">GitHub source</MenuItem>\n  <MenuSeparator/>\n  <MenuItem href="/docs/components/menu" shortcut="↵">Component page</MenuItem>\n</Menu>`,
+            code: `<Menu id="dm-menu-links" triggerLabel="Open in" placement="bottom-start">\n  <MenuItem href="https://astro.build" shortcut="↗">Astro docs</MenuItem>\n  <MenuItem href="https://github.com/parsakafi/astro-ui" shortcut="↗">GitHub source</MenuItem>\n  <MenuSeparator/>\n  <MenuItem href="/components/menu/" shortcut="↵">Component page</MenuItem>\n</Menu>`,
         },
         {
             id: "open",
