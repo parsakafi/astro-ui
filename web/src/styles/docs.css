@@ -1019,6 +1019,12 @@
   align-items: center;
   gap: var(--ui-space-3);
   padding: var(--ui-space-2) 0;
+  /* Narrow previews: let the name/role give way instead of forcing the
+     card into a horizontal scroll. */
+  flex-wrap: wrap;
+}
+.docs-block-team-row > * {
+  min-inline-size: 0;
 }
 
 .docs-block-team-name {
@@ -1203,7 +1209,10 @@
 
 .docs-block-analytics__kpis {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  /* `min(…, 100%)` keeps the track from forcing a 10rem floor when the
+     block sits in a narrow preview — otherwise the row pushes the page
+     into a horizontal scroll. */
+  grid-template-columns: repeat(auto-fit, minmax(min(10rem, 100%), 1fr));
   gap: var(--ui-space-3);
 }
 
@@ -1229,7 +1238,9 @@
 
 .docs-block-analytics__charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  /* Same guard as the KPI row: a 20rem floor would exceed a narrow
+     preview's width, so cap the floor at the container width. */
+  grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
   gap: var(--ui-space-3);
 }
 
@@ -2798,6 +2809,12 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: var(--ui-space-4);
+  /* Grid items default to min-content, so a block whose innards cannot
+     shrink (a KPI row, a stats strip) would push the canvas past the
+     viewport. Let the cell shrink; the block scrolls or wraps inside. */
+}
+.docs-block-canvas-grid > * {
+  min-inline-size: 0;
 }
 
 .docs-block-hint {
