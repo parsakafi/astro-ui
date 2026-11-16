@@ -127,6 +127,11 @@ function assertAA(
 
 const COLOR_FAMILIES = ["success", "warning", "error", "info"] as const;
 
+/** Neutral/brand fills that pair with their own foreground (no -text or
+ * -muted siblings). They are light in the dark theme, so their foreground
+ * flips to dark ink there. */
+const FILL_ONLY_FAMILIES = ["accent", "carbon"] as const;
+
 describe.each([
   ["light", light],
   ["dark", dark],
@@ -156,6 +161,12 @@ describe.each([
       "--ui-primary-foreground",
     );
     for (const family of COLOR_FAMILIES) {
+      assertAA(theme, family, `--ui-${family}`, `--ui-${family}-foreground`);
+    }
+  });
+
+  it("accent and carbon fills reach 4.5:1 with their foreground", () => {
+    for (const family of FILL_ONLY_FAMILIES) {
       assertAA(theme, family, `--ui-${family}`, `--ui-${family}-foreground`);
     }
   });

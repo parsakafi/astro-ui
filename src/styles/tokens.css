@@ -252,11 +252,14 @@
   --ui-rating-4: #a3e635;
   --ui-rating-5: #4ade80;
 
+  /* Both fills stay light in the dark theme, so the readable pairing is
+     dark ink rather than white: #8b949e/#fafafa was 2.94:1 and
+     #a78bfa/#ffffff 2.72:1. #18181b brings them to 5.76:1 and 6.51:1. */
   --ui-carbon: #8b949e;
-  --ui-carbon-foreground: #fafafa;
+  --ui-carbon-foreground: #18181b;
 
   --ui-accent: #a78bfa;
-  --ui-accent-foreground: #ffffff;
+  --ui-accent-foreground: #18181b;
 
   --ui-chart-1: #fb7185;
   --ui-chart-2: #38bdf8;
@@ -328,6 +331,12 @@
     --ui-rating-3: #facc15;
     --ui-rating-4: #a3e635;
     --ui-rating-5: #4ade80;
+
+    --ui-carbon: #8b949e;
+    --ui-carbon-foreground: #18181b;
+
+    --ui-accent: #a78bfa;
+    --ui-accent-foreground: #18181b;
 
     --ui-chart-1: #fb7185;
     --ui-chart-2: #38bdf8;
