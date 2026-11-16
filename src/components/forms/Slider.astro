@@ -175,7 +175,7 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
           step={step}
           disabled={disabled}
           class="aui-slider__input"
-          aria-label={isRange ? startLabel : label}
+          aria-label={isRange ? startLabel : (label ?? ariaStartLabel)}
           aria-labelledby={!isRange && id && label ? `${id}-label` : undefined}
           {...rest}
         />
@@ -223,7 +223,7 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
           disabled={disabled}
           class="aui-slider__input"
           style={!isRange ? `--aui-slider-pct:${pct}%` : undefined}
-          aria-label={isRange ? startLabel : label}
+          aria-label={isRange ? startLabel : (label ?? ariaStartLabel)}
           aria-labelledby={!isRange && id && label ? `${id}-label` : undefined}
           {...rest}
         />

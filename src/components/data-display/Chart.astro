@@ -3914,7 +3914,10 @@ const tableCaption = title ?? (combo ? "Combo chart" : `${type} chart`);
     <tbody>
     {labels.map((label, i) => (
       <tr>
-        <th scope="row">{label}</th>
+        {/* A blank category would leave the row header empty, so fall
+            back to the row number — charts may legitimately omit
+            x-axis labels, but the data table still needs a name. */}
+        <th scope="row">{label || String(i + 1)}</th>
         {series.map((s) => (
           <td>{format(s.data[i] ?? 0)}</td>
         ))}

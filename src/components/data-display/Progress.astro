@@ -646,5 +646,10 @@ const circleStyle = [
   /* prevent layout shift from the SVG circle's initial render */
   .aui-progress--circle .aui-progress__fill {
     stroke-dashoffset: 100;
+    /* The colour rules above set background-color for the bar fill. On
+       the circle it paints nothing (the ring is a stroke) but contrast
+       checkers read the shape's box as an opaque backdrop behind the
+       centred value, so clear it for the circle variant. */
+    background-color: transparent;
   }
 </style>
