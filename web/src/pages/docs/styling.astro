@@ -192,7 +192,12 @@ const playgroundGroups = tokenGroups.map((g) => ({
                 <button type="button" id="tp-copy" class="tp-btn" disabled>Copy</button>
               </span>
             </div>
-            <pre class="tp-output"><code id="tp-output-code">/* Edit a token — overrides appear here as copy-ready CSS. */</code></pre>
+            <pre
+              class="tp-output"
+              tabindex="0"
+              role="region"
+              aria-label="Generated token overrides"
+            ><code id="tp-output-code">/* Edit a token - overrides appear here as copy-ready CSS. */</code></pre>
           </div>
           <p class="docs-muted-note">
             Dark mode needs the same overrides under
