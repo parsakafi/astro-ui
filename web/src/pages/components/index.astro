@@ -48,7 +48,7 @@ const filterChips = [
 ];
 ---
 
-<DocsLayout title="Components" sidebar toc={toc}>
+<DocsLayout title="Components" description={`Browse all ${stats.components} astro-ui components by category: general, layout, navigation, forms, data display, feedback, and overlay.`} sidebar toc={toc}>
   <article class="docs-article">
     <section id="overview" class="docs-hero">
       <p class="docs-hero-kicker">Browse every component by category</p>
@@ -92,7 +92,8 @@ const filterChips = [
       </div>
     </section>
 
-    <section aria-label="Before you browse">
+    <section aria-labelledby="before-you-browse">
+      <h2 id="before-you-browse" class="docs-visually-hidden">Before you browse</h2>
       <div class="docs-feature-grid">
         {
           guides.map((guide) => (
