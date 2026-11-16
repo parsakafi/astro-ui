@@ -6,6 +6,22 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Circular geometry under squircle themes. With `--ui-corner-shape:
+  squircle`, the switch knob, radio circle and dot, status and
+  notification dots, count bubbles, stepper markers, timeline dots,
+  carousel and lightbox indicators, skeleton circles and spinner rings
+  were drawn as superellipses and read as broken corners. Those parts
+  now stay `round`; containers (Button, Badge, Card, Input) still follow
+  the theme.
+
+### Added
+
+- `--aui-corner-shape` — a per-element or per-subtree override of
+  `--ui-corner-shape`, so an instance can opt into or out of squircle
+  corners without changing the theme. Documented in `docs/theming.md`.
+
 ## [0.2.0] - 2026-11-12
 
 Addresses the 0.1.x review: published-package gaps, WCAG AA contrast,

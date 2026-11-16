@@ -124,6 +124,8 @@ const classes = cn(
     background-color: var(--ui-background);
     border: 1px solid var(--ui-input);
     border-radius: var(--ui-radius-full);
+    /* Circular control: keep the theme's squircle out of the geometry. */
+    corner-shape: var(--aui-corner-shape, round);
     transition: border-color var(--ui-transition-fast);
     margin-top: 1px;
   }
@@ -191,6 +193,7 @@ const classes = cn(
 
   .aui-radio__dot {
     border-radius: var(--ui-radius-full);
+    corner-shape: var(--aui-corner-shape, round);
     background-color: var(--ui-primary);
     opacity: 0;
     transform: scale(0.5);

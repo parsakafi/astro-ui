@@ -714,6 +714,8 @@ const dialDash = `${(dialFracB - dialFracA) * DIAL_C} ${DIAL_C}`;
     display: inline-grid;
     place-items: center;
     border-radius: var(--ui-radius-full);
+    /* Round dial → round focus ring, whatever the theme's corner shape. */
+    corner-shape: var(--aui-corner-shape, round);
   }
 
   .aui-slider__dial:focus-within {

@@ -272,6 +272,7 @@ const resolvedAriaLabel = resolveAriaLabel(Astro.props, ariaLabel);
     block-size: 0.375rem;
     flex-shrink: 0;
     border-radius: var(--ui-radius-full);
+    corner-shape: var(--aui-corner-shape, round);
     background-color: currentcolor;
   }
 
@@ -357,6 +358,8 @@ const resolvedAriaLabel = resolveAriaLabel(Astro.props, ariaLabel);
     font-weight: var(--ui-font-semibold);
     line-height: var(--ui-leading-none);
     border-radius: var(--ui-radius-full);
+    /* A count bubble reads as a badge dot, not a squircle chip. */
+    corner-shape: var(--aui-corner-shape, round);
     border: 1px solid transparent;
     white-space: nowrap;
     pointer-events: none;

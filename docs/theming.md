@@ -114,12 +114,41 @@ All controls use `--ui-control-radius` for their default corner. Change
 the scale once and Button, Input, Select, Textarea, and InputGroup move
 together.
 
+## Corner shape
+
+`corner-shape` is opt-in through the theme: `--ui-corner-shape: round`
+(the default) draws classic arcs, `squircle` draws continuous corners.
+Only Chromium-based engines implement the property today; everywhere else
+the token is inert and corners stay round.
+
+```css
+:root {
+  --ui-corner-shape: squircle; /* app-wide default */
+}
+```
+
+Shapes that *are* circles — the switch knob, radio circle and dot,
+avatars, spinners, status and notification dots, count bubbles, stepper
+markers, timeline dots, carousel and lightbox indicators, and skeleton
+circles — ignore that theme and stay `round`, because a superellipse
+knob or a square dot reads as a rendering bug. Containers such as Button,
+Badge, Card and Input follow the theme as before.
+
+Any element or subtree can choose differently with the inherited
+`--aui-corner-shape` (it wins over `--ui-corner-shape` for that scope):
+
+```astro
+<Switch ariaLabel="Weekly digest" style="--aui-corner-shape: squircle" />
+<Card style="--aui-corner-shape: round">…</Card>
+```
+
 ## Rules
 
 1. Components must use `var(--ui-*)` — enforced by contract tests. No raw
    `#hex`, `rgb()`, or `hsl()` values anywhere in a component file.
 2. Components never declare `--ui-*`; private variables use the
-   `--aui-<component>-*` prefix.
+   `--aui-<component>-*` prefix. The one library-wide `--aui-*` is
+   `--aui-corner-shape`, the public per-instance override above.
 3. Interactive elements style keyboard focus with `:focus-visible`, not
    bare `:focus`. Composite widgets may use `:focus-within`/`:has()` on
    the wrapper.

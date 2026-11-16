@@ -168,6 +168,9 @@ const classes = cn(
   .aui-switch__thumb {
     display: block;
     border-radius: var(--ui-radius-full);
+    /* A knob is a circle: a squircle theme shapes the track, not this.
+       --aui-corner-shape opts the instance back in. */
+    corner-shape: var(--aui-corner-shape, round);
     background-color: var(--ui-primary-foreground);
     box-shadow: var(--ui-shadow-sm);
     transition: transform var(--ui-transition-fast);

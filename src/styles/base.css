@@ -15,14 +15,18 @@
 }
 
 /* Corner shaping is theme-controlled via --ui-corner-shape
-   (tokens.css: "round" by default, "squircle" to opt in). The
-   @supports gate keeps engines without corner-shape untouched, and
+   (tokens.css: "round" by default, "squircle" to opt in). Any element
+   or subtree can override that choice with --aui-corner-shape, e.g.
+   <Button style="--aui-corner-shape: round"> or a wrapper that sets it
+   once. Components whose shape is a circle (switch knob, radio, avatar,
+   dots, spinners) default to "round" and only take squircle on request.
+   The @supports gate keeps engines without corner-shape untouched, and
    the property is a no-op on elements without a border-radius. */
 @supports (corner-shape: squircle) {
   *,
   *::before,
   *::after {
-    corner-shape: var(--ui-corner-shape, round);
+    corner-shape: var(--aui-corner-shape, var(--ui-corner-shape, round));
   }
 }
 
