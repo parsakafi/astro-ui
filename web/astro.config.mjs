@@ -2,6 +2,8 @@ import {defineConfig} from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  // Canonical/Open Graph URLs resolve against this origin.
+  site: "https://astroui.ir",
   vite: {
     plugins: [tailwindcss()],
   },

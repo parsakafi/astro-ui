@@ -19,6 +19,7 @@ import "../styles/tailwind.css";
 import "../styles/demo.css";
 import "../styles/docs.css";
 import "../styles/brand.css";
+import {SITE} from "../lib/site";
 
 interface Props {
   title: string;
@@ -50,17 +51,76 @@ const {
   toc,
   activePath = "docs",
 } = Astro.props;
+
+// Social/canonical metadata is derived per page so every route advertises
+// itself: the origin comes from `site` in astro.config.mjs, the path from
+// the build. `new URL()` normalises the trailing slash (Astro emits
+// `/route/index.html`, so paths end in `/`).
+const site = Astro.site ?? new URL("https://astroui.ir");
+const origin = site.origin;
+const canonical = new URL(Astro.url.pathname, site).href;
+const socialTitle = `${title} · ${SITE.name}`;
+const socialDescription = description ?? SITE.description;
+const socialImage = new URL("/og.png", site).href;
+
+// Site-level entities only — no per-page markup to keep crawlers from
+// seeing 100 near-duplicate Page nodes. SoftwareApplication carries the
+// package facts, WebSite the name/description used in sitelinks.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${origin}/#website`,
+      url: `${origin}/`,
+      name: SITE.name,
+      alternateName: SITE.shortName,
+      description: SITE.description,
+      inLanguage: "en",
+      publisher: {"@id": `${origin}/#software`},
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${origin}/#software`,
+      name: SITE.name,
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "Any",
+      softwareVersion: SITE.version,
+      description: SITE.description,
+      url: `${origin}/`,
+      codeRepository: SITE.repo,
+      license: "https://opensource.org/licenses/MIT",
+      offers: {"@type": "Offer", price: "0", priceCurrency: "USD"},
+    },
+  ],
+};
 ---
 
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="description" content={description}/>
+  <meta name="description" content={socialDescription}/>
   <meta name="viewport" content="width=device-width"/>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
   <meta name="generator" content={Astro.generator}/>
-  <title>{title} · Astro UI</title>
+  <title>{socialTitle}</title>
+  <link rel="canonical" href={canonical}/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content={SITE.name}/>
+  <meta property="og:title" content={socialTitle}/>
+  <meta property="og:description" content={socialDescription}/>
+  <meta property="og:url" content={canonical}/>
+  <meta property="og:image" content={socialImage}/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta property="og:image:alt" content={`${SITE.name} — ${SITE.description}`}/>
+  <meta property="og:locale" content="en"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content={socialTitle}/>
+  <meta name="twitter:description" content={socialDescription}/>
+  <meta name="twitter:image" content={socialImage}/>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}/>
   <script is:inline>
     // Theme init: runs before paint to avoid FOUC (demo-app behavior).
     try {
