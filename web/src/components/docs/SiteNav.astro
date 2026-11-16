@@ -286,9 +286,15 @@ const menuIcons: Record<string, string> = {
   // script keeps aria-expanded honest and supports click + Escape +
   // outside-click for pointerless flows.
   const triggers = document.querySelectorAll<HTMLButtonElement>(".docs-mega-trigger");
+  // `data-open` is the click/tap state the stylesheet reveals; :hover and
+  // :focus-within cover the pointer/keyboard paths on their own. Both
+  // attributes must move together or aria-expanded lies to screen readers.
   const closeAll = (except?: HTMLButtonElement) => {
     triggers.forEach((t) => {
-      if (t !== except) t.setAttribute("aria-expanded", "false");
+      if (t !== except) {
+        t.setAttribute("aria-expanded", "false");
+        t.closest(".docs-mega")?.removeAttribute("data-open");
+      }
     });
   };
   for (const trigger of triggers) {
@@ -296,6 +302,7 @@ const menuIcons: Record<string, string> = {
       const open = trigger.getAttribute("aria-expanded") === "true";
       closeAll(trigger);
       trigger.setAttribute("aria-expanded", open ? "false" : "true");
+      trigger.closest(".docs-mega")?.toggleAttribute("data-open", !open);
     });
   }
   document.addEventListener("keydown", (event) => {

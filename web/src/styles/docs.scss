@@ -83,6 +83,17 @@ $mega-close-grace: 300ms;
     transition-delay: 0s;
   }
 
+  /* Click/tap path. Touch has no :hover, and :focus-within alone leaves
+     the panel hidden after the trigger is clicked, so the script mirrors
+     the open state onto `data-open` and this rule reveals the panel. */
+  &[data-open] .docs-mega-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    translate: 0 0;
+    transition-delay: 0s;
+  }
+
   &:hover .docs-mega-chevron,
   &:focus-within .docs-mega-chevron {
     transform: rotate(180deg);
