@@ -529,6 +529,14 @@ html[data-theme=light] .home-hero .docs-text-gradient {
   color: var(--ui-muted-foreground);
 }
 
+/* The Astro UI column carries a violet wash, which lifts the surface enough
+   to push --ui-success-text to 4.38:1. Mixing it toward the body text keeps
+   the hue and raises contrast in both themes (darker in light, lighter in
+   dark, because --ui-foreground flips). */
+.home-compare-table .home-status--ok {
+  color: color-mix(in srgb, var(--ui-success-text) 72%, var(--ui-foreground));
+}
+
 .home-status-mark {
   flex: none;
   font-size: 0.95em;
