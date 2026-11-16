@@ -14,5 +14,5 @@ import { Empty, Button } from "@parsakafi/astro-ui";
 </Empty>
 
 <style is:global>
-  .block-empty-icon { display: grid; place-items: center; font-size: 1.75rem; color: var(--ui-primary); }
+  .block-empty-icon { display: grid; place-items: center; font-size: 1.75rem; color: var(--ui-primary-text); }
 </style>`;

@@ -22,7 +22,7 @@ import { Card, Badge, Kbd } from "@parsakafi/astro-ui";
   .block-hint { margin: 0; color: var(--ui-muted-foreground); font-size: var(--ui-text-sm); }
   .block-features { display: grid; gap: var(--ui-space-2); margin: 0 0 var(--ui-space-4); padding: 0; list-style: none; font-size: var(--ui-text-sm); color: var(--ui-muted-foreground); }
   .block-features li { display: flex; align-items: start; gap: var(--ui-space-2); line-height: var(--ui-leading-normal); }
-  .block-features li::before { content: "\\2713"; flex-shrink: 0; color: var(--ui-primary); font-weight: var(--ui-font-semibold); }
+  .block-features li::before { content: "\\2713"; flex-shrink: 0; color: var(--ui-primary-text); font-weight: var(--ui-font-semibold); }
   .block-form-row { display: flex; align-items: center; justify-content: space-between; gap: var(--ui-space-3); }
   .block-plan-label { font-size: var(--ui-text-sm); color: var(--ui-muted-foreground); }
 </style>`;

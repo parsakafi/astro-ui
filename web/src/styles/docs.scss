@@ -133,7 +133,7 @@ $mega-close-grace: 300ms;
 
   .docs-mega-link:hover .docs-mega-icon,
   .docs-mega-link:focus-visible .docs-mega-icon {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   /* Featured banner ("All components") — soft violet→blue wash: brand-colored icon chip, trailing arrow. */
@@ -392,14 +392,16 @@ $docs-anchor-offset: 7.5rem;
   text-decoration: none;
 
   &-mark {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 
   &-version {
     padding-inline: var(--ui-space-2);
     font-size: var(--ui-text-2xs);
     font-weight: var(--ui-font-medium);
-    color: var(--ui-primary);
+    /* --ui-primary at 10px on the dark canvas is 4.48:1; the *-text token
+       is the same hue, tuned for coloured text on a tinted surface. */
+    color: var(--ui-primary-text);
     background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
     border-radius: var(--ui-radius-full);
   }
@@ -495,7 +497,7 @@ $docs-anchor-offset: 7.5rem;
   }
 
   &-icon {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 }
 
@@ -528,7 +530,7 @@ $docs-anchor-offset: 7.5rem;
   }
 
   &.is-active {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     background-color: color-mix(in srgb, var(--ui-primary) 8%, transparent);
     font-weight: var(--ui-font-medium);
   }
@@ -712,7 +714,7 @@ $docs-anchor-offset: 7.5rem;
   }
 
   a {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
@@ -752,7 +754,7 @@ $docs-anchor-offset: 7.5rem;
 
 .docs-hero-kicker {
   margin: 0;
-  color: var(--ui-primary);
+  color: var(--ui-primary-text);
   font-size: var(--ui-text-xs);
   font-weight: var(--ui-font-semibold);
   text-transform: uppercase;
@@ -887,7 +889,7 @@ $docs-anchor-offset: 7.5rem;
   }
 
   &-icon {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     font-size: var(--ui-text-lg);
   }
 
@@ -923,7 +925,7 @@ $docs-anchor-offset: 7.5rem;
   }
 
   &-cta {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     transition: translate var(--ui-transition-fast);
   }
 
@@ -1025,7 +1027,7 @@ $docs-anchor-offset: 7.5rem;
 
 .docs-block-link {
   font-size: var(--ui-text-sm);
-  color: var(--ui-primary);
+  color: var(--ui-primary-text);
 }
 
 /* pricing block — tiered plan cards (comparison best practices:
@@ -1042,7 +1044,7 @@ $docs-anchor-offset: 7.5rem;
   }
 
   &.docs-block-plan--featured {
-    border-color: var(--ui-primary);
+    border-color: var(--ui-primary-text);
     box-shadow: 0 0 0 1px var(--ui-primary), var(--ui-shadow-lg);
   }
 }
@@ -1083,7 +1085,7 @@ $docs-anchor-offset: 7.5rem;
     &::before {
       content: "✓";
       flex-shrink: 0;
-      color: var(--ui-primary);
+      color: var(--ui-primary-text);
       font-weight: var(--ui-font-semibold);
     }
   }
@@ -1679,7 +1681,7 @@ $docs-anchor-offset: 7.5rem;
   color: var(--ui-muted-foreground);
 
   a {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 }
 
@@ -1779,7 +1781,7 @@ $docs-anchor-offset: 7.5rem;
   box-shadow var(--ui-transition-fast);
 
   &:hover {
-    border-color: var(--ui-primary);
+    border-color: var(--ui-primary-text);
     translate: 0 -2px;
     box-shadow: var(--ui-shadow-md);
   }
@@ -1939,7 +1941,7 @@ $docs-anchor-offset: 7.5rem;
   .docs-start-num {
     font-family: var(--ui-font-mono);
     font-size: var(--ui-text-sm);
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     font-weight: var(--ui-font-semibold);
   }
 }
@@ -2083,7 +2085,7 @@ $docs-anchor-offset: 7.5rem;
 
     &:hover {
       background: var(--ui-muted);
-      border-color: var(--ui-primary);
+      border-color: var(--ui-primary-text);
     }
   }
 }
@@ -2113,7 +2115,7 @@ $docs-anchor-offset: 7.5rem;
   place-items: center;
   width: 2.5rem;
   height: 2.5rem;
-  color: var(--ui-primary);
+  color: var(--ui-primary-text);
   background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
   border-radius: var(--ui-radius-md);
   font-size: var(--ui-text-lg);
@@ -2370,7 +2372,7 @@ $docs-anchor-offset: 7.5rem;
   }
 
   &[data-changed] .tp-token-name {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 }
 
@@ -2583,7 +2585,7 @@ $docs-anchor-offset: 7.5rem;
 }
 
 .docs-code-type {
-  color: var(--ui-primary);
+  color: var(--ui-primary-text);
   word-break: break-word;
 }
 
@@ -2655,7 +2657,7 @@ $docs-anchor-offset: 7.5rem;
   border-radius: var(--ui-radius-full);
 
   &-more {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
     background-color: color-mix(in srgb, var(--ui-primary) 10%, transparent);
   }
 }
@@ -2733,7 +2735,7 @@ $docs-anchor-offset: 7.5rem;
 }
 
 .docs-changelog-version {
-  color: var(--ui-primary);
+  color: var(--ui-primary-text);
   font-weight: var(--ui-font-semibold);
   font-size: var(--ui-text-sm);
 }
@@ -3091,7 +3093,7 @@ $docs-anchor-offset: 7.5rem;
   display: grid;
   place-items: center;
   font-size: 1.75rem;
-  color: var(--ui-primary);
+  color: var(--ui-primary-text);
 }
 
 .docs-filter-count {
@@ -3376,7 +3378,7 @@ html[data-kbd="mac"] .docs-search-kbd-pc {
       text-decoration: none;
 
       &:hover {
-        color: var(--ui-primary);
+        color: var(--ui-primary-text);
       }
     }
   }
@@ -3393,7 +3395,7 @@ html[data-kbd="mac"] .docs-search-kbd-pc {
   text-decoration: none;
 
   &:hover {
-    color: var(--ui-primary);
+    color: var(--ui-primary-text);
   }
 }
 
@@ -3467,8 +3469,8 @@ html[data-kbd="mac"] .docs-search-kbd-pc {
     transition: border-color var(--ui-transition-fast), color var(--ui-transition-fast), background-color var(--ui-transition-fast);
 
     &:hover {
-      color: var(--ui-primary);
-      border-color: var(--ui-primary);
+      color: var(--ui-primary-text);
+      border-color: var(--ui-primary-text);
       background: color-mix(in srgb, var(--ui-primary) 8%, transparent);
     }
 
@@ -3521,7 +3523,7 @@ html[data-kbd="mac"] .docs-search-kbd-pc {
   }
 
   &.docs-block-plan--featured {
-    border-color: var(--ui-primary);
+    border-color: var(--ui-primary-text);
     box-shadow: 0 0 0 1px var(--ui-primary), var(--ui-shadow-lg);
   }
 }
