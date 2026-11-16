@@ -41,8 +41,13 @@ html[data-theme="dark"]:root {
   --ui-background: var(--astro-space);
   --ui-foreground: var(--astro-star);
 
-  --ui-primary: var(--astro-violet);
-  --ui-primary-hover: color-mix(in srgb, var(--astro-violet) 80%, white);
+  /* White on --astro-violet is 4.1:1, under the 4.5:1 AA floor for the
+     filled surfaces that pair it with --ui-primary-foreground (buttons,
+     tags, badges, avatars, bubbles, active tabs). Deepening the fill
+     toward black keeps the brand hue, puts the base at 5.5:1 and the
+     hover at 4.7:1, and leaves the brighter violet for accents. */
+  --ui-primary: color-mix(in srgb, var(--astro-violet) 84%, #000);
+  --ui-primary-hover: color-mix(in srgb, var(--astro-violet) 92%, #000);
   --ui-primary-foreground: #ffffff;
 
   --ui-muted: #12172b;
@@ -59,7 +64,13 @@ html[data-theme="dark"]:root {
 
 html[data-theme="light"]:root {
   --ui-primary: var(--astro-fuchsia);
-  --ui-primary-hover: var(--astro-violet);
+  /* Hover lifts 20% toward the brand violet instead of jumping all the
+     way to it: #b845ed under white is 4.1:1, while this mix stays 6.4:1. */
+  --ui-primary-hover: color-mix(
+    in srgb,
+    var(--astro-fuchsia) 80%,
+    var(--astro-violet)
+  );
   --ui-primary-foreground: #ffffff;
 }
 
