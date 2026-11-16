@@ -676,6 +676,19 @@
   gap: var(--ui-space-4);
 }
 
+/* `.docs-article section` clamps prose sections to a single track at higher
+   specificity than a lone class, so the stats row restates its columns here.
+   The four stats stay in one row down to phone widths — a 2×2 mid step read
+   as broken rather than as a row — then stack into a single column. */
+.docs-article .docs-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 40rem) {
+  .docs-article .docs-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .docs-stat {
   display: grid;
   gap: var(--ui-space-1);
