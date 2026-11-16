@@ -30,17 +30,17 @@ export const banner: ComponentMeta = {
         {
             id: "release",
             title: "Release announcement",
-            code: `<Banner variant="info">\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline, Banner, and Menu are here.\n  <Button slot="actions" size="sm" variant="secondary">Read the notes</Button>\n</Banner>`,
+            code: `<Banner variant="info" ariaLabel="Release announcement">\n  <span slot="icon" aria-hidden="true">✦</span>\n  <strong>v2.5 is out.</strong> Timeline, Banner, and Menu are here.\n  <Button slot="actions" size="sm" variant="secondary">Read the notes</Button>\n</Banner>`,
         },
         {
             id: "dismissible",
             title: "Dismissible trial notice",
-            code: `<Banner variant="primary" closable>\n  <strong>14 days left in your trial.</strong> Add a payment method to keep your projects online.\n  <Button slot="actions" size="sm" variant="secondary">Choose a plan</Button>\n</Banner>`,
+            code: `<Banner variant="primary" closable ariaLabel="Trial notice">\n  <strong>14 days left in your trial.</strong> Add a payment method to keep your projects online.\n  <Button slot="actions" size="sm" variant="secondary">Choose a plan</Button>\n</Banner>`,
         },
         {
             id: "sticky",
             title: "Sticky maintenance strip",
-            code: `<Banner variant="warning" sticky closable closeLabel="Dismiss maintenance notice">\n  <span slot="icon" aria-hidden="true">⏳</span>\n  Scheduled maintenance on Oct 24, 02:00–04:00 UTC. Deploys will queue.\n</Banner>`,
+            code: `<Banner variant="warning" sticky closable closeLabel="Dismiss maintenance notice" ariaLabel="Maintenance notice">\n  <span slot="icon" aria-hidden="true">⏳</span>\n  Scheduled maintenance on Oct 24, 02:00–04:00 UTC. Deploys will queue.\n</Banner>`,
         },
         {
             id: "neutral",

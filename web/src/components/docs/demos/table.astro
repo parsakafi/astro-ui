@@ -15,7 +15,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-table-basic">
               <Fragment slot="preview">
-                <Table>
+                <Table ariaLabel="Team members">
                   <tr slot="head">
                     <th class="aui-table__head-cell">Name</th>
                     <th class="aui-table__head-cell">Role</th>
@@ -41,7 +41,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Bordered + striped</h3>
             <DemoTabs id="dm-table-striped">
               <Fragment slot="preview">
-                <Table bordered striped>
+                <Table ariaLabel="Team status" bordered striped>
                   <tr slot="head">
                     <th class="aui-table__head-cell">Name</th>
                     <th class="aui-table__head-cell">Status</th>

@@ -28,7 +28,7 @@ export const table: ComponentMeta = {
         {
             id: "basic",
             title: "Basic",
-            code: `<Table>
+            code: `<Table ariaLabel="Team members">
   <tr slot="head">
 <th class="aui-table__head-cell">Name</th>
 <th class="aui-table__head-cell">Role</th>
@@ -42,7 +42,7 @@ export const table: ComponentMeta = {
         {
             id: "bordered-striped",
             title: "Bordered + striped",
-            code: `<Table bordered striped>
+            code: `<Table ariaLabel="Team status" bordered striped>
   <tr slot="head">…</tr>
   <tr><td>…</td></tr>
 </Table>`,

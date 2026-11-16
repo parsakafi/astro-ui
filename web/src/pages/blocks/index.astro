@@ -30,16 +30,16 @@ import {blockCategories, blockCount, categoryHref} from "../../lib/blocks";
       blockCategories.map((category) => (
         <section id={category.id} class="docs-block-section">
           <div class="docs-block-cat-card">
+            <div class="docs-cat-head">
+              <span class="docs-cat-icon" aria-hidden="true">{category.icon}</span>
+              <h2>
+                <a href={categoryHref(category.id)}>{category.label}</a>
+              </h2>
+            </div>
             <div class="docs-block-cat-preview">
               <BlockDemo id={category.blocks[0].id} idPrefix={`cat-${category.id}`}/>
             </div>
             <div class="docs-block-cat-body">
-              <div class="docs-cat-head">
-                <span class="docs-cat-icon" aria-hidden="true">{category.icon}</span>
-                <h2>
-                  <a href={categoryHref(category.id)}>{category.label}</a>
-                </h2>
-              </div>
               <p>{category.description}</p>
               <BlockRecipe
                 recipe={category.blocks.map((b) => b.recipe).join(" · ").split(" · ").filter((v, i, a) => a.indexOf(v) === i).join(" · ")}/>

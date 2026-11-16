@@ -19,7 +19,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-breadcrumb-basic">
               <Fragment slot="preview">
-                <Breadcrumb
+                <Breadcrumb ariaLabel="Component path"
                   items={[
                     {href: "/", label: "Home"},
                     {href: "/components/", label: "Components"},
@@ -38,7 +38,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Chevron separator</h3>
             <DemoTabs id="dm-breadcrumb-chevron">
               <Fragment slot="preview">
-                <Breadcrumb
+                <Breadcrumb ariaLabel="Chevron path"
                   separator="chevron"
                   items={[
                     {href: "/", label: "Home"},
@@ -93,7 +93,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <DemoTabs id="dm-breadcrumb-slash">
               <Fragment slot="preview">
                 <div class="demo-row">
-                  <Breadcrumb
+                  <Breadcrumb ariaLabel="Filesystem path"
                     separator="custom"
                     style="--aui-breadcrumb-separator: '//'"
                     items={[
@@ -102,7 +102,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
                       {label: "bin"},
                     ]}
                   />
-                  <Breadcrumb
+                  <Breadcrumb ariaLabel="Settings path"
                     separator="custom"
                     style="--aui-breadcrumb-separator: '\\2022'"
                     items={[
@@ -125,7 +125,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Ellipsis for long paths</h3>
             <DemoTabs id="dm-breadcrumb-ellipsis">
               <Fragment slot="preview">
-                <Breadcrumb
+                <Breadcrumb ariaLabel="Ellipsis path"
                   items={[
                     {href: "/", label: "Home"},
                     {ellipsis: true, label: "More"},
@@ -145,7 +145,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Icons for each item</h3>
             <DemoTabs id="dm-breadcrumb-icons">
               <Fragment slot="preview">
-                <Breadcrumb separator="chevron"
+                <Breadcrumb ariaLabel="Library path" separator="chevron"
                             items={[
                               {
                                 href: "/",
@@ -175,7 +175,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Double chevron separators</h3>
             <DemoTabs id="dm-breadcrumb-chevrons">
               <Fragment slot="preview">
-                <Breadcrumb separator="chevrons"
+                <Breadcrumb ariaLabel="Resource path" separator="chevrons"
                             items={[
                               {href: "/", label: "Dashboard"},
                               {href: "#", label: "Resources"},
@@ -195,7 +195,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <DemoTabs id="dm-breadcrumb-pill">
               <Fragment slot="preview">
                 <div class="docs-breadcrumb-frame">
-                  <Breadcrumb pill separator="chevron"
+                  <Breadcrumb ariaLabel="Checkout path" pill separator="chevron"
                               items={[
                                 {
                                   href: "/",
@@ -219,7 +219,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Home icon item</h3>
             <DemoTabs id="dm-breadcrumb-home">
               <Fragment slot="preview">
-                <Breadcrumb
+                <Breadcrumb ariaLabel="Product path"
                   items={[
                     {
                       href: "/",
@@ -296,7 +296,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <DemoTabs id="dm-breadcrumb-card">
               <Fragment slot="preview">
                 <Card size="sm">
-                  <Breadcrumb separator="chevron"
+                  <Breadcrumb ariaLabel="Path inside a card" separator="chevron"
                               items={[
                                 {href: "/", label: "Home"},
                                 {href: "#", label: "Products"},

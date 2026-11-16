@@ -16,7 +16,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Vertical</h3>
             <DemoTabs id="dm-scroll-area-vertical">
               <Fragment slot="preview">
-                <ScrollArea class="h-40 w-full">
+                <ScrollArea ariaLabel="Activity feed" class="h-40 w-full">
                   <div class="demo-field">
                     <p>Row one — the scrollbar is themed from design tokens.</p>
                     <p>Row two</p>
@@ -40,7 +40,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Horizontal</h3>
             <DemoTabs id="dm-scroll-area-horizontal">
               <Fragment slot="preview">
-                <ScrollArea orientation="horizontal" class="w-full">
+                <ScrollArea ariaLabel="Monthly summary" orientation="horizontal" class="w-full">
                   <div class="demo-row" style="width:max-content">
                     <Tag>Jan</Tag>
                     <Tag>Feb</Tag>

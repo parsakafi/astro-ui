@@ -15,7 +15,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Basic</h3>
             <DemoTabs id="dm-pagination-basic">
               <Fragment slot="preview">
-                <Pagination page={4} total={12} pageHref={(p: any) => `?page=${p}`}/>
+                <Pagination ariaLabel="Search results" page={4} total={12} pageHref={(p: any) => `?page=${p}`}/>
               </Fragment>
               <Fragment slot="code">
                 <Fragment set:html={codeHtml.get("basic")} />
@@ -28,7 +28,7 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             <h3 class="docs-demo-title">Compact</h3>
             <DemoTabs id="dm-pagination-compact">
               <Fragment slot="preview">
-                <Pagination compact page={2} total={5} pageHref={(p: any) => `?p=${p}`}/>
+                <Pagination ariaLabel="Search results (compact)" compact page={2} total={5} pageHref={(p: any) => `?p=${p}`}/>
               </Fragment>
               <Fragment slot="code">
                 <Fragment set:html={codeHtml.get("compact")} />

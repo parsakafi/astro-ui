@@ -36,7 +36,7 @@ export const sidebar: ComponentMeta = {
         {
             id: "collapsible",
             title: "Collapsible groups",
-            code: `<Sidebar ariaLabel="Docs">\n  <SidebarGroup label="Getting started" collapsible open>\n    <SidebarItem href="#install">Install</SidebarItem>\n    <SidebarItem href="#tokens">Tokens</SidebarItem>\n  </SidebarGroup>\n  <SidebarGroup label="Components" collapsible>\n    <SidebarItem href="#button">Button</SidebarItem>\n    <SidebarItem href="#menu">Menu</SidebarItem>\n  </SidebarGroup>\n</Sidebar>`,
+            code: `<Sidebar ariaLabel="Docs navigation">\n  <SidebarGroup label="Getting started" collapsible open>\n    <SidebarItem href="#install">Install</SidebarItem>\n    <SidebarItem href="#tokens">Tokens</SidebarItem>\n  </SidebarGroup>\n  <SidebarGroup label="Components" collapsible>\n    <SidebarItem href="#button">Button</SidebarItem>\n    <SidebarItem href="#menu">Menu</SidebarItem>\n  </SidebarGroup>\n</Sidebar>`,
         },
         {
             id: "buttons",

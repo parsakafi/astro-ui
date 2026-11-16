@@ -30,7 +30,7 @@ export const navbar: ComponentMeta = {
         {
             id: "app",
             title: "App bar with actions",
-            code: `<Navbar ariaLabel="Main">\n  <a slot="brand" href="/">Acme</a>\n  <a href="/docs" aria-current="page">Docs</a>\n  <a href="/pricing">Pricing</a>\n  <a href="/changelog">Changelog</a>\n  <Button slot="actions" size="sm">Sign in</Button>\n  <Fragment slot="mobile">\n    <a href="/docs">Docs</a>\n    <a href="/pricing">Pricing</a>\n    <a href="/changelog">Changelog</a>\n  </Fragment>\n</Navbar>`,
+            code: `<Navbar ariaLabel="Primary navigation">\n  <a slot="brand" href="/">Acme</a>\n  <a href="/docs" aria-current="page">Docs</a>\n  <a href="/pricing">Pricing</a>\n  <a href="/changelog">Changelog</a>\n  <Button slot="actions" size="sm">Sign in</Button>\n  <Fragment slot="mobile">\n    <a href="/docs">Docs</a>\n    <a href="/pricing">Pricing</a>\n    <a href="/changelog">Changelog</a>\n  </Fragment>\n</Navbar>`,
         },
         {
             id: "elevated",

@@ -32,12 +32,12 @@ import { ScrollArea } from "@parsakafi/astro-ui";
         {
             id: "vertical",
             title: "Vertical",
-            code: `<ScrollArea class="h-40 w-full">\n  <div style="display:grid;gap:0.5rem">\n    <p>Row one</p>\n    <p>Row two</p>\n    <p>Row three</p>\n  </div>\n</ScrollArea>`,
+            code: `<ScrollArea ariaLabel="Activity feed" class="h-40 w-full">\n  <div style="display:grid;gap:0.5rem">\n    <p>Row one</p>\n    <p>Row two</p>\n    <p>Row three</p>\n  </div>\n</ScrollArea>`,
         },
         {
             id: "horizontal",
             title: "Horizontal",
-            code: `<ScrollArea orientation="horizontal" class="w-full">\n  <div style="width:max-content;display:flex;gap:0.5rem">\n    <Tag>Jan</Tag>\n    <Tag>Feb</Tag>\n    <Tag>Mar</Tag>\n  </div>\n</ScrollArea>`,
+            code: `<ScrollArea ariaLabel="Monthly summary" orientation="horizontal" class="w-full">\n  <div style="width:max-content;display:flex;gap:0.5rem">\n    <Tag>Jan</Tag>\n    <Tag>Feb</Tag>\n    <Tag>Mar</Tag>\n  </div>\n</ScrollArea>`,
         },
     ],
     props: [

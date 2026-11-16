@@ -30,12 +30,12 @@ export const breadcrumb: ComponentMeta = {
         {
             id: "basic",
             title: "Basic",
-            code: `<Breadcrumb\n  items={[\n    { href: "/", label: "Home" },\n    { href: "/components/", label: "Components" },\n    { label: "Button" },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Component path"\n  items={[\n    { href: "/", label: "Home" },\n    { href: "/components/", label: "Components" },\n    { label: "Button" },\n  ]}\n/>`,
         },
         {
             id: "chevron",
             title: "Chevron separator",
-            code: `<Breadcrumb separator="chevron"\n  items={[\n    { href: "/", label: "Home" },\n    { label: "Docs" },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Chevron path" separator="chevron"\n  items={[\n    { href: "/", label: "Home" },\n    { label: "Docs" },\n  ]}\n/>`,
         },
         {
             id: "dropdown",
@@ -45,32 +45,32 @@ export const breadcrumb: ComponentMeta = {
         {
             id: "slash",
             title: "Custom slash separator",
-            code: `<Breadcrumb\n  separator="custom"\n  style="--aui-breadcrumb-separator: '//'"\n  items={[\n    { href: "/", label: "usr" },\n    { href: "#", label: "local" },\n    { label: "bin" },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Filesystem path"\n  separator="custom"\n  style="--aui-breadcrumb-separator: '//'"\n  items={[\n    { href: "/", label: "usr" },\n    { href: "#", label: "local" },\n    { label: "bin" },\n  ]}\n/>`,
         },
         {
             id: "ellipsis",
             title: "Ellipsis for long paths",
-            code: `<Breadcrumb\n  items={[\n    { href: "/", label: "Home" },\n    { ellipsis: true, label: "More" },\n    { href: "#", label: "Components" },\n    { label: "Breadcrumb" },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Ellipsis path"\n  items={[\n    { href: "/", label: "Home" },\n    { ellipsis: true, label: "More" },\n    { href: "#", label: "Components" },\n    { label: "Breadcrumb" },\n  ]}\n/>`,
         },
         {
             id: "icons",
             title: "Icons for each item",
-            code: `<Breadcrumb separator="chevron"\n  items={[\n    { href: "/", label: "Home", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>' },\n    { href: "#", label: "Library", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },\n    { label: "Breadcrumb", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M15 2v5h5"/></svg>' },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Library path" separator="chevron"\n  items={[\n    { href: "/", label: "Home", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>' },\n    { href: "#", label: "Library", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>' },\n    { label: "Breadcrumb", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M15 2v5h5"/></svg>' },\n  ]}\n/>`,
         },
         {
             id: "chevrons",
             title: "Double chevron separators",
-            code: `<Breadcrumb separator="chevrons"\n  items={[\n    { href: "/", label: "Dashboard" },\n    { href: "#", label: "Resources" },\n    { label: "Documentation" },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Resource path" separator="chevrons"\n  items={[\n    { href: "/", label: "Dashboard" },\n    { href: "#", label: "Resources" },\n    { label: "Documentation" },\n  ]}\n/>`,
         },
         {
             id: "pill-frame",
             title: "Pill-style breadcrumb inside frame",
-            code: `<Breadcrumb\n  pill\n  separator="chevron"\n  items={[\n    { href: "/", label: "Home", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>' },\n    { href: "#", label: "Products" },\n    { label: "Checkout" },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Checkout path"\n  pill\n  separator="chevron"\n  items={[\n    { href: "/", label: "Home", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>' },\n    { href: "#", label: "Products" },\n    { label: "Checkout" },\n  ]}\n/>`,
         },
         {
             id: "home-icon",
             title: "Home icon item",
-            code: `<Breadcrumb\n  items={[\n    { href: "/", label: "Home", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>' },\n    { href: "#", label: "Products" },\n    { label: "Checkout" },\n  ]}\n/>`,
+            code: `<Breadcrumb ariaLabel="Product path"\n  items={[\n    { href: "/", label: "Home", icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>' },\n    { href: "#", label: "Products" },\n    { label: "Checkout" },\n  ]}\n/>`,
         },
         {
             id: "badge-count",
@@ -85,7 +85,7 @@ export const breadcrumb: ComponentMeta = {
         {
             id: "card",
             title: "Breadcrumb inside card",
-            code: `<Card size="sm">\n  <Breadcrumb\n    separator="chevron"\n    items={[\n      { href: "/", label: "Home" },\n      { href: "#", label: "Products" },\n      { label: "Checkout" },\n    ]}\n  />\n</Card>`,
+            code: `<Card size="sm">\n  <Breadcrumb ariaLabel="Path inside a card"\n    separator="chevron"\n    items={[\n      { href: "/", label: "Home" },\n      { href: "#", label: "Products" },\n      { label: "Checkout" },\n    ]}\n  />\n</Card>`,
         },
     ],
     props: [

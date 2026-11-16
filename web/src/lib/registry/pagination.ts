@@ -28,12 +28,12 @@ export const pagination: ComponentMeta = {
         {
             id: "basic",
             title: "Basic",
-            code: `<Pagination\n  page={4}\n  total={12}\n  pageHref={(p) => \`?page=\${p}\`}\n/>`,
+            code: `<Pagination ariaLabel="Search results"\n  page={4}\n  total={12}\n  pageHref={(p) => \`?page=\${p}\`}\n/>`,
         },
         {
             id: "compact",
             title: "Compact",
-            code: `<Pagination compact page={2} total={5} pageHref={(p) => \`?p=\${p}\`} />`,
+            code: `<Pagination ariaLabel="Search results (compact)" compact page={2} total={5} pageHref={(p) => \`?p=\${p}\`} />`,
         },
     ],
     props: [
