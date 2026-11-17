@@ -310,12 +310,18 @@ const classes = cn(
     align-items: center;
     gap: var(--ui-space-1);
     overflow-x: auto;
+    /* The line variant pulls its active underline 1px below the list
+       (margin-block-end: -1px) to cover the shared rule. An auto/auto
+       scroll container treats that 1px as block-axis overflow and
+       Chromium then renders a vertical scrollbar next to the tabs, so
+       pin the block axis to hidden. */
+    overflow-y: hidden;
   }
 
   .aui-tabs--vertical .aui-tabs__list {
     flex-direction: column;
     align-items: stretch;
-    overflow-x: visible;
+    overflow: visible;
   }
 
   .aui-tabs__tab {

@@ -26,6 +26,12 @@ versioning follows [SemVer](https://semver.org/).
   interactive. Disabled items expose `aria-disabled`, leave the tab
   order, and ignore pointer input.
 
+- Tabs no longer grow a vertical scrollbar. The tab list is a horizontal
+  scroll container, and the line variant's 1px underline overlap counted
+  as block-axis overflow, so Chromium and Edge painted a vertical
+  scrollbar at the end of the strip. The block axis is pinned to
+  `hidden`; vertical tabs still overflow visibly.
+
 ### Added
 
 - `AccordionItem.value` is optional again and is emitted as `data-value`
