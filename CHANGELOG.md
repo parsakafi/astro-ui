@@ -32,6 +32,13 @@ versioning follows [SemVer](https://semver.org/).
   scrollbar at the end of the strip. The block axis is pinned to
   `hidden`; vertical tabs still overflow visibly.
 
+- `Input` no longer strands the native date/time icon mid-control.
+  `.aui-input` was a flex container, which shrank Chromium's internal
+  date shadow box to the value's width and pulled the calendar/clock
+  picker indicator up against the text. The control is block again, so
+  the indicator sits at the inline end for `date`, `time`,
+  `datetime-local`, `month`, and `week`.
+
 ### Added
 
 - `AccordionItem.value` is optional again and is emitted as `data-value`

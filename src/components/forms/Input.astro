@@ -142,7 +142,12 @@ const classes = cn(
 
 <style>
   .aui-input {
-    display: flex;
+    /* Block, not flex: Chromium/Edge lay the native date/time shadow content
+       out as a single anonymous box inside the control. As a flex item it
+       shrinks to the value's width, which drags the calendar/clock picker
+       indicator next to the text instead of the inline end; as a block it
+       fills the control. */
+    display: block;
     width: 100%;
     font-family: var(--ui-font-sans);
     font-size: var(--ui-text-sm);
