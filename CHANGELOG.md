@@ -16,7 +16,21 @@ versioning follows [SemVer](https://semver.org/).
   now stay `round`; containers (Button, Badge, Card, Input) still follow
   the theme.
 
+- Accordion panel breathing room. Content started flush against the
+  summary, so the first line read as part of the title. The body now
+  carries a block-start step sized with the component (`space-1` for
+  `sm`, `space-2` for `md`, `space-3` for `lg`).
+
+- `Accordion` items now honor `disabled`. The prop and its CSS existed,
+  but the attribute was never rendered, so every panel stayed
+  interactive. Disabled items expose `aria-disabled`, leave the tab
+  order, and ignore pointer input.
+
 ### Added
+
+- `AccordionItem.value` is optional again and is emitted as `data-value`
+  on the panel, so the identifier can drive styling or tracking without
+  being mandatory.
 
 - `--aui-corner-shape` — a per-element or per-subtree override of
   `--ui-corner-shape`, so an instance can opt into or out of squircle

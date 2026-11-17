@@ -14,8 +14,11 @@ import { resolveAriaLabel } from "../../utils/a11y";
 import { cn } from "../../utils/cn";
 
 export interface AccordionItem {
-  /** Unique value identifying the panel. */
-  value: string;
+  /**
+   * Optional identifier, emitted as `data-value` on the item. Use it to
+   * target a panel from CSS/JS or to know which panel a consumer acted on.
+   */
+  value?: string;
   /** Summary-line text. */
   title: string;
   /** Panel body content (rendered as plain HTML-free text or slot per item). */
@@ -73,9 +76,15 @@ const classes = cn(
       <details
         class="aui-accordion__item"
         name={single ? (id ? `${id}-group` : "aui-accordion-group") : undefined}
+        data-value={item.value}
+        data-disabled={item.disabled ? "true" : undefined}
         open={item.open || undefined}
       >
-        <summary class="aui-accordion__summary">
+        <summary
+          class="aui-accordion__summary"
+          aria-disabled={item.disabled ? "true" : undefined}
+          tabindex={item.disabled ? "-1" : undefined}
+        >
           <span class="aui-accordion__title">{item.title}</span>
           {indicator && (
             <svg
@@ -168,10 +177,16 @@ const classes = cn(
     outline-offset: calc(var(--ui-focus-ring-offset) * -1);
   }
 
-  .aui-accordion__item[disabled] .aui-accordion__summary,
-  .aui-accordion__item:has(> summary[disabled]) .aui-accordion__summary {
-    opacity: var(--ui-disabled-opacity);
+  /* Disabled: aria-disabled announces the state, tabindex="-1" keeps the
+     summary out of the keyboard order, and pointer-events stops mouse
+     toggles — the panel cannot be opened or closed without script. */
+  .aui-accordion__item[data-disabled="true"] {
     cursor: not-allowed;
+
+    .aui-accordion__summary {
+      opacity: var(--ui-disabled-opacity);
+      pointer-events: none;
+    }
   }
 
   /* --- sizes --- */
@@ -192,17 +207,17 @@ const classes = cn(
   }
 
   .aui-accordion--sm .aui-accordion__content {
-    padding: 0 var(--ui-space-3) var(--ui-space-3);
+    padding: var(--ui-space-1) var(--ui-space-3) var(--ui-space-3);
     font-size: var(--ui-text-sm);
   }
 
   .aui-accordion--md .aui-accordion__content {
-    padding: 0 var(--ui-space-4) var(--ui-space-4);
+    padding: var(--ui-space-2) var(--ui-space-4) var(--ui-space-4);
     font-size: var(--ui-text-sm);
   }
 
   .aui-accordion--lg .aui-accordion__content {
-    padding: 0 var(--ui-space-5) var(--ui-space-5);
+    padding: var(--ui-space-3) var(--ui-space-5) var(--ui-space-5);
     font-size: var(--ui-text-md);
   }
 

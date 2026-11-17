@@ -19,10 +19,12 @@ export const accordion: ComponentMeta = {
         "Chevron indicator with rotation",
         "Optional height animation via `animated` (pure CSS, graceful fallback)",
         "SSR-controlled open panels via item.open",
+        "Disabled items without script (aria-disabled + tab/pointer guard)",
+        "Optional item.value, emitted as data-value for styling and tracking",
     ],
     a11y: [
         "Native `<details>`/`<summary>` — expand/collapse state, Space/Enter activation, and screen-reader announcements come from the platform",
-        "Disabled summaries are skipped by keyboard and assistive tech",
+        "Disabled items carry `aria-disabled` and leave the tab order, so keyboard users skip them",
         "Focus-visible ring on summaries via `:focus-visible`",
     ],
     demos: [
@@ -41,9 +43,14 @@ export const accordion: ComponentMeta = {
             title: "Animated expand",
             code: `<Accordion animated\n  items={[\n    { value: "a", title: "Smooth height", content: "The panel animates open and closed instead of snapping." },\n    { value: "b", title: "Still zero JS", content: "Pure CSS: ::details-content + interpolate-size. Unsupported browsers snap instantly." },\n  ]}\n/>`,
         },
+        {
+            id: "disabled",
+            title: "Disabled item",
+            code: `<Accordion\n  items={[\n    { title: "Billing", content: "Manage your plan and invoices." },\n    {\n      title: "Single sign-on",\n      content: "Available on the Enterprise plan.",\n      disabled: true,\n    },\n  ]}\n/>`,
+        },
     ],
     props: [
-        t("items", "AccordionItem[]", "[]", "Sections: { value, title, content, open?, disabled? }."),
+        t("items", "AccordionItem[]", "[]", "Sections: { title, content, value?, open?, disabled? }. `value` is emitted as data-value."),
         t("single", "boolean", "false", "One-open-at-a-time via native name attribute."),
         t("animated", "boolean", "false", "Smooth expand/collapse height animation (CSS-only)."),
         t("variant", `"default" | "bordered" | "ghost"`, `"default"`, "Visual style."),
@@ -64,6 +71,14 @@ export const accordion: ComponentMeta = {
         {
             q: "How does the animation work?",
             a: "`animated` animates the native ::details-content pseudo between block-size 0 and auto (interpolate-size: allow-keywords). Browsers without support ignore it and snap instantly — never broken.",
+        },
+        {
+            q: "How do I disable a panel?",
+            a: "Set `disabled: true` on the item. The summary gets `aria-disabled`, leaves the tab order, and ignores pointer input, so the panel cannot be toggled — no script required.",
+        },
+        {
+            q: "What is item.value for?",
+            a: "An optional identifier, emitted as `data-value` on the panel. Use it to target the item from CSS or to tell panels apart in your own state; the component never requires it.",
         },
     ],
     since: "0.1.0",

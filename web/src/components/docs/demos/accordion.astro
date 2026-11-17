@@ -81,6 +81,33 @@ const {demoIds, codeHtml} = Astro.props as {demoIds: string[]; codeHtml: Map<str
             </DemoTabs>
           </div>
         )}
+        {id === "disabled" && (
+          <div class="docs-demo-block" id={`demo-accordion-${id}`}>
+            <h3 class="docs-demo-title">Disabled item</h3>
+            <DemoTabs id="dm-accordion-disabled">
+              <Fragment slot="preview">
+                <Accordion
+                  id="dm-acc-dis"
+                  items={[
+                    {
+                      value: "billing",
+                      title: "Billing",
+                      content: "Manage your plan and invoices."
+                    },
+                    {
+                      title: "Single sign-on",
+                      content: "Available on the Enterprise plan.",
+                      disabled: true
+                    },
+                  ]}
+                />
+              </Fragment>
+              <Fragment slot="code">
+                <Fragment set:html={codeHtml.get("disabled")} />
+              </Fragment>
+            </DemoTabs>
+          </div>
+        )}
       </Fragment>
     ))}
   </div>
