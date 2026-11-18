@@ -29,15 +29,20 @@ export function parseChangelog(markdown: string): ChangelogEntry[] {
     const entries: ChangelogEntry[] = [];
     let current: ChangelogEntry | null = null;
     let currentSection = "";
+    let lastBullet: {list: string[]; index: number} | null = null;
 
     for (const raw of markdown.split(/\r?\n/)) {
         const line = raw.trimEnd();
-        if (!line) continue;
+        if (!line.trim()) {
+            lastBullet = null;
+            continue;
+        }
 
         const h = HEADING.exec(line);
         if (h) {
             current = {version: h[1], url: h[2], date: h[3]?.trim(), sections: {}};
             currentSection = "";
+            lastBullet = null;
             entries.push(current);
             continue;
         }
@@ -47,11 +52,21 @@ export function parseChangelog(markdown: string): ChangelogEntry[] {
         if (s) {
             currentSection = s[1].toLowerCase();
             current.sections[currentSection] = current.sections[currentSection] ?? [];
+            lastBullet = null;
             continue;
         }
         if (currentSection) {
             const b = BULLET.exec(line);
-            if (b) current.sections[currentSection]?.push(b[1]);
+            if (b) {
+                const list = (current.sections[currentSection] =
+                    current.sections[currentSection] ?? []);
+                list.push(b[1]);
+                lastBullet = {list, index: list.length - 1};
+            } else if (lastBullet && /^\s+/.test(raw)) {
+                // Entries are hard-wrapped in the source; an indented line
+                // continues the bullet above it instead of being dropped.
+                lastBullet.list[lastBullet.index] += ` ${line.trim()}`;
+            }
         }
     }
     return entries;
