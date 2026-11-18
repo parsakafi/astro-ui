@@ -5,7 +5,7 @@ design tokens. Dark mode, Tailwind interop, SSR-safe, tree-shakable, typed.
 
 - Website: <https://astroui.ir> · Docs: <https://astroui.ir/docs/> ·
   Playground: <https://astroui.ir/blocks/>
-- Status: `0.2.0` — current release (see [CHANGELOG.md](./CHANGELOG.md))
+- Status: `0.3.0` — current release (see [CHANGELOG.md](./CHANGELOG.md))
 
 ## Install
 

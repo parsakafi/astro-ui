@@ -6,15 +6,35 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-18
+
+Hardening release: crisp circular geometry under squircle themes, fixes
+for Chromium and Edge form and tab rendering, phone-safe overlays, and
+the accessible names a site-wide axe pass surfaced.
+
+### Added
+
+- `Lightbox backdrop={false}` keeps the click-to-close layer but drops
+  the dimmed fill, so a picture can sit over the live page. Combined with
+  `showClose={false}` it renders picture-only. The default stays dimmed.
+
+- `AccordionItem.value` is optional again and is emitted as `data-value`
+  on the panel, so the identifier can drive styling or tracking without
+  being mandatory.
+
+- `--aui-corner-shape` — a per-element or per-subtree override of
+  `--ui-corner-shape`, so an instance can opt into or out of squircle
+  corners without changing the theme. Documented in `docs/theming.md`.
+
 ### Fixed
 
 - Circular geometry under squircle themes. With `--ui-corner-shape:
-  squircle`, the switch knob, radio circle and dot, status and
+  squircle`, avatars, the switch knob, radio circle and dot, status and
   notification dots, count bubbles, stepper markers, timeline dots,
-  carousel and lightbox indicators, skeleton circles and spinner rings
-  were drawn as superellipses and read as broken corners. Those parts
-  now stay `round`; containers (Button, Badge, Card, Input) still follow
-  the theme.
+  carousel and lightbox indicators, skeleton circles, and spinner rings
+  and dots were drawn as superellipses and read as broken corners. Those
+  parts now stay `round`; containers (Button, Badge, Card, Input) still
+  follow the theme.
 
 - Accordion panel breathing room. Content started flush against the
   summary, so the first line read as part of the title. The body now
@@ -39,15 +59,31 @@ versioning follows [SemVer](https://semver.org/).
   the indicator sits at the inline end for `date`, `time`,
   `datetime-local`, `month`, and `week`.
 
-### Added
+- Light accent and carbon fills now use dark ink in the dark theme.
+  Both fills stay light, so white text measured 2.72:1 on accent and
+  2.94:1 on carbon; `#18181b` raises them to 6.51:1 and 5.76:1 while
+  keeping the hue. The `prefers-color-scheme` dark block mirrors the
+  explicit dark values, and the contrast guard covers both pairs.
 
-- `AccordionItem.value` is optional again and is emitted as `data-value`
-  on the panel, so the identifier can drive styling or tracking without
-  being mandatory.
+- Overlays stay inside the viewport on phones. Dialog, AlertDialog, and
+  Sheet panels are capped to the visual viewport with an internal scroll,
+  and the NotificationCenter panel no longer runs past the inline end and
+  drags the page into horizontal scrolling.
 
-- `--aui-corner-shape` — a per-element or per-subtree override of
-  `--ui-corner-shape`, so an instance can opt into or out of squircle
-  corners without changing the theme. Documented in `docs/theming.md`.
+- Banner keeps its close button beside the message on mobile. The
+  full-bleed actions row came first in DOM order, so the close button
+  wrapped onto a third row at the bottom-start.
+
+- `ScrollArea` no longer stretches auto-sized grid and flex tracks. Size
+  containment on the inline axis keeps a wide `max-content` child from
+  feeding its intrinsic width back into the parent, which caused
+  horizontal page scroll on the demo.
+
+- `Chart` rows fall back to the row number when a category label is
+  empty, so the fallback data table never ships an empty row header.
+  Circle `Progress` no longer exposes a phantom amber backdrop behind
+  its value, and `Slider` thumbs take their name from
+  `ariaStartLabel`/`ariaEndLabel` when `label` is absent.
 
 ## [0.2.0] - 2026-11-12
 
